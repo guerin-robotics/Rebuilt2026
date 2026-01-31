@@ -1,0 +1,176 @@
+[
+  {
+    "subsystem": "Climber",
+    "issues": [
+      {
+        "title": "Climber - Define IO Layer",
+        "size": "S",
+        "priority": "Medium",
+        "phase": "Define IO Layer"
+      },
+      {
+        "title": "Climber - Implement RealIO Layer",
+        "size": "M",
+        "priority": "Low",
+        "phase": "Implement RealIO Layer"
+      },
+      {
+        "title": "Climber - Implement Basic Subsystem",
+        "size": "M",
+        "priority": "Low",
+        "phase": "Implement Basic Subsystem"
+      },
+      {
+        "title": "Climber - Implement Basic Subsystem Commands",
+        "size": "S",
+        "priority": "Low",
+        "phase": "Implement Basic Subsystem Commands"
+      }
+    ]
+  },
+  {
+    "subsystem": "Shooter",
+    "issues": [
+      {
+        "title": "Shooter - Define IO Layer",
+        "size": "S",
+        "priority": "Medium",
+        "phase": "Define IO Layer"
+      },
+      {
+        "title": "Shooter - Implement RealIO Layer",
+        "size": "M",
+        "priority": "Low",
+        "phase": "Implement RealIO Layer"
+      },
+      {
+        "title": "Shooter - Implement Basic Subsystem",
+        "size": "M",
+        "priority": "Low",
+        "phase": "Implement Basic Subsystem"
+      },
+      {
+        "title": "Shooter - Implement Basic Subsystem Commands",
+        "size": "S",
+        "priority": "Low",
+        "phase": "Implement Basic Subsystem Commands"
+      }
+    ]
+  },
+  {
+    "subsystem": "Hopper",
+    "issues": [
+      {
+        "title": "Hopper - Define IO Layer",
+        "size": "S",
+        "priority": "Medium",
+        "phase": "Define IO Layer"
+      },
+      {
+        "title": "Hopper - Implement RealIO Layer",
+        "size": "M",
+        "priority": "Low",
+        "phase": "Implement RealIO Layer"
+      },
+      {
+        "title": "Hopper - Implement Basic Subsystem",
+        "size": "M",
+        "priority": "Low",
+        "phase": "Implement Basic Subsystem"
+      },
+      {
+        "title": "Hopper - Implement Basic Subsystem Commands",
+        "size": "S",
+        "priority": "Low",
+        "phase": "Implement Basic Subsystem Commands"
+      }
+    ]
+  },
+  {
+    "subsystem": "Feeder",
+    "issues": [
+      {
+        "title": "Feeder - Define IO Layer",
+        "size": "S",
+        "priority": "Medium",
+        "phase": "Define IO Layer"
+      },
+      {
+        "title": "Feeder - Implement RealIO Layer",
+        "size": "M",
+        "priority": "Low",
+        "phase": "Implement RealIO Layer"
+      },
+      {
+        "title": "Feeder - Implement Basic Subsystem",
+        "size": "M",
+        "priority": "Low",
+        "phase": "Implement Basic Subsystem"
+      },
+      {
+        "title": "Feeder - Implement Basic Subsystem Commands",
+        "size": "S",
+        "priority": "Low",
+        "phase": "Implement Basic Subsystem Commands"
+      }
+    ]
+  },
+  {
+    "subsystem": "Intake",
+    "issues": [
+      {
+        "title": "Intake - Define IO Layer",
+        "size": "S",
+        "priority": "Medium",
+        "phase": "Define IO Layer"
+      },
+      {
+        "title": "Intake - Implement RealIO Layer",
+        "size": "M",
+        "priority": "Low",
+        "phase": "Implement RealIO Layer"
+      },
+      {
+        "title": "Intake - Implement Basic Subsystem",
+        "size": "M",
+        "priority": "Low",
+        "phase": "Implement Basic Subsystem"
+      },
+      {
+        "title": "Intake - Implement Basic Subsystem Commands",
+        "size": "S",
+        "priority": "Low",
+        "phase": "Implement Basic Subsystem Commands"
+      }
+    ]
+  },
+  {
+    "subsystem": "LEDs",
+    "issues": [
+      {
+        "title": "LEDs - Define IO Layer",
+        "size": "S",
+        "priority": "Medium",
+        "phase": "Define IO Layer"
+      },
+      {
+        "title": "LEDs - Implement RealIO Layer",
+        "size": "M",
+        "priority": "Low",
+        "phase": "Implement RealIO Layer"
+      },
+      {
+        "title": "LEDs - Implement Basic Subsystem",
+        "size": "M",
+        "priority": "Low",
+        "phase": "Implement Basic Subsystem"
+      },
+      {
+        "title": "LEDs - Implement Basic Subsystem Commands",
+        "size": "S",
+        "priority": "Low",
+        "phase": "Implement Basic Subsystem Commands"
+      }
+    ]
+  }
+]
