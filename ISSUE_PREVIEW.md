@@ -319,8 +319,8 @@ This document shows a preview of all 24 issues that will be created.
 **Key Tasks**:
 - Create `LEDsIO.java` interface
 - Define `LEDsIOInputs` with @AutoLog
-- Add sensor input fields (position, velocity, voltage, current)
-- Define control methods (setVoltage, etc.)
+- Add LED status input fields (strip length, active state, pattern, brightness)
+- Define control methods (setColor, setPattern, setBrightness, etc.)
 
 **DoD**: Interface created with all inputs and methods documented
 
@@ -329,13 +329,13 @@ This document shows a preview of all 24 issues that will be created.
 ### Issue 22: LEDs - Implement RealIO Layer
 **Labels**: `size: M`, `priority: Low`
 
-**What**: Implement the real hardware IO layer using CTRE TalonFX motors and Phoenix 6.
+**What**: Implement the real hardware IO layer using appropriate LED control hardware (e.g., CTRE CANdle, AddressableLED).
 
 **Key Tasks**:
-- Create `LEDsIOTalonFX.java` implementing `LEDsIO`
-- Initialize and configure TalonFX motor
-- Implement updateInputs() with sensor readings
-- Implement setVoltage() using VoltageOut control
+- Create `LEDsIOHardware.java` implementing `LEDsIO` (name based on hardware choice)
+- Initialize and configure LED hardware (CANdle, AddressableLED, etc.)
+- Implement updateInputs() with LED status
+- Implement color/pattern control methods
 
 **DoD**: Real hardware implementation complete and tested
 

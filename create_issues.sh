@@ -19,7 +19,75 @@ SUBSYSTEMS=("Climber" "Shooter" "Hopper" "Feeder" "Intake" "LEDs")
 create_io_layer_issue() {
     local subsystem=$1
     local title="${subsystem} - Define IO Layer"
-    local body=$(cat <<EOF
+    
+    # Special case for LEDs subsystem
+    if [ "$subsystem" = "LEDs" ]; then
+        local body=$(cat <<EOF
+# What
+
+Define the IO interface for the ${subsystem} subsystem following the AdvantageKit IO layer pattern. This interface will define all inputs and outputs for the ${subsystem} hardware abstraction.
+
+# Implementation
+
+Create \`${subsystem}IO.java\` in the appropriate package with:
+
+**Skeleton Example:**
+\`\`\`java
+package frc.robot.subsystems.${subsystem,,};
+
+import org.littletonrobotics.junction.AutoLog;
+
+public interface ${subsystem}IO {
+    @AutoLog
+    public static class ${subsystem}IOInputs {
+        // Define LED status inputs here
+        // Example: public int stripLength = 0;
+        // Example: public boolean isActive = false;
+        // Example: public int currentPattern = 0;
+        // Example: public double brightness = 1.0;
+    }
+
+    /** Updates the set of loggable inputs. */
+    public default void updateInputs(${subsystem}IOInputs inputs) {}
+
+    /** Set LED color (RGB) */
+    public default void setColor(int r, int g, int b) {}
+
+    /** Set LED pattern */
+    public default void setPattern(int patternId) {}
+
+    // Add other control methods as needed
+    // Example: public default void setBrightness(double brightness) {}
+    // Example: public default void clear() {}
+}
+\`\`\`
+
+**Key Points:**
+- Use \`@AutoLog\` annotation for automatic logging
+- Define LED status inputs in the inner class (not motor sensors)
+- Include methods for colors, patterns, and effects
+- Follow team naming conventions
+- Include documentation comments
+
+# Definition of Done
+
+- [ ] \`${subsystem}IO.java\` interface created
+- [ ] \`${subsystem}IOInputs\` inner class defined with \`@AutoLog\`
+- [ ] LED status fields defined (strip length, active state, pattern, brightness)
+- [ ] \`updateInputs()\` method signature defined
+- [ ] LED control methods defined (setColor, setPattern, etc.)
+- [ ] Code follows team conventions
+- [ ] All methods have documentation comments
+
+# Other Resources (If Applicable)
+
+- AdvantageKit Documentation: https://github.com/Mechanical-Advantage/AdvantageKit
+- Team coding standards
+- WPILib LED Documentation: https://docs.wpilib.org/en/stable/docs/software/hardware-apis/misc/addressable-leds.html
+EOF
+)
+    else
+        local body=$(cat <<EOF
 # What
 
 Define the IO interface for the ${subsystem} subsystem following the AdvantageKit IO layer pattern. This interface will define all inputs and outputs for the ${subsystem} hardware abstraction.
@@ -80,6 +148,7 @@ public interface ${subsystem}IO {
 - Phoenix 6 Documentation: https://v6.docs.ctr-electronics.com/
 EOF
 )
+    fi
 
     echo -e "${BLUE}Creating issue: ${title}${NC}"
     gh issue create \
@@ -93,7 +162,90 @@ EOF
 create_real_io_issue() {
     local subsystem=$1
     local title="${subsystem} - Implement RealIO Layer"
-    local body=$(cat <<EOF
+    
+    # Special case for LEDs subsystem
+    if [ "$subsystem" = "LEDs" ]; then
+        local body=$(cat <<EOF
+# What
+
+Implement the real hardware IO layer for the ${subsystem} subsystem using appropriate LED control hardware (e.g., CTRE CANdle, AddressableLED, etc.).
+
+# Implementation
+
+Create \`${subsystem}IOHardware.java\` that implements \`${subsystem}IO\`:
+
+**Note**: LEDs subsystem uses different hardware than motor-driven subsystems. Choose appropriate hardware:
+- CTRE CANdle for CAN-based LED control
+- WPILib AddressableLED for PWM-based LED strips
+- Other LED controllers as appropriate
+
+**Skeleton Example (using AddressableLED):**
+\`\`\`java
+package frc.robot.subsystems.${subsystem,,};
+
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+
+public class ${subsystem}IOAddressableLED implements ${subsystem}IO {
+    private final AddressableLED ledStrip;
+    private final AddressableLEDBuffer ledBuffer;
+    private final int ledCount = 60; // TODO: Use actual LED count from constants
+
+    public ${subsystem}IOAddressableLED() {
+        // Initialize LED strip with PWM port
+        ledStrip = new AddressableLED(0); // TODO: Replace 0 with actual PWM port from Constants.java
+        ledBuffer = new AddressableLEDBuffer(ledCount);
+        
+        ledStrip.setLength(ledBuffer.getLength());
+        ledStrip.setData(ledBuffer);
+        ledStrip.start();
+    }
+
+    @Override
+    public void updateInputs(${subsystem}IOInputs inputs) {
+        // Read LED state/status
+        // Example: inputs.stripLength = ledBuffer.getLength();
+        // Example: inputs.isActive = true;
+    }
+
+    @Override
+    public void setColor(int r, int g, int b) {
+        for (int i = 0; i < ledBuffer.getLength(); i++) {
+            ledBuffer.setRGB(i, r, g, b);
+        }
+        ledStrip.setData(ledBuffer);
+    }
+
+    // Implement other control methods for patterns, animations, etc.
+}
+\`\`\`
+
+**Key Points:**
+- Choose appropriate LED hardware for your robot
+- For CANdle: Use CTRE CANdle API
+- For AddressableLED: Use WPILib AddressableLED API
+- Configure LED count and port/CAN ID from constants
+- Implement methods for colors, patterns, and animations
+- Update inputs with LED status information
+
+# Definition of Done
+
+- [ ] \`${subsystem}IOHardware.java\` created (name based on hardware choice)
+- [ ] LED hardware initialized with correct port/CAN ID
+- [ ] \`updateInputs()\` implemented with LED status
+- [ ] Color/pattern control methods implemented
+- [ ] Code tested with actual hardware (if available)
+- [ ] All methods have documentation comments
+
+# Other Resources (If Applicable)
+
+- WPILib AddressableLED: https://docs.wpilib.org/en/stable/docs/software/hardware-apis/misc/addressable-leds.html
+- CTRE CANdle Documentation: https://v6.docs.ctr-electronics.com/
+- Team hardware constants
+EOF
+)
+    else
+        local body=$(cat <<EOF
 # What
 
 Implement the real hardware IO layer for the ${subsystem} subsystem using CTRE TalonFX motors and Phoenix 6 API.
@@ -118,7 +270,7 @@ public class ${subsystem}IOTalonFX implements ${subsystem}IO {
 
     public ${subsystem}IOTalonFX() {
         // Initialize motor with CAN ID
-        motor = new TalonFX(0); // TODO: Use actual CAN ID from constants
+        motor = new TalonFX(0); // TODO: Replace 0 with actual CAN ID from Constants.java
 
         // Configure motor
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -175,6 +327,7 @@ public class ${subsystem}IOTalonFX implements ${subsystem}IO {
 - Team hardware constants
 EOF
 )
+    fi
 
     echo -e "${BLUE}Creating issue: ${title}${NC}"
     gh issue create \
