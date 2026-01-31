@@ -350,7 +350,7 @@ This document shows a preview of all 24 issues that will be created.
 - Create `LEDs.java` extending SubsystemBase
 - Accept IO interface in constructor
 - Implement periodic() with logging
-- Add basic control methods (setVoltage, stop)
+- Add basic control methods (setColor, setPattern, setBrightness)
 
 **DoD**: Subsystem instantiable with proper logging
 
@@ -386,10 +386,12 @@ This document shows a preview of all 24 issues that will be created.
 ```
 frc.robot.subsystems.{subsystem}/
 ├── {Subsystem}IO.java
-├── {Subsystem}IOTalonFX.java
+├── {Subsystem}IOTalonFX.java (or LEDsIOAddressableLED.java for LEDs)
 └── {Subsystem}.java
 
 frc.robot.commands.{subsystem}/
 ├── Run{Subsystem}Command.java
 └── Stop{Subsystem}Command.java
 ```
+
+**Note**: The LEDs subsystem uses AddressableLED or CANdle hardware instead of TalonFX motors.

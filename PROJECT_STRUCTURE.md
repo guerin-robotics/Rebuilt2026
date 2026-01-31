@@ -35,7 +35,7 @@ frc.robot/
 │   └── leds/
 │       ├── LEDs.java                     (Issue 23)
 │       ├── LEDsIO.java                   (Issue 21)
-│       └── LEDsIOTalonFX.java            (Issue 22)
+│       └── LEDsIOAddressableLED.java     (Issue 22)
 │
 └── commands/
     ├── climber/
