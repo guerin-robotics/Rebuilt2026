@@ -97,15 +97,15 @@ public class RobotContainer {
   }
 
   private double getThrustX() {
-    return deadband(thrustmaster.getRawAxis(0)); // strafe
+    return thrustmaster.getRawAxis(0); // strafe
   }
 
   private double getThrustY() {
-    return deadband(-thrustmaster.getRawAxis(1)); // forward
+    return -thrustmaster.getRawAxis(1); // forward
   }
 
   private double getThrustRot() {
-    return deadband(thrustmaster.getRawAxis(2)); // twist
+    return thrustmaster.getRawAxis(2); // twist
   }
 
   private void configureButtonBindings() {
@@ -113,20 +113,18 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> MathUtil.clamp(deadband(-controller.getLeftY()) + getThrustY(), -1.0, 1.0),
-            () -> MathUtil.clamp(deadband(-controller.getLeftX()) + getThrustX(), -1.0, 1.0),
-            () -> MathUtil.clamp(deadband(-controller.getRightX()) + getThrustRot(), -1.0, 1.0)));
-
+            () -> MathUtil.clamp(controller.getLeftY() + -getThrustY(), -1.0, 1.0),
+            () -> MathUtil.clamp(controller.getLeftX() + getThrustX(), -1.0, 1.0),
+            () -> MathUtil.clamp(-controller.getRightX() + -getThrustRot(), -1.0, 1.0)));
     // Lock to 0° when A button is held (Xbox still controls angle)
     controller
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> MathUtil.clamp(deadband(-controller.getLeftY()) + getThrustY(), -1.0, 1.0),
-                () -> MathUtil.clamp(deadband(-controller.getLeftX()) + getThrustX(), -1.0, 1.0),
+                () -> MathUtil.clamp(controller.getLeftY() + -getThrustY(), -1.0, 1.0),
+                () -> MathUtil.clamp(controller.getLeftX() + getThrustX(), -1.0, 1.0),
                 () -> Rotation2d.kZero));
-
     // X pattern
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
