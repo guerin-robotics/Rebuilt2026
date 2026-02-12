@@ -28,4 +28,12 @@ public final class Constants {
     /** Replaying from a log file. */
     REPLAY
   }
+
+  public final class Vision {
+    // Right Camera
+    public static final String cameraName1 = "EagleEye01";
+
+    // Left Camera
+    public static final String cameraName2 = "EagleEye02";
+  }
 }
