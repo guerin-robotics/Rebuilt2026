@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 public final class Constants {
   public static final Mode simMode = Mode.SIM;
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
-
+  public static final RobotType robotType = RobotType.COMP;
   public static enum Mode {
     /** Running on a real robot. */
     REAL,
@@ -29,6 +29,11 @@ public final class Constants {
     REPLAY
   }
 
+  public enum RobotType{
+    ALPHA,
+    COMP,
+    NONE
+  }
   public final class Vision {
     // Right Camera
     public static final String cameraName1 = "EagleEye01";
