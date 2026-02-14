@@ -1,9 +1,0 @@
-[
-  {
-    "type": "java",
-    "name": "frcJava",
-    "port": 8349,
-    "target": "10.100.21.2",
-    "project": "Rebuilt2026"
-  }
-]
