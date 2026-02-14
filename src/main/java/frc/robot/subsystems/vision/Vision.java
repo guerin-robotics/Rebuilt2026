@@ -4,6 +4,7 @@
 // Use of this source code is governed by a BSD
 // license that can be found in the LICENSE file
 // at the root directory of this project.
+// comment
 
 package frc.robot.subsystems.vision;
 
@@ -19,7 +20,9 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
+import frc.robot.subsystems.vision.io.VisionIO;
+import frc.robot.subsystems.vision.io.VisionIO.PoseObservationType;
+import frc.robot.subsystems.vision.io.VisionIOInputsAutoLogged;
 import java.util.LinkedList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
