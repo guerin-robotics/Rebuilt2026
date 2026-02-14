@@ -18,6 +18,9 @@ public final class Constants {
   public static final Mode simMode = Mode.SIM;
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 
+  // CHANGE ME TO WHAT ROBOT IS CURRENTLY BEING USED
+  public static final RobotType robotType = RobotType.COMP;
+
   public static enum Mode {
     /** Running on a real robot. */
     REAL,
@@ -29,11 +32,9 @@ public final class Constants {
     REPLAY
   }
 
-  public final class Vision {
-    // Right Camera
-    public static final String cameraName1 = "EagleEye01";
-
-    // Left Camera
-    public static final String cameraName2 = "EagleEye02";
+  public enum RobotType {
+    COMP,
+    ALPHA,
+    NONE
   }
 }

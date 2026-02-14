@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,9 +16,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.ShooterCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -24,6 +28,9 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.io.ShooterIO;
+import frc.robot.subsystems.shooter.io.ShooterIOPhoenix6;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.io.VisionIO;
@@ -35,15 +42,20 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Vision vision;
+  private final Shooter shooter;
 
   // Controllers
   private final CommandXboxController controller = new CommandXboxController(0);
   private final Joystick thrustmaster = new Joystick(1);
+  private final CommandJoystick buttonPanel = new CommandJoystick(2);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
   private static final double DEADBAND = 0.08;
+
+  // Shooter voltage for button control (tunable)
+  private static final double SHOOTER_TEST_VOLTAGE = 6.0; // Volts
 
   public RobotContainer() {
     switch (Constants.currentMode) {
@@ -62,6 +74,7 @@ public class RobotContainer {
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0),
                 new VisionIOPhotonVision(
                     VisionConstants.camera1Name, VisionConstants.robotToCamera1));
+        shooter = new Shooter(new ShooterIOPhoenix6());
         break;
 
       case SIM:
@@ -79,6 +92,7 @@ public class RobotContainer {
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
                 new VisionIOPhotonVisionSim(
                     VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose));
+        shooter = new Shooter(new ShooterIO() {});
         break;
 
       default:
@@ -90,6 +104,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+        shooter = new Shooter(new ShooterIO() {});
         break;
     }
 
@@ -130,6 +145,7 @@ public class RobotContainer {
   }
 
   private void configureButtonBindings() {
+    // ==================== DRIVE CONTROLS (DO NOT MODIFY) ====================
     // Default command: Xbox + Thrustmaster combined
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
@@ -159,6 +175,15 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+
+    // ==================== SHOOTER CONTROLS (BUTTON PANEL) ====================
+    // Button 1: Run shooter at test voltage while held, stop when released
+    buttonPanel
+        .button(1)
+        .whileTrue(ShooterCommands.runVoltage(shooter, Volts.of(SHOOTER_TEST_VOLTAGE)));
+
+    // Button 2: Stop shooter immediately (safety)
+    buttonPanel.button(2).onTrue(ShooterCommands.stop(shooter));
   }
 
   public Command getAutonomousCommand() {

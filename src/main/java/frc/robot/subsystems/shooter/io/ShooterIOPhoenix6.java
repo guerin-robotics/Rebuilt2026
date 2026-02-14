@@ -1,0 +1,164 @@
+package frc.robot.subsystems.shooter.io;
+
+import static edu.wpi.first.units.Units.RevolutionsPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
+import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
+import frc.robot.subsystems.shooter.ShooterConstants;
+
+/**
+ * CTRE Phoenix 6 implementation of ShooterIO.
+ *
+ * <p>Controls 4x TalonFX motors (1 leader + 3 followers) as a single flywheel group. Uses
+ * VelocityVoltage closed-loop control with Slot0 PID/FF gains from ShooterConstants.
+ *
+ * <p>Current limits from Constants.CurrentLimits are applied here.
+ *
+ * <p><b>Hardware:</b>
+ *
+ * <ul>
+ *   <li>Leader: CAN ID 37 (left bay top)
+ *   <li>Follower 1: CAN ID 34 (left bay lower, opposed)
+ *   <li>Follower 2: CAN ID 36 (right bay top, opposed)
+ *   <li>Follower 3: CAN ID 35 (right bay bottom, aligned)
+ * </ul>
+ */
+public class ShooterIOPhoenix6 implements ShooterIO {
+
+  private static final CANBus CAN_BUS = new CANBus("rio");
+
+  // 4x TalonFX motors for main flywheel
+  private final TalonFX leader;
+  private final TalonFX follower1;
+  private final TalonFX follower2;
+  private final TalonFX follower3;
+
+  // Control requests (reused to avoid allocations)
+  private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
+  private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
+  private final VoltageOut voltageRequest = new VoltageOut(0);
+
+  public ShooterIOPhoenix6() {
+    leader = new TalonFX(ShooterConstants.CANIDs.MAIN_FLYWHEEL_LEADER_ID, CAN_BUS);
+    follower1 = new TalonFX(ShooterConstants.CANIDs.MAIN_FLYWHEEL_FOLLOWER1_ID, CAN_BUS);
+    follower2 = new TalonFX(ShooterConstants.CANIDs.MAIN_FLYWHEEL_FOLLOWER2_ID, CAN_BUS);
+    follower3 = new TalonFX(ShooterConstants.CANIDs.MAIN_FLYWHEEL_FOLLOWER3_ID, CAN_BUS);
+
+    // Configure followers
+    int leaderId = leader.getDeviceID();
+    follower1.setControl(new Follower(leaderId, MotorAlignmentValue.Opposed));
+    follower2.setControl(new Follower(leaderId, MotorAlignmentValue.Opposed));
+    follower3.setControl(new Follower(leaderId, MotorAlignmentValue.Aligned));
+
+    configureLeader();
+    configureFollowers();
+  }
+
+  private void configureLeader() {
+    var config = new TalonFXConfiguration();
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.Inverted =
+        ShooterConstants.Mechanical.INVERTED
+            ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
+            : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+
+    // Slot0 PID/FF gains for velocity control
+    config.Slot0.kS = ShooterConstants.PID.MAIN_KS;
+    config.Slot0.kV = ShooterConstants.PID.MAIN_KV;
+    config.Slot0.kP = ShooterConstants.PID.MAIN_KP;
+    config.Slot0.kI = ShooterConstants.PID.MAIN_KI;
+    config.Slot0.kD = ShooterConstants.PID.MAIN_KD;
+
+    // Current limits
+    var limits = new CurrentLimitsConfigs();
+    limits.SupplyCurrentLimit = ShooterConstants.CurrentLimits.SHOOTER_MAIN_SUPPLY_AMP;
+    limits.SupplyCurrentLimitEnable = true;
+    limits.SupplyCurrentLowerLimit = ShooterConstants.CurrentLimits.SHOOTER_MAIN_SUPPLY_TRIGGER_AMP;
+    limits.SupplyCurrentLowerTime =
+        ShooterConstants.CurrentLimits.SHOOTER_MAIN_SUPPLY_TRIGGER_TIME_SEC.in(Seconds);
+    limits.StatorCurrentLimit = ShooterConstants.CurrentLimits.SHOOTER_MAIN_STATOR_AMP;
+    limits.StatorCurrentLimitEnable = true;
+
+    leader.getConfigurator().apply(config);
+    leader.getConfigurator().apply(limits);
+  }
+
+  private void configureFollowers() {
+    var coastConfig = new MotorOutputConfigs();
+    coastConfig.NeutralMode = NeutralModeValue.Coast;
+
+    var followerLimits = new CurrentLimitsConfigs();
+    followerLimits.StatorCurrentLimit = ShooterConstants.CurrentLimits.SHOOTER_MAIN_STATOR_AMP;
+    followerLimits.StatorCurrentLimitEnable = true;
+
+    for (TalonFX f : new TalonFX[] {follower1, follower2, follower3}) {
+      f.getConfigurator().apply(coastConfig);
+      f.getConfigurator().apply(followerLimits);
+    }
+  }
+
+  @Override
+  public void updateInputs(ShooterIOInputs inputs) {
+    // Leader motor
+    inputs.leaderVelocity = RevolutionsPerSecond.of(leader.getVelocity().getValueAsDouble());
+    inputs.leaderAppliedVolts = leader.getMotorVoltage().getValueAsDouble();
+    inputs.leaderSupplyCurrentAmps = leader.getSupplyCurrent().getValueAsDouble();
+    inputs.leaderStatorCurrentAmps = leader.getStatorCurrent().getValueAsDouble();
+
+    // Follower 1 motor
+    inputs.follower1Velocity = RevolutionsPerSecond.of(follower1.getVelocity().getValueAsDouble());
+    inputs.follower1AppliedVolts = follower1.getMotorVoltage().getValueAsDouble();
+    inputs.follower1SupplyCurrentAmps = follower1.getSupplyCurrent().getValueAsDouble();
+    inputs.follower1StatorCurrentAmps = follower1.getStatorCurrent().getValueAsDouble();
+
+    // Follower 2 motor
+    inputs.follower2Velocity = RevolutionsPerSecond.of(follower2.getVelocity().getValueAsDouble());
+    inputs.follower2AppliedVolts = follower2.getMotorVoltage().getValueAsDouble();
+    inputs.follower2SupplyCurrentAmps = follower2.getSupplyCurrent().getValueAsDouble();
+    inputs.follower2StatorCurrentAmps = follower2.getStatorCurrent().getValueAsDouble();
+
+    // Follower 3 motor
+    inputs.follower3Velocity = RevolutionsPerSecond.of(follower3.getVelocity().getValueAsDouble());
+    inputs.follower3AppliedVolts = follower3.getMotorVoltage().getValueAsDouble();
+    inputs.follower3SupplyCurrentAmps = follower3.getSupplyCurrent().getValueAsDouble();
+    inputs.follower3StatorCurrentAmps = follower3.getStatorCurrent().getValueAsDouble();
+
+    // Combined flywheel velocity (use leader velocity as representative)
+    inputs.flywheelVelocity = inputs.leaderVelocity;
+  }
+
+  @Override
+  public void setFlywheelSpeed(AngularVelocity speed) {
+    // TalonFX velocity is in rotations per second
+    double rps = speed.in(RevolutionsPerSecond);
+    leader.setControl(velocityRequest.withVelocity(rps));
+  }
+
+  @Override
+  public void setFlywheelDutyCycle(double output) {
+    leader.setControl(dutyCycleRequest.withOutput(output));
+  }
+
+  @Override
+  public void stopFlywheel() {
+    leader.setControl(dutyCycleRequest.withOutput(0));
+  }
+
+  @Override
+  public void setFlywheelVoltage(Voltage volts) {
+    leader.setControl(voltageRequest.withOutput(volts.in(Volts)));
+  }
+}
