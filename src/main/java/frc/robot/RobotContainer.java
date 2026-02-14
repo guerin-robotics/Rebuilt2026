@@ -122,7 +122,7 @@ public class RobotContainer {
   }
 
   private double getThrustY() {
-    return -thrustmaster.getRawAxis(1); // forward
+    return thrustmaster.getRawAxis(1); // forward
   }
 
   private double getThrustRot() {
@@ -134,8 +134,8 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> MathUtil.clamp(controller.getLeftY() + -getThrustY(), -1.0, 1.0),
-            () -> MathUtil.clamp(controller.getLeftX() + getThrustX(), -1.0, 1.0),
+            () -> MathUtil.clamp(-controller.getLeftY() + -getThrustY(), -1.0, 1.0),
+            () -> MathUtil.clamp(-controller.getLeftX() + -getThrustX(), -1.0, 1.0),
             () -> MathUtil.clamp(-controller.getRightX() + -getThrustRot(), -1.0, 1.0)));
     // Lock to 0° when A button is held (Xbox still controls angle)
     controller
@@ -143,8 +143,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> MathUtil.clamp(controller.getLeftY() + -getThrustY(), -1.0, 1.0),
-                () -> MathUtil.clamp(controller.getLeftX() + getThrustX(), -1.0, 1.0),
+                () -> MathUtil.clamp(-controller.getLeftY() + -getThrustY(), -1.0, 1.0),
+                () -> MathUtil.clamp(-controller.getLeftX() + -getThrustX(), -1.0, 1.0),
                 () -> Rotation2d.kZero));
     // X pattern
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
