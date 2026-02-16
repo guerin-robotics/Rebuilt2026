@@ -12,5 +12,8 @@ public class HardwareConstants {
 
     // Climber
     public static int CLIMBER_MOTOR_ID = 42;
+
+    // Prestage
+    public static int PRESTAGE_MOTOR_ID = 33;
   }
 }
