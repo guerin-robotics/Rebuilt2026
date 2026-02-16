@@ -1,4 +1,4 @@
-package frc.robot.subsystems.shooter.io;
+package frc.robot.subsystems.flywheel.io;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
@@ -7,11 +7,11 @@ import edu.wpi.first.units.measure.Voltage;
  * IO interface for the shooter flywheel.
  *
  * <p>Defines the hardware abstraction contract for the shooter. Implementations include {@link
- * ShooterIOPhoenix6} for real CTRE TalonFX hardware.
+ * FlywheelIOPhoenix6} for real CTRE TalonFX hardware.
  *
  * <p>This interface uses WPILib units (AngularVelocity, Voltage) for type safety.
  */
-public interface ShooterIO {
+public interface FlywheelIO {
 
   /** Sensor data read from the flywheel motors each loop. */
   public static class ShooterIOInputs {

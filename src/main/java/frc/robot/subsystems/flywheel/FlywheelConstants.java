@@ -1,4 +1,4 @@
-package frc.robot.subsystems.shooter;
+package frc.robot.subsystems.flywheel;
 
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RevolutionsPerSecond;
@@ -19,7 +19,7 @@ import edu.wpi.first.units.measure.Time;
  * <p>Our robot uses CTRE TalonFX (Phoenix 6) motors, so PID/FF values here are for the TalonFX
  * Slot0 closed-loop controller (not REV SparkMax).
  */
-public class ShooterConstants {
+public class FlywheelConstants {
 
   public static class CANIDs {
     public static final int MAIN_FLYWHEEL_LEADER_ID = 37;

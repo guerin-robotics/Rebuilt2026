@@ -28,9 +28,9 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.io.ShooterIO;
-import frc.robot.subsystems.shooter.io.ShooterIOPhoenix6;
+import frc.robot.subsystems.flywheel.Flywheel;
+import frc.robot.subsystems.flywheel.io.FlywheelIO;
+import frc.robot.subsystems.flywheel.io.FlywheelIOPhoenix6;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.io.VisionIO;
@@ -42,7 +42,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Vision vision;
-  private final Shooter shooter;
+  private final Flywheel shooter;
 
   // Controllers
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -74,7 +74,7 @@ public class RobotContainer {
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0),
                 new VisionIOPhotonVision(
                     VisionConstants.camera1Name, VisionConstants.robotToCamera1));
-        shooter = new Shooter(new ShooterIOPhoenix6());
+        shooter = new Flywheel(new FlywheelIOPhoenix6());
         break;
 
       case SIM:
@@ -92,7 +92,7 @@ public class RobotContainer {
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
                 new VisionIOPhotonVisionSim(
                     VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose));
-        shooter = new Shooter(new ShooterIO() {});
+        shooter = new Flywheel(new FlywheelIO() {});
         break;
 
       default:
@@ -104,7 +104,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
-        shooter = new Shooter(new ShooterIO() {});
+        shooter = new Flywheel(new FlywheelIO() {});
         break;
     }
 

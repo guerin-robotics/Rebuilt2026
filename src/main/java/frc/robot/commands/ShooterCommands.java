@@ -6,7 +6,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.flywheel.Flywheel;
 
 /**
  * Command factory methods for controlling the shooter subsystem.
@@ -41,7 +41,7 @@ public class ShooterCommands {
    * @param voltage The voltage to apply (e.g., Volts.of(6.0))
    * @return Command that runs shooter at voltage, stops on end
    */
-  public static Command runVoltage(Shooter shooter, Voltage voltage) {
+  public static Command runVoltage(Flywheel shooter, Voltage voltage) {
     return Commands.startEnd(
             () -> shooter.runCharacterization(voltage), // Apply voltage
             () -> shooter.stopFlywheels(), // Stop on end
@@ -59,7 +59,7 @@ public class ShooterCommands {
    * @param speed The target angular velocity (e.g., RPM.of(3000) or RadiansPerSecond.of(314))
    * @return Command that runs shooter at target velocity, stops on end
    */
-  public static Command runVelocity(Shooter shooter, AngularVelocity speed) {
+  public static Command runVelocity(Flywheel shooter, AngularVelocity speed) {
     return Commands.startEnd(
             () -> shooter.setFlywheelSpeed(speed), // Set target velocity
             () -> shooter.stopFlywheels(), // Stop on end
@@ -80,7 +80,7 @@ public class ShooterCommands {
    * @param dutyCycle The motor output (-1.0 to 1.0, where 1.0 = 100% forward)
    * @return Command that runs shooter at duty cycle, stops on end
    */
-  public static Command runDutyCycle(Shooter shooter, double dutyCycle) {
+  public static Command runDutyCycle(Flywheel shooter, double dutyCycle) {
     return Commands.startEnd(
             () -> shooter.setFlywheelDutyCycle(dutyCycle), // Set duty cycle
             () -> shooter.stopFlywheels(), // Stop on end
@@ -97,7 +97,7 @@ public class ShooterCommands {
    * @param shooter The shooter subsystem
    * @return Instant command that stops the shooter
    */
-  public static Command stop(Shooter shooter) {
+  public static Command stop(Flywheel shooter) {
     return Commands.runOnce(() -> shooter.stopFlywheels(), shooter).withName("ShooterStop");
   }
 
@@ -112,7 +112,7 @@ public class ShooterCommands {
    * @param speed The target angular velocity
    * @return Command that spins up shooter and finishes when at speed
    */
-  public static Command spinUpAndWait(Shooter shooter, AngularVelocity speed) {
+  public static Command spinUpAndWait(Flywheel shooter, AngularVelocity speed) {
     return Commands.runOnce(() -> shooter.setFlywheelSpeed(speed), shooter)
         .andThen(Commands.waitUntil(() -> shooter.areFlywheelsAtTargetSpeed()))
         .withName(
@@ -129,7 +129,7 @@ public class ShooterCommands {
    * @param seconds How long to run the shooter (in seconds)
    * @return Command that runs shooter for duration then stops
    */
-  public static Command runForDuration(Shooter shooter, AngularVelocity speed, double seconds) {
+  public static Command runForDuration(Flywheel shooter, AngularVelocity speed, double seconds) {
     return runVelocity(shooter, speed)
         .withTimeout(seconds)
         .withName(

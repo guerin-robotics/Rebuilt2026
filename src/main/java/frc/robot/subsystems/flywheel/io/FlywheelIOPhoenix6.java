@@ -1,4 +1,4 @@
-package frc.robot.subsystems.shooter.io;
+package frc.robot.subsystems.flywheel.io;
 
 import static edu.wpi.first.units.Units.RevolutionsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
@@ -17,7 +17,7 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.subsystems.shooter.ShooterConstants;
+import frc.robot.subsystems.flywheel.FlywheelConstants;
 
 /**
  * CTRE Phoenix 6 implementation of ShooterIO.
@@ -36,7 +36,7 @@ import frc.robot.subsystems.shooter.ShooterConstants;
  *   <li>Follower 3: CAN ID 35 (right bay bottom, aligned)
  * </ul>
  */
-public class ShooterIOPhoenix6 implements ShooterIO {
+public class FlywheelIOPhoenix6 implements FlywheelIO {
 
   private static final CANBus CAN_BUS = new CANBus("rio");
 
@@ -51,11 +51,11 @@ public class ShooterIOPhoenix6 implements ShooterIO {
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
   private final VoltageOut voltageRequest = new VoltageOut(0);
 
-  public ShooterIOPhoenix6() {
-    leader = new TalonFX(ShooterConstants.CANIDs.MAIN_FLYWHEEL_LEADER_ID, CAN_BUS);
-    follower1 = new TalonFX(ShooterConstants.CANIDs.MAIN_FLYWHEEL_FOLLOWER1_ID, CAN_BUS);
-    follower2 = new TalonFX(ShooterConstants.CANIDs.MAIN_FLYWHEEL_FOLLOWER2_ID, CAN_BUS);
-    follower3 = new TalonFX(ShooterConstants.CANIDs.MAIN_FLYWHEEL_FOLLOWER3_ID, CAN_BUS);
+  public FlywheelIOPhoenix6() {
+    leader = new TalonFX(FlywheelConstants.CANIDs.MAIN_FLYWHEEL_LEADER_ID, CAN_BUS);
+    follower1 = new TalonFX(FlywheelConstants.CANIDs.MAIN_FLYWHEEL_FOLLOWER1_ID, CAN_BUS);
+    follower2 = new TalonFX(FlywheelConstants.CANIDs.MAIN_FLYWHEEL_FOLLOWER2_ID, CAN_BUS);
+    follower3 = new TalonFX(FlywheelConstants.CANIDs.MAIN_FLYWHEEL_FOLLOWER3_ID, CAN_BUS);
 
     // Configure followers
     int leaderId = leader.getDeviceID();
@@ -71,25 +71,25 @@ public class ShooterIOPhoenix6 implements ShooterIO {
     var config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.MotorOutput.Inverted =
-        ShooterConstants.Mechanical.INVERTED
+        FlywheelConstants.Mechanical.INVERTED
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
 
     // Slot0 PID/FF gains for velocity control
-    config.Slot0.kS = ShooterConstants.PID.MAIN_KS;
-    config.Slot0.kV = ShooterConstants.PID.MAIN_KV;
-    config.Slot0.kP = ShooterConstants.PID.MAIN_KP;
-    config.Slot0.kI = ShooterConstants.PID.MAIN_KI;
-    config.Slot0.kD = ShooterConstants.PID.MAIN_KD;
+    config.Slot0.kS = FlywheelConstants.PID.MAIN_KS;
+    config.Slot0.kV = FlywheelConstants.PID.MAIN_KV;
+    config.Slot0.kP = FlywheelConstants.PID.MAIN_KP;
+    config.Slot0.kI = FlywheelConstants.PID.MAIN_KI;
+    config.Slot0.kD = FlywheelConstants.PID.MAIN_KD;
 
     // Current limits
     var limits = new CurrentLimitsConfigs();
-    limits.SupplyCurrentLimit = ShooterConstants.CurrentLimits.SHOOTER_MAIN_SUPPLY_AMP;
+    limits.SupplyCurrentLimit = FlywheelConstants.CurrentLimits.SHOOTER_MAIN_SUPPLY_AMP;
     limits.SupplyCurrentLimitEnable = true;
-    limits.SupplyCurrentLowerLimit = ShooterConstants.CurrentLimits.SHOOTER_MAIN_SUPPLY_TRIGGER_AMP;
+    limits.SupplyCurrentLowerLimit = FlywheelConstants.CurrentLimits.SHOOTER_MAIN_SUPPLY_TRIGGER_AMP;
     limits.SupplyCurrentLowerTime =
-        ShooterConstants.CurrentLimits.SHOOTER_MAIN_SUPPLY_TRIGGER_TIME_SEC.in(Seconds);
-    limits.StatorCurrentLimit = ShooterConstants.CurrentLimits.SHOOTER_MAIN_STATOR_AMP;
+        FlywheelConstants.CurrentLimits.SHOOTER_MAIN_SUPPLY_TRIGGER_TIME_SEC.in(Seconds);
+    limits.StatorCurrentLimit = FlywheelConstants.CurrentLimits.SHOOTER_MAIN_STATOR_AMP;
     limits.StatorCurrentLimitEnable = true;
 
     leader.getConfigurator().apply(config);
@@ -101,7 +101,7 @@ public class ShooterIOPhoenix6 implements ShooterIO {
     coastConfig.NeutralMode = NeutralModeValue.Coast;
 
     var followerLimits = new CurrentLimitsConfigs();
-    followerLimits.StatorCurrentLimit = ShooterConstants.CurrentLimits.SHOOTER_MAIN_STATOR_AMP;
+    followerLimits.StatorCurrentLimit = FlywheelConstants.CurrentLimits.SHOOTER_MAIN_STATOR_AMP;
     followerLimits.StatorCurrentLimitEnable = true;
 
     for (TalonFX f : new TalonFX[] {follower1, follower2, follower3}) {
