@@ -86,7 +86,8 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     var limits = new CurrentLimitsConfigs();
     limits.SupplyCurrentLimit = FlywheelConstants.CurrentLimits.SHOOTER_MAIN_SUPPLY_AMP;
     limits.SupplyCurrentLimitEnable = true;
-    limits.SupplyCurrentLowerLimit = FlywheelConstants.CurrentLimits.SHOOTER_MAIN_SUPPLY_TRIGGER_AMP;
+    limits.SupplyCurrentLowerLimit =
+        FlywheelConstants.CurrentLimits.SHOOTER_MAIN_SUPPLY_TRIGGER_AMP;
     limits.SupplyCurrentLowerTime =
         FlywheelConstants.CurrentLimits.SHOOTER_MAIN_SUPPLY_TRIGGER_TIME_SEC.in(Seconds);
     limits.StatorCurrentLimit = FlywheelConstants.CurrentLimits.SHOOTER_MAIN_STATOR_AMP;

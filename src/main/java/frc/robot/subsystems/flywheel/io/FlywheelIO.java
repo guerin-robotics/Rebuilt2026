@@ -1,9 +1,8 @@
 package frc.robot.subsystems.flywheel.io;
 
-import org.littletonrobotics.junction.AutoLog;
-
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import org.littletonrobotics.junction.AutoLog;
 
 /**
  * IO interface for the shooter flywheel.

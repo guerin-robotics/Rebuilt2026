@@ -8,16 +8,17 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.feeder.Feeder;
 
 public class FeederCommands {
-    
-    public static Command runFeederVoltage(Feeder feeder, Voltage voltage) {
-        return Commands.startEnd(
-                () -> feeder.setFeederVoltage(voltage), // Apply voltage
-                () -> feeder.setFeederVoltage(Volts.of(0)), // Stop on end
-                feeder)
-            .withName("FeederVoltage_" + voltage.in(Volts) + "V");
-    }
 
-    public static Command stop(Feeder feeder) {
-        return Commands.runOnce(() -> feeder.setFeederVoltage(Volts.of(0)), feeder).withName("FeederStop");
-    }
+  public static Command runFeederVoltage(Feeder feeder, Voltage voltage) {
+    return Commands.startEnd(
+            () -> feeder.setFeederVoltage(voltage), // Apply voltage
+            () -> feeder.setFeederVoltage(Volts.of(0)), // Stop on end
+            feeder)
+        .withName("FeederVoltage_" + voltage.in(Volts) + "V");
+  }
+
+  public static Command stop(Feeder feeder) {
+    return Commands.runOnce(() -> feeder.setFeederVoltage(Volts.of(0)), feeder)
+        .withName("FeederStop");
+  }
 }

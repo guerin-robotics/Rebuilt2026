@@ -191,7 +191,7 @@ public class RobotContainer {
 
     // Button 2: Stop shooter immediately (safety)
     buttonPanel.button(2).onTrue(FlwheelCommands.stop(shooter));
-    }
+  }
 
   public Command getAutonomousCommand() {
     return autoChooser.get();
