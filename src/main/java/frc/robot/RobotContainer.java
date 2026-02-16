@@ -28,6 +28,9 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.feeder.Feeder;
+import frc.robot.subsystems.feeder.io.FeederIO;
+import frc.robot.subsystems.feeder.io.FeederIOReal;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.FlywheelIOPhoenix6;
@@ -43,6 +46,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Vision vision;
   private final Flywheel shooter;
+  private final Feeder feeder;
 
   // Controllers
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -75,6 +79,7 @@ public class RobotContainer {
                 new VisionIOPhotonVision(
                     VisionConstants.camera1Name, VisionConstants.robotToCamera1));
         shooter = new Flywheel(new FlywheelIOPhoenix6());
+        feeder = new Feeder(new FeederIOReal());
         break;
 
       case SIM:
@@ -93,6 +98,7 @@ public class RobotContainer {
                 new VisionIOPhotonVisionSim(
                     VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose));
         shooter = new Flywheel(new FlywheelIO() {});
+        feeder = new Feeder(new FeederIO() {});
         break;
 
       default:
@@ -105,6 +111,7 @@ public class RobotContainer {
                 new ModuleIO() {});
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         shooter = new Flywheel(new FlywheelIO() {});
+        feeder = new Feeder(new FeederIO() {});
         break;
     }
 
@@ -184,7 +191,7 @@ public class RobotContainer {
 
     // Button 2: Stop shooter immediately (safety)
     buttonPanel.button(2).onTrue(FlwheelCommands.stop(shooter));
-  }
+    }
 
   public Command getAutonomousCommand() {
     return autoChooser.get();
