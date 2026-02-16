@@ -29,7 +29,7 @@ import frc.robot.subsystems.flywheel.Flywheel;
  * button.onTrue(ShooterCommands.runVelocity(shooter, RPM.of(3000)));
  * </pre>
  */
-public class ShooterCommands {
+public class FlwheelCommands {
 
   /**
    * Runs the shooter at a specific voltage while the command is active. Stops when the command
@@ -43,29 +43,10 @@ public class ShooterCommands {
    */
   public static Command runVoltage(Flywheel shooter, Voltage voltage) {
     return Commands.startEnd(
-            () -> shooter.runCharacterization(voltage), // Apply voltage
+            () -> shooter.setFlywheelVoltage(voltage), // Apply voltage
             () -> shooter.stopFlywheels(), // Stop on end
             shooter)
-        .withName("ShooterVoltage_" + voltage.in(Volts) + "V");
-  }
-
-  /**
-   * Runs the shooter at a specific angular velocity using closed-loop PID control. Stops when the
-   * command ends.
-   *
-   * <p><b>Use case:</b> Precise shooting at a known speed (e.g., shooting from a fixed distance).
-   *
-   * @param shooter The shooter subsystem
-   * @param speed The target angular velocity (e.g., RPM.of(3000) or RadiansPerSecond.of(314))
-   * @return Command that runs shooter at target velocity, stops on end
-   */
-  public static Command runVelocity(Flywheel shooter, AngularVelocity speed) {
-    return Commands.startEnd(
-            () -> shooter.setFlywheelSpeed(speed), // Set target velocity
-            () -> shooter.stopFlywheels(), // Stop on end
-            shooter)
-        .withName(
-            "ShooterVelocity_" + Math.round(speed.in(RevolutionsPerSecond) * 60.0) + "RPM");
+        .withName("FlwheelVoltage_" + voltage.in(Volts) + "V");
   }
 
   /**
@@ -85,7 +66,7 @@ public class ShooterCommands {
             () -> shooter.setFlywheelDutyCycle(dutyCycle), // Set duty cycle
             () -> shooter.stopFlywheels(), // Stop on end
             shooter)
-        .withName("ShooterDutyCycle_" + Math.round(dutyCycle * 100) + "%");
+        .withName("FlwheelDutyCycle_" + Math.round(dutyCycle * 100) + "%");
   }
 
   /**
@@ -98,48 +79,9 @@ public class ShooterCommands {
    * @return Instant command that stops the shooter
    */
   public static Command stop(Flywheel shooter) {
-    return Commands.runOnce(() -> shooter.stopFlywheels(), shooter).withName("ShooterStop");
-  }
-
-  /**
-   * Runs the shooter at a target velocity and waits until it reaches the setpoint within
-   * tolerance.
-   *
-   * <p><b>Use case:</b> Auto sequences where you need to wait for the shooter to spin up before
-   * feeding.
-   *
-   * @param shooter The shooter subsystem
-   * @param speed The target angular velocity
-   * @return Command that spins up shooter and finishes when at speed
-   */
-  public static Command spinUpAndWait(Flywheel shooter, AngularVelocity speed) {
-    return Commands.runOnce(() -> shooter.setFlywheelSpeed(speed), shooter)
-        .andThen(Commands.waitUntil(() -> shooter.areFlywheelsAtTargetSpeed()))
-        .withName(
-            "ShooterSpinUp_" + Math.round(speed.in(RevolutionsPerSecond) * 60.0) + "RPM");
-  }
-
-  /**
-   * Runs the shooter at a target velocity for a specific duration, then stops.
-   *
-   * <p><b>Use case:</b> Testing, or timed shooting sequences in auto.
-   *
-   * @param shooter The shooter subsystem
-   * @param speed The target angular velocity
-   * @param seconds How long to run the shooter (in seconds)
-   * @return Command that runs shooter for duration then stops
-   */
-  public static Command runForDuration(Flywheel shooter, AngularVelocity speed, double seconds) {
-    return runVelocity(shooter, speed)
-        .withTimeout(seconds)
-        .withName(
-            "ShooterTimed_"
-                + Math.round(speed.in(RevolutionsPerSecond) * 60.0)
-                + "RPM_"
-                + seconds
-                + "s");
+    return Commands.runOnce(() -> shooter.stopFlywheels(), shooter).withName("FlwheelStop");
   }
 
   // Prevent instantiation - this is a utility class
-  private ShooterCommands() {}
+  private FlwheelCommands() {}
 }

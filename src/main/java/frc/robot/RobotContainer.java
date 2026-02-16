@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.ShooterCommands;
+import frc.robot.commands.FlwheelCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -180,10 +180,10 @@ public class RobotContainer {
     // Button 1: Run shooter at test voltage while held, stop when released
     buttonPanel
         .button(1)
-        .whileTrue(ShooterCommands.runVoltage(shooter, Volts.of(SHOOTER_TEST_VOLTAGE)));
+        .whileTrue(FlwheelCommands.runVoltage(shooter, Volts.of(SHOOTER_TEST_VOLTAGE)));
 
     // Button 2: Stop shooter immediately (safety)
-    buttonPanel.button(2).onTrue(ShooterCommands.stop(shooter));
+    buttonPanel.button(2).onTrue(FlwheelCommands.stop(shooter));
   }
 
   public Command getAutonomousCommand() {
