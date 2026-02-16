@@ -1,5 +1,7 @@
 package frc.robot.subsystems.flywheel.io;
 
+import org.littletonrobotics.junction.AutoLog;
+
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 
@@ -14,6 +16,7 @@ import edu.wpi.first.units.measure.Voltage;
 public interface FlywheelIO {
 
   /** Sensor data read from the flywheel motors each loop. */
+  @AutoLog
   public static class ShooterIOInputs {
     // Combined flywheel velocity (typically matches leader velocity)
     /** Combined flywheel velocity (average or leader). */

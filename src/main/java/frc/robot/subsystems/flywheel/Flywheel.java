@@ -6,6 +6,8 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RevolutionsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
@@ -14,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
+import frc.robot.subsystems.flywheel.io.ShooterIOInputsAutoLogged;
 
 /**
  * The Shooter subsystem controls the robot's game piece launching mechanism.
@@ -23,7 +26,7 @@ import frc.robot.subsystems.flywheel.io.FlywheelIO;
  */
 public class Flywheel extends SubsystemBase {
   private final FlywheelIO io;
-  private final FlywheelIO.ShooterIOInputs inputs = new FlywheelIO.ShooterIOInputs();
+  private final ShooterIOInputsAutoLogged inputs;
   private final SysIdRoutine sysId;
 
   /**
@@ -33,6 +36,7 @@ public class Flywheel extends SubsystemBase {
    */
   public Flywheel(FlywheelIO shooterIO) {
     this.io = shooterIO;
+    inputs = new ShooterIOInputsAutoLogged();
     this.stopFlywheels();
 
     // Configure SysId for feedforward characterization
@@ -49,6 +53,7 @@ public class Flywheel extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
+    Logger.processInputs("Flywheel", inputs);
   }
 
   /** Stops the flywheel by setting target speed to zero. */
