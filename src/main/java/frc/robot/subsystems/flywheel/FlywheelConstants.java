@@ -63,18 +63,13 @@ public class FlywheelConstants {
   }
 
   /**
-   * PID and feedforward constants for the TalonFX Slot0 controller.
-   *
-   * <p>These map to Phoenix 6 Slot0Configs (kS, kV, kP, kI, kD). The values below are the defaults
-   * already tuned in ShooterIOPhoenix6.
+   * Feedforward constants for the main flywheel. Used by SimpleMotorFeedforward (kS, kV). Prestage
+   * and Kicker use TalonFX Slot0 closed-loop; main flywheel uses feedforward-only.
    */
   public static class PID {
-    // Main flywheel (4x TalonFX)
+    // Main flywheel (4x TalonFX) - feedforward only
     public static final double MAIN_KS = 0.35;
     public static final double MAIN_KV = 0.12;
-    public static final double MAIN_KP = 0.15;
-    public static final double MAIN_KI = 0.0;
-    public static final double MAIN_KD = 0.0;
 
     // Prestage (2x TalonFX)
     public static final double PRESTAGE_KS = 0.45;

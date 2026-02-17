@@ -10,12 +10,10 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.subsystems.flywheel.FlywheelConstants;
 
@@ -23,7 +21,7 @@ import frc.robot.subsystems.flywheel.FlywheelConstants;
  * CTRE Phoenix 6 implementation of ShooterIO.
  *
  * <p>Controls 4x TalonFX motors (1 leader + 3 followers) as a single flywheel group. Uses
- * VelocityVoltage closed-loop control with Slot0 PID/FF gains from ShooterConstants.
+ * VoltageOut for feedforward control (computed in Flywheel subsystem).
  *
  * <p>Current limits from Constants.CurrentLimits are applied here.
  *
@@ -47,7 +45,6 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
   private final TalonFX follower3;
 
   // Control requests (reused to avoid allocations)
-  private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
   private final VoltageOut voltageRequest = new VoltageOut(0);
 
@@ -74,13 +71,6 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
         FlywheelConstants.Mechanical.INVERTED
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
-
-    // Slot0 PID/FF gains for velocity control
-    config.Slot0.kS = FlywheelConstants.PID.MAIN_KS;
-    config.Slot0.kV = FlywheelConstants.PID.MAIN_KV;
-    config.Slot0.kP = FlywheelConstants.PID.MAIN_KP;
-    config.Slot0.kI = FlywheelConstants.PID.MAIN_KI;
-    config.Slot0.kD = FlywheelConstants.PID.MAIN_KD;
 
     // Current limits
     var limits = new CurrentLimitsConfigs();
@@ -139,13 +129,6 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
 
     // Combined flywheel velocity (use leader velocity as representative)
     inputs.flywheelVelocity = inputs.leaderVelocity;
-  }
-
-  @Override
-  public void setFlywheelSpeed(AngularVelocity speed) {
-    // TalonFX velocity is in rotations per second
-    double rps = speed.in(RevolutionsPerSecond);
-    leader.setControl(velocityRequest.withVelocity(rps));
   }
 
   @Override

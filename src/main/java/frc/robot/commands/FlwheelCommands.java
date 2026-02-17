@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -46,6 +47,21 @@ public class FlwheelCommands {
             () -> shooter.stopFlywheels(), // Stop on end
             shooter)
         .withName("FlwheelVoltage_" + voltage.in(Volts) + "V");
+  }
+
+  /**
+   * Runs the shooter at a target speed using feedforward-only control. Stops when the command ends.
+   *
+   * <p><b>Use case:</b> Shooting at a known RPM. Uses kS and kV from constants (no PID).
+   *
+   * @param shooter The shooter subsystem
+   * @param targetSpeed Desired angular velocity (e.g., RPM.of(3000))
+   * @return Command that runs shooter at target speed via feedforward, stops on end
+   */
+  public static Command runVelocity(Flywheel shooter, AngularVelocity targetSpeed) {
+    return Commands.startEnd(
+            () -> shooter.setFlywheelSpeed(targetSpeed), () -> shooter.stopFlywheels(), shooter)
+        .withName("FlwheelVelocity_" + targetSpeed.in(RPM) + "RPM");
   }
 
   /**
