@@ -40,6 +40,9 @@ import frc.robot.subsystems.flywheel.io.FlywheelIOPhoenix6;
 import frc.robot.subsystems.prestage.Prestage;
 import frc.robot.subsystems.prestage.io.PrestageIO;
 import frc.robot.subsystems.prestage.io.PrestageIOReal;
+import frc.robot.subsystems.transport.Transport;
+import frc.robot.subsystems.transport.io.TransportIO;
+import frc.robot.subsystems.transport.io.TransportIOReal;
 import frc.robot.subsystems.intakeSlider.intakeSlider;
 import frc.robot.subsystems.intakeSlider.io.intakeSliderIO;
 import frc.robot.subsystems.intakeSlider.io.intakeSliderIOReal;
@@ -62,6 +65,7 @@ public class RobotContainer {
   private final Prestage prestage;
   private final intakeSlider intakeSlider;
   private final intakeRoller intakeRoller;
+  private final Transport transport;
 
   // Controllers
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -103,6 +107,7 @@ public class RobotContainer {
         shooter = new Flywheel(new FlywheelIOPhoenix6());
         feeder = new Feeder(new FeederIOReal());
         prestage = new Prestage(new PrestageIOReal());
+        transport = new Transport(new TransportIOReal());
         intakeSlider = new intakeSlider(new intakeSliderIOReal());
         intakeRoller = new intakeRoller(new intakeRollerIOReal());
         break;
@@ -125,6 +130,7 @@ public class RobotContainer {
         shooter = new Flywheel(new FlywheelIO() {});
         feeder = new Feeder(new FeederIO() {});
         prestage = new Prestage(new PrestageIO() {});
+        transport = new Transport(new TransportIO() {});
         intakeSlider = new intakeSlider(new intakeSliderIO() {});
         intakeRoller = new intakeRoller(new intakeRollerIO() {});
         break;
@@ -141,6 +147,7 @@ public class RobotContainer {
         shooter = new Flywheel(new FlywheelIO() {});
         feeder = new Feeder(new FeederIO() {});
         prestage = new Prestage(new PrestageIO() {});
+        transport = new Transport(new TransportIO() {});
         intakeSlider = new intakeSlider(new intakeSliderIO() {});
         intakeRoller = new intakeRoller(new intakeRollerIO() {});
         break;

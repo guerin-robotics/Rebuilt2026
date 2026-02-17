@@ -18,7 +18,7 @@ public class HardwareConstants {
     public static int PRESTAGE_FOLLOWER_ID = 37;
 
     // Transport
-    public static int Transport_MOTOR_ID = 38;
+    public static int TRANSPORT_MOTOR_ID = 38;
 
     // Intake
     public static int INTAKE_SLIDER_MOTOR_ID = 39;
