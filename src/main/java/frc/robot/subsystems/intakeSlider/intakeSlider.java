@@ -4,23 +4,23 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.intakeSlider.io.intakeSliderIO;
 
-public class intakeSlider extends SubsystemBase{
+public class intakeSlider extends SubsystemBase {
 
-    private final intakeSliderIO io;
+  private final intakeSliderIO io;
 
-    private final intakeSliderIO.IntakeSliderIOInputs inputs = new intakeSliderIO.IntakeSliderIOInputs();
+  private final intakeSliderIO.IntakeSliderIOInputs inputs =
+      new intakeSliderIO.IntakeSliderIOInputs();
 
-    public intakeSlider(intakeSliderIO io) {
-        this.io = io;
-    }
+  public intakeSlider(intakeSliderIO io) {
+    this.io = io;
+  }
 
-    @Override
-    public void periodic() {
-        io.updateInputs(inputs);
-    }
+  @Override
+  public void periodic() {
+    io.updateInputs(inputs);
+  }
 
-    public void setIntakeSliderVoltage(Voltage volts) {
-        io.setIntakeSliderVoltage(volts);
-    }
-
+  public void setIntakeSliderVoltage(Voltage volts) {
+    io.setIntakeSliderVoltage(volts);
+  }
 }

@@ -1,16 +1,17 @@
 package frc.robot.subsystems.intakeSlider;
 
-import edu.wpi.first.units.measure.Time;
 import static edu.wpi.first.units.Units.Seconds;
 
+import edu.wpi.first.units.measure.Time;
+
 public class intakeSliderConstants {
-        /** Current limits. */
-    public static class CurrentLimits {
-        public static final int INTAKE_SLIDER_MAIN_SUPPLY_AMP = 40;
-        public static final int INTAKE_SLIDER_MAIN_SUPPLY_TRIGGER_AMP = 35;
-        public static final Time INTAKE_SLIDER_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
-        public static final int INTAKE_SLIDER_MAIN_STATOR_AMP = 60;
-    }
+  /** Current limits. */
+  public static class CurrentLimits {
+    public static final int INTAKE_SLIDER_MAIN_SUPPLY_AMP = 40;
+    public static final int INTAKE_SLIDER_MAIN_SUPPLY_TRIGGER_AMP = 35;
+    public static final Time INTAKE_SLIDER_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
+    public static final int INTAKE_SLIDER_MAIN_STATOR_AMP = 60;
+  }
 
   public static class SoftwareConstants {
     public static final boolean INVERTED = false;

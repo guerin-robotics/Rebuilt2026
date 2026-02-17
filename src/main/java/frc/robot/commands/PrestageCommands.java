@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.prestage.Prestage;
 
 public class PrestageCommands {
-    
+
   public static Command runPrestageVoltage(Prestage prestage, Voltage voltage) {
     return Commands.startEnd(
             () -> prestage.setPrestageVoltage(voltage), // Apply voltage

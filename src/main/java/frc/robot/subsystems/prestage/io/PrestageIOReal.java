@@ -29,8 +29,9 @@ public class PrestageIOReal implements PrestageIO {
   public PrestageIOReal() {
     prestageLeader = new TalonFX(HardwareConstants.CanIds.PRESTAGE_LEADER_ID, CAN_BUS);
     prestageFollower = new TalonFX(HardwareConstants.CanIds.PRESTAGE_FOLLOWER_ID, CAN_BUS);
-    
-    prestageFollower.setControl(new Follower(HardwareConstants.CanIds.PRESTAGE_LEADER_ID, MotorAlignmentValue.Aligned));
+
+    prestageFollower.setControl(
+        new Follower(HardwareConstants.CanIds.PRESTAGE_LEADER_ID, MotorAlignmentValue.Aligned));
 
     // Configure motor
     configurePrestageMotor();

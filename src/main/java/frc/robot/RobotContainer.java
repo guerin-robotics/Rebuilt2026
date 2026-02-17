@@ -20,10 +20,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.FlywheelCommands;
-import frc.robot.commands.intakeSliderCommands;
-import frc.robot.commands.PrestageCommands;
 import frc.robot.commands.FeederCommands;
+import frc.robot.commands.FlywheelCommands;
+import frc.robot.commands.PrestageCommands;
+import frc.robot.commands.intakeSliderCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -37,18 +37,18 @@ import frc.robot.subsystems.feeder.io.FeederIOReal;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.FlywheelIOPhoenix6;
+import frc.robot.subsystems.intakeRoller.intakeRoller;
+import frc.robot.subsystems.intakeRoller.io.intakeRollerIO;
+import frc.robot.subsystems.intakeRoller.io.intakeRollerIOReal;
+import frc.robot.subsystems.intakeSlider.intakeSlider;
+import frc.robot.subsystems.intakeSlider.io.intakeSliderIO;
+import frc.robot.subsystems.intakeSlider.io.intakeSliderIOReal;
 import frc.robot.subsystems.prestage.Prestage;
 import frc.robot.subsystems.prestage.io.PrestageIO;
 import frc.robot.subsystems.prestage.io.PrestageIOReal;
 import frc.robot.subsystems.transport.Transport;
 import frc.robot.subsystems.transport.io.TransportIO;
 import frc.robot.subsystems.transport.io.TransportIOReal;
-import frc.robot.subsystems.intakeSlider.intakeSlider;
-import frc.robot.subsystems.intakeSlider.io.intakeSliderIO;
-import frc.robot.subsystems.intakeSlider.io.intakeSliderIOReal;
-import frc.robot.subsystems.intakeRoller.intakeRoller;
-import frc.robot.subsystems.intakeRoller.io.intakeRollerIO;
-import frc.robot.subsystems.intakeRoller.io.intakeRollerIOReal;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.io.VisionIO;
@@ -231,24 +231,28 @@ public class RobotContainer {
 
     // FEEDER CONTROLS
     // Button 3 (label "L1"): Run feeder
-    buttonPanel.button(3).whileTrue(FeederCommands.runFeederVoltage(feeder, Volts.of(FeederTestVoltage)));
+    buttonPanel
+        .button(3)
+        .whileTrue(FeederCommands.runFeederVoltage(feeder, Volts.of(FeederTestVoltage)));
     // Button 7 (Label "OUT"): Stop feeder
     buttonPanel.button(7).onTrue(FeederCommands.stop(feeder));
 
     // PRESTAGE CONTROLS
     // Button 4: Run prestage
-    buttonPanel.button(4).whileTrue(PrestageCommands.runPrestageVoltage(prestage, Volts.of(PrestageTestVoltage)));
+    buttonPanel
+        .button(4)
+        .whileTrue(PrestageCommands.runPrestageVoltage(prestage, Volts.of(PrestageTestVoltage)));
     // Button 5: Stop prestage
     buttonPanel.button(5).onTrue(PrestageCommands.stop(prestage));
 
     // INTAKE CONTROLS
     // Button 9: Run transport out
-    buttonPanel.button(9).whileTrue(intakeSliderCommands.runIntakeForward(intakeSlider, Volts.of(intakeSliderTestVoltage)));
+    buttonPanel
+        .button(9)
+        .whileTrue(
+            intakeSliderCommands.runIntakeForward(intakeSlider, Volts.of(intakeSliderTestVoltage)));
     // Button 10: Stop transport
     buttonPanel.button(10).onTrue(intakeSliderCommands.stopIntakeSlider(intakeSlider));
-
-
-
   }
 
   public Command getAutonomousCommand() {

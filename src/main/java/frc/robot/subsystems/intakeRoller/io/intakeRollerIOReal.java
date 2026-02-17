@@ -1,4 +1,5 @@
 package frc.robot.subsystems.intakeRoller.io;
+
 import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.CANBus;
@@ -28,8 +29,10 @@ public class intakeRollerIOReal implements intakeRollerIO {
   public intakeRollerIOReal() {
     intakeRollerLeader = new TalonFX(HardwareConstants.CanIds.INTAKE_ROLLER_LEADER_ID, CAN_BUS);
     intakeRollerFollower = new TalonFX(HardwareConstants.CanIds.INTAKE_ROLLER_FOLLOWER_ID, CAN_BUS);
-    
-    intakeRollerFollower.setControl(new Follower(HardwareConstants.CanIds.INTAKE_ROLLER_LEADER_ID, MotorAlignmentValue.Aligned));
+
+    intakeRollerFollower.setControl(
+        new Follower(
+            HardwareConstants.CanIds.INTAKE_ROLLER_LEADER_ID, MotorAlignmentValue.Aligned));
 
     // Configure motor
     configureintakeRollerMotor();

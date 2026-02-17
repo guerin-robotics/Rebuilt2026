@@ -5,13 +5,13 @@ public class HardwareConstants {
 
   public static class CanIds {
     // Flywheel
-    //public static int FLYWHEEL_MOTOR_ID = 31;
+    // public static int FLYWHEEL_MOTOR_ID = 31;
 
     // Feeder
     public static int FEEDER_MOTOR_ID = 35;
 
     // Climber
-    //public static int CLIMBER_MOTOR_ID = 42;
+    // public static int CLIMBER_MOTOR_ID = 42;
 
     // Prestage
     public static int PRESTAGE_LEADER_ID = 36;
