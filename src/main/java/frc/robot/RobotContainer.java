@@ -23,6 +23,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeederCommands;
 import frc.robot.commands.FlywheelCommands;
 import frc.robot.commands.PrestageCommands;
+import frc.robot.commands.intakeRollerCommands;
 import frc.robot.commands.intakeSliderCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -195,17 +196,17 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> MathUtil.clamp(-controller.getLeftY() + -getThrustY(), -1.0, 1.0),
-            () -> MathUtil.clamp(-controller.getLeftX() + -getThrustX(), -1.0, 1.0),
-            () -> MathUtil.clamp(-controller.getRightX() + -getThrustRot(), -1.0, 1.0)));
+            () -> MathUtil.clamp(controller.getLeftY() + getThrustY(), -1.0, 1.0),
+            () -> MathUtil.clamp(controller.getLeftX() + getThrustX(), -1.0, 1.0),
+            () -> MathUtil.clamp(controller.getRightX() + getThrustRot(), -1.0, 1.0)));
     // Lock to 0° when A button is held (Xbox still controls angle)
     controller
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> MathUtil.clamp(-controller.getLeftY() + -getThrustY(), -1.0, 1.0),
-                () -> MathUtil.clamp(-controller.getLeftX() + -getThrustX(), -1.0, 1.0),
+                () -> MathUtil.clamp(controller.getLeftY() + getThrustY(), -1.0, 1.0),
+                () -> MathUtil.clamp(controller.getLeftX() + getThrustX(), -1.0, 1.0),
                 () -> Rotation2d.kZero));
     // X pattern
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -223,7 +224,10 @@ public class RobotContainer {
 
     // ==================== SHOOTER CONTROLS (BUTTON PANEL) ====================
     // Button 1: Run shooter at test voltage while held, stop when released
-    buttonPanel
+    // buttonPanel
+    //     .button(1)
+    //     .whileTrue(FlywheelCommands.runVoltage(shooter, Volts.of(SHOOTER_TEST_VOLTAGE)));
+    controller
         .button(1)
         .whileTrue(FlywheelCommands.runVoltage(shooter, Volts.of(SHOOTER_TEST_VOLTAGE)));
     // Button 2: Stop shooter immediately (safety)
@@ -231,28 +235,49 @@ public class RobotContainer {
 
     // FEEDER CONTROLS
     // Button 3 (label "L1"): Run feeder
-    buttonPanel
-        .button(3)
+    // buttonPanel
+    //     .button(3)
+    //     .whileTrue(FeederCommands.runFeederVoltage(feeder, Volts.of(FeederTestVoltage)));
+    controller
+        .button(2)
         .whileTrue(FeederCommands.runFeederVoltage(feeder, Volts.of(FeederTestVoltage)));
     // Button 7 (Label "OUT"): Stop feeder
     buttonPanel.button(7).onTrue(FeederCommands.stop(feeder));
 
     // PRESTAGE CONTROLS
     // Button 4: Run prestage
-    buttonPanel
-        .button(4)
+    // buttonPanel
+    //     .button(4)
+    //     .whileTrue(PrestageCommands.runPrestageVoltage(prestage, Volts.of(PrestageTestVoltage)));
+    controller
+        .button(3)
         .whileTrue(PrestageCommands.runPrestageVoltage(prestage, Volts.of(PrestageTestVoltage)));
-    // Button 5: Stop prestage
+    // // Button 5: Stop prestage
     buttonPanel.button(5).onTrue(PrestageCommands.stop(prestage));
 
     // INTAKE CONTROLS
-    // Button 9: Run transport out
-    buttonPanel
-        .button(9)
+    // Button 9: Run intake out
+    // buttonPanel
+    //     .button(9)
+    //     .whileTrue(
+    //         intakeSliderCommands.runIntakeForward(intakeSlider,
+    // Volts.of(intakeSliderTestVoltage)));
+    controller
+        .button(4)
         .whileTrue(
             intakeSliderCommands.runIntakeForward(intakeSlider, Volts.of(intakeSliderTestVoltage)));
     // Button 10: Stop transport
     buttonPanel.button(10).onTrue(intakeSliderCommands.stopIntakeSlider(intakeSlider));
+
+    controller
+        .button(7)
+        .whileTrue(
+            intakeRollerCommands.runIntakeRoller(intakeRoller, Volts.of(intakeSliderTestVoltage)));
+
+    // controller
+    //     .button(7)
+    //     .whileTrue(
+    //         TransportCommands.runTransportVoltage(transport, Volts.of(intakeSliderTestVoltage)));
   }
 
   public Command getAutonomousCommand() {
