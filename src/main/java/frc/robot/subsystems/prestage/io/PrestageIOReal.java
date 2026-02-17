@@ -5,9 +5,11 @@ import static edu.wpi.first.units.Units.Second;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
@@ -18,13 +20,17 @@ public class PrestageIOReal implements PrestageIO {
 
   private static final CANBus CAN_BUS = new CANBus("rio");
 
-  private final TalonFX prestageMotor;
+  private final TalonFX prestageLeader;
+  private final TalonFX prestageFollower;
 
   private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
   private final VoltageOut voltageRequest = new VoltageOut(0);
 
   public PrestageIOReal() {
-    prestageMotor = new TalonFX(HardwareConstants.CanIds.PRESTAGE_MOTOR_ID, CAN_BUS);
+    prestageLeader = new TalonFX(HardwareConstants.CanIds.PRESTAGE_LEADER_ID, CAN_BUS);
+    prestageFollower = new TalonFX(HardwareConstants.CanIds.PRESTAGE_FOLLOWER_ID, CAN_BUS);
+    
+    prestageFollower.setControl(new Follower(HardwareConstants.CanIds.PRESTAGE_LEADER_ID, MotorAlignmentValue.Aligned));
 
     // Configure motor
     configurePrestageMotor();
@@ -58,24 +64,24 @@ public class PrestageIOReal implements PrestageIO {
     limits.StatorCurrentLimit = PrestageConstants.CurrentLimits.PRESTAGE_MAIN_STATOR_AMP;
     limits.StatorCurrentLimitEnable = true;
 
-    prestageMotor.getConfigurator().apply(config);
-    prestageMotor.getConfigurator().apply(limits);
+    prestageLeader.getConfigurator().apply(config);
+    prestageLeader.getConfigurator().apply(limits);
   }
 
   public void updateInputs(PrestageIOInputs inputs) {
     // Read sensor values and populate inputs object
-    inputs.prestageMotorVelocity = prestageMotor.getVelocity().getValue();
-    inputs.prestageStatorAmps = prestageMotor.getStatorCurrent().getValue();
-    inputs.prestageSupplyAmps = prestageMotor.getSupplyCurrent().getValue();
-    inputs.prestageVoltage = prestageMotor.getMotorVoltage().getValue();
-    inputs.prestageMotorTemperature = prestageMotor.getDeviceTemp().getValue();
+    inputs.prestageMotorVelocity = prestageLeader.getVelocity().getValue();
+    inputs.prestageStatorAmps = prestageLeader.getStatorCurrent().getValue();
+    inputs.prestageSupplyAmps = prestageLeader.getSupplyCurrent().getValue();
+    inputs.prestageVoltage = prestageLeader.getMotorVoltage().getValue();
+    inputs.prestageMotorTemperature = prestageLeader.getDeviceTemp().getValue();
   }
 
   public void setPrestageVoltage(Voltage volts) {
-    prestageMotor.setControl(voltageRequest.withOutput(volts));
+    prestageLeader.setControl(voltageRequest.withOutput(volts));
   }
 
   public void setPrestageSpeed(AngularVelocity speed) {
-    prestageMotor.setControl(velocityRequest.withVelocity(speed));
+    prestageLeader.setControl(velocityRequest.withVelocity(speed));
   }
 }

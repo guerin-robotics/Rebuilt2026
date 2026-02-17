@@ -29,7 +29,7 @@ import frc.robot.subsystems.flywheel.Flywheel;
  * button.onTrue(ShooterCommands.runVelocity(shooter, RPM.of(3000)));
  * </pre>
  */
-public class FlwheelCommands {
+public class FlywheelCommands {
 
   /**
    * Runs the shooter at a specific voltage while the command is active. Stops when the command
@@ -46,7 +46,7 @@ public class FlwheelCommands {
             () -> shooter.setFlywheelVoltage(voltage), // Apply voltage
             () -> shooter.stopFlywheels(), // Stop on end
             shooter)
-        .withName("FlwheelVoltage_" + voltage.in(Volts) + "V");
+        .withName("FlywheelVoltage_" + voltage.in(Volts) + "V");
   }
 
   /**
@@ -61,7 +61,7 @@ public class FlwheelCommands {
   public static Command runVelocity(Flywheel shooter, AngularVelocity targetSpeed) {
     return Commands.startEnd(
             () -> shooter.setFlywheelSpeed(targetSpeed), () -> shooter.stopFlywheels(), shooter)
-        .withName("FlwheelVelocity_" + targetSpeed.in(RPM) + "RPM");
+        .withName("FlywheelVelocity_" + targetSpeed.in(RPM) + "RPM");
   }
 
   /**
@@ -81,7 +81,7 @@ public class FlwheelCommands {
             () -> shooter.setFlywheelDutyCycle(dutyCycle), // Set duty cycle
             () -> shooter.stopFlywheels(), // Stop on end
             shooter)
-        .withName("FlwheelDutyCycle_" + Math.round(dutyCycle * 100) + "%");
+        .withName("FlywheelDutyCycle_" + Math.round(dutyCycle * 100) + "%");
   }
 
   /**
@@ -94,9 +94,9 @@ public class FlwheelCommands {
    * @return Instant command that stops the shooter
    */
   public static Command stop(Flywheel shooter) {
-    return Commands.runOnce(() -> shooter.stopFlywheels(), shooter).withName("FlwheelStop");
+    return Commands.runOnce(() -> shooter.stopFlywheels(), shooter).withName("FlywheelStop");
   }
 
   // Prevent instantiation - this is a utility class
-  private FlwheelCommands() {}
+  private FlywheelCommands() {}
 }

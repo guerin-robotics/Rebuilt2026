@@ -20,7 +20,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.FlwheelCommands;
+import frc.robot.commands.FlywheelCommands;
+import frc.robot.commands.intakeSliderCommands;
+import frc.robot.commands.PrestageCommands;
+import frc.robot.commands.FeederCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -34,6 +37,15 @@ import frc.robot.subsystems.feeder.io.FeederIOReal;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.FlywheelIOPhoenix6;
+import frc.robot.subsystems.prestage.Prestage;
+import frc.robot.subsystems.prestage.io.PrestageIO;
+import frc.robot.subsystems.prestage.io.PrestageIOReal;
+import frc.robot.subsystems.intakeSlider.intakeSlider;
+import frc.robot.subsystems.intakeSlider.io.intakeSliderIO;
+import frc.robot.subsystems.intakeSlider.io.intakeSliderIOReal;
+import frc.robot.subsystems.intakeRoller.intakeRoller;
+import frc.robot.subsystems.intakeRoller.io.intakeRollerIO;
+import frc.robot.subsystems.intakeRoller.io.intakeRollerIOReal;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.io.VisionIO;
@@ -47,6 +59,9 @@ public class RobotContainer {
   private final Vision vision;
   private final Flywheel shooter;
   private final Feeder feeder;
+  private final Prestage prestage;
+  private final intakeSlider intakeSlider;
+  private final intakeRoller intakeRoller;
 
   // Controllers
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -60,6 +75,13 @@ public class RobotContainer {
 
   // Shooter voltage for button control (tunable)
   private static final double SHOOTER_TEST_VOLTAGE = 6.0; // Volts
+
+  // Feeder test voltage
+  private static final double FeederTestVoltage = 3.0;
+  private static final double PrestageTestVoltage = 3.0;
+  private static final double TransportTestVoltage = 3.0;
+  private static final double intakeSliderTestVoltage = 3.0;
+  private static final double intakeRollerTestVoltage = 3.0;
 
   public RobotContainer() {
     switch (Constants.currentMode) {
@@ -80,6 +102,9 @@ public class RobotContainer {
                     VisionConstants.camera1Name, VisionConstants.robotToCamera1));
         shooter = new Flywheel(new FlywheelIOPhoenix6());
         feeder = new Feeder(new FeederIOReal());
+        prestage = new Prestage(new PrestageIOReal());
+        intakeSlider = new intakeSlider(new intakeSliderIOReal());
+        intakeRoller = new intakeRoller(new intakeRollerIOReal());
         break;
 
       case SIM:
@@ -99,6 +124,9 @@ public class RobotContainer {
                     VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose));
         shooter = new Flywheel(new FlywheelIO() {});
         feeder = new Feeder(new FeederIO() {});
+        prestage = new Prestage(new PrestageIO() {});
+        intakeSlider = new intakeSlider(new intakeSliderIO() {});
+        intakeRoller = new intakeRoller(new intakeRollerIO() {});
         break;
 
       default:
@@ -112,6 +140,9 @@ public class RobotContainer {
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         shooter = new Flywheel(new FlywheelIO() {});
         feeder = new Feeder(new FeederIO() {});
+        prestage = new Prestage(new PrestageIO() {});
+        intakeSlider = new intakeSlider(new intakeSliderIO() {});
+        intakeRoller = new intakeRoller(new intakeRollerIO() {});
         break;
     }
 
@@ -187,10 +218,30 @@ public class RobotContainer {
     // Button 1: Run shooter at test voltage while held, stop when released
     buttonPanel
         .button(1)
-        .whileTrue(FlwheelCommands.runVoltage(shooter, Volts.of(SHOOTER_TEST_VOLTAGE)));
-
+        .whileTrue(FlywheelCommands.runVoltage(shooter, Volts.of(SHOOTER_TEST_VOLTAGE)));
     // Button 2: Stop shooter immediately (safety)
-    buttonPanel.button(2).onTrue(FlwheelCommands.stop(shooter));
+    buttonPanel.button(2).onTrue(FlywheelCommands.stop(shooter));
+
+    // FEEDER CONTROLS
+    // Button 3 (label "L1"): Run feeder
+    buttonPanel.button(3).whileTrue(FeederCommands.runFeederVoltage(feeder, Volts.of(FeederTestVoltage)));
+    // Button 7 (Label "OUT"): Stop feeder
+    buttonPanel.button(7).onTrue(FeederCommands.stop(feeder));
+
+    // PRESTAGE CONTROLS
+    // Button 4: Run prestage
+    buttonPanel.button(4).whileTrue(PrestageCommands.runPrestageVoltage(prestage, Volts.of(PrestageTestVoltage)));
+    // Button 5: Stop prestage
+    buttonPanel.button(5).onTrue(PrestageCommands.stop(prestage));
+
+    // INTAKE CONTROLS
+    // Button 9: Run transport out
+    buttonPanel.button(9).whileTrue(intakeSliderCommands.runIntakeForward(intakeSlider, Volts.of(intakeSliderTestVoltage)));
+    // Button 10: Stop transport
+    buttonPanel.button(10).onTrue(intakeSliderCommands.stopIntakeSlider(intakeSlider));
+
+
+
   }
 
   public Command getAutonomousCommand() {
