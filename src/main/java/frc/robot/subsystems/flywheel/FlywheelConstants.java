@@ -65,11 +65,13 @@ public class FlywheelConstants {
   /**
    * Feedforward constants for the main flywheel. Used by SimpleMotorFeedforward (kS, kV). Prestage
    * and Kicker use TalonFX Slot0 closed-loop; main flywheel uses feedforward-only.
+   * In progress: adding combined feedforward and feedback; adding motion magic
    */
   public static class PID {
     // Main flywheel (4x TalonFX) - feedforward only
     public static final double MAIN_KS = 0.35;
     public static final double MAIN_KV = 0.12;
+    public static final double kP = 0.3;
 
     // Prestage (2x TalonFX)
     public static final double PRESTAGE_KS = 0.45;

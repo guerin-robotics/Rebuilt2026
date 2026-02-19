@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,6 +32,9 @@ public class Flywheel extends SubsystemBase {
   private final SimpleMotorFeedforward feedforward =
       new SimpleMotorFeedforward(
           FlywheelConstants.PID.MAIN_KS, FlywheelConstants.PID.MAIN_KV / (2 * Math.PI));
+
+  //Shooter feedback controller
+  private final PIDController shooterFeedback = new PIDController(FlywheelConstants.PID.kP, 0.0, 0.0);
 
   /**
    * Creates a new Shooter subsystem.
@@ -83,6 +87,8 @@ public class Flywheel extends SubsystemBase {
   public void setFlywheelSpeed(AngularVelocity targetSpeed) {
     double velocityRadPerSec = targetSpeed.in(RadiansPerSecond);
     double volts = feedforward.calculate(velocityRadPerSec);
+    //If we want to combine feedforward and feedback:
+    //double volts = feedforward.calculate(velocityRadPerSec) + shooterFeedback.calculate(velocityRadPerSec);
     io.setFlywheelVoltage(Volts.of(volts));
   }
 

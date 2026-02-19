@@ -20,4 +20,6 @@ public interface intakeSliderIO {
   public default void updateInputs(IntakeSliderIOInputs inputs) {}
 
   public default void setIntakeSliderVoltage(Voltage volts) {}
+
+  public default void setIntakePos(double rotationChange) {}
 }

@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.subsystems.flywheel.FlywheelConstants;
 

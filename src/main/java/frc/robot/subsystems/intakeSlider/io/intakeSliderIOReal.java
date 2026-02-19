@@ -8,7 +8,10 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.Voltage;
+import static edu.wpi.first.units.Units.Volts;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.intakeSlider.intakeSliderConstants;
 
@@ -19,6 +22,9 @@ public class intakeSliderIOReal implements intakeSliderIO {
   private final TalonFX intakeSliderMotor;
 
   private final VoltageOut voltageRequest = new VoltageOut(0);
+
+  private final PIDController intakeSlideControls = new PIDController(
+    intakeSliderConstants.PID.KP, intakeSliderConstants.PID.KI, intakeSliderConstants.PID.KD);
 
   public intakeSliderIOReal() {
     intakeSliderMotor = new TalonFX(HardwareConstants.CanIds.INTAKE_SLIDER_MOTOR_ID, CAN_BUS);
@@ -69,4 +75,19 @@ public class intakeSliderIOReal implements intakeSliderIO {
   public void setIntakeSliderVoltage(Voltage volts) {
     intakeSliderMotor.setControl(voltageRequest.withOutput(volts));
   }
+
+  // Setting position, for use in pulse sequence. Uses PID controller.
+  // Expected result: given current rotations and desired rotations, find rotations to desired rotations and execute
+  public void setIntakePos(double rotationChange) {
+    double volts;
+    double currentPoint = intakeSliderMotor.getPosition().getValueAsDouble();
+    if (currentPoint > HardwareConstants.rotationsWhenIn) {
+      volts = intakeSlideControls.calculate(currentPoint, currentPoint+rotationChange);
+    }
+    else {
+      volts = intakeSlideControls.calculate(currentPoint, currentPoint-rotationChange);
+    }
+    setIntakeSliderVoltage(Volts.of(volts));
+  }
+
 }
