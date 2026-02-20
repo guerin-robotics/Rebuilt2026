@@ -19,6 +19,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import frc.robot.HardwareConstants;
 import frc.robot.subsystems.flywheel.FlywheelConstants;
 import org.littletonrobotics.junction.Logger;
 
@@ -43,10 +45,6 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
 
   private static final CANBus CAN_BUS = new CANBus("rio");
 
-  private final SimpleMotorFeedforward velocityFeedforward =
-      new SimpleMotorFeedforward(
-          FlywheelConstants.TorqueControl.KS, FlywheelConstants.TorqueControl.KV / (2 * Math.PI));
-
   // 4x TalonFX motors for main flywheel
   private final TalonFX leader;
   private final TalonFX follower1;
@@ -56,14 +54,19 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
   // Control requests (reused to avoid allocations)
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
   private final VoltageOut voltageRequest = new VoltageOut(0);
+  // Feedforward controller. kV from constants is V/(rps); SimpleMotorFeedforward expects V/(rad/s).
+  // Conversion: 1 rps = 2π rad/s => kV_rads = kV_rps / (2π)
+  private final SimpleMotorFeedforward feedforward =
+      new SimpleMotorFeedforward(
+          FlywheelConstants.PID.MAIN_KS, FlywheelConstants.PID.MAIN_KV / (2 * Math.PI));
   private final VelocityTorqueCurrentFOC velocityTorqueCurrentRequest =
       new VelocityTorqueCurrentFOC(0);
 
   public FlywheelIOPhoenix6() {
-    leader = new TalonFX(FlywheelConstants.CANIDs.MAIN_FLYWHEEL_LEADER_ID, CAN_BUS);
-    follower1 = new TalonFX(FlywheelConstants.CANIDs.MAIN_FLYWHEEL_FOLLOWER1_ID, CAN_BUS);
-    follower2 = new TalonFX(FlywheelConstants.CANIDs.MAIN_FLYWHEEL_FOLLOWER2_ID, CAN_BUS);
-    follower3 = new TalonFX(FlywheelConstants.CANIDs.MAIN_FLYWHEEL_FOLLOWER3_ID, CAN_BUS);
+    leader = new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_LEADER_ID, CAN_BUS);
+    follower1 = new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_FOLLOWER1_ID, CAN_BUS);
+    follower2 = new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_FOLLOWER2_ID, CAN_BUS);
+    follower3 = new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_FOLLOWER3_ID, CAN_BUS);
 
     // Configure followers
     int leaderId = leader.getDeviceID();
@@ -71,21 +74,19 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     follower2.setControl(new Follower(leaderId, MotorAlignmentValue.Aligned));
     follower3.setControl(new Follower(leaderId, MotorAlignmentValue.Opposed));
 
-    configureLeader();
-    configureFollowers();
+    configureMotors();
   }
 
-  private void configureLeader() {
+  private void configureMotors() {
     var config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.MotorOutput.Inverted =
         FlywheelConstants.Mechanical.INVERTED
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
-    config.Slot0 =
-        new Slot0Configs()
-            .withKV(FlywheelConstants.TorqueControl.KV)
-            .withKS(FlywheelConstants.TorqueControl.KS);
+
+    config.Slot0.kS = FlywheelConstants.TorqueControl.KS;
+    config.Slot0.kP = FlywheelConstants.TorqueControl.KP;
 
     // Current limits
     var limits = new CurrentLimitsConfigs();
@@ -100,63 +101,56 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
 
     leader.getConfigurator().apply(config);
     leader.getConfigurator().apply(limits);
-  }
-
-  private void configureFollowers() {
-    var coastConfig = new MotorOutputConfigs();
-    coastConfig.NeutralMode = NeutralModeValue.Coast;
-
-    var followerLimits = new CurrentLimitsConfigs();
-    followerLimits.StatorCurrentLimit = FlywheelConstants.CurrentLimits.SHOOTER_MAIN_STATOR_AMP;
-    followerLimits.StatorCurrentLimitEnable = true;
-
-    for (TalonFX f : new TalonFX[] {follower1, follower2, follower3}) {
-      f.getConfigurator().apply(coastConfig);
-      f.getConfigurator().apply(followerLimits);
-    }
+    follower1.getConfigurator().apply(config);
+    follower1.getConfigurator().apply(limits);
+    follower2.getConfigurator().apply(config);
+    follower2.getConfigurator().apply(limits);
+    follower3.getConfigurator().apply(config);
+    follower3.getConfigurator().apply(limits);
   }
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
     // Leader motor
-    inputs.leaderVelocity = RevolutionsPerSecond.of(leader.getVelocity().getValueAsDouble());
-    inputs.leaderAppliedVolts = leader.getMotorVoltage().getValueAsDouble();
-    inputs.leaderSupplyCurrentAmps = leader.getSupplyCurrent().getValueAsDouble();
-    inputs.leaderStatorCurrentAmps = leader.getStatorCurrent().getValueAsDouble();
+    inputs.leaderVelocity = leader.getVelocity().getValue();
+    inputs.leaderAppliedVolts = leader.getMotorVoltage().getValue();
+    inputs.leaderSupplyCurrentAmps = leader.getSupplyCurrent().getValue();
+    inputs.leaderStatorCurrentAmps = leader.getStatorCurrent().getValue();
 
     // Follower 1 motor
-    inputs.follower1Velocity = RevolutionsPerSecond.of(follower1.getVelocity().getValueAsDouble());
-    inputs.follower1AppliedVolts = follower1.getMotorVoltage().getValueAsDouble();
-    inputs.follower1SupplyCurrentAmps = follower1.getSupplyCurrent().getValueAsDouble();
-    inputs.follower1StatorCurrentAmps = follower1.getStatorCurrent().getValueAsDouble();
+    inputs.follower1Velocity = follower1.getVelocity().getValue();
+    inputs.follower1AppliedVolts = follower1.getMotorVoltage().getValue();
+    inputs.follower1SupplyCurrentAmps = follower1.getSupplyCurrent().getValue();
+    inputs.follower1StatorCurrentAmps = follower1.getStatorCurrent().getValue();
 
     // Follower 2 motor
-    inputs.follower2Velocity = RevolutionsPerSecond.of(follower2.getVelocity().getValueAsDouble());
-    inputs.follower2AppliedVolts = follower2.getMotorVoltage().getValueAsDouble();
-    inputs.follower2SupplyCurrentAmps = follower2.getSupplyCurrent().getValueAsDouble();
-    inputs.follower2StatorCurrentAmps = follower2.getStatorCurrent().getValueAsDouble();
+    inputs.follower2Velocity = follower2.getVelocity().getValue();
+    inputs.follower2AppliedVolts = follower2.getMotorVoltage().getValue();
+    inputs.follower2SupplyCurrentAmps = follower2.getSupplyCurrent().getValue();
+    inputs.follower2StatorCurrentAmps = follower2.getStatorCurrent().getValue();
 
     // Follower 3 motor
-    inputs.follower3Velocity = RevolutionsPerSecond.of(follower3.getVelocity().getValueAsDouble());
-    inputs.follower3AppliedVolts = follower3.getMotorVoltage().getValueAsDouble();
-    inputs.follower3SupplyCurrentAmps = follower3.getSupplyCurrent().getValueAsDouble();
-    inputs.follower3StatorCurrentAmps = follower3.getStatorCurrent().getValueAsDouble();
+    inputs.follower3Velocity = follower3.getVelocity().getValue();
+    inputs.follower3AppliedVolts = follower3.getMotorVoltage().getValue();
+    inputs.follower3SupplyCurrentAmps = follower3.getSupplyCurrent().getValue();
+    inputs.follower3StatorCurrentAmps = follower3.getStatorCurrent().getValue();
 
     // Combined flywheel velocity (use leader velocity as representative)
     inputs.flywheelVelocity = inputs.leaderVelocity;
   }
 
-  @Override
   public void setFlywheelDutyCycle(double output) {
     leader.setControl(dutyCycleRequest.withOutput(output));
   }
 
-  public void stopFlywheel() {
-    leader.setControl(dutyCycleRequest.withOutput(0));
-  }
-
   public void setFlywheelVoltage(Voltage volts) {
     leader.setControl(voltageRequest.withOutput(volts.in(Volts)));
+  }
+
+  public void setFlywheelSpeed(AngularVelocity targetSpeed) {
+    double velocityRadPerSec = targetSpeed.in(RadiansPerSecond);
+    double volts = feedforward.calculate(velocityRadPerSec);
+    leader.setControl(voltageRequest.withOutput(volts));
   }
 
   public void setFlywheelRPM(AngularVelocity velocity) {

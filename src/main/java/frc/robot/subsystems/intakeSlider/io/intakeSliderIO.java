@@ -21,5 +21,11 @@ public interface intakeSliderIO {
 
   public default void setIntakeSliderVoltage(Voltage volts) {}
 
-  public default void setIntakePos(double rotationChange) {}
+  public default void setIntakePos(double setpoint) {}
+
+  public default void setIntakePosForPulse(double rotations) {}
+
+  public default void intakeRetract(double retractVolts, double extension) {}
+
+  public default void intakeWait(double seconds) {}
 }

@@ -26,18 +26,6 @@ public class Flywheel extends SubsystemBase {
   private final SysIdRoutine sysId;
 
   /**
-   * Feedforward controller. kV from constants is V/(rps); SimpleMotorFeedforward expects V/(rad/s).
-   * Conversion: 1 rps = 2π rad/s => kV_rads = kV_rps / (2π)
-   */
-  private final SimpleMotorFeedforward feedforward =
-      new SimpleMotorFeedforward(
-          FlywheelConstants.PID.MAIN_KS, FlywheelConstants.PID.MAIN_KV / (2 * Math.PI));
-
-  // Shooter feedback controller
-  private final PIDController shooterFeedback =
-      new PIDController(FlywheelConstants.PID.kP, 0.0, 0.0);
-
-  /**
    * Creates a new Shooter subsystem.
    *
    * @param shooterIO The hardware interface for shooter control
@@ -45,7 +33,6 @@ public class Flywheel extends SubsystemBase {
   public Flywheel(FlywheelIO shooterIO) {
     this.io = shooterIO;
     inputs = new ShooterIOInputsAutoLogged();
-    this.stopFlywheels();
 
     // Configure SysId for feedforward characterization
     sysId =
@@ -64,23 +51,13 @@ public class Flywheel extends SubsystemBase {
     Logger.processInputs("Flywheel", inputs);
   }
 
-  /** Stops the flywheel by setting target speed to zero. */
-  public void stopFlywheels() {
-    io.stopFlywheel();
-  }
-
   /** Manual duty cycle control - for testing motor direction/wiring only. */
   public void setFlywheelDutyCycle(double output) {
     io.setFlywheelDutyCycle(output);
   }
 
-  /** Run characterization for SysId feedforward identification. */
   public void setFlywheelVoltage(Voltage volts) {
     io.setFlywheelVoltage(volts);
-  }
-
-  public void setFlywheelRPM(AngularVelocity velocity) {
-    io.setFlywheelRPM(velocity);
   }
 
   /**
@@ -90,12 +67,11 @@ public class Flywheel extends SubsystemBase {
    * @param targetSpeed Desired angular velocity (e.g., RPM.of(3000))
    */
   public void setFlywheelSpeed(AngularVelocity targetSpeed) {
-    double velocityRadPerSec = targetSpeed.in(RadiansPerSecond);
-    double volts = feedforward.calculate(velocityRadPerSec);
-    // If we want to combine feedforward and feedback:
-    // double volts = feedforward.calculate(velocityRadPerSec) +
-    // shooterFeedback.calculate(velocityRadPerSec);
-    io.setFlywheelVoltage(Volts.of(volts));
+    io.setFlywheelSpeed(targetSpeed);
+  }
+
+  public void setFlywheelRPM(AngularVelocity velocity) {
+    io.setFlywheelRPM(velocity);
   }
 
   /** Returns current flywheel velocity in rad/s for SysId. */
@@ -106,6 +82,7 @@ public class Flywheel extends SubsystemBase {
     return inputs.flywheelVelocity.in(RadiansPerSecond);
   }
 
+  /** Run characterization for SysId feedforward identification. */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return run(() -> setFlywheelVoltage(Volts.of(0.0)))
         .withTimeout(1.0)

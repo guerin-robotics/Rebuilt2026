@@ -1,16 +1,17 @@
 package frc.robot.subsystems.intakeSlider.io;
 
 import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.controller.PIDController;
+import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.intakeSlider.intakeSliderConstants;
 
@@ -21,10 +22,8 @@ public class intakeSliderIOReal implements intakeSliderIO {
   private final TalonFX intakeSliderMotor;
 
   private final VoltageOut voltageRequest = new VoltageOut(0);
-
-  private final PIDController intakeSlideControls =
-      new PIDController(
-          intakeSliderConstants.PID.KP, intakeSliderConstants.PID.KI, intakeSliderConstants.PID.KD);
+  private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
+  private final PositionTorqueCurrentFOC positionRequest = new PositionTorqueCurrentFOC(0);
 
   public intakeSliderIOReal() {
     intakeSliderMotor = new TalonFX(HardwareConstants.CanIds.INTAKE_SLIDER_MOTOR_ID, CAN_BUS);
@@ -42,11 +41,11 @@ public class intakeSliderIOReal implements intakeSliderIO {
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
 
-    // Slot0 PID/FF gains for velocity control
+    // Slot0 gains for position control
     config.Slot0.kS = intakeSliderConstants.PID.KS;
-    config.Slot0.kV = intakeSliderConstants.PID.KV;
+    // config.Slot0.kV = intakeSliderConstants.PID.KV;
     config.Slot0.kP = intakeSliderConstants.PID.KP;
-    config.Slot0.kI = intakeSliderConstants.PID.KI;
+    // config.Slot0.kI = intakeSliderConstants.PID.KI;
     config.Slot0.kD = intakeSliderConstants.PID.KD;
 
     // Current limits
@@ -76,17 +75,40 @@ public class intakeSliderIOReal implements intakeSliderIO {
     intakeSliderMotor.setControl(voltageRequest.withOutput(volts));
   }
 
-  // Setting position, for use in pulse sequence. Uses PID controller.
-  // Expected result: given current rotations and desired rotations, find rotations to desired
-  // rotations and execute
-  public void setIntakePos(double rotationChange) {
-    double volts;
-    double currentPoint = intakeSliderMotor.getPosition().getValueAsDouble();
-    if (currentPoint > HardwareConstants.rotationsWhenIn) {
-      volts = intakeSlideControls.calculate(currentPoint, currentPoint + rotationChange);
-    } else {
-      volts = intakeSlideControls.calculate(currentPoint, currentPoint - rotationChange);
-    }
-    setIntakeSliderVoltage(Volts.of(volts));
+  // Setting position basic
+  public void setIntakePos(double setpoint) {
+    intakeSliderMotor.setControl(positionRequest.withPosition(setpoint));
   }
+
+  // Setting position for use in pulse sequence. Uses PositionTorqueCurrent control
+  public void setIntakePosForPulse(double rotations) {
+    double positionSetpoint;
+    double currentPoint = intakeSliderMotor.getPosition().getValueAsDouble();
+    if (currentPoint > HardwareConstants.intakeRotations) {
+      positionSetpoint = currentPoint - rotations;
+    } else {
+      positionSetpoint = currentPoint + rotations;
+    }
+    intakeSliderMotor.setControl(positionRequest.withPosition(positionSetpoint));
+  }
+
+  // Smarter pulse sequence
+  // Logic: Retracts until current draw spikes, then extends +2.0 rotations, repeat
+  public void intakeRetract(Voltage retractVolts, double extension) {
+    double currentPos = intakeSliderMotor.getPosition().getValueAsDouble();
+    if (intakeSliderMotor.getStatorCurrent().getValueAsDouble() < 2.0) {
+      intakeSliderMotor.setControl(voltageRequest.withOutput(retractVolts));
+    } else {
+      intakeSliderMotor.setControl(positionRequest.withPosition(currentPos + extension));
+    }
+  }
+
+  public void intakeWait(double seconds) {
+    Timer intakeTimer = new Timer();
+    intakeTimer.start();
+    if (intakeTimer.get() > 0.5) {
+      intakeTimer.stop();
+    }
+  }
+
 }

@@ -20,11 +20,27 @@ public class intakeSliderCommands {
     return Commands.runOnce(() -> intakeSlider.setIntakeSliderVoltage(Volts.of(0)), intakeSlider);
   }
 
-  public static Command setIntakePos(intakeSlider intakeSlider, double rotationChange) {
+  public static Command setIntakePos(intakeSlider intakeSlider, double setpoint) {
     return Commands.startEnd(
-        () -> intakeSlider.setIntakePos(rotationChange),
+        () -> intakeSlider.setIntakePos(setpoint),
         () -> intakeSlider.setIntakeSliderVoltage(Volts.of(0)),
         intakeSlider);
+  }
+
+  public static Command intakeRetract(intakeSlider intakeSlider, double retractVelo, double extension) {
+      return Commands.startEnd(
+        () -> intakeSlider.intakeRetract(retractVelo, extension),
+        () -> intakeSlider.setIntakeSliderVoltage(Volts.of(0)),
+        intakeSlider
+      );
+  }
+
+  public static Command setIntakePosForPulse(intakeSlider intakeSlider, double rotations) {
+    return Commands.startEnd(
+      () -> intakeSlider.setIntakePosForPulse(rotations),
+      () -> intakeSlider.setIntakeSliderVoltage(Volts.of(0)),
+      intakeSlider
+    );
   }
 
   public static Command intakeWait(intakeSlider intakeSlider, double seconds) {
@@ -33,6 +49,20 @@ public class intakeSliderCommands {
 
   public static Command pulseIntakeSlider(intakeSlider intakeSlider, double rotationChange) {
     return Commands.repeatingSequence(
-        setIntakePos(intakeSlider, rotationChange), intakeWait(intakeSlider, 0.5));
+      setIntakePos(intakeSlider, rotationChange), intakeWait(intakeSlider, 0.5)
+    );
   }
+
+  public static Command pulseIntakeByTorque(intakeSlider intakeSlider, double rotations) {
+    return Commands.repeatingSequence(
+      setIntakePosForPulse(intakeSlider, rotations), intakeWait(intakeSlider, 0.5)
+    );
+  }
+
+  public static Command pulseIntakeByCurrent(intakeSlider intakeSlider, double retractVelo, double extension) {
+    return Commands.repeatingSequence(
+      intakeRetract(intakeSlider, retractVelo, extension), intakeWait(intakeSlider, 0.5)
+    );
+  }
+
 }

@@ -25,6 +25,8 @@ import frc.robot.commands.FeederCommands;
 import frc.robot.commands.FlywheelCommands;
 import frc.robot.commands.PrestageCommands;
 import frc.robot.commands.TransportCommands;
+import frc.robot.commands.intakeRollerCommands;
+import frc.robot.commands.intakeSliderCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -231,8 +233,14 @@ public class RobotContainer {
     // buttonPanel
     //     .button(1)
     //     .whileTrue(FlywheelCommands.runVoltage(flywheel, Volts.of(FlywheelTestVoltage)));
+    // Real button 1: Flywheel velocity torque current control, run while held
+    buttonPanel.button(1).whileTrue(FlywheelCommands.runRPM(flywheel, FlywheelTestVelocity));
     // Button 2: Stop shooter immediately (safety)
     // buttonPanel.button(2).onTrue(FlywheelCommands.stop(flywheel));
+    // Real button 2: Run feeder at test voltage while held
+    buttonPanel
+        .button(2)
+        .whileTrue(FeederCommands.runFeederVoltage(feeder, Volts.of(FeederTestVoltage)));
     // Feeder
     // Button 3 (label "L1"): Run feeder
     // buttonPanel
@@ -261,10 +269,9 @@ public class RobotContainer {
     // CONTROLLER CONTROLS
     // Flywheel
     // Button 1 ("A"): Run flywheel at test voltage while held
-    // buttonPanel
+    // controller
     //     .button(1)
     //     .whileTrue(FlywheelCommands.runVoltage(flywheel, Volts.of(FlywheelTestVoltage)));
-    buttonPanel.button(1).whileTrue(FlywheelCommands.runRPM(flywheel, FlywheelTestVelocity));
     // Prestage
     // Button 3 ("Y"): Run prestage at test voltage while held
     controller
@@ -272,13 +279,13 @@ public class RobotContainer {
         .whileTrue(PrestageCommands.runPrestageVoltage(prestage, Volts.of(PrestageTestVoltage)));
     // Feeder
     // Button 2 ("X"): Run feeder at test voltage while held
-    buttonPanel
-        .button(2)
-        .whileTrue(FeederCommands.runFeederVoltage(feeder, Volts.of(FeederTestVoltage)));
+    // controller
+    //     .button(2)
+    //     .whileTrue(FeederCommands.runFeederVoltage(feeder, Volts.of(FeederTestVoltage)));
     // Transport
     // Button 5 (One of the middle ones): Run transport at test voltage while held
     controller
-        .button(7)
+        .button(5)
         .whileTrue(
             TransportCommands.runTransportVoltage(transport, Volts.of(TransportTestVoltage)));
     // Intake roller
@@ -294,7 +301,7 @@ public class RobotContainer {
     //     .button(4)
     //     .whileTrue(
     //         intakeSliderCommands.runIntakeForward(intakeSlider,
-    // Volts.of(intakeSliderTestVoltage)));
+    //  Volts.of(intakeSliderTestVoltage)));
     // *UNTESTED* Button 4 ("B"): Pulse intake *UNTESTED*
     // controller
     //     .button(4)
@@ -304,16 +311,27 @@ public class RobotContainer {
     // Button 5 (one of the middle ones):
     // Pulse intake and run intake roller, transport, feeder, prestage, and flywheel at their test
     // voltages
-    controller
-        .button(8)
+    buttonPanel
+        .button(4)
         .whileTrue(
-            // intakeSliderCommands.pulseIntakeSlider(intakeSlider,pulseRotationChange).alongWith(
+            intakeSliderCommands.pulseIntakeByCurrent(intakeSlider, intakeSliderTestVoltage, HardwareConstants.intakeRotations).alongWith(
             // intakeRollerCommands.runIntakeRoller(intakeRoller,Volts.of(intakeRollerTestVoltage))).alongWith(
             TransportCommands.runTransportVoltage(transport, Volts.of(TransportTestVoltage))
                 .alongWith(FeederCommands.runFeederVoltage(feeder, Volts.of(FeederTestVoltage)))
                 .alongWith(
                     PrestageCommands.runPrestageVoltage(prestage, Volts.of(PrestageTestVoltage)))
-                .alongWith(FlywheelCommands.runRPM(flywheel, FlywheelTestVelocity)));
+                .alongWith(FlywheelCommands.runRPM(flywheel, FlywheelTestVelocity))));
+
+    /* *UNTESTED* Full shooter sequence, separated to 2 buttons
+     so we can let the flywheel spin up before we start feeding *UNTESTED* */
+    buttonPanel.button(5).whileTrue(
+        PrestageCommands.runPrestageVoltage(prestage, Volts.of(PrestageTestVoltage))
+        .alongWith(FlywheelCommands.runRPM(flywheel, FlywheelTestVelocity))
+    );
+    buttonPanel.button(6).whileTrue(
+        TransportCommands.runTransportVoltage(transport, Volts.of(TransportTestVoltage))
+        .alongWith(FeederCommands.runFeederVoltage(feeder, Volts.of(FeederTestVoltage)))
+    );
   }
 
   public Command getAutonomousCommand() {

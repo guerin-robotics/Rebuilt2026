@@ -1,7 +1,6 @@
 package frc.robot.subsystems.intakeSlider;
 
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.intakeSlider.io.intakeSliderIO;
 
@@ -25,15 +24,19 @@ public class intakeSlider extends SubsystemBase {
     io.setIntakeSliderVoltage(volts);
   }
 
-  public void setIntakePos(double rotationChange) {
-    io.setIntakePos(rotationChange);
+  public void setIntakePos(double setpoint) {
+    io.setIntakePos(setpoint);
+  }
+
+  public void intakeRetract(double retractVelo, double extension) {
+    io.intakeRetract(retractVelo, extension);
+  }
+
+  public void setIntakePosForPulse(double rotations) {
+    io.setIntakePosForPulse(rotations);
   }
 
   public void intakeWait(double seconds) {
-    Timer intakeTimer = new Timer();
-    intakeTimer.start();
-    if (intakeTimer.get() > 0.5) {
-      intakeTimer.stop();
-    }
+    io.intakeWait(seconds);
   }
 }
