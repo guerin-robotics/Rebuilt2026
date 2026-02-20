@@ -22,20 +22,17 @@ public class intakeSliderCommands {
 
   public static Command setIntakePos(intakeSlider intakeSlider, double rotationChange) {
     return Commands.startEnd(
-      () -> intakeSlider.setIntakePos(rotationChange),
-      () -> intakeSlider.setIntakeSliderVoltage(Volts.of(0)),
-       intakeSlider);
+        () -> intakeSlider.setIntakePos(rotationChange),
+        () -> intakeSlider.setIntakeSliderVoltage(Volts.of(0)),
+        intakeSlider);
   }
 
   public static Command intakeWait(intakeSlider intakeSlider, double seconds) {
-    return Commands.runOnce(
-      () -> intakeSlider.intakeWait(seconds),
-      intakeSlider
-    );
+    return Commands.runOnce(() -> intakeSlider.intakeWait(seconds), intakeSlider);
   }
 
   public static Command pulseIntakeSlider(intakeSlider intakeSlider, double rotationChange) {
-    return Commands.repeatingSequence(setIntakePos(intakeSlider, rotationChange),intakeWait(intakeSlider, 0.5));
+    return Commands.repeatingSequence(
+        setIntakePos(intakeSlider, rotationChange), intakeWait(intakeSlider, 0.5));
   }
-
 }

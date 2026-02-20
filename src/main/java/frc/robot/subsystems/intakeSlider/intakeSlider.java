@@ -1,8 +1,8 @@
 package frc.robot.subsystems.intakeSlider;
 
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.intakeSlider.io.intakeSliderIO;
 
 public class intakeSlider extends SubsystemBase {
@@ -36,5 +36,4 @@ public class intakeSlider extends SubsystemBase {
       intakeTimer.stop();
     }
   }
-
 }

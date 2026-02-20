@@ -73,4 +73,6 @@ public interface FlywheelIO {
 
   /** Set the flywheel to a specific voltage output. For SysId characterization. */
   public default void setFlywheelVoltage(Voltage volts) {}
+
+  public default void setFlywheelRPM(AngularVelocity velocity) {}
 }

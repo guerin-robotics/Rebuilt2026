@@ -22,15 +22,15 @@ import edu.wpi.first.units.measure.Time;
 public class FlywheelConstants {
 
   public static class CANIDs {
-    public static final int MAIN_FLYWHEEL_LEADER_ID = 37;
-    public static final int MAIN_FLYWHEEL_FOLLOWER1_ID = 34;
-    public static final int MAIN_FLYWHEEL_FOLLOWER2_ID = 36;
-    public static final int MAIN_FLYWHEEL_FOLLOWER3_ID = 35;
+    public static final int MAIN_FLYWHEEL_LEADER_ID = 31;
+    public static final int MAIN_FLYWHEEL_FOLLOWER1_ID = 32;
+    public static final int MAIN_FLYWHEEL_FOLLOWER2_ID = 33;
+    public static final int MAIN_FLYWHEEL_FOLLOWER3_ID = 34;
 
-    public static final int PRESTAGE_LEADER_ID = 31;
-    public static final int PRESTAGE_FOLLOWER_ID = 32;
+    // public static final int PRESTAGE_LEADER_ID = 31;
+    // public static final int PRESTAGE_FOLLOWER_ID = 32;
 
-    public static final int KICKER_MOTOR_ID = 33;
+    // public static final int KICKER_MOTOR_ID = 33;
   }
 
   /** Velocity and acceleration limits for the flywheel. */
@@ -62,10 +62,15 @@ public class FlywheelConstants {
     public static final int KICKER_STATOR_AMP = 30;
   }
 
+  public static class TorqueControl {
+    public static final double KS = 35.45;
+    public static final double KV = 0.15;
+  }
+
   /**
    * Feedforward constants for the main flywheel. Used by SimpleMotorFeedforward (kS, kV). Prestage
-   * and Kicker use TalonFX Slot0 closed-loop; main flywheel uses feedforward-only.
-   * In progress: adding combined feedforward and feedback; adding motion magic
+   * and Kicker use TalonFX Slot0 closed-loop; main flywheel uses feedforward-only. In progress:
+   * adding combined feedforward and feedback; adding motion magic
    */
   public static class PID {
     // Main flywheel (4x TalonFX) - feedforward only

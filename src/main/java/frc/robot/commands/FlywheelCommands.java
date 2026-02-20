@@ -84,6 +84,11 @@ public class FlywheelCommands {
         .withName("FlywheelDutyCycle_" + Math.round(dutyCycle * 100) + "%");
   }
 
+  public static Command runRPM(Flywheel flywheel, AngularVelocity velocity) {
+    return Commands.startEnd(
+        () -> flywheel.setFlywheelRPM(velocity), () -> flywheel.stopFlywheels(), flywheel);
+  }
+
   /**
    * Stops the shooter immediately.
    *

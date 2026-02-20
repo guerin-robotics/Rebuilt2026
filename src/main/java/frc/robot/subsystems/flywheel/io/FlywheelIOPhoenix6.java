@@ -7,16 +7,20 @@ import static edu.wpi.first.units.Units.Volts;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.subsystems.flywheel.FlywheelConstants;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * CTRE Phoenix 6 implementation of ShooterIO.
@@ -39,6 +43,10 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
 
   private static final CANBus CAN_BUS = new CANBus("rio");
 
+  private final SimpleMotorFeedforward velocityFeedforward =
+      new SimpleMotorFeedforward(
+          FlywheelConstants.TorqueControl.KS, FlywheelConstants.TorqueControl.KV / (2 * Math.PI));
+
   // 4x TalonFX motors for main flywheel
   private final TalonFX leader;
   private final TalonFX follower1;
@@ -48,6 +56,8 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
   // Control requests (reused to avoid allocations)
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
   private final VoltageOut voltageRequest = new VoltageOut(0);
+  private final VelocityTorqueCurrentFOC velocityTorqueCurrentRequest =
+      new VelocityTorqueCurrentFOC(0);
 
   public FlywheelIOPhoenix6() {
     leader = new TalonFX(FlywheelConstants.CANIDs.MAIN_FLYWHEEL_LEADER_ID, CAN_BUS);
@@ -58,8 +68,8 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     // Configure followers
     int leaderId = leader.getDeviceID();
     follower1.setControl(new Follower(leaderId, MotorAlignmentValue.Opposed));
-    follower2.setControl(new Follower(leaderId, MotorAlignmentValue.Opposed));
-    follower3.setControl(new Follower(leaderId, MotorAlignmentValue.Aligned));
+    follower2.setControl(new Follower(leaderId, MotorAlignmentValue.Aligned));
+    follower3.setControl(new Follower(leaderId, MotorAlignmentValue.Opposed));
 
     configureLeader();
     configureFollowers();
@@ -72,6 +82,10 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
         FlywheelConstants.Mechanical.INVERTED
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+    config.Slot0 =
+        new Slot0Configs()
+            .withKV(FlywheelConstants.TorqueControl.KV)
+            .withKS(FlywheelConstants.TorqueControl.KS);
 
     // Current limits
     var limits = new CurrentLimitsConfigs();
@@ -137,13 +151,16 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     leader.setControl(dutyCycleRequest.withOutput(output));
   }
 
-  @Override
   public void stopFlywheel() {
     leader.setControl(dutyCycleRequest.withOutput(0));
   }
 
-  @Override
   public void setFlywheelVoltage(Voltage volts) {
     leader.setControl(voltageRequest.withOutput(volts.in(Volts)));
+  }
+
+  public void setFlywheelRPM(AngularVelocity velocity) {
+    leader.setControl(velocityTorqueCurrentRequest.withVelocity(velocity));
+    Logger.recordOutput("Flywheel running", velocity);
   }
 }
