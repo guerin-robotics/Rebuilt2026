@@ -3,22 +3,24 @@ package frc.robot.subsystems.intakeSlider;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.intakeSlider.io.IntakeSliderIOInputsAutoLogged;
 import frc.robot.subsystems.intakeSlider.io.intakeSliderIO;
+import org.littletonrobotics.junction.Logger;
 
 public class intakeSlider extends SubsystemBase {
 
   private final intakeSliderIO io;
-
-  private final intakeSliderIO.IntakeSliderIOInputs inputs =
-      new intakeSliderIO.IntakeSliderIOInputs();
+  private final IntakeSliderIOInputsAutoLogged inputs;
 
   public intakeSlider(intakeSliderIO io) {
     this.io = io;
+    this.inputs = new IntakeSliderIOInputsAutoLogged();
   }
 
   @Override
   public void periodic() {
     io.updateInputs(inputs);
+    Logger.processInputs("Intake Slider", inputs);
   }
 
   public void setIntakeSliderVoltage(Voltage volts) {

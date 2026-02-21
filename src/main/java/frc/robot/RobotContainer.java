@@ -13,6 +13,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.*;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -82,24 +83,26 @@ public class RobotContainer {
 
   // Shooter voltage for button control (tunable)
   private static final double FlywheelTestVoltage = 6.0; // Volts
-  private static final AngularVelocity FlywheelTestVelocity =
-      RotationsPerSecond.of(20.0); // rotations/s
 
   // Test voltages
   private static final double FeederTestVoltage = 3.0;
   private static final double PrestageTestVoltage = 5.0;
   private static final double TransportTestVoltage = -3.0;
-  private static final double intakeSliderTestVoltage = 3.0;
-  private static final double intakeSliderTestVoltageIn = -3.0;
+  private static final double intakeSliderTestVoltage = 8.0;
+  private static final double intakeSliderTestVoltageIn = -8.0;
   private static final double intakeRollerTestVoltage = -8.0;
   // Slider pulse test rotations
   private static final double pulseRotationChange = 1.0;
+
   // CENTER GROVE TEST VELOCITIES
+  private static final AngularVelocity FlywheelTestVelocity =
+      RotationsPerSecond.of(20.0); // rotations/s
   private static final AngularVelocity feederVelocity = RotationsPerSecond.of(10.0);
-  private static final AngularVelocity rollerVelocity = RotationsPerSecond.of(10.0);
+  private static final AngularVelocity rollerVelocity = RotationsPerSecond.of(-10.0);
   private static final AngularVelocity prestageVelocity = RotationsPerSecond.of(10.0);
-  private static final AngularVelocity transportVelocity = RotationsPerSecond.of(10.0);
-  private static final AngularVelocity sliderVelocity = RotationsPerSecond.of(3.0);
+  private static final AngularVelocity transportVelocity = RotationsPerSecond.of(-10.0);
+  private static final AngularVelocity sliderVelocity = RotationsPerSecond.of(30.0);
+  private static final AngularVelocity sliderInVelocity = RotationsPerSecond.of(-30.0);
   // Slider test inch
   private static final double intakeInchTest = 3.0;
 
@@ -244,7 +247,7 @@ public class RobotContainer {
     //     .button(1)
     //     .whileTrue(FlywheelCommands.runVoltage(flywheel, Volts.of(FlywheelTestVoltage)));
     // Real button 1: Flywheel velocity torque current control, run while held
-    //buttonPanel.button(1).whileTrue(FlywheelCommands.runTorque(flywheel, FlywheelTestVelocity));
+    // buttonPanel.button(1).whileTrue(FlywheelCommands.runTorque(flywheel, FlywheelTestVelocity));
     // Button 2: Stop shooter immediately (safety)
     // buttonPanel.button(2).onTrue(FlywheelCommands.stop(flywheel));
     // Real button 2: Run feeder at test voltage while held
@@ -266,7 +269,7 @@ public class RobotContainer {
     // buttonPanel
     //     .button(4)
     //     .whileTrue(PrestageCommands.runPrestageVoltage(prestage, Volts.of(PrestageTestVoltage)));
-    //buttonPanel.button(4).whileTrue(intakeSliderCommands.zeroIntake(intakeSlider));
+    // buttonPanel.button(4).whileTrue(intakeSliderCommands.zeroIntake(intakeSlider));
     // Button 5: Stop prestage
     // buttonPanel.button(5).onTrue(PrestageCommands.stop(prestage));
     // Intake slider
@@ -275,7 +278,8 @@ public class RobotContainer {
     // buttonPanel
     //     .button(6)
     //     .whileTrue(
-    //         intakeSliderCommands.runIntakeForward(intakeSlider, Volts.of(intakeSliderTestVoltage)));
+    //         intakeSliderCommands.runIntakeForward(intakeSlider,
+    // Volts.of(intakeSliderTestVoltage)));
     // buttonPanel
     //     .button(7)
     //     .whileTrue(
@@ -312,7 +316,8 @@ public class RobotContainer {
     // buttonPanel
     //     .button(5)
     //     .whileTrue(
-    //         intakeRollerCommands.runIntakeRoller(intakeRoller, Volts.of(intakeRollerTestVoltage)));
+    //         intakeRollerCommands.runIntakeRoller(intakeRoller,
+    // Volts.of(intakeRollerTestVoltage)));
     // Intake slider
     // Button 4 ("B"): Run intake at test voltage while held
     // controller
@@ -359,29 +364,25 @@ public class RobotContainer {
                 .alongWith(FeederCommands.runFeederVoltage(feeder, Volts.of(FeederTestVoltage))));
 
     // CENTER GROVE EVENT CONTROLS
-    buttonPanel.button(1).whileTrue(
-        FeederCommands.runTorque(feeder, feederVelocity)
-    );
-    buttonPanel.button(2).whileTrue(
-        FlywheelCommands.runTorque(flywheel, FlywheelTestVelocity)
-    );
-    buttonPanel.button(3).whileTrue(
-        intakeRollerCommands.runTorque(intakeRoller, rollerVelocity)
-    );
-    buttonPanel.button(4).whileTrue(
-        PrestageCommands.runTorque(prestage, prestageVelocity)
-    );
-    buttonPanel.button(5).whileTrue(
-        TransportCommands.runTorque(transport, transportVelocity)
-    );
-    // Slider out
-    buttonPanel.button(6).whileTrue(
-        intakeSliderCommands.runTorque(intakeSlider, sliderVelocity)
-    );
-    // Slider in
-    buttonPanel.button(7).whileTrue(
-        intakeSliderCommands.runTorque(intakeSlider, sliderVelocity)
-    );
+    // Feeder
+    buttonPanel.button(1).whileTrue(FeederCommands.runTorque(feeder, feederVelocity));
+    // Flywheel
+    buttonPanel.button(2).whileTrue(FlywheelCommands.runTorque(flywheel, FlywheelTestVelocity));
+    // Run intake
+    buttonPanel.button(3).whileTrue(intakeRollerCommands.runTorque(intakeRoller, rollerVelocity));
+    // Prestage
+    buttonPanel.button(4).whileTrue(PrestageCommands.runTorque(prestage, prestageVelocity));
+    // Transport
+    buttonPanel.button(5).whileTrue(TransportCommands.runTorque(transport, transportVelocity));
+    // Intake out
+    buttonPanel.button(6).whileTrue(intakeSliderCommands.runTorque(intakeSlider, sliderVelocity));
+    // buttonPanel
+    //     .button(6)
+    //     .whileTrue(
+    //         intakeSliderCommands.setIntakePos(
+    //             intakeSlider, intakeSliderConstants.Mechanical.rotationsWhenOut));
+    // Intake in
+    buttonPanel.button(7).whileTrue(intakeSliderCommands.runTorque(intakeSlider, sliderInVelocity));
   }
 
   public Command getAutonomousCommand() {

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intakeSlider.io;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.CANBus;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.intakeSlider.intakeSliderConstants;
 import frc.robot.subsystems.intakeSlider.intakeSliderConstants.sliderMagicConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class intakeSliderIOReal implements intakeSliderIO {
 
@@ -69,13 +71,19 @@ public class intakeSliderIOReal implements intakeSliderIO {
     intakeSliderMotor.getConfigurator().apply(limits);
   }
 
+  @Override
   public void updateInputs(IntakeSliderIOInputs inputs) {
     inputs.intakeSliderVoltage = intakeSliderMotor.getMotorVoltage().getValue();
-    inputs.intakeSliderVelocity = intakeSliderMotor.getVelocity().getValue();
+    inputs.intakeSliderVelocity =
+        RotationsPerSecond.of(intakeSliderMotor.getVelocity().getValueAsDouble());
     inputs.intakeSliderStatorCurrent = intakeSliderMotor.getStatorCurrent().getValueAsDouble();
     inputs.intakeSliderSupplyCurrent = intakeSliderMotor.getSupplyCurrent().getValue();
     inputs.intakeSliderTemperature = intakeSliderMotor.getDeviceTemp().getValue();
     inputs.intakeSliderPosition = intakeSliderMotor.getPosition().getValueAsDouble();
+    inputs.intakeSliderClosedLoopReference =
+        RotationsPerSecond.of(intakeSliderMotor.getClosedLoopReference().getValueAsDouble());
+    inputs.intakeSliderClosedLoopError =
+        RotationsPerSecond.of(intakeSliderMotor.getClosedLoopError().getValueAsDouble());
   }
 
   public void setIntakeSliderVoltage(Voltage volts) {
@@ -89,6 +97,7 @@ public class intakeSliderIOReal implements intakeSliderIO {
 
   public void setIntakeSliderVelocityTorque(AngularVelocity velocity) {
     intakeSliderMotor.setControl(torqueRequest.withVelocity(velocity));
+    Logger.recordOutput("Intake slider torque controls", velocity);
   }
 
   public void setIntakePositionTorque(double setpoint) {

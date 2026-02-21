@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -57,10 +56,9 @@ public class intakeSliderCommands {
   }
 
   public static Command runTorque(intakeSlider intakeSlider, AngularVelocity sliderVelo) {
-        return Commands.startEnd(
-          () -> intakeSlider.setIntakeSliderVelocityTorque(sliderVelo),
-          () -> intakeSlider.setIntakeSliderVelocityTorque(RotationsPerSecond.of(0)),
-          intakeSlider
-      );
+    return Commands.startEnd(
+        () -> intakeSlider.setIntakeSliderVelocityTorque(sliderVelo),
+        () -> intakeSlider.setIntakeSliderVoltage(Volts.of(0)),
+        intakeSlider);
   }
 }

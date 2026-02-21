@@ -19,7 +19,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.HardwareConstants;
-import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelConstants;
 import org.littletonrobotics.junction.Logger;
 
@@ -89,7 +88,8 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     config.Slot0.kP = FlywheelConstants.TorqueControl.KP;
 
     var flywheelMotionMagic = config.MotionMagic;
-    flywheelMotionMagic.MotionMagicAcceleration = FlywheelConstants.flywheelMagicConstants.flywheelAccel; // 60
+    flywheelMotionMagic.MotionMagicAcceleration =
+        FlywheelConstants.flywheelMagicConstants.flywheelAccel; // 60
 
     // Current limits
     var limits = new CurrentLimitsConfigs();

@@ -16,6 +16,8 @@ public interface intakeSliderIO {
     public Temperature intakeSliderTemperature;
     public AngularVelocity intakeSliderVelocity;
     public double intakeSliderPosition;
+    public AngularVelocity intakeSliderClosedLoopReference;
+    public AngularVelocity intakeSliderClosedLoopError;
   }
 
   public default void updateInputs(IntakeSliderIOInputs inputs) {}

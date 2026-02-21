@@ -5,15 +5,14 @@ import static edu.wpi.first.units.Units.Second;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.HardwareConstants;
-import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.FeederConstants;
 
 public class FeederIOReal implements FeederIO {
@@ -24,7 +23,8 @@ public class FeederIOReal implements FeederIO {
 
   private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
   private final VoltageOut voltageRequest = new VoltageOut(0);
-  private final MotionMagicVelocityTorqueCurrentFOC torqueRequest = new MotionMagicVelocityTorqueCurrentFOC(0);
+  private final MotionMagicVelocityTorqueCurrentFOC torqueRequest =
+      new MotionMagicVelocityTorqueCurrentFOC(0);
 
   public FeederIOReal() {
     feederMotor = new TalonFX(HardwareConstants.CanIds.FEEDER_MOTOR_ID, CAN_BUS);
@@ -67,6 +67,7 @@ public class FeederIOReal implements FeederIO {
     feederMotor.getConfigurator().apply(limits);
   }
 
+  @Override
   public void updateInputs(FeederIOInputs inputs) {
     // Read sensor values and populate inputs object
     inputs.feederMotorVelocity = feederMotor.getVelocity().getValue();

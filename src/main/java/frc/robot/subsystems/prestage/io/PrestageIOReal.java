@@ -6,12 +6,12 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.HardwareConstants;
@@ -26,7 +26,8 @@ public class PrestageIOReal implements PrestageIO {
 
   private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
   private final VoltageOut voltageRequest = new VoltageOut(0);
-  private final MotionMagicVelocityTorqueCurrentFOC torqueRequest = new MotionMagicVelocityTorqueCurrentFOC(0);
+  private final MotionMagicVelocityTorqueCurrentFOC torqueRequest =
+      new MotionMagicVelocityTorqueCurrentFOC(0);
 
   public PrestageIOReal() {
     prestageLeader = new TalonFX(HardwareConstants.CanIds.PRESTAGE_LEADER_ID, CAN_BUS);
@@ -74,6 +75,7 @@ public class PrestageIOReal implements PrestageIO {
     prestageLeader.getConfigurator().apply(limits);
   }
 
+  @Override
   public void updateInputs(PrestageIOInputs inputs) {
     // Read sensor values and populate inputs object
     inputs.prestageMotorVelocity = prestageLeader.getVelocity().getValue();

@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
@@ -24,8 +24,8 @@ public class intakeRollerCommands {
 
   public static Command runTorque(intakeRoller intakeRoller, AngularVelocity rollerVelo) {
     return Commands.startEnd(
-      () -> intakeRoller.setRollerTorqueControl(rollerVelo),
-      () -> intakeRoller.setRollerTorqueControl(RotationsPerSecond.of(0)),
-      intakeRoller);
+        () -> intakeRoller.setRollerTorqueControl(rollerVelo),
+        () -> intakeRoller.setRollerTorqueControl(RotationsPerSecond.of(0)),
+        intakeRoller);
   }
 }

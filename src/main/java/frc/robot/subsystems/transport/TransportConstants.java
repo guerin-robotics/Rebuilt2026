@@ -20,7 +20,7 @@ public class TransportConstants {
 
   // NOT Tuned yet - placeholder values
   public static class PID {
-    public static final double KS = 0.35;
+    public static final double KS = 35;
     public static final double KV = 0.12;
     public static final double KP = 0.15;
     public static final double KI = 0.0;

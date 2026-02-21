@@ -19,18 +19,19 @@ public class intakeSliderConstants {
 
   // NOT Tuned yet - placeholder values
   public static class PID {
-    public static final double KS = 0.35;
-    public static final double KV = 0.12;
-    public static final double KP = 0.15;
+    public static final double KS = 60.0;
+    public static final double KV = 0.0;
+    public static final double KP = 3.0;
     public static final double KI = 0.0;
     public static final double KD = 0.0;
   }
 
   public static class Mechanical {
     public static final double rotationsPerInch = 1.0;
+    public static final double rotationsWhenOut = 2.5;
   }
 
   public static class sliderMagicConstants {
-    public static final double sliderAccel = 2;
+    public static final double sliderAccel = 2.0;
   }
 }
