@@ -39,9 +39,9 @@ public class FlywheelConstants {
   }
 
   public static class TorqueControl {
-    public static final double KS = 35.45;
-    public static final double KV = 0.15;
-    public static final double KP = 0.0;
+    public static final double KS = 35;
+    public static final double KV = 0.0;
+    public static final double KP = 5.0;
   }
 
   /**

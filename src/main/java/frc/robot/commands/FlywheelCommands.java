@@ -80,13 +80,17 @@ public class FlywheelCommands {
    */
   public static Command runVelocity(Flywheel flywheel, AngularVelocity targetSpeed) {
     return Commands.startEnd(
-            () -> flywheel.setFlywheelSpeed(targetSpeed), () -> flywheel.setFlywheelVoltage(Volts.of(0)), flywheel)
+            () -> flywheel.setFlywheelSpeed(targetSpeed),
+            () -> flywheel.setFlywheelVoltage(Volts.of(0)),
+            flywheel)
         .withName("FlywheelVelocity_" + targetSpeed.in(RPM) + "RPM");
   }
 
   public static Command runRPM(Flywheel flywheel, AngularVelocity velocity) {
     return Commands.startEnd(
-        () -> flywheel.setFlywheelRPM(velocity), () -> flywheel.setFlywheelVoltage(Volts.of(0)), flywheel);
+        () -> flywheel.setFlywheelRPM(velocity),
+        () -> flywheel.setFlywheelRPM(RotationsPerSecond.of(0)),
+        flywheel);
   }
 
   /**
@@ -99,7 +103,7 @@ public class FlywheelCommands {
    * @return Instant command that stops the shooter
    */
   public static Command stop(Flywheel shooter) {
-    return Commands.runOnce(() -> shooter.setFlywheelVoltage(Volts.of(0)), shooter).withName("FlywheelStop");
+    return Commands.runOnce(() -> shooter.setFlywheelVoltage(Volts.of(0)), shooter)
+        .withName("FlywheelStop");
   }
-
 }

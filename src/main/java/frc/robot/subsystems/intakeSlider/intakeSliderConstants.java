@@ -25,4 +25,8 @@ public class intakeSliderConstants {
     public static final double KI = 0.0;
     public static final double KD = 0.0;
   }
+
+  public static class Mechanical {
+    public static final double rotationsPerInch = 1.0;
+  }
 }

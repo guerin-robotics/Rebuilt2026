@@ -12,20 +12,29 @@ public interface intakeSliderIO {
   public static class IntakeSliderIOInputs {
     public Voltage intakeSliderVoltage;
     public Current intakeSliderSupplyCurrent;
-    public Current intakeSliderStatorCurrent;
+    public double intakeSliderStatorCurrent;
     public Temperature intakeSliderTemperature;
     public AngularVelocity intakeSliderVelocity;
+    public double intakeSliderPosition;
   }
 
   public default void updateInputs(IntakeSliderIOInputs inputs) {}
 
   public default void setIntakeSliderVoltage(Voltage volts) {}
 
-  public default void setIntakePos(double setpoint) {}
+  public default void setIntakeInch(double inches) {}
+
+  public default void setIntakeSliderVelocityTorque(AngularVelocity velocity) {}
+
+  public default void setIntakePositionTorque(double setpoint) {}
 
   public default void setIntakePosForPulse(double rotations) {}
 
   public default void intakeRetract(double retractVolts, double extension) {}
+
+  public default void zeroMotor() {}
+
+  public default void intakeHome() {}
 
   public default void intakeWait(double seconds) {}
 }

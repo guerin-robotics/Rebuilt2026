@@ -1,17 +1,16 @@
 package frc.robot.subsystems.flywheel.io;
 
-import static edu.wpi.first.units.Units.RevolutionsPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -19,7 +18,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.flywheel.FlywheelConstants;
 import org.littletonrobotics.junction.Logger;
@@ -59,8 +57,8 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
   private final SimpleMotorFeedforward feedforward =
       new SimpleMotorFeedforward(
           FlywheelConstants.PID.MAIN_KS, FlywheelConstants.PID.MAIN_KV / (2 * Math.PI));
-  private final VelocityTorqueCurrentFOC velocityTorqueCurrentRequest =
-      new VelocityTorqueCurrentFOC(0);
+  private final MotionMagicVelocityTorqueCurrentFOC velocityTorqueCurrentRequest =
+      new MotionMagicVelocityTorqueCurrentFOC(0);
 
   public FlywheelIOPhoenix6() {
     leader = new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_LEADER_ID, CAN_BUS);
@@ -86,7 +84,11 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
 
     config.Slot0.kS = FlywheelConstants.TorqueControl.KS;
+    config.Slot0.kV = FlywheelConstants.TorqueControl.KV;
     config.Slot0.kP = FlywheelConstants.TorqueControl.KP;
+
+    var flywheelMotionMagic = config.MotionMagic;
+    flywheelMotionMagic.MotionMagicAcceleration = 60; // 60
 
     // Current limits
     var limits = new CurrentLimitsConfigs();
@@ -112,7 +114,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
     // Leader motor
-    inputs.leaderVelocity = leader.getVelocity().getValue();
+    inputs.leaderVelocity = RotationsPerSecond.of(leader.getVelocity().getValueAsDouble());
     inputs.leaderAppliedVolts = leader.getMotorVoltage().getValue();
     inputs.leaderSupplyCurrentAmps = leader.getSupplyCurrent().getValue();
     inputs.leaderStatorCurrentAmps = leader.getStatorCurrent().getValue();
@@ -137,6 +139,11 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
 
     // Combined flywheel velocity (use leader velocity as representative)
     inputs.flywheelVelocity = inputs.leaderVelocity;
+
+    // Setpoint
+    inputs.closedLoopError = RotationsPerSecond.of(leader.getClosedLoopError().getValueAsDouble());
+    inputs.closedLoopReference =
+        RotationsPerSecond.of(leader.getClosedLoopReference().getValueAsDouble());
   }
 
   public void setFlywheelDutyCycle(double output) {

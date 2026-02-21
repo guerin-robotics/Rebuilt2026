@@ -22,6 +22,9 @@ public interface FlywheelIO {
     /** Combined flywheel velocity (average or leader). */
     public AngularVelocity flywheelVelocity;
 
+    public AngularVelocity closedLoopError;
+    public AngularVelocity closedLoopReference;
+
     // Leader motor
     public AngularVelocity leaderVelocity;
     public Voltage leaderAppliedVolts;
@@ -40,7 +43,7 @@ public interface FlywheelIO {
     public Current follower2SupplyCurrentAmps;
     public Current follower2StatorCurrentAmps;
 
-        // Follower 3 motor
+    // Follower 3 motor
     public AngularVelocity follower3Velocity;
     public Voltage follower3AppliedVolts;
     public Current follower3SupplyCurrentAmps;

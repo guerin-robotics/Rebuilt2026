@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -20,27 +21,19 @@ public class intakeSliderCommands {
     return Commands.runOnce(() -> intakeSlider.setIntakeSliderVoltage(Volts.of(0)), intakeSlider);
   }
 
-  public static Command setIntakePos(intakeSlider intakeSlider, double setpoint) {
+  public static Command setIntakePos(intakeSlider intakeSlider, double inches) {
     return Commands.startEnd(
-        () -> intakeSlider.setIntakePos(setpoint),
+        () -> intakeSlider.setIntakeInch(inches),
         () -> intakeSlider.setIntakeSliderVoltage(Volts.of(0)),
         intakeSlider);
   }
 
-  public static Command intakeRetract(intakeSlider intakeSlider, double retractVelo, double extension) {
-      return Commands.startEnd(
+  public static Command intakeRetract(
+      intakeSlider intakeSlider, AngularVelocity retractVelo, double extension) {
+    return Commands.startEnd(
         () -> intakeSlider.intakeRetract(retractVelo, extension),
         () -> intakeSlider.setIntakeSliderVoltage(Volts.of(0)),
-        intakeSlider
-      );
-  }
-
-  public static Command setIntakePosForPulse(intakeSlider intakeSlider, double rotations) {
-    return Commands.startEnd(
-      () -> intakeSlider.setIntakePosForPulse(rotations),
-      () -> intakeSlider.setIntakeSliderVoltage(Volts.of(0)),
-      intakeSlider
-    );
+        intakeSlider);
   }
 
   public static Command intakeWait(intakeSlider intakeSlider, double seconds) {
@@ -49,20 +42,20 @@ public class intakeSliderCommands {
 
   public static Command pulseIntakeSlider(intakeSlider intakeSlider, double rotationChange) {
     return Commands.repeatingSequence(
-      setIntakePos(intakeSlider, rotationChange), intakeWait(intakeSlider, 0.5)
-    );
+        setIntakePos(intakeSlider, rotationChange), intakeWait(intakeSlider, 0.5));
   }
 
-  public static Command pulseIntakeByTorque(intakeSlider intakeSlider, double rotations) {
+  public static Command pulseIntakeByCurrent(
+      intakeSlider intakeSlider, AngularVelocity retractVelo, double extension) {
     return Commands.repeatingSequence(
-      setIntakePosForPulse(intakeSlider, rotations), intakeWait(intakeSlider, 0.5)
-    );
+        intakeRetract(intakeSlider, retractVelo, extension), intakeWait(intakeSlider, 0.5));
   }
 
-  public static Command pulseIntakeByCurrent(intakeSlider intakeSlider, double retractVelo, double extension) {
-    return Commands.repeatingSequence(
-      intakeRetract(intakeSlider, retractVelo, extension), intakeWait(intakeSlider, 0.5)
-    );
+  public static Command intakeSetInches(intakeSlider intakeSlider, double inches) {
+    return Commands.runOnce(() -> intakeSlider.setIntakeInch(inches));
   }
 
+  public static Command zeroIntake(intakeSlider intakeSlider) {
+    return Commands.runOnce(() -> intakeSlider.zeroMotor());
+  }
 }
