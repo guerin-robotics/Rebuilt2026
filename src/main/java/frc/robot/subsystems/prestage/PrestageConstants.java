@@ -25,4 +25,8 @@ public class PrestageConstants {
     public static final double KI = 0.0;
     public static final double KD = 0.0;
   }
+
+  public static class prestageMagicConstants {
+    public static final double prestageAccel = 20.0;
+  }
 }

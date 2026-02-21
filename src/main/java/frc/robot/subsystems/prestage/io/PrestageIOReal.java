@@ -11,6 +11,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.HardwareConstants;
@@ -25,6 +26,7 @@ public class PrestageIOReal implements PrestageIO {
 
   private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
   private final VoltageOut voltageRequest = new VoltageOut(0);
+  private final MotionMagicVelocityTorqueCurrentFOC torqueRequest = new MotionMagicVelocityTorqueCurrentFOC(0);
 
   public PrestageIOReal() {
     prestageLeader = new TalonFX(HardwareConstants.CanIds.PRESTAGE_LEADER_ID, CAN_BUS);
@@ -53,6 +55,9 @@ public class PrestageIOReal implements PrestageIO {
     config.Slot0.kP = PrestageConstants.PID.KP;
     config.Slot0.kI = PrestageConstants.PID.KI;
     config.Slot0.kD = PrestageConstants.PID.KD;
+
+    var prestageMagic = config.MotionMagic;
+    prestageMagic.MotionMagicAcceleration = PrestageConstants.prestageMagicConstants.prestageAccel;
 
     // Current limits
     var limits = new CurrentLimitsConfigs();
@@ -84,5 +89,9 @@ public class PrestageIOReal implements PrestageIO {
 
   public void setPrestageSpeed(AngularVelocity speed) {
     prestageLeader.setControl(velocityRequest.withVelocity(speed));
+  }
+
+  public void setPrestageTorque(AngularVelocity prestageVelo) {
+    prestageLeader.setControl(torqueRequest.withVelocity(prestageVelo));
   }
 }

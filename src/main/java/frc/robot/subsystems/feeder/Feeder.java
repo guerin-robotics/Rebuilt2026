@@ -30,4 +30,8 @@ public class Feeder extends SubsystemBase {
   public void setFeederSpeed(AngularVelocity speed) {
     io.setFeederSpeed(speed);
   }
+
+  public void setFeederTorqueControl(AngularVelocity feederVelo) {
+    io.setFeederTorqueControl(feederVelo);
+  }
 }

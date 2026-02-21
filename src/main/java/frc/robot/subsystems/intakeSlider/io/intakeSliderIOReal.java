@@ -15,18 +15,18 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.intakeSlider.intakeSliderConstants;
+import frc.robot.subsystems.intakeSlider.intakeSliderConstants.sliderMagicConstants;
 
 public class intakeSliderIOReal implements intakeSliderIO {
 
   private static final CANBus CAN_BUS = new CANBus("rio");
 
-  private final MotionMagicVelocityTorqueCurrentFOC torqueRequest =
-      new MotionMagicVelocityTorqueCurrentFOC(0);
-
   private final TalonFX intakeSliderMotor;
 
   private final VoltageOut voltageRequest = new VoltageOut(0);
   private final PositionTorqueCurrentFOC positionRequest = new PositionTorqueCurrentFOC(0);
+  private final MotionMagicVelocityTorqueCurrentFOC torqueRequest =
+      new MotionMagicVelocityTorqueCurrentFOC(0);
 
   public intakeSliderIOReal() {
     intakeSliderMotor = new TalonFX(HardwareConstants.CanIds.INTAKE_SLIDER_MOTOR_ID, CAN_BUS);
@@ -51,8 +51,8 @@ public class intakeSliderIOReal implements intakeSliderIO {
     // config.Slot0.kI = intakeSliderConstants.PID.KI;
     config.Slot0.kD = intakeSliderConstants.PID.KD;
 
-    var intakeMotionMagic = config.MotionMagic;
-    intakeMotionMagic.MotionMagicAcceleration = 2;
+    var sliderMotionMagic = config.MotionMagic;
+    sliderMotionMagic.MotionMagicAcceleration = sliderMagicConstants.sliderAccel;
 
     // Current limits
     var limits = new CurrentLimitsConfigs();

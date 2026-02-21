@@ -1,8 +1,10 @@
 package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.transport.Transport;
@@ -20,5 +22,12 @@ public class TransportCommands {
   public static Command stop(Transport transport) {
     return Commands.runOnce(() -> transport.setTransportVoltage(Volts.of(0)), transport)
         .withName("TransportStop");
+  }
+
+  public static Command runTorque(Transport transport, AngularVelocity transportVelo) {
+    return Commands.startEnd(
+      () -> transport.setTransportTorque(transportVelo),
+      () -> transport.setTransportTorque(RotationsPerSecond.of(0)),
+      transport);
   }
 }

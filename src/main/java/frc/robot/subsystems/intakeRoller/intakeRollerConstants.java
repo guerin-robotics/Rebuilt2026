@@ -17,6 +17,10 @@ public class intakeRollerConstants {
     public static final boolean INVERTED = false;
   }
 
+  public static class rollerMagicConstants {
+    public static final double rollerAccel = 2;
+  }
+
   // NOT Tuned yet - placeholder values
   public static class PID {
     public static final double KS = 0.35;

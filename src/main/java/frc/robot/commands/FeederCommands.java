@@ -1,8 +1,10 @@
 package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.feeder.Feeder;
@@ -20,5 +22,12 @@ public class FeederCommands {
   public static Command stop(Feeder feeder) {
     return Commands.runOnce(() -> feeder.setFeederVoltage(Volts.of(0)), feeder)
         .withName("FeederStop");
+  }
+
+  public static Command runTorque(Feeder feeder, AngularVelocity feederVelo) {
+    return Commands.startEnd(
+      () -> feeder.setFeederTorqueControl(feederVelo),
+      () -> feeder.setFeederTorqueControl(RotationsPerSecond.of(0)),
+      feeder);
   }
 }

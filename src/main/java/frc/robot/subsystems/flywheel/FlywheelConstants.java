@@ -44,6 +44,10 @@ public class FlywheelConstants {
     public static final double KP = 5.0;
   }
 
+  public static class flywheelMagicConstants {
+    public static final double flywheelAccel = 60;
+  }
+
   /**
    * Feedforward constants for the main flywheel. Used by SimpleMotorFeedforward (kS, kV). Prestage
    * and Kicker use TalonFX Slot0 closed-loop; main flywheel uses feedforward-only. In progress:

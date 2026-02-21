@@ -3,6 +3,7 @@ package frc.robot.subsystems.flywheel.io;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.units.measure.Temperature;
 import org.littletonrobotics.junction.AutoLog;
 
 /**
@@ -30,24 +31,28 @@ public interface FlywheelIO {
     public Voltage leaderAppliedVolts;
     public Current leaderSupplyCurrentAmps;
     public Current leaderStatorCurrentAmps;
+    public Temperature leaderTemp;
 
     // Follower 1 motor
     public AngularVelocity follower1Velocity;
     public Voltage follower1AppliedVolts;
     public Current follower1SupplyCurrentAmps;
     public Current follower1StatorCurrentAmps;
+    public Temperature follower1Temp;
 
     // Follower 2 motor
     public AngularVelocity follower2Velocity;
     public Voltage follower2AppliedVolts;
     public Current follower2SupplyCurrentAmps;
     public Current follower2StatorCurrentAmps;
+    public Temperature follower2Temp;
 
     // Follower 3 motor
     public AngularVelocity follower3Velocity;
     public Voltage follower3AppliedVolts;
     public Current follower3SupplyCurrentAmps;
     public Current follower3StatorCurrentAmps;
+    public Temperature follower3Temp;
   }
 
   /** Read sensor data from the flywheel motor. */
@@ -63,5 +68,5 @@ public interface FlywheelIO {
   public default void setFlywheelSpeed(AngularVelocity targetSpeed) {}
 
   // VelocityTorqueCurrentFOC control
-  public default void setFlywheelRPM(AngularVelocity velocity) {}
+  public default void setFlywheelTorque(AngularVelocity velocity) {}
 }

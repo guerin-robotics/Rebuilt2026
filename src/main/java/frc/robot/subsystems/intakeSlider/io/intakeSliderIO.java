@@ -28,8 +28,6 @@ public interface intakeSliderIO {
 
   public default void setIntakePositionTorque(double setpoint) {}
 
-  public default void setIntakePosForPulse(double rotations) {}
-
   public default void intakeRetract(double retractVolts, double extension) {}
 
   public default void zeroMotor() {}

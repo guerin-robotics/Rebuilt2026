@@ -11,10 +11,12 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.intakeRoller.intakeRollerConstants;
+import frc.robot.subsystems.intakeRoller.intakeRollerConstants.rollerMagicConstants;
 
 public class intakeRollerIOReal implements intakeRollerIO {
 
@@ -25,6 +27,7 @@ public class intakeRollerIOReal implements intakeRollerIO {
 
   private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
   private final VoltageOut voltageRequest = new VoltageOut(0);
+  private final MotionMagicVelocityTorqueCurrentFOC torqueRequest = new MotionMagicVelocityTorqueCurrentFOC(0);
 
   public intakeRollerIOReal() {
     intakeRollerLeader = new TalonFX(HardwareConstants.CanIds.INTAKE_ROLLER_LEADER_ID, CAN_BUS);
@@ -47,6 +50,9 @@ public class intakeRollerIOReal implements intakeRollerIO {
         intakeRollerConstants.SoftwareConstants.INVERTED
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+
+    var rollerMagic = config.MotionMagic;
+    rollerMagic.MotionMagicAcceleration = rollerMagicConstants.rollerAccel;
 
     // Slot0 PID/FF gains for velocity control
     config.Slot0.kS = intakeRollerConstants.PID.KS;
@@ -85,5 +91,9 @@ public class intakeRollerIOReal implements intakeRollerIO {
 
   public void setIntakeRollerSpeed(AngularVelocity speed) {
     intakeRollerLeader.setControl(velocityRequest.withVelocity(speed));
+  }
+
+  public void setRollerTorqueControl(AngularVelocity rollerVelo) {
+    intakeRollerLeader.setControl(torqueRequest.withVelocity(rollerVelo));
   }
 }

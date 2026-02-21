@@ -68,8 +68,8 @@ public class Flywheel extends SubsystemBase {
     io.setFlywheelSpeed(targetSpeed);
   }
 
-  public void setFlywheelRPM(AngularVelocity velocity) {
-    io.setFlywheelRPM(velocity);
+  public void setFlywheelTorque(AngularVelocity velocity) {
+    io.setFlywheelTorque(velocity);
   }
 
   /** Returns current flywheel velocity in rad/s for SysId. */

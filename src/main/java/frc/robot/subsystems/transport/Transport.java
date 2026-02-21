@@ -26,4 +26,8 @@ public class Transport extends SubsystemBase {
   public void setTransportSpeed(AngularVelocity speed) {
     io.setTransportSpeed(speed);
   }
+
+  public void setTransportTorque(AngularVelocity transportVelo) {
+    io.setTransportTorque(transportVelo);
+  }
 }

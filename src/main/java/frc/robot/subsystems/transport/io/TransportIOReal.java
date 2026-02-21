@@ -7,11 +7,13 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.HardwareConstants;
+import frc.robot.subsystems.prestage.PrestageConstants;
 import frc.robot.subsystems.transport.TransportConstants;
 
 public class TransportIOReal implements TransportIO {
@@ -22,6 +24,7 @@ public class TransportIOReal implements TransportIO {
 
   private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
   private final VoltageOut voltageRequest = new VoltageOut(0);
+  private final MotionMagicVelocityTorqueCurrentFOC torqueRequest = new MotionMagicVelocityTorqueCurrentFOC(0);
 
   public TransportIOReal() {
     transportMotor = new TalonFX(HardwareConstants.CanIds.TRANSPORT_MOTOR_ID, CAN_BUS);
@@ -45,6 +48,9 @@ public class TransportIOReal implements TransportIO {
     config.Slot0.kP = TransportConstants.PID.KP;
     config.Slot0.kI = TransportConstants.PID.KI;
     config.Slot0.kD = TransportConstants.PID.KD;
+
+    var transportMagic = config.MotionMagic;
+    transportMagic.MotionMagicAcceleration = TransportConstants.transportMagicConstants.transportAccel;  
 
     // Current limits
     var limits = new CurrentLimitsConfigs();
@@ -76,5 +82,9 @@ public class TransportIOReal implements TransportIO {
 
   public void setTransportSpeed(AngularVelocity speed) {
     transportMotor.setControl(velocityRequest.withVelocity(speed));
+  }
+
+  public void setTransportTorque(AngularVelocity transportVelo) {
+    transportMotor.setControl(torqueRequest.withVelocity(transportVelo));
   }
 }

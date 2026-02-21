@@ -29,4 +29,8 @@ public class intakeSliderConstants {
   public static class Mechanical {
     public static final double rotationsPerInch = 1.0;
   }
+
+  public static class sliderMagicConstants {
+    public static final double sliderAccel = 2;
+  }
 }

@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -51,11 +52,15 @@ public class intakeSliderCommands {
         intakeRetract(intakeSlider, retractVelo, extension), intakeWait(intakeSlider, 0.5));
   }
 
-  public static Command intakeSetInches(intakeSlider intakeSlider, double inches) {
-    return Commands.runOnce(() -> intakeSlider.setIntakeInch(inches));
-  }
-
   public static Command zeroIntake(intakeSlider intakeSlider) {
     return Commands.runOnce(() -> intakeSlider.zeroMotor());
+  }
+
+  public static Command runTorque(intakeSlider intakeSlider, AngularVelocity sliderVelo) {
+        return Commands.startEnd(
+          () -> intakeSlider.setIntakeSliderVelocityTorque(sliderVelo),
+          () -> intakeSlider.setIntakeSliderVelocityTorque(RotationsPerSecond.of(0)),
+          intakeSlider
+      );
   }
 }

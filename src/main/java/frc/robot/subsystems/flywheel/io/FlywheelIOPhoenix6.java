@@ -19,6 +19,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.HardwareConstants;
+import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelConstants;
 import org.littletonrobotics.junction.Logger;
 
@@ -88,7 +89,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     config.Slot0.kP = FlywheelConstants.TorqueControl.KP;
 
     var flywheelMotionMagic = config.MotionMagic;
-    flywheelMotionMagic.MotionMagicAcceleration = 60; // 60
+    flywheelMotionMagic.MotionMagicAcceleration = FlywheelConstants.flywheelMagicConstants.flywheelAccel; // 60
 
     // Current limits
     var limits = new CurrentLimitsConfigs();
@@ -118,12 +119,14 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     inputs.leaderAppliedVolts = leader.getMotorVoltage().getValue();
     inputs.leaderSupplyCurrentAmps = leader.getSupplyCurrent().getValue();
     inputs.leaderStatorCurrentAmps = leader.getStatorCurrent().getValue();
+    inputs.leaderTemp = leader.getDeviceTemp().getValue();
 
     // Follower 1 motor
     inputs.follower1Velocity = follower1.getVelocity().getValue();
     inputs.follower1AppliedVolts = follower1.getMotorVoltage().getValue();
     inputs.follower1SupplyCurrentAmps = follower1.getSupplyCurrent().getValue();
     inputs.follower1StatorCurrentAmps = follower1.getStatorCurrent().getValue();
+    inputs.follower1Temp = follower1.getDeviceTemp().getValue();
 
     // Follower 2 motor
     inputs.follower2Velocity = follower2.getVelocity().getValue();
@@ -160,7 +163,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     leader.setControl(voltageRequest.withOutput(volts));
   }
 
-  public void setFlywheelRPM(AngularVelocity velocity) {
+  public void setFlywheelTorque(AngularVelocity velocity) {
     leader.setControl(velocityTorqueCurrentRequest.withVelocity(velocity));
     Logger.recordOutput("Flywheel running", velocity);
   }

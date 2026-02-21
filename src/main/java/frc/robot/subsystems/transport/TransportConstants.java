@@ -26,4 +26,8 @@ public class TransportConstants {
     public static final double KI = 0.0;
     public static final double KD = 0.0;
   }
+
+  public static class transportMagicConstants {
+    public static final double transportAccel = 2.0;
+  }
 }

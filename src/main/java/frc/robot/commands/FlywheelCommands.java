@@ -86,10 +86,10 @@ public class FlywheelCommands {
         .withName("FlywheelVelocity_" + targetSpeed.in(RPM) + "RPM");
   }
 
-  public static Command runRPM(Flywheel flywheel, AngularVelocity velocity) {
+  public static Command runTorque(Flywheel flywheel, AngularVelocity velocity) {
     return Commands.startEnd(
-        () -> flywheel.setFlywheelRPM(velocity),
-        () -> flywheel.setFlywheelRPM(RotationsPerSecond.of(0)),
+        () -> flywheel.setFlywheelTorque(velocity),
+        () -> flywheel.setFlywheelTorque(RotationsPerSecond.of(0)),
         flywheel);
   }
 

@@ -26,4 +26,8 @@ public class FeederConstants {
     public static final double KI = 0.0;
     public static final double KD = 0.0;
   }
+
+  public static class feederMagicConstants {
+    public static final double feederAccel = 20.0;
+  }
 }
