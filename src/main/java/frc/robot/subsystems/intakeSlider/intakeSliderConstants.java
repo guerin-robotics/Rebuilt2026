@@ -32,6 +32,6 @@ public class intakeSliderConstants {
   }
 
   public static class sliderMagicConstants {
-    public static final double sliderAccel = 2.0;
+    public static final double sliderAccel = 6.0;
   }
 }

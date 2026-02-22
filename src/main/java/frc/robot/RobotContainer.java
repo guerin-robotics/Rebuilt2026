@@ -7,14 +7,10 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.measure.*;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -71,40 +67,16 @@ public class RobotContainer {
   private final intakeRoller intakeRoller;
   private final Transport transport;
 
-  // Controllers
-  private final CommandXboxController controller = new CommandXboxController(0);
-  private final Joystick thrustmaster = new Joystick(1);
-  private final CommandJoystick buttonPanel = new CommandJoystick(2);
-
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
-  private static final double DEADBAND = 0.08;
-
-  // Shooter voltage for button control (tunable)
-  private static final double FlywheelTestVoltage = 6.0; // Volts
-
-  // Test voltages
-  private static final double FeederTestVoltage = 3.0;
-  private static final double PrestageTestVoltage = 5.0;
-  private static final double TransportTestVoltage = -3.0;
-  private static final double intakeSliderTestVoltage = 8.0;
-  private static final double intakeSliderTestVoltageIn = -8.0;
-  private static final double intakeRollerTestVoltage = -8.0;
-  // Slider pulse test rotations
-  private static final double pulseRotationChange = 1.0;
-
-  // CENTER GROVE TEST VELOCITIES
-  private static final AngularVelocity FlywheelTestVelocity =
-      RotationsPerSecond.of(20.0); // rotations/s
-  private static final AngularVelocity feederVelocity = RotationsPerSecond.of(10.0);
-  private static final AngularVelocity rollerVelocity = RotationsPerSecond.of(-10.0);
-  private static final AngularVelocity prestageVelocity = RotationsPerSecond.of(10.0);
-  private static final AngularVelocity transportVelocity = RotationsPerSecond.of(-10.0);
-  private static final AngularVelocity sliderVelocity = RotationsPerSecond.of(30.0);
-  private static final AngularVelocity sliderInVelocity = RotationsPerSecond.of(-30.0);
-  // Slider test inch
-  private static final double intakeInchTest = 3.0;
+  // Controllers
+  private final CommandXboxController controller = new CommandXboxController(
+    HardwareConstants.ControllerConstants.XboxControllerPort);
+  private final Joystick thrustmaster = new Joystick(
+    HardwareConstants.ControllerConstants.JoystickControllerPort);
+  private final CommandJoystick buttonPanel = new CommandJoystick(
+    HardwareConstants.ControllerConstants.ButtonPanelPort);
 
   public RobotContainer() {
     switch (Constants.currentMode) {
@@ -193,7 +165,7 @@ public class RobotContainer {
   }
 
   private double deadband(double value) {
-    return MathUtil.applyDeadband(value, DEADBAND);
+    return MathUtil.applyDeadband(value, HardwareConstants.ControllerConstants.DEADBAND);
   }
 
   private double getThrustX() {
@@ -240,149 +212,49 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    // BUTTON PANEL CONTROLS
-    // Shooter
-    // Button 1: Run shooter at test voltage while held, stop when released
-    // buttonPanel
-    //     .button(1)
-    //     .whileTrue(FlywheelCommands.runVoltage(flywheel, Volts.of(FlywheelTestVoltage)));
-    // Real button 1: Flywheel velocity torque current control, run while held
-    // buttonPanel.button(1).whileTrue(FlywheelCommands.runTorque(flywheel, FlywheelTestVelocity));
-    // Button 2: Stop shooter immediately (safety)
-    // buttonPanel.button(2).onTrue(FlywheelCommands.stop(flywheel));
-    // Real button 2: Run feeder at test voltage while held
-    // buttonPanel
-    //     .button(2)
-    //     .whileTrue(FeederCommands.runFeederVoltage(feeder, Volts.of(FeederTestVoltage)));
-    // Feeder
-    // Button 3 (label "L1"): Run feeder
-    // buttonPanel
-    //     .button(3)
-    //     .whileTrue(FeederCommands.runFeederVoltage(feeder, Volts.of(FeederTestVoltage)));
-    // buttonPanel
-    //     .button(3)
-    //     .whileTrue(intakeSliderCommands.setIntakePos(intakeSlider, intakeInchTest));
-    // Button 7 (Label "OUT"): Stop feeder
-    // buttonPanel.button(7).onTrue(FeederCommands.stop(feeder));
-    // Prestage
-    // Button 4: Run prestage
-    // buttonPanel
-    //     .button(4)
-    //     .whileTrue(PrestageCommands.runPrestageVoltage(prestage, Volts.of(PrestageTestVoltage)));
-    // buttonPanel.button(4).whileTrue(intakeSliderCommands.zeroIntake(intakeSlider));
-    // Button 5: Stop prestage
-    // buttonPanel.button(5).onTrue(PrestageCommands.stop(prestage));
-    // Intake slider
-    // buttonPanel.button(5).whileTrue(intakeSliderCommands.);
-    // Button 9: Run intake out
-    // buttonPanel
-    //     .button(6)
-    //     .whileTrue(
-    //         intakeSliderCommands.runIntakeForward(intakeSlider,
-    // Volts.of(intakeSliderTestVoltage)));
-    // buttonPanel
-    //     .button(7)
-    //     .whileTrue(
-    //         intakeSliderCommands.runIntakeForward(
-    //             intakeSlider, Volts.of(intakeSliderTestVoltageIn)));
-    // Button 10: Run intake in
-    //  buttonPanel.button(10).onTrue(
-    // intakeSliderCommands.runIntakeForward(intakeSlider, Volts.of(-IntakeSliderTestVoltage))
-
-    // CONTROLLER CONTROLS
-    // Flywheel
-    // Button 1 ("A"): Run flywheel at test voltage while held
-    // controller
-    //     .button(1)
-    //     .whileTrue(FlywheelCommands.runVoltage(flywheel, Volts.of(FlywheelTestVoltage)));
-    // Prestage
-    // Button 3 ("Y"): Run prestage at test voltage while held
-    // controller
-    //     .button(3)
-    //     .whileTrue(PrestageCommands.runPrestageVoltage(prestage, Volts.of(PrestageTestVoltage)));
-    // Feeder
-    // Button 2 ("X"): Run feeder at test voltage while held
-    // controller
-    //     .button(2)
-    //     .whileTrue(FeederCommands.runFeederVoltage(feeder, Volts.of(FeederTestVoltage)));
-    // Transport
-    // Button 5 (One of the middle ones): Run transport at test voltage while held
-    // controller
-    //     .button(8)
-    //     .whileTrue(
-    //         TransportCommands.runTransportVoltage(transport, Volts.of(TransportTestVoltage)));
-    // Intake roller
-    // Button 7 (One of the middle ones): Run intake roller at test voltage while held
-    // buttonPanel
-    //     .button(5)
-    //     .whileTrue(
-    //         intakeRollerCommands.runIntakeRoller(intakeRoller,
-    // Volts.of(intakeRollerTestVoltage)));
-    // Intake slider
-    // Button 4 ("B"): Run intake at test voltage while held
-    // controller
-    //     .button(4)
-    //     .whileTrue(
-    //         intakeSliderCommands.runIntakeForward(intakeSlider,
-    //  Volts.of(intakeSliderTestVoltage)));
-    // *UNTESTED* Button 4 ("B"): Pulse intake *UNTESTED*
-    // controller
-    //     .button(4)
-    //     .whileTrue(intakeSliderCommands.pulseIntakeSlider(intakeSlider, pulseRotationChange));
-
-    // *UNTESTED* Full shooter sequence *UNTESTED*
-    // Button 5 (one of the middle ones):
-    // Pulse intake and run intake roller, transport, feeder, prestage, and flywheel at their test
-    // voltages
-    buttonPanel
-        .button(8)
-        .whileTrue(
-            intakeSliderCommands
-                .pulseIntakeByCurrent(
-                    intakeSlider, sliderVelocity, HardwareConstants.intakeRotations)
-                .alongWith(
-                    // intakeRollerCommands.runIntakeRoller(intakeRoller,Volts.of(intakeRollerTestVoltage))).alongWith(
-                    TransportCommands.runTransportVoltage(transport, Volts.of(TransportTestVoltage))
-                        .alongWith(
-                            FeederCommands.runFeederVoltage(feeder, Volts.of(FeederTestVoltage)))
-                        .alongWith(
-                            PrestageCommands.runPrestageVoltage(
-                                prestage, Volts.of(PrestageTestVoltage)))
-                        .alongWith(FlywheelCommands.runTorque(flywheel, FlywheelTestVelocity))));
-
-    /* *UNTESTED* Full shooter sequence, separated to 2 buttons
-    so we can let the flywheel spin up before we start feeding *UNTESTED* */
-    buttonPanel
-        .button(9)
-        .whileTrue(
-            PrestageCommands.runPrestageVoltage(prestage, Volts.of(PrestageTestVoltage))
-                .alongWith(FlywheelCommands.runTorque(flywheel, FlywheelTestVelocity)));
-    buttonPanel
-        .button(10)
-        .whileTrue(
-            TransportCommands.runTransportVoltage(transport, Volts.of(TransportTestVoltage))
-                .alongWith(FeederCommands.runFeederVoltage(feeder, Volts.of(FeederTestVoltage))));
+    // ==================== SUBSYSTEM CONTROLS ====================
+    // *UNTESTED* Full shooting sequence *UNTESTED*
+    buttonPanel.button(8).whileTrue(FlywheelCommands.runTorque(
+        flywheel, HardwareConstants.TestVelocities.FlywheelVelocity));
+    buttonPanel.button(9).whileTrue(
+        TransportCommands.runTorque(transport, HardwareConstants.TestVelocities.transportVelocity).alongWith(
+            FeederCommands.runTorque(feeder, HardwareConstants.TestVelocities.feederVelocity).alongWith(
+                PrestageCommands.runTorque(prestage, HardwareConstants.TestVelocities.prestageVelocity).alongWith(
+                    intakeSliderCommands.intakeRetractUntilCurrent(
+                        intakeSlider, HardwareConstants.TestVelocities.sliderVelocity, 
+                        HardwareConstants.PulseConstants.pulseInches, HardwareConstants.PulseConstants.pulseSeconds)
+                )
+            )
+        )
+    );
 
     // CENTER GROVE EVENT CONTROLS
     // Feeder
-    buttonPanel.button(1).whileTrue(FeederCommands.runTorque(feeder, feederVelocity));
+    buttonPanel.button(1).whileTrue(FeederCommands.runTorque(
+        feeder, HardwareConstants.TestVelocities.feederVelocity));
     // Flywheel
-    buttonPanel.button(2).whileTrue(FlywheelCommands.runTorque(flywheel, FlywheelTestVelocity));
+    buttonPanel.button(2).whileTrue(FlywheelCommands.runTorque(
+        flywheel, HardwareConstants.TestVelocities.FlywheelVelocity));
     // Run intake
-    buttonPanel.button(3).whileTrue(intakeRollerCommands.runTorque(intakeRoller, rollerVelocity));
+    buttonPanel.button(3).whileTrue(intakeRollerCommands.runTorque(
+        intakeRoller, HardwareConstants.TestVelocities.rollerVelocity));
     // Prestage
-    buttonPanel.button(4).whileTrue(PrestageCommands.runTorque(prestage, prestageVelocity));
+    buttonPanel.button(4).whileTrue(PrestageCommands.runTorque(
+        prestage, HardwareConstants.TestVelocities.prestageVelocity));
     // Transport
-    buttonPanel.button(5).whileTrue(TransportCommands.runTorque(transport, transportVelocity));
+    buttonPanel.button(5).whileTrue(TransportCommands.runTorque(
+        transport, HardwareConstants.TestVelocities.transportVelocity));
     // Intake out
-    buttonPanel.button(6).whileTrue(intakeSliderCommands.runTorque(intakeSlider, sliderVelocity));
+    buttonPanel.button(6).whileTrue(intakeSliderCommands.runTorque(
+        intakeSlider, HardwareConstants.TestVelocities.sliderVelocity));
     // buttonPanel
     //     .button(6)
     //     .whileTrue(
     //         intakeSliderCommands.setIntakePos(
     //             intakeSlider, intakeSliderConstants.Mechanical.rotationsWhenOut));
     // Intake in
-    buttonPanel.button(7).whileTrue(intakeSliderCommands.runTorque(intakeSlider, sliderInVelocity));
+    buttonPanel.button(7).whileTrue(intakeSliderCommands.runTorque(
+        intakeSlider, HardwareConstants.TestVelocities.sliderInVelocity));
   }
 
   public Command getAutonomousCommand() {

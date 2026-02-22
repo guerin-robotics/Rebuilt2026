@@ -84,7 +84,7 @@ public class FlywheelConstants {
     public static final InterpolatingDoubleTreeMap SPEED_MAP = new InterpolatingDoubleTreeMap();
 
     static {
-      // TODO: Characterize these values on the real robot
+      // Characterize these values on the real robot
       SPEED_MAP.put(1.0, 1000.0); // 1 meter -> 1000 RPM
       SPEED_MAP.put(3.0, 1500.0); // 3 meters -> 1500 RPM
     }

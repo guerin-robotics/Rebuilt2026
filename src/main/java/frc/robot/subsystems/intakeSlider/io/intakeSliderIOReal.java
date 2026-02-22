@@ -13,7 +13,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.Timer;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.intakeSlider.intakeSliderConstants;
 import frc.robot.subsystems.intakeSlider.intakeSliderConstants.sliderMagicConstants;
@@ -100,19 +99,7 @@ public class intakeSliderIOReal implements intakeSliderIO {
     Logger.recordOutput("Intake slider torque controls", velocity);
   }
 
-  public void setIntakePositionTorque(double setpoint) {
-    intakeSliderMotor.setControl(positionRequest.withPosition(setpoint));
-  }
-
   public void zeroMotor() {
     intakeSliderMotor.setPosition(0);
-  }
-
-  public void intakeWait(double seconds) {
-    Timer intakeTimer = new Timer();
-    intakeTimer.start();
-    if (intakeTimer.get() > 0.5) {
-      intakeTimer.stop();
-    }
   }
 }

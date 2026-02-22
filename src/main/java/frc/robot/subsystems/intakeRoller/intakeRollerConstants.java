@@ -18,7 +18,7 @@ public class intakeRollerConstants {
   }
 
   public static class rollerMagicConstants {
-    public static final double rollerAccel = 2;
+    public static final double rollerAccel = 6.0;
   }
 
   // NOT Tuned yet - placeholder values

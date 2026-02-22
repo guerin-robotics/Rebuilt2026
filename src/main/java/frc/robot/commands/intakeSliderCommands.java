@@ -21,34 +21,12 @@ public class intakeSliderCommands {
     return Commands.runOnce(() -> intakeSlider.setIntakeSliderVoltage(Volts.of(0)), intakeSlider);
   }
 
-  public static Command setIntakePos(intakeSlider intakeSlider, double inches) {
+  public static Command intakeRetractUntilCurrent(
+      intakeSlider intakeSlider, AngularVelocity retractVelo, double extensionInches, double seconds) {
     return Commands.startEnd(
-        () -> intakeSlider.setIntakeInch(inches),
+        () -> intakeSlider.intakeRetractUntilCurrent(retractVelo, extensionInches, seconds),
         () -> intakeSlider.setIntakeSliderVoltage(Volts.of(0)),
         intakeSlider);
-  }
-
-  public static Command intakeRetract(
-      intakeSlider intakeSlider, AngularVelocity retractVelo, double extension) {
-    return Commands.startEnd(
-        () -> intakeSlider.intakeRetract(retractVelo, extension),
-        () -> intakeSlider.setIntakeSliderVoltage(Volts.of(0)),
-        intakeSlider);
-  }
-
-  public static Command intakeWait(intakeSlider intakeSlider, double seconds) {
-    return Commands.runOnce(() -> intakeSlider.intakeWait(seconds), intakeSlider);
-  }
-
-  public static Command pulseIntakeSlider(intakeSlider intakeSlider, double rotationChange) {
-    return Commands.repeatingSequence(
-        setIntakePos(intakeSlider, rotationChange), intakeWait(intakeSlider, 0.5));
-  }
-
-  public static Command pulseIntakeByCurrent(
-      intakeSlider intakeSlider, AngularVelocity retractVelo, double extension) {
-    return Commands.repeatingSequence(
-        intakeRetract(intakeSlider, retractVelo, extension), intakeWait(intakeSlider, 0.5));
   }
 
   public static Command zeroIntake(intakeSlider intakeSlider) {

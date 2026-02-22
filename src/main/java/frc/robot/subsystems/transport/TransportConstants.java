@@ -28,6 +28,6 @@ public class TransportConstants {
   }
 
   public static class transportMagicConstants {
-    public static final double transportAccel = 2.0;
+    public static final double transportAccel = 6.0;
   }
 }

@@ -28,13 +28,9 @@ public interface intakeSliderIO {
 
   public default void setIntakeSliderVelocityTorque(AngularVelocity velocity) {}
 
-  public default void setIntakePositionTorque(double setpoint) {}
-
-  public default void intakeRetract(double retractVolts, double extension) {}
-
   public default void zeroMotor() {}
 
-  public default void intakeHome() {}
+  public default void intakeRetractUntilCurrent(double retractVolts, double extension) {}
 
-  public default void intakeWait(double seconds) {}
+  public default void intakeHome() {}
 }

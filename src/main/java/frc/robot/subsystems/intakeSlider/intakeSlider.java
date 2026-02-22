@@ -3,6 +3,7 @@ package frc.robot.subsystems.intakeSlider;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.intakeSlider.io.IntakeSliderIOInputsAutoLogged;
 import frc.robot.subsystems.intakeSlider.io.intakeSliderIO;
 import org.littletonrobotics.junction.Logger;
@@ -35,13 +36,18 @@ public class intakeSlider extends SubsystemBase {
     io.setIntakeSliderVelocityTorque(sliderVelo);
   }
 
+  public void zeroMotor() {
+    io.zeroMotor();
+  }
+
   // Retract for pulse sequence
-  public void intakeRetract(AngularVelocity retractVelo, double extension) {
-    double currentPos = inputs.intakeSliderPosition;
+  public void intakeRetractUntilCurrent(AngularVelocity retractVelo, double extensionInches, double seconds) {
+    double currentPos = inputs.intakeSliderPosition * intakeSliderConstants.Mechanical.rotationsPerInch;
     if (inputs.intakeSliderStatorCurrent < 2.0) {
       io.setIntakeSliderVelocityTorque(retractVelo);
     } else {
-      io.setIntakePositionTorque(currentPos + extension);
+      io.setIntakeInch(currentPos + extensionInches);
+      new WaitCommand(seconds);
     }
   }
 
@@ -51,13 +57,5 @@ public class intakeSlider extends SubsystemBase {
     } else {
       io.zeroMotor();
     }
-  }
-
-  public void zeroMotor() {
-    io.zeroMotor();
-  }
-
-  public void intakeWait(double seconds) {
-    io.intakeWait(seconds);
   }
 }

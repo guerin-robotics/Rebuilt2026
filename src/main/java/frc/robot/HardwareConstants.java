@@ -1,5 +1,8 @@
 package frc.robot;
 
+import edu.wpi.first.units.measure.AngularVelocity;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 public class HardwareConstants {
   public static final int NUMBER_OF_CAMERAS = 2;
 
@@ -29,5 +32,40 @@ public class HardwareConstants {
 
     // Climber
     // public static int CLIMBER_MOTOR_ID = 42;
+  }
+
+  public static class TestVoltages {
+    public static final double FlywheelTestVoltage = 6.0; // Volts
+    public static final double FeederTestVoltage = 3.0;
+    public static final double PrestageTestVoltage = 5.0;
+    public static final double TransportTestVoltage = -3.0;
+    public static final double intakeSliderTestVoltage = 8.0;
+    public static final double intakeSliderTestVoltageIn = -8.0;
+    public static final double intakeRollerTestVoltage = -8.0;
+  }
+
+  public static class TestVelocities {
+    public static final AngularVelocity FlywheelVelocity = RotationsPerSecond.of(20.0); // rotations/s
+    public static final AngularVelocity feederVelocity = RotationsPerSecond.of(10.0);
+    public static final AngularVelocity rollerVelocity = RotationsPerSecond.of(-10.0);
+    public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(10.0);
+    public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-10.0);
+    public static final AngularVelocity sliderVelocity = RotationsPerSecond.of(30.0);
+    public static final AngularVelocity sliderInVelocity = RotationsPerSecond.of(-30.0);
+  }
+
+  public static class PulseConstants {
+    // Slider pulse seconds
+    public static final double pulseInches = 1.0;
+    public static final double pulseSeconds = 0.5;
+    // Slider extension test inches
+    public static final double intakeInchTest = 3.0;
+  }
+
+  public static class ControllerConstants {
+    public static final int XboxControllerPort = 0;
+    public static final int JoystickControllerPort = 1;
+    public static final int ButtonPanelPort = 2;
+    public static final double DEADBAND = 0.08;
   }
 }
