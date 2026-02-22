@@ -1,6 +1,7 @@
 package frc.robot.subsystems.intakeRoller.io;
 
 import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -80,11 +81,13 @@ public class intakeRollerIOReal implements intakeRollerIO {
   @Override
   public void updateInputs(intakeRollerIOInputs inputs) {
     // Read sensor values and populate inputs object
-    inputs.intakeRollerVelocity = intakeRollerLeader.getVelocity().getValue();
+    inputs.intakeRollerVelocity = RotationsPerSecond.of(intakeRollerLeader.getVelocity().getValueAsDouble());
     inputs.intakeRollerStatorCurrent = intakeRollerLeader.getStatorCurrent().getValue();
     inputs.intakeRollerSupplyCurrent = intakeRollerLeader.getSupplyCurrent().getValue();
     inputs.intakeRollerVoltage = intakeRollerLeader.getMotorVoltage().getValue();
     inputs.intakeRollerTemperature = intakeRollerLeader.getDeviceTemp().getValue();
+    inputs.rollerClosedLoopReference = RotationsPerSecond.of(intakeRollerLeader.getClosedLoopReference().getValueAsDouble());
+    inputs.rollerClosedLoopError = RotationsPerSecond.of(intakeRollerLeader.getClosedLoopError().getValueAsDouble());
   }
 
   public void setIntakeRollerVoltage(Voltage volts) {

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.feeder.io;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.CANBus;
@@ -70,11 +71,13 @@ public class FeederIOReal implements FeederIO {
   @Override
   public void updateInputs(FeederIOInputs inputs) {
     // Read sensor values and populate inputs object
-    inputs.feederMotorVelocity = feederMotor.getVelocity().getValue();
+    inputs.feederMotorVelocity = RotationsPerSecond.of(feederMotor.getVelocity().getValueAsDouble());
     inputs.feederStatorAmps = feederMotor.getStatorCurrent().getValue();
     inputs.feederSupplyAmps = feederMotor.getSupplyCurrent().getValue();
     inputs.feederVoltage = feederMotor.getMotorVoltage().getValue();
     inputs.feederMotorTemperature = feederMotor.getDeviceTemp().getValue();
+    inputs.feederClosedLoopReference = RotationsPerSecond.of(feederMotor.getClosedLoopReference().getValueAsDouble());
+    inputs.feederClosedLoopError = RotationsPerSecond.of(feederMotor.getClosedLoopError().getValueAsDouble());
   }
 
   public void setFeederVoltage(Voltage volts) {

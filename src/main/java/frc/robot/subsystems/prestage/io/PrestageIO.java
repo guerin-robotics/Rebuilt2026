@@ -15,6 +15,8 @@ public interface PrestageIO {
     public Current prestageSupplyAmps;
     public AngularVelocity prestageMotorVelocity;
     public Temperature prestageMotorTemperature;
+    public AngularVelocity prestageClosedLoopReference;
+    public AngularVelocity prestageClosedLoopError;
   }
 
   public default void updateInputs(PrestageIOInputs inputs) {}

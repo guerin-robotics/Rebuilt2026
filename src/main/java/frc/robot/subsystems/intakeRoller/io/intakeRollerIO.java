@@ -15,6 +15,8 @@ public interface intakeRollerIO {
     public Current intakeRollerStatorCurrent;
     public Temperature intakeRollerTemperature;
     public AngularVelocity intakeRollerVelocity;
+    public AngularVelocity rollerClosedLoopReference;
+    public AngularVelocity rollerClosedLoopError;
   }
 
   public default void updateInputs(intakeRollerIOInputs inputs) {}

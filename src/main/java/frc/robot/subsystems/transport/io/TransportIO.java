@@ -15,6 +15,8 @@ public interface TransportIO {
     public Current TransportSupplyAmps;
     public AngularVelocity TransportMotorVelocity;
     public Temperature TransportMotorTemperature;
+    public AngularVelocity transportClosedLoopReference;
+    public AngularVelocity transportClosedLoopError;
   }
 
   public default void updateInputs(TransportIOInputs inputs) {}

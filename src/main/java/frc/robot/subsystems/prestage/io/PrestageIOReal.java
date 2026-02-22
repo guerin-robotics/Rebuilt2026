@@ -1,6 +1,7 @@
 package frc.robot.subsystems.prestage.io;
 
 import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -83,6 +84,8 @@ public class PrestageIOReal implements PrestageIO {
     inputs.prestageSupplyAmps = prestageLeader.getSupplyCurrent().getValue();
     inputs.prestageVoltage = prestageLeader.getMotorVoltage().getValue();
     inputs.prestageMotorTemperature = prestageLeader.getDeviceTemp().getValue();
+    inputs.prestageClosedLoopReference = RotationsPerSecond.of(prestageLeader.getClosedLoopReference().getValueAsDouble());
+    inputs.prestageClosedLoopError= RotationsPerSecond.of(prestageLeader.getClosedLoopError().getValueAsDouble());
   }
 
   public void setPrestageVoltage(Voltage volts) {

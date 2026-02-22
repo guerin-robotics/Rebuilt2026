@@ -15,6 +15,8 @@ public interface FeederIO {
     public Current feederSupplyAmps;
     public AngularVelocity feederMotorVelocity;
     public Temperature feederMotorTemperature;
+    public AngularVelocity feederClosedLoopReference;
+    public AngularVelocity feederClosedLoopError;
   }
 
   public default void updateInputs(FeederIOInputs inputs) {}

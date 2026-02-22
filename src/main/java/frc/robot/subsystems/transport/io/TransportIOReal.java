@@ -1,6 +1,7 @@
 package frc.robot.subsystems.transport.io;
 
 import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -76,6 +77,8 @@ public class TransportIOReal implements TransportIO {
     inputs.TransportSupplyAmps = transportMotor.getSupplyCurrent().getValue();
     inputs.TransportVoltage = transportMotor.getMotorVoltage().getValue();
     inputs.TransportMotorTemperature = transportMotor.getDeviceTemp().getValue();
+    inputs.transportClosedLoopReference = RotationsPerSecond.of(transportMotor.getClosedLoopReference().getValueAsDouble());
+    inputs.transportClosedLoopError = RotationsPerSecond.of(transportMotor.getClosedLoopError().getValueAsDouble());
   }
 
   public void setTransportVoltage(Voltage volts) {
