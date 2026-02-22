@@ -32,6 +32,10 @@ public class intakeSlider extends SubsystemBase {
     io.setIntakeInch(inches);
   }
 
+  public void setIntakeRotations(double rotations) {
+    io.setIntakeRotations(rotations);
+  }
+
   public void setIntakeSliderVelocityTorque(AngularVelocity sliderVelo) {
     io.setIntakeSliderVelocityTorque(sliderVelo);
   }
@@ -41,8 +45,10 @@ public class intakeSlider extends SubsystemBase {
   }
 
   // Retract for pulse sequence
-  public void intakeRetractUntilCurrent(AngularVelocity retractVelo, double extensionInches, double seconds) {
-    double currentPos = inputs.intakeSliderPosition * intakeSliderConstants.Mechanical.rotationsPerInch;
+  public void intakeRetractUntilCurrent(
+      AngularVelocity retractVelo, double extensionInches, double seconds) {
+    double currentPos =
+        inputs.intakeSliderPosition * intakeSliderConstants.Mechanical.rotationsPerInch;
     if (inputs.intakeSliderStatorCurrent < 2.0) {
       io.setIntakeSliderVelocityTorque(retractVelo);
     } else {

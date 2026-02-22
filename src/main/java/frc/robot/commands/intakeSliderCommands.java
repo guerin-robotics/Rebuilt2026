@@ -21,8 +21,18 @@ public class intakeSliderCommands {
     return Commands.runOnce(() -> intakeSlider.setIntakeSliderVoltage(Volts.of(0)), intakeSlider);
   }
 
+  public static Command setIntakePos(intakeSlider intakeSlider, double rotations) {
+    return Commands.startEnd(
+        () -> intakeSlider.setIntakeRotations(rotations),
+        () -> intakeSlider.setIntakeSliderVoltage(Volts.of(0)),
+        intakeSlider);
+  }
+
   public static Command intakeRetractUntilCurrent(
-      intakeSlider intakeSlider, AngularVelocity retractVelo, double extensionInches, double seconds) {
+      intakeSlider intakeSlider,
+      AngularVelocity retractVelo,
+      double extensionInches,
+      double seconds) {
     return Commands.startEnd(
         () -> intakeSlider.intakeRetractUntilCurrent(retractVelo, extensionInches, seconds),
         () -> intakeSlider.setIntakeSliderVoltage(Volts.of(0)),

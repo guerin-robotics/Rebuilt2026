@@ -26,6 +26,8 @@ public interface intakeSliderIO {
 
   public default void setIntakeInch(double inches) {}
 
+  public default void setIntakeRotations(double rotations) {}
+
   public default void setIntakeSliderVelocityTorque(AngularVelocity velocity) {}
 
   public default void zeroMotor() {}

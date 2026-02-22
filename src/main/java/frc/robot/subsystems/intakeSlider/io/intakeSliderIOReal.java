@@ -94,6 +94,10 @@ public class intakeSliderIOReal implements intakeSliderIO {
         positionRequest.withPosition(inches * intakeSliderConstants.Mechanical.rotationsPerInch));
   }
 
+  public void setIntakeRotations(double rotations) {
+    intakeSliderMotor.setControl(positionRequest.withPosition(rotations));
+  }
+
   public void setIntakeSliderVelocityTorque(AngularVelocity velocity) {
     intakeSliderMotor.setControl(torqueRequest.withVelocity(velocity));
     Logger.recordOutput("Intake slider torque controls", velocity);

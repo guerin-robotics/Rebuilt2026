@@ -1,12 +1,13 @@
 package frc.robot;
 
-import edu.wpi.first.units.measure.AngularVelocity;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
 
 public class HardwareConstants {
   public static final int NUMBER_OF_CAMERAS = 2;
-
-  public static final double intakeRotations = 2.0;
 
   public static class CanIds {
     // Flywheel
@@ -35,23 +36,24 @@ public class HardwareConstants {
   }
 
   public static class TestVoltages {
-    public static final double FlywheelTestVoltage = 6.0; // Volts
-    public static final double FeederTestVoltage = 3.0;
-    public static final double PrestageTestVoltage = 5.0;
-    public static final double TransportTestVoltage = -3.0;
-    public static final double intakeSliderTestVoltage = 8.0;
-    public static final double intakeSliderTestVoltageIn = -8.0;
-    public static final double intakeRollerTestVoltage = -8.0;
+    public static final Voltage FlywheelTestVoltage = Volts.of(6.0); // Volts
+    public static final Voltage FeederTestVoltage = Volts.of(3.0);
+    public static final Voltage PrestageTestVoltage = Volts.of(5.0);
+    public static final Voltage TransportTestVoltage = Volts.of(-3.0);
+    public static final Voltage intakeSliderTestVoltage = Volts.of(8.0);
+    public static final Voltage intakeSliderTestVoltageIn = Volts.of(-8.0);
+    public static final Voltage intakeRollerTestVoltage = Volts.of(-8.0);
   }
 
   public static class TestVelocities {
-    public static final AngularVelocity FlywheelVelocity = RotationsPerSecond.of(20.0); // rotations/s
+    public static final AngularVelocity FlywheelVelocity =
+        RotationsPerSecond.of(20.0); // rotations/s
     public static final AngularVelocity feederVelocity = RotationsPerSecond.of(10.0);
     public static final AngularVelocity rollerVelocity = RotationsPerSecond.of(-10.0);
-    public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(10.0);
+    public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(40.0);
     public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-10.0);
-    public static final AngularVelocity sliderVelocity = RotationsPerSecond.of(30.0);
-    public static final AngularVelocity sliderInVelocity = RotationsPerSecond.of(-30.0);
+    public static final AngularVelocity sliderVelocity = RotationsPerSecond.of(20.0);
+    public static final AngularVelocity sliderInVelocity = RotationsPerSecond.of(-20.0);
   }
 
   public static class PulseConstants {

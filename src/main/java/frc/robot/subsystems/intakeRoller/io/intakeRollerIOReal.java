@@ -1,7 +1,7 @@
 package frc.robot.subsystems.intakeRoller.io;
 
-import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -60,8 +60,8 @@ public class intakeRollerIOReal implements intakeRollerIO {
     config.Slot0.kS = intakeRollerConstants.PID.KS;
     config.Slot0.kV = intakeRollerConstants.PID.KV;
     config.Slot0.kP = intakeRollerConstants.PID.KP;
-    config.Slot0.kI = intakeRollerConstants.PID.KI;
-    config.Slot0.kD = intakeRollerConstants.PID.KD;
+    // config.Slot0.kI = intakeRollerConstants.PID.KI;
+    // config.Slot0.kD = intakeRollerConstants.PID.KD;
 
     // Current limits
     var limits = new CurrentLimitsConfigs();
@@ -81,13 +81,16 @@ public class intakeRollerIOReal implements intakeRollerIO {
   @Override
   public void updateInputs(intakeRollerIOInputs inputs) {
     // Read sensor values and populate inputs object
-    inputs.intakeRollerVelocity = RotationsPerSecond.of(intakeRollerLeader.getVelocity().getValueAsDouble());
+    inputs.intakeRollerVelocity =
+        RotationsPerSecond.of(intakeRollerLeader.getVelocity().getValueAsDouble());
     inputs.intakeRollerStatorCurrent = intakeRollerLeader.getStatorCurrent().getValue();
     inputs.intakeRollerSupplyCurrent = intakeRollerLeader.getSupplyCurrent().getValue();
     inputs.intakeRollerVoltage = intakeRollerLeader.getMotorVoltage().getValue();
     inputs.intakeRollerTemperature = intakeRollerLeader.getDeviceTemp().getValue();
-    inputs.rollerClosedLoopReference = RotationsPerSecond.of(intakeRollerLeader.getClosedLoopReference().getValueAsDouble());
-    inputs.rollerClosedLoopError = RotationsPerSecond.of(intakeRollerLeader.getClosedLoopError().getValueAsDouble());
+    inputs.rollerClosedLoopReference =
+        RotationsPerSecond.of(intakeRollerLeader.getClosedLoopReference().getValueAsDouble());
+    inputs.rollerClosedLoopError =
+        RotationsPerSecond.of(intakeRollerLeader.getClosedLoopError().getValueAsDouble());
   }
 
   public void setIntakeRollerVoltage(Voltage volts) {

@@ -1,7 +1,7 @@
 package frc.robot.subsystems.transport.io;
 
-import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -47,8 +47,8 @@ public class TransportIOReal implements TransportIO {
     config.Slot0.kS = TransportConstants.PID.KS;
     config.Slot0.kV = TransportConstants.PID.KV;
     config.Slot0.kP = TransportConstants.PID.KP;
-    config.Slot0.kI = TransportConstants.PID.KI;
-    config.Slot0.kD = TransportConstants.PID.KD;
+    // config.Slot0.kI = TransportConstants.PID.KI;
+    // config.Slot0.kD = TransportConstants.PID.KD;
 
     var transportMagic = config.MotionMagic;
     transportMagic.MotionMagicAcceleration =
@@ -77,8 +77,10 @@ public class TransportIOReal implements TransportIO {
     inputs.TransportSupplyAmps = transportMotor.getSupplyCurrent().getValue();
     inputs.TransportVoltage = transportMotor.getMotorVoltage().getValue();
     inputs.TransportMotorTemperature = transportMotor.getDeviceTemp().getValue();
-    inputs.transportClosedLoopReference = RotationsPerSecond.of(transportMotor.getClosedLoopReference().getValueAsDouble());
-    inputs.transportClosedLoopError = RotationsPerSecond.of(transportMotor.getClosedLoopError().getValueAsDouble());
+    inputs.transportClosedLoopReference =
+        RotationsPerSecond.of(transportMotor.getClosedLoopReference().getValueAsDouble());
+    inputs.transportClosedLoopError =
+        RotationsPerSecond.of(transportMotor.getClosedLoopError().getValueAsDouble());
   }
 
   public void setTransportVoltage(Voltage volts) {

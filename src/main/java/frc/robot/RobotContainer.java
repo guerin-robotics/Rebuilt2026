@@ -41,6 +41,7 @@ import frc.robot.subsystems.intakeRoller.intakeRoller;
 import frc.robot.subsystems.intakeRoller.io.intakeRollerIO;
 import frc.robot.subsystems.intakeRoller.io.intakeRollerIOReal;
 import frc.robot.subsystems.intakeSlider.intakeSlider;
+import frc.robot.subsystems.intakeSlider.intakeSliderConstants;
 import frc.robot.subsystems.intakeSlider.io.intakeSliderIO;
 import frc.robot.subsystems.intakeSlider.io.intakeSliderIOReal;
 import frc.robot.subsystems.prestage.Prestage;
@@ -71,12 +72,12 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
 
   // Controllers
-  private final CommandXboxController controller = new CommandXboxController(
-    HardwareConstants.ControllerConstants.XboxControllerPort);
-  private final Joystick thrustmaster = new Joystick(
-    HardwareConstants.ControllerConstants.JoystickControllerPort);
-  private final CommandJoystick buttonPanel = new CommandJoystick(
-    HardwareConstants.ControllerConstants.ButtonPanelPort);
+  private final CommandXboxController controller =
+      new CommandXboxController(HardwareConstants.ControllerConstants.XboxControllerPort);
+  private final Joystick thrustmaster =
+      new Joystick(HardwareConstants.ControllerConstants.JoystickControllerPort);
+  private final CommandJoystick buttonPanel =
+      new CommandJoystick(HardwareConstants.ControllerConstants.ButtonPanelPort);
 
   public RobotContainer() {
     switch (Constants.currentMode) {
@@ -183,12 +184,13 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // ==================== DRIVE CONTROLS (DO NOT MODIFY) ====================
     // Default command: Xbox + Thrustmaster combined
+    // 2/22 Inverted
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
             () -> MathUtil.clamp(controller.getLeftY() + getThrustY(), -1.0, 1.0),
             () -> MathUtil.clamp(controller.getLeftX() + getThrustX(), -1.0, 1.0),
-            () -> MathUtil.clamp(controller.getRightX() + getThrustRot(), -1.0, 1.0)));
+            () -> MathUtil.clamp(-controller.getRightX() - getThrustRot(), -1.0, 1.0)));
     // Lock to 0° when A button is held (Xbox still controls angle)
     controller
         .a()
@@ -214,47 +216,84 @@ public class RobotContainer {
 
     // ==================== SUBSYSTEM CONTROLS ====================
     // *UNTESTED* Full shooting sequence *UNTESTED*
-    buttonPanel.button(8).whileTrue(FlywheelCommands.runTorque(
-        flywheel, HardwareConstants.TestVelocities.FlywheelVelocity));
-    buttonPanel.button(9).whileTrue(
-        TransportCommands.runTorque(transport, HardwareConstants.TestVelocities.transportVelocity).alongWith(
-            FeederCommands.runTorque(feeder, HardwareConstants.TestVelocities.feederVelocity).alongWith(
-                PrestageCommands.runTorque(prestage, HardwareConstants.TestVelocities.prestageVelocity).alongWith(
-                    intakeSliderCommands.intakeRetractUntilCurrent(
-                        intakeSlider, HardwareConstants.TestVelocities.sliderVelocity, 
-                        HardwareConstants.PulseConstants.pulseInches, HardwareConstants.PulseConstants.pulseSeconds)
-                )
-            )
-        )
-    );
+    buttonPanel
+        .button(8)
+        .whileTrue(
+            FlywheelCommands.runTorque(
+                flywheel, HardwareConstants.TestVelocities.FlywheelVelocity));
+    buttonPanel
+        .button(9)
+        .whileTrue(
+            TransportCommands.runTorque(
+                    transport, HardwareConstants.TestVelocities.transportVelocity)
+                .alongWith(
+                    FeederCommands.runTorque(
+                            feeder, HardwareConstants.TestVelocities.feederVelocity)
+                        .alongWith(
+                            PrestageCommands.runTorque(
+                                prestage, HardwareConstants.TestVelocities.prestageVelocity)
+                            // .alongWith(
+                            //     intakeSliderCommands.intakeRetractUntilCurrent(
+                            //         intakeSlider,
+                            //         HardwareConstants.TestVelocities.sliderVelocity,
+                            //         HardwareConstants.PulseConstants.pulseInches,
+                            //         HardwareConstants.PulseConstants.pulseSeconds)))
+                            )));
 
     // CENTER GROVE EVENT CONTROLS
     // Feeder
-    buttonPanel.button(1).whileTrue(FeederCommands.runTorque(
-        feeder, HardwareConstants.TestVelocities.feederVelocity));
+    buttonPanel
+        .button(1)
+        .whileTrue(
+            FeederCommands.runTorque(feeder, HardwareConstants.TestVelocities.feederVelocity));
     // Flywheel
-    buttonPanel.button(2).whileTrue(FlywheelCommands.runTorque(
-        flywheel, HardwareConstants.TestVelocities.FlywheelVelocity));
+    buttonPanel
+        .button(2)
+        .whileTrue(
+            FlywheelCommands.runTorque(
+                flywheel, HardwareConstants.TestVelocities.FlywheelVelocity));
     // Run intake
-    buttonPanel.button(3).whileTrue(intakeRollerCommands.runTorque(
-        intakeRoller, HardwareConstants.TestVelocities.rollerVelocity));
+    buttonPanel
+        .button(3)
+        .whileTrue(
+            intakeRollerCommands.runTorque(
+                intakeRoller, HardwareConstants.TestVelocities.rollerVelocity));
     // Prestage
-    buttonPanel.button(4).whileTrue(PrestageCommands.runTorque(
-        prestage, HardwareConstants.TestVelocities.prestageVelocity));
+    buttonPanel
+        .button(4)
+        .whileTrue(
+            PrestageCommands.runTorque(
+                prestage, HardwareConstants.TestVelocities.prestageVelocity));
     // Transport
-    buttonPanel.button(5).whileTrue(TransportCommands.runTorque(
-        transport, HardwareConstants.TestVelocities.transportVelocity));
+    buttonPanel
+        .button(5)
+        .whileTrue(
+            TransportCommands.runTransportVoltage(
+                transport, HardwareConstants.TestVoltages.TransportTestVoltage));
     // Intake out
-    buttonPanel.button(6).whileTrue(intakeSliderCommands.runTorque(
-        intakeSlider, HardwareConstants.TestVelocities.sliderVelocity));
     // buttonPanel
     //     .button(6)
     //     .whileTrue(
-    //         intakeSliderCommands.setIntakePos(
-    //             intakeSlider, intakeSliderConstants.Mechanical.rotationsWhenOut));
+    //         intakeSliderCommands.runTorque(
+    //             intakeSlider, HardwareConstants.TestVelocities.sliderVelocity));
+    buttonPanel
+        .button(6)
+        .whileTrue(
+            intakeSliderCommands.setIntakePos(
+                intakeSlider, intakeSliderConstants.Mechanical.rotationsWhenOut));
     // Intake in
-    buttonPanel.button(7).whileTrue(intakeSliderCommands.runTorque(
-        intakeSlider, HardwareConstants.TestVelocities.sliderInVelocity));
+    // buttonPanel
+    //     .button(7)
+    //     .whileTrue(
+    //         intakeSliderCommands.runTorque(
+    //             intakeSlider, HardwareConstants.TestVelocities.sliderInVelocity));
+    buttonPanel
+        .button(7)
+        .whileTrue(
+            intakeSliderCommands.setIntakePos(
+                intakeSlider, -intakeSliderConstants.Mechanical.rotationsWhenOut));
+    // Zero intake
+    controller.button(4).whileTrue(intakeSliderCommands.zeroIntake(intakeSlider));
   }
 
   public Command getAutonomousCommand() {

@@ -1,7 +1,7 @@
 package frc.robot.subsystems.prestage.io;
 
-import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -55,8 +55,8 @@ public class PrestageIOReal implements PrestageIO {
     config.Slot0.kS = PrestageConstants.PID.KS;
     config.Slot0.kV = PrestageConstants.PID.KV;
     config.Slot0.kP = PrestageConstants.PID.KP;
-    config.Slot0.kI = PrestageConstants.PID.KI;
-    config.Slot0.kD = PrestageConstants.PID.KD;
+    // config.Slot0.kI = PrestageConstants.PID.KI;
+    // config.Slot0.kD = PrestageConstants.PID.KD;
 
     var prestageMagic = config.MotionMagic;
     prestageMagic.MotionMagicAcceleration = PrestageConstants.prestageMagicConstants.prestageAccel;
@@ -79,13 +79,16 @@ public class PrestageIOReal implements PrestageIO {
   @Override
   public void updateInputs(PrestageIOInputs inputs) {
     // Read sensor values and populate inputs object
-    inputs.prestageMotorVelocity = prestageLeader.getVelocity().getValue();
+    inputs.prestageMotorVelocity =
+        RotationsPerSecond.of(prestageLeader.getVelocity().getValueAsDouble());
     inputs.prestageStatorAmps = prestageLeader.getStatorCurrent().getValue();
     inputs.prestageSupplyAmps = prestageLeader.getSupplyCurrent().getValue();
     inputs.prestageVoltage = prestageLeader.getMotorVoltage().getValue();
     inputs.prestageMotorTemperature = prestageLeader.getDeviceTemp().getValue();
-    inputs.prestageClosedLoopReference = RotationsPerSecond.of(prestageLeader.getClosedLoopReference().getValueAsDouble());
-    inputs.prestageClosedLoopError= RotationsPerSecond.of(prestageLeader.getClosedLoopError().getValueAsDouble());
+    inputs.prestageClosedLoopReference =
+        RotationsPerSecond.of(prestageLeader.getClosedLoopReference().getValueAsDouble());
+    inputs.prestageClosedLoopError =
+        RotationsPerSecond.of(prestageLeader.getClosedLoopError().getValueAsDouble());
   }
 
   public void setPrestageVoltage(Voltage volts) {

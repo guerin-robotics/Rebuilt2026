@@ -51,8 +51,8 @@ public class FeederIOReal implements FeederIO {
     config.Slot0.kS = FeederConstants.PID.KS;
     config.Slot0.kV = FeederConstants.PID.KV;
     config.Slot0.kP = FeederConstants.PID.KP;
-    config.Slot0.kI = FeederConstants.PID.KI;
-    config.Slot0.kD = FeederConstants.PID.KD;
+    // config.Slot0.kI = FeederConstants.PID.KI;
+    // config.Slot0.kD = FeederConstants.PID.KD;
 
     // Current limits
     var limits = new CurrentLimitsConfigs();
@@ -71,13 +71,16 @@ public class FeederIOReal implements FeederIO {
   @Override
   public void updateInputs(FeederIOInputs inputs) {
     // Read sensor values and populate inputs object
-    inputs.feederMotorVelocity = RotationsPerSecond.of(feederMotor.getVelocity().getValueAsDouble());
+    inputs.feederMotorVelocity =
+        RotationsPerSecond.of(feederMotor.getVelocity().getValueAsDouble());
     inputs.feederStatorAmps = feederMotor.getStatorCurrent().getValue();
     inputs.feederSupplyAmps = feederMotor.getSupplyCurrent().getValue();
     inputs.feederVoltage = feederMotor.getMotorVoltage().getValue();
     inputs.feederMotorTemperature = feederMotor.getDeviceTemp().getValue();
-    inputs.feederClosedLoopReference = RotationsPerSecond.of(feederMotor.getClosedLoopReference().getValueAsDouble());
-    inputs.feederClosedLoopError = RotationsPerSecond.of(feederMotor.getClosedLoopError().getValueAsDouble());
+    inputs.feederClosedLoopReference =
+        RotationsPerSecond.of(feederMotor.getClosedLoopReference().getValueAsDouble());
+    inputs.feederClosedLoopError =
+        RotationsPerSecond.of(feederMotor.getClosedLoopError().getValueAsDouble());
   }
 
   public void setFeederVoltage(Voltage volts) {
