@@ -82,6 +82,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
         FlywheelConstants.Mechanical.INVERTED
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+    config.Feedback.SensorToMechanismRatio = FlywheelConstants.Mechanical.flywheelRatio;
 
     config.Slot0.kS = FlywheelConstants.TorqueControl.KS;
     config.Slot0.kV = FlywheelConstants.TorqueControl.KV;

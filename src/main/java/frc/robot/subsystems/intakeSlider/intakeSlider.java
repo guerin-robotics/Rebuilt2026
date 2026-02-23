@@ -4,6 +4,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.HardwareConstants;
 import frc.robot.subsystems.intakeSlider.io.IntakeSliderIOInputsAutoLogged;
 import frc.robot.subsystems.intakeSlider.io.intakeSliderIO;
 import org.littletonrobotics.junction.Logger;
@@ -49,8 +50,8 @@ public class intakeSlider extends SubsystemBase {
       AngularVelocity retractVelo, double extensionInches, double seconds) {
     double currentPos =
         inputs.intakeSliderPosition * intakeSliderConstants.Mechanical.rotationsPerInch;
-    if (inputs.intakeSliderStatorCurrent < intakeSliderConstants.CurrentLimits.INTAKE_SLIDER_MAIN_STATOR_AMP) {
-      io.setIntakeSliderVelocityTorque(retractVelo);
+    if (inputs.intakeSliderStatorCurrent < 50) {
+      io.setIntakeSliderVoltage(HardwareConstants.TestVoltages.intakeSliderTestVoltageIn);
     } else {
       io.setIntakeInch(currentPos + extensionInches);
       new WaitCommand(seconds);

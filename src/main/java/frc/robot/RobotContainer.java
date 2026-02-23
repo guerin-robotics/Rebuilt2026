@@ -11,7 +11,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -74,8 +73,8 @@ public class RobotContainer {
   // Controllers
   private final CommandXboxController controller =
       new CommandXboxController(HardwareConstants.ControllerConstants.XboxControllerPort);
-  private final Joystick thrustmaster =
-      new Joystick(HardwareConstants.ControllerConstants.JoystickControllerPort);
+  private final CommandJoystick thrustmaster =
+      new CommandJoystick(HardwareConstants.ControllerConstants.JoystickControllerPort);
   private final CommandJoystick buttonPanel =
       new CommandJoystick(HardwareConstants.ControllerConstants.ButtonPanelPort);
 
@@ -219,10 +218,10 @@ public class RobotContainer {
     buttonPanel
         .button(8)
         .whileTrue(
-            FlywheelCommands.runTorque(
-                flywheel, HardwareConstants.TestVelocities.FlywheelVelocity).alongWith(
-                    PrestageCommands.runTorque(prestage, HardwareConstants.TestVelocities.prestageVelocity)
-                ));
+            FlywheelCommands.runTorque(flywheel, HardwareConstants.TestVelocities.FlywheelVelocity)
+                .alongWith(
+                    PrestageCommands.runTorque(
+                        prestage, HardwareConstants.TestVelocities.prestageVelocity)));
     buttonPanel
         .button(9)
         .whileTrue(
@@ -230,14 +229,25 @@ public class RobotContainer {
                     transport, HardwareConstants.TestVelocities.transportVelocity)
                 .alongWith(
                     FeederCommands.runTorque(
-                            feeder, HardwareConstants.TestVelocities.feederVelocity))
-                            .alongWith(
-                                intakeSliderCommands.intakeJostleByCurrent(
-                                    intakeSlider,
-                                    HardwareConstants.TestVelocities.sliderVelocity,
-                                    HardwareConstants.PulseConstants.pulseInches,
-                                    HardwareConstants.PulseConstants.pulseSeconds))
-                            );
+                        feeder, HardwareConstants.TestVelocities.feederVelocity))
+            // .alongWith(
+            //     intakeSliderCommands.intakeJostleByCurrent(
+            //         intakeSlider,
+            //         HardwareConstants.TestVelocities.sliderInVelocity,
+            //         HardwareConstants.PulseConstants.pulseInches,
+            //         HardwareConstants.PulseConstants.pulseSeconds))
+            );
+
+    thrustmaster
+        .button(3)
+        .whileTrue(
+            intakeSliderCommands.runIntakeForward(
+                intakeSlider, HardwareConstants.TestVoltages.intakeSliderTestVoltageIn));
+    thrustmaster
+        .button(4)
+        .whileTrue(
+            intakeSliderCommands.runIntakeForward(
+                intakeSlider, HardwareConstants.TestVoltages.intakeSliderTestVoltage));
 
     // CENTER GROVE EVENT CONTROLS
     // Feeder

@@ -40,9 +40,9 @@ public class HardwareConstants {
     public static final Voltage FeederTestVoltage = Volts.of(3.0);
     public static final Voltage PrestageTestVoltage = Volts.of(5.0);
     public static final Voltage TransportTestVoltage = Volts.of(-3.0);
-    public static final Voltage intakeSliderTestVoltage = Volts.of(8.0);
-    public static final Voltage intakeSliderTestVoltageIn = Volts.of(-8.0);
-    public static final Voltage intakeRollerTestVoltage = Volts.of(-8.0);
+    public static final Voltage intakeSliderTestVoltage = Volts.of(10.0);
+    public static final Voltage intakeSliderTestVoltageIn = Volts.of(-10.0);
+    public static final Voltage intakeRollerTestVoltage = Volts.of(10.0);
   }
 
   public static class TestVelocities {
