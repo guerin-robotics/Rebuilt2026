@@ -41,10 +41,12 @@ public class FlywheelConstants {
 
   public static class TorqueControl {
     private static LoggedNetworkNumber tunableKS = new LoggedNetworkNumber("Tune/flywheel/KS", 35);
+    private static LoggedNetworkNumber tunableKV = new LoggedNetworkNumber("Tune/flywheel/KV", 0);
+    private static LoggedNetworkNumber tunableKP = new LoggedNetworkNumber("Tune/flywheel/KP", 5);
 
-    public static final double KS = tunableKS.get();
-    public static final double KV = 0.0;
-    public static final double KP = 5.0;
+    public static double KS = tunableKS.get();
+    public static double KV = tunableKV.get();
+    public static double KP = tunableKP.get();
   }
 
   public static class flywheelMagicConstants {
@@ -75,6 +77,7 @@ public class FlywheelConstants {
   public static class Mechanical {
     /** Hood angle for trajectory visualization (degrees). */
     public static final boolean INVERTED = false;
+
     public static final double flywheelRatio = 1.47;
   }
 
