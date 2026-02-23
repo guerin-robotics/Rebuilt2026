@@ -231,12 +231,12 @@ public class RobotContainer {
                 .alongWith(
                     FeederCommands.runTorque(
                             feeder, HardwareConstants.TestVelocities.feederVelocity))
-                            // .alongWith(
-                            //     intakeSliderCommands.intakeRetractUntilCurrent(
-                            //         intakeSlider,
-                            //         HardwareConstants.TestVelocities.sliderVelocity,
-                            //         HardwareConstants.PulseConstants.pulseInches,
-                            //         HardwareConstants.PulseConstants.pulseSeconds))
+                            .alongWith(
+                                intakeSliderCommands.intakeJostleByCurrent(
+                                    intakeSlider,
+                                    HardwareConstants.TestVelocities.sliderVelocity,
+                                    HardwareConstants.PulseConstants.pulseInches,
+                                    HardwareConstants.PulseConstants.pulseSeconds))
                             );
 
     // CENTER GROVE EVENT CONTROLS

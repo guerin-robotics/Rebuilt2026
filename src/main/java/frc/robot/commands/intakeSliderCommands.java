@@ -28,13 +28,13 @@ public class intakeSliderCommands {
         intakeSlider);
   }
 
-  public static Command intakeRetractUntilCurrent(
+  public static Command intakeJostleByCurrent(
       intakeSlider intakeSlider,
       AngularVelocity retractVelo,
       double extensionInches,
       double seconds) {
     return Commands.startEnd(
-        () -> intakeSlider.intakeRetractUntilCurrent(retractVelo, extensionInches, seconds),
+        () -> intakeSlider.intakeJostleByCurrent(retractVelo, extensionInches, seconds),
         () -> intakeSlider.setIntakeSliderVoltage(Volts.of(0)),
         intakeSlider);
   }

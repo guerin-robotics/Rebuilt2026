@@ -45,11 +45,11 @@ public class intakeSlider extends SubsystemBase {
   }
 
   // Retract for pulse sequence
-  public void intakeRetractUntilCurrent(
+  public void intakeJostleByCurrent(
       AngularVelocity retractVelo, double extensionInches, double seconds) {
     double currentPos =
         inputs.intakeSliderPosition * intakeSliderConstants.Mechanical.rotationsPerInch;
-    if (inputs.intakeSliderStatorCurrent < 2.0) {
+    if (inputs.intakeSliderStatorCurrent < intakeSliderConstants.CurrentLimits.INTAKE_SLIDER_MAIN_STATOR_AMP) {
       io.setIntakeSliderVelocityTorque(retractVelo);
     } else {
       io.setIntakeInch(currentPos + extensionInches);

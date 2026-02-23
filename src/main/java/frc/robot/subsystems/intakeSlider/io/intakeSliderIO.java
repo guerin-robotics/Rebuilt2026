@@ -32,7 +32,7 @@ public interface intakeSliderIO {
 
   public default void zeroMotor() {}
 
-  public default void intakeRetractUntilCurrent(double retractVolts, double extension) {}
+  public default void intakeJostleByCurrent(double retractVolts, double extension) {}
 
   public default void intakeHome() {}
 }
