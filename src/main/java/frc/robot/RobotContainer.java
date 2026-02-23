@@ -220,7 +220,9 @@ public class RobotContainer {
         .button(8)
         .whileTrue(
             FlywheelCommands.runTorque(
-                flywheel, HardwareConstants.TestVelocities.FlywheelVelocity));
+                flywheel, HardwareConstants.TestVelocities.FlywheelVelocity).alongWith(
+                    PrestageCommands.runTorque(prestage, HardwareConstants.TestVelocities.prestageVelocity)
+                ));
     buttonPanel
         .button(9)
         .whileTrue(
@@ -228,17 +230,14 @@ public class RobotContainer {
                     transport, HardwareConstants.TestVelocities.transportVelocity)
                 .alongWith(
                     FeederCommands.runTorque(
-                            feeder, HardwareConstants.TestVelocities.feederVelocity)
-                        .alongWith(
-                            PrestageCommands.runTorque(
-                                prestage, HardwareConstants.TestVelocities.prestageVelocity)
+                            feeder, HardwareConstants.TestVelocities.feederVelocity))
                             // .alongWith(
                             //     intakeSliderCommands.intakeRetractUntilCurrent(
                             //         intakeSlider,
                             //         HardwareConstants.TestVelocities.sliderVelocity,
                             //         HardwareConstants.PulseConstants.pulseInches,
-                            //         HardwareConstants.PulseConstants.pulseSeconds)))
-                            )));
+                            //         HardwareConstants.PulseConstants.pulseSeconds))
+                            );
 
     // CENTER GROVE EVENT CONTROLS
     // Feeder
