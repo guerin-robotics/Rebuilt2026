@@ -48,7 +48,7 @@ public class HardwareConstants {
   public static class TestVelocities {
     public static final AngularVelocity FlywheelVelocity =
         RotationsPerSecond.of(20.0); // rotations/s
-    public static final AngularVelocity feederVelocity = RotationsPerSecond.of(10.0);
+    public static final AngularVelocity feederVelocity = RotationsPerSecond.of(40.0);
     public static final AngularVelocity rollerVelocity = RotationsPerSecond.of(-10.0);
     public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(40.0);
     public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-10.0);
@@ -65,9 +65,9 @@ public class HardwareConstants {
   }
 
   public static class ControllerConstants {
-    public static final int XboxControllerPort = 0;
-    public static final int JoystickControllerPort = 1;
-    public static final int ButtonPanelPort = 2;
+    public static final int XboxControllerPort = 1;
+    public static final int JoystickControllerPort = 2;
+    public static final int ButtonPanelPort = 0;
     public static final double DEADBAND = 0.08;
   }
 }
