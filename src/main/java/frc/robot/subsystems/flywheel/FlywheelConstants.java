@@ -9,6 +9,7 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Time;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 /**
  * Constants for the shooter subsystem.
@@ -39,7 +40,9 @@ public class FlywheelConstants {
   }
 
   public static class TorqueControl {
-    public static final double KS = 35;
+    private static LoggedNetworkNumber tunableKS = new LoggedNetworkNumber("Tune/flywheel/KS", 35);
+
+    public static final double KS = tunableKS.get();
     public static final double KV = 0.0;
     public static final double KP = 5.0;
   }

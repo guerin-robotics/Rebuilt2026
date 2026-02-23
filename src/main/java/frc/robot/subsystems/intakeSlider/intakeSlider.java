@@ -49,7 +49,8 @@ public class intakeSlider extends SubsystemBase {
       AngularVelocity retractVelo, double extensionInches, double seconds) {
     double currentPos =
         inputs.intakeSliderPosition * intakeSliderConstants.Mechanical.rotationsPerInch;
-    if (inputs.intakeSliderStatorCurrent < intakeSliderConstants.CurrentLimits.INTAKE_SLIDER_MAIN_STATOR_AMP) {
+    if (inputs.intakeSliderStatorCurrent
+        < intakeSliderConstants.CurrentLimits.INTAKE_SLIDER_MAIN_STATOR_AMP) {
       io.setIntakeSliderVelocityTorque(retractVelo);
     } else {
       io.setIntakeInch(currentPos + extensionInches);
