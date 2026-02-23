@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
@@ -165,6 +166,11 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
   }
 
   public void setFlywheelTorque(AngularVelocity velocity) {
+    var slot0configs = new Slot0Configs();
+    slot0configs.kS = FlywheelConstants.TorqueControl.KS;
+    slot0configs.kV = FlywheelConstants.TorqueControl.KV;
+    slot0configs.kP = FlywheelConstants.TorqueControl.KP;
+    leader.getConfigurator().apply(slot0configs);
     leader.setControl(velocityTorqueCurrentRequest.withVelocity(velocity));
     Logger.recordOutput("Flywheel running", velocity);
   }
