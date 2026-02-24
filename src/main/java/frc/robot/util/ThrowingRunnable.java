@@ -23,10 +23,10 @@ package frc.robot.util;
  */
 @FunctionalInterface
 public interface ThrowingRunnable<T extends Exception> {
-    /**
-     * Executes this runnable, potentially throwing an exception.
-     *
-     * @throws T the exception that may be thrown during execution
-     */
-    public void run() throws T;
+  /**
+   * Executes this runnable, potentially throwing an exception.
+   *
+   * @throws T the exception that may be thrown during execution
+   */
+  public void run() throws T;
 }

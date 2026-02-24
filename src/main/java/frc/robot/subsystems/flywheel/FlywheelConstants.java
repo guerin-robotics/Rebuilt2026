@@ -9,7 +9,6 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Time;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 /**
  * Constants for the shooter subsystem.
@@ -40,13 +39,20 @@ public class FlywheelConstants {
   }
 
   public static class TorqueControl {
-    private static LoggedNetworkNumber tunableKS = new LoggedNetworkNumber("Tune/flywheel/KS", 35);
-    private static LoggedNetworkNumber tunableKV = new LoggedNetworkNumber("Tune/flywheel/KV", 0);
-    private static LoggedNetworkNumber tunableKP = new LoggedNetworkNumber("Tune/flywheel/KP", 5);
+    // private static LoggedNetworkNumber tunableKS = new LoggedNetworkNumber("Tune/flywheel/KS",
+    // 35);
+    // private static LoggedNetworkNumber tunableKV = new LoggedNetworkNumber("Tune/flywheel/KV",
+    // 0);
+    // private static LoggedNetworkNumber tunableKP = new LoggedNetworkNumber("Tune/flywheel/KP",
+    // 5);
 
-    public static double KS = tunableKS.get();
-    public static double KV = tunableKV.get();
-    public static double KP = tunableKP.get();
+    // public static double KS = tunableKS.get();
+    // public static double KV = tunableKV.get();
+    // public static double KP = tunableKP.get();
+
+    public static double KS = 20;
+    public static double KV = 0;
+    public static double KP = 6.0;
   }
 
   public static class flywheelMagicConstants {
@@ -61,8 +67,8 @@ public class FlywheelConstants {
   public static class PID {
     // Main flywheel (4x TalonFX) - feedforward only
     public static final double MAIN_KS = 0.35;
-    public static final double MAIN_KV = 0.12;
-    public static final double kP = 0.3;
+    public static final double MAIN_KV = 0.0;
+    public static final double kP = 0.0;
   }
 
   /** Software tuning settings. */
