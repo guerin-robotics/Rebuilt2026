@@ -2,7 +2,9 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -90,6 +92,45 @@ public class FlywheelCommands {
     return Commands.startEnd(
         () -> flywheel.setFlywheelTorque(velocity),
         () -> flywheel.setFlywheelTorque(RotationsPerSecond.of(0)),
+        flywheel);
+  }
+
+  /**
+   * Sets flywheel velocity based on position relative to hub (calculated from odometry).
+   *
+   * @param flywheel
+   * @return Command that sets flywheel velocity using VelocityTorqueCurrent control, stops
+   */
+  public static Command setVelocityForHub(Flywheel flywheel) {
+    return Commands.startEnd(
+        () -> flywheel.setSpeedForHub(), () -> flywheel.setFlywheelVoltage(Volts.of(0)), flywheel);
+  }
+
+  /**
+   * Sets flywheel velocity based on position relative to target (calculated from odometry).
+   *
+   * @param flywheel
+   * @param target
+   * @return Command that sets flywheel velocity using VelocityTorqueCurrent control, stops
+   */
+  public static Command setVelocityForTarget(Flywheel flywheel, Translation3d target) {
+    return Commands.startEnd(
+        () -> flywheel.setSpeedForTarget(target),
+        () -> flywheel.setFlywheelVoltage(Volts.of(0)),
+        flywheel);
+  }
+
+  /**
+   * Sets flywheel velocity based on distance given.
+   *
+   * @param flywheel
+   * @param distance
+   * @return Command that sets flywheel velocity using VelocityTorqueCurrent control, stops
+   */
+  public static Command setVelocityForDistance(Flywheel flywheel, Distance distance) {
+    return Commands.startEnd(
+        () -> flywheel.setSpeedForDistance(distance),
+        () -> flywheel.setFlywheelVoltage(Volts.of(0)),
         flywheel);
   }
 

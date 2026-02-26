@@ -20,6 +20,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.flywheel.FlywheelConstants;
+import frc.robot.util.CANUpdateThread;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -43,6 +44,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
 
   private static final CANBus CAN_BUS = new CANBus("rio");
   private TalonFXConfiguration config = new TalonFXConfiguration();
+  private static CANUpdateThread updateThread = new CANUpdateThread();
 
   // 4x TalonFX motors for main flywheel
   private final TalonFX leader;
@@ -169,6 +171,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
         .withKV(FlywheelConstants.TorqueControl.KV)
         .withKP(FlywheelConstants.TorqueControl.KP);
     leader.getConfigurator().apply(config);
+    updateThread.CTRECheckErrorAndRetry(() -> leader.getConfigurator().apply(config));
     leader.setControl(velocityTorqueCurrentRequest.withVelocity(velocity));
     Logger.recordOutput("Flywheel running", velocity);
   }

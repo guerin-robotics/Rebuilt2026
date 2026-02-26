@@ -3,7 +3,9 @@ package frc.robot.subsystems.flywheel;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -69,6 +71,21 @@ public class Flywheel extends SubsystemBase {
   }
 
   public void setFlywheelTorque(AngularVelocity velocity) {
+    io.setFlywheelTorque(velocity);
+  }
+
+  public void setSpeedForHub() {
+    AngularVelocity velocity = ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub();
+    io.setFlywheelTorque(velocity);
+  }
+
+  public void setSpeedForTarget(Translation3d target) {
+    AngularVelocity velocity = ShotCalculator.getInstance().getFlywheelSpeedForTarget(target);
+    io.setFlywheelTorque(velocity);
+  }
+
+  public void setSpeedForDistance(Distance distance) {
+    AngularVelocity velocity = ShotCalculator.getInstance().getFlywheelSpeedForDistance(distance);
     io.setFlywheelTorque(velocity);
   }
 

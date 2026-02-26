@@ -37,4 +37,6 @@ public final class Constants {
     ALPHA,
     NONE
   }
+
+  public static boolean disableHAL = false;
 }

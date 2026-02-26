@@ -1,5 +1,6 @@
 package frc.robot.subsystems.flywheel;
 
+import static edu.wpi.first.math.util.Units.feetToMeters;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RevolutionsPerSecond;
 import static edu.wpi.first.units.Units.Second;
@@ -9,6 +10,7 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Time;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 /**
  * Constants for the shooter subsystem.
@@ -39,20 +41,20 @@ public class FlywheelConstants {
   }
 
   public static class TorqueControl {
-    // private static LoggedNetworkNumber tunableKS = new LoggedNetworkNumber("Tune/flywheel/KS",
-    // 35);
-    // private static LoggedNetworkNumber tunableKV = new LoggedNetworkNumber("Tune/flywheel/KV",
-    // 0);
-    // private static LoggedNetworkNumber tunableKP = new LoggedNetworkNumber("Tune/flywheel/KP",
-    // 5);
+    private static LoggedNetworkNumber tunableKS = new LoggedNetworkNumber("Tune/flywheel/KS",
+    35);
+    private static LoggedNetworkNumber tunableKV = new LoggedNetworkNumber("Tune/flywheel/KV",
+    0);
+    private static LoggedNetworkNumber tunableKP = new LoggedNetworkNumber("Tune/flywheel/KP",
+    5);
 
-    // public static double KS = tunableKS.get();
-    // public static double KV = tunableKV.get();
-    // public static double KP = tunableKP.get();
+    public static double KS = tunableKS.get();
+    public static double KV = tunableKV.get();
+    public static double KP = tunableKP.get();
 
-    public static double KS = 20;
-    public static double KV = 0;
-    public static double KP = 6.0;
+    // public static double KS = 20;
+    // public static double KV = 0;
+    // public static double KP = 6.0;
   }
 
   public static class flywheelMagicConstants {
@@ -96,10 +98,10 @@ public class FlywheelConstants {
   public static class DistanceMap {
     public static final InterpolatingDoubleTreeMap SPEED_MAP = new InterpolatingDoubleTreeMap();
 
+    // Key is distance from center of hub in meters
+    // Value is RPM
     static {
-      // Characterize these values on the real robot
-      SPEED_MAP.put(1.0, 1000.0); // 1 meter -> 1000 RPM
-      SPEED_MAP.put(3.0, 1500.0); // 3 meters -> 1500 RPM
+      SPEED_MAP.put(feetToMeters(5), 990.0);
     }
   }
 }

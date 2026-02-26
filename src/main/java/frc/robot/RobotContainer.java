@@ -303,6 +303,9 @@ public class RobotContainer {
                 intakeSlider, -intakeSliderConstants.Mechanical.rotationsWhenOut));
     // Zero intake
     controller.button(4).whileTrue(intakeSliderCommands.zeroIntake(intakeSlider));
+    // *UNTESTED* Set flywheel velocity based on distance from hub. Needs more entries in speed map.
+    // *UNTESTED*
+    buttonPanel.button(10).whileTrue(FlywheelCommands.setVelocityForHub(flywheel));
   }
 
   public Command getAutonomousCommand() {
