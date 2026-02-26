@@ -183,7 +183,6 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // ==================== DRIVE CONTROLS (DO NOT MODIFY) ====================
     // Default command: Xbox + Thrustmaster combined
-    // 2/22 Inverted
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
@@ -304,7 +303,6 @@ public class RobotContainer {
     // Zero intake
     controller.button(4).whileTrue(intakeSliderCommands.zeroIntake(intakeSlider));
     // *UNTESTED* Set flywheel velocity based on distance from hub. Needs more entries in speed map.
-    // *UNTESTED*
     buttonPanel.button(10).whileTrue(FlywheelCommands.setVelocityForHub(flywheel));
   }
 

@@ -46,11 +46,10 @@ public class HardwareConstants {
   }
 
   public static class TestVelocities {
-    public static final AngularVelocity FlywheelVelocity =
-        RotationsPerSecond.of(16.75); // rotations/s
-    public static final AngularVelocity feederVelocity = RotationsPerSecond.of(40.0);
+    public static final AngularVelocity FlywheelVelocity = RotationsPerSecond.of(17); // rotations/s
+    public static final AngularVelocity feederVelocity = RotationsPerSecond.of(50.0);
     public static final AngularVelocity rollerVelocity = RotationsPerSecond.of(-10.0);
-    public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(40.0);
+    public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(50.0);
     public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-10.0);
     public static final AngularVelocity sliderVelocity = RotationsPerSecond.of(20.0);
     public static final AngularVelocity sliderInVelocity = RotationsPerSecond.of(-20.0);
