@@ -33,6 +33,9 @@ public class HardwareConstants {
 
     // Climber
     // public static int CLIMBER_MOTOR_ID = 42;
+
+    // Hood
+    public static int HOOD_SERVO_CHANNEL = 0;
   }
 
   public static class TestVoltages {
@@ -55,12 +58,14 @@ public class HardwareConstants {
     public static final AngularVelocity sliderInVelocity = RotationsPerSecond.of(-20.0);
   }
 
-  public static class PulseConstants {
+  public static class TestPositions {
     // Slider pulse seconds
     public static final double pulseInches = 1.0;
     public static final double pulseSeconds = 0.5;
     // Slider extension test inches
     public static final double intakeInchTest = 3.0;
+    // Hood angle
+    public static final double hoodAngleTest = 30.0;
   }
 
   public static class ControllerConstants {

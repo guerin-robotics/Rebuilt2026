@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeederCommands;
 import frc.robot.commands.FlywheelCommands;
+import frc.robot.commands.HoodCommands;
 import frc.robot.commands.PrestageCommands;
 import frc.robot.commands.TransportCommands;
 import frc.robot.commands.intakeSliderCommands;
@@ -35,6 +36,9 @@ import frc.robot.subsystems.feeder.io.FeederIOReal;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.FlywheelIOPhoenix6;
+import frc.robot.subsystems.hood.Hood;
+import frc.robot.subsystems.hood.io.HoodIO;
+import frc.robot.subsystems.hood.io.HoodIOReal;
 import frc.robot.subsystems.intakeRoller.intakeRoller;
 import frc.robot.subsystems.intakeRoller.io.intakeRollerIO;
 import frc.robot.subsystems.intakeRoller.io.intakeRollerIOReal;
@@ -60,6 +64,7 @@ public class RobotContainer {
   private final Vision vision;
   private final Flywheel flywheel;
   private final Feeder feeder;
+  private final Hood hood;
   private final Prestage prestage;
   private final intakeSlider intakeSlider;
   private final intakeRoller intakeRoller;
@@ -95,6 +100,7 @@ public class RobotContainer {
                     VisionConstants.camera1Name, VisionConstants.robotToCamera1));
         flywheel = new Flywheel(new FlywheelIOPhoenix6());
         feeder = new Feeder(new FeederIOReal());
+        hood = new Hood(new HoodIOReal());
         prestage = new Prestage(new PrestageIOReal());
         transport = new Transport(new TransportIOReal());
         intakeSlider = new intakeSlider(new intakeSliderIOReal());
@@ -119,6 +125,7 @@ public class RobotContainer {
         flywheel = new Flywheel(new FlywheelIO() {});
         feeder = new Feeder(new FeederIO() {});
         prestage = new Prestage(new PrestageIO() {});
+        hood = new Hood(new HoodIO() {});
         transport = new Transport(new TransportIO() {});
         intakeSlider = new intakeSlider(new intakeSliderIO() {});
         intakeRoller = new intakeRoller(new intakeRollerIO() {});
@@ -136,6 +143,7 @@ public class RobotContainer {
         flywheel = new Flywheel(new FlywheelIO() {});
         feeder = new Feeder(new FeederIO() {});
         prestage = new Prestage(new PrestageIO() {});
+        hood = new Hood(new HoodIO() {});
         transport = new Transport(new TransportIO() {});
         intakeSlider = new intakeSlider(new intakeSliderIO() {});
         intakeRoller = new intakeRoller(new intakeRollerIO() {});
@@ -302,6 +310,9 @@ public class RobotContainer {
     // controller.button(4).whileTrue(intakeSliderCommands.zeroIntake(intakeSlider));
     // *UNTESTED* Set flywheel velocity based on distance from hub. Needs more entries in speed map.
     buttonPanel.button(10).whileTrue(FlywheelCommands.setVelocityForHub(flywheel));
+    buttonPanel
+        .button(4)
+        .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodAngleTest));
   }
 
   public Command getAutonomousCommand() {
