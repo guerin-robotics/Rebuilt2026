@@ -21,7 +21,6 @@ import frc.robot.commands.FeederCommands;
 import frc.robot.commands.FlywheelCommands;
 import frc.robot.commands.PrestageCommands;
 import frc.robot.commands.TransportCommands;
-import frc.robot.commands.intakeRollerCommands;
 import frc.robot.commands.intakeSliderCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -40,7 +39,6 @@ import frc.robot.subsystems.intakeRoller.intakeRoller;
 import frc.robot.subsystems.intakeRoller.io.intakeRollerIO;
 import frc.robot.subsystems.intakeRoller.io.intakeRollerIOReal;
 import frc.robot.subsystems.intakeSlider.intakeSlider;
-import frc.robot.subsystems.intakeSlider.intakeSliderConstants;
 import frc.robot.subsystems.intakeSlider.io.intakeSliderIO;
 import frc.robot.subsystems.intakeSlider.io.intakeSliderIOReal;
 import frc.robot.subsystems.prestage.Prestage;
@@ -250,58 +248,58 @@ public class RobotContainer {
 
     // CENTER GROVE EVENT CONTROLS
     // Feeder
-    buttonPanel
-        .button(1)
-        .whileTrue(
-            FeederCommands.runTorque(feeder, HardwareConstants.TestVelocities.feederVelocity));
-    // Flywheel
-    buttonPanel
-        .button(2)
-        .whileTrue(
-            FlywheelCommands.runTorque(
-                flywheel, HardwareConstants.TestVelocities.FlywheelVelocity));
-    // Run intake
-    buttonPanel
-        .button(3)
-        .whileTrue(
-            intakeRollerCommands.runTorque(
-                intakeRoller, HardwareConstants.TestVelocities.rollerVelocity));
+    // buttonPanel
+    //     .button(1)
+    //     .whileTrue(
+    //         FeederCommands.runTorque(feeder, HardwareConstants.TestVelocities.feederVelocity));
+    // // Flywheel
+    // buttonPanel
+    //     .button(2)
+    //     .whileTrue(
+    //         FlywheelCommands.runTorque(
+    //             flywheel, HardwareConstants.TestVelocities.FlywheelVelocity));
+    // // Run intake
+    // buttonPanel
+    //     .button(3)
+    //     .whileTrue(
+    //         intakeRollerCommands.runTorque(
+    //             intakeRoller, HardwareConstants.TestVelocities.rollerVelocity));
     // Prestage
-    buttonPanel
-        .button(4)
-        .whileTrue(
-            PrestageCommands.runTorque(
-                prestage, HardwareConstants.TestVelocities.prestageVelocity));
-    // Transport
-    buttonPanel
-        .button(5)
-        .whileTrue(
-            TransportCommands.runTransportVoltage(
-                transport, HardwareConstants.TestVoltages.TransportTestVoltage));
+    // buttonPanel
+    //     .button(4)
+    //     .whileTrue(
+    //         PrestageCommands.runTorque(
+    //             prestage, HardwareConstants.TestVelocities.prestageVelocity));
+    // // Transport
+    // buttonPanel
+    //     .button(5)
+    //     .whileTrue(
+    //         TransportCommands.runTransportVoltage(
+    //             transport, HardwareConstants.TestVoltages.TransportTestVoltage));
     // Intake out
     // buttonPanel
     //     .button(6)
     //     .whileTrue(
     //         intakeSliderCommands.runTorque(
     //             intakeSlider, HardwareConstants.TestVelocities.sliderVelocity));
-    buttonPanel
-        .button(6)
-        .whileTrue(
-            intakeSliderCommands.setIntakePos(
-                intakeSlider, intakeSliderConstants.Mechanical.rotationsWhenOut));
-    // Intake in
+    // buttonPanel
+    //     .button(6)
+    //     .whileTrue(
+    //         intakeSliderCommands.setIntakePos(
+    //             intakeSlider, intakeSliderConstants.Mechanical.rotationsWhenOut));
+    // // Intake in
+    // // buttonPanel
+    // //     .button(7)
+    // //     .whileTrue(
+    // //         intakeSliderCommands.runTorque(
+    // //             intakeSlider, HardwareConstants.TestVelocities.sliderInVelocity));
     // buttonPanel
     //     .button(7)
     //     .whileTrue(
-    //         intakeSliderCommands.runTorque(
-    //             intakeSlider, HardwareConstants.TestVelocities.sliderInVelocity));
-    buttonPanel
-        .button(7)
-        .whileTrue(
-            intakeSliderCommands.setIntakePos(
-                intakeSlider, -intakeSliderConstants.Mechanical.rotationsWhenOut));
-    // Zero intake
-    controller.button(4).whileTrue(intakeSliderCommands.zeroIntake(intakeSlider));
+    //         intakeSliderCommands.setIntakePos(
+    //             intakeSlider, -intakeSliderConstants.Mechanical.rotationsWhenOut));
+    // // Zero intake
+    // controller.button(4).whileTrue(intakeSliderCommands.zeroIntake(intakeSlider));
     // *UNTESTED* Set flywheel velocity based on distance from hub. Needs more entries in speed map.
     buttonPanel.button(10).whileTrue(FlywheelCommands.setVelocityForHub(flywheel));
   }
