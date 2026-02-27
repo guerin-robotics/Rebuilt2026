@@ -6,7 +6,7 @@ import frc.robot.subsystems.hood.Hood;
 
 public class HoodCommands {
 
-  public static Command setHoodPos(Hood hood, double angle) {
-    return Commands.runOnce(() -> hood.setHoodPos(angle), hood);
+  public static Command setHoodPos(Hood hood) {
+    return Commands.startEnd(() -> hood.setHoodPos(), () -> hood.stopHood(), hood);
   }
 }

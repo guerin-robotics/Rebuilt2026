@@ -310,9 +310,7 @@ public class RobotContainer {
     // controller.button(4).whileTrue(intakeSliderCommands.zeroIntake(intakeSlider));
     // *UNTESTED* Set flywheel velocity based on distance from hub. Needs more entries in speed map.
     buttonPanel.button(10).whileTrue(FlywheelCommands.setVelocityForHub(flywheel));
-    buttonPanel
-        .button(4)
-        .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodAngleTest));
+    buttonPanel.button(4).whileTrue(HoodCommands.setHoodPos(hood));
   }
 
   public Command getAutonomousCommand() {

@@ -36,6 +36,7 @@ public class HardwareConstants {
 
     // Hood
     public static int HOOD_SERVO_CHANNEL = 0;
+    public static int HOOD_LEFT_SERVO_CHANNEL = 1;
   }
 
   public static class TestVoltages {
@@ -64,8 +65,8 @@ public class HardwareConstants {
     public static final double pulseSeconds = 0.5;
     // Slider extension test inches
     public static final double intakeInchTest = 3.0;
-    // Hood angle
-    public static final double hoodAngleTest = 30.0;
+    // Hood position (0.0-1.0)
+    public static final double hoodPosTest = 1.0;
   }
 
   public static class ControllerConstants {
