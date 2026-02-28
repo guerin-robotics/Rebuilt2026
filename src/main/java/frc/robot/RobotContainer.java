@@ -7,10 +7,13 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -21,6 +24,7 @@ import frc.robot.commands.FeederCommands;
 import frc.robot.commands.FlywheelCommands;
 import frc.robot.commands.HoodCommands;
 import frc.robot.commands.PrestageCommands;
+import frc.robot.commands.intakeRollerCommands;
 import frc.robot.commands.TransportCommands;
 import frc.robot.commands.intakeSliderCommands;
 import frc.robot.generated.TunerConstants;
@@ -218,8 +222,20 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
+    // Manually set the odometry from starting (0,0) to in front of the hub
+    // (Used for developing distance-based shooting without vision)
+    controller
+        .y()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        drive.setPose(
+                            new Pose2d(new Translation2d(3, 4), drive.getPose().getRotation())),
+                    drive)
+                .ignoringDisable(true));
+
     // ==================== SUBSYSTEM CONTROLS ====================
-    // *UNTESTED* Full shooting sequence *UNTESTED*
+    // Full shooting sequence
     buttonPanel
         .button(8)
         .whileTrue(
@@ -243,6 +259,7 @@ public class RobotContainer {
             //         HardwareConstants.PulseConstants.pulseSeconds))
             );
 
+    // Buttons on joystick for intake in/out
     thrustmaster
         .button(3)
         .whileTrue(
@@ -253,64 +270,32 @@ public class RobotContainer {
         .whileTrue(
             intakeSliderCommands.runIntakeForward(
                 intakeSlider, HardwareConstants.TestVoltages.intakeSliderTestVoltage));
+    
+    // Intake roller
+    buttonPanel.button(3).whileTrue(intakeRollerCommands.runTorque(intakeRoller, HardwareConstants.TestVelocities.rollerVelocity));
 
-    // CENTER GROVE EVENT CONTROLS
-    // Feeder
-    // buttonPanel
-    //     .button(1)
-    //     .whileTrue(
-    //         FeederCommands.runTorque(feeder, HardwareConstants.TestVelocities.feederVelocity));
-    // // Flywheel
-    // buttonPanel
-    //     .button(2)
-    //     .whileTrue(
-    //         FlywheelCommands.runTorque(
-    //             flywheel, HardwareConstants.TestVelocities.FlywheelVelocity));
-    // // Run intake
-    // buttonPanel
-    //     .button(3)
-    //     .whileTrue(
-    //         intakeRollerCommands.runTorque(
-    //             intakeRoller, HardwareConstants.TestVelocities.rollerVelocity));
-    // Prestage
-    // buttonPanel
-    //     .button(4)
-    //     .whileTrue(
-    //         PrestageCommands.runTorque(
-    //             prestage, HardwareConstants.TestVelocities.prestageVelocity));
-    // // Transport
-    // buttonPanel
-    //     .button(5)
-    //     .whileTrue(
-    //         TransportCommands.runTransportVoltage(
-    //             transport, HardwareConstants.TestVoltages.TransportTestVoltage));
-    // Intake out
-    // buttonPanel
-    //     .button(6)
-    //     .whileTrue(
-    //         intakeSliderCommands.runTorque(
-    //             intakeSlider, HardwareConstants.TestVelocities.sliderVelocity));
-    // buttonPanel
-    //     .button(6)
-    //     .whileTrue(
-    //         intakeSliderCommands.setIntakePos(
-    //             intakeSlider, intakeSliderConstants.Mechanical.rotationsWhenOut));
-    // // Intake in
-    // // buttonPanel
-    // //     .button(7)
-    // //     .whileTrue(
-    // //         intakeSliderCommands.runTorque(
-    // //             intakeSlider, HardwareConstants.TestVelocities.sliderInVelocity));
-    // buttonPanel
-    //     .button(7)
-    //     .whileTrue(
-    //         intakeSliderCommands.setIntakePos(
-    //             intakeSlider, -intakeSliderConstants.Mechanical.rotationsWhenOut));
-    // // Zero intake
-    // controller.button(4).whileTrue(intakeSliderCommands.zeroIntake(intakeSlider));
-    // *UNTESTED* Set flywheel velocity based on distance from hub. Needs more entries in speed map.
-    buttonPanel.button(10).whileTrue(FlywheelCommands.setVelocityForHub(flywheel));
-    buttonPanel.button(4).whileTrue(HoodCommands.setHoodPos(hood));
+    // Set flywheel velocity based on distance from hub
+    buttonPanel
+        .button(10)
+        .onTrue(FlywheelCommands.setVelocityForHub(flywheel))
+        .onFalse(FlywheelCommands.runTorque(flywheel, RotationsPerSecond.of(0)));
+    
+    // Set hood to various positions
+    buttonPanel
+        .button(1)
+        .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
+    buttonPanel
+        .button(2)
+        .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos2Test));
+    buttonPanel
+        .button(3)
+        .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos3Test));
+    buttonPanel
+        .button(4)
+        .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos4Test));
+    buttonPanel
+        .button(5)
+        .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos5Test));
   }
 
   public Command getAutonomousCommand() {

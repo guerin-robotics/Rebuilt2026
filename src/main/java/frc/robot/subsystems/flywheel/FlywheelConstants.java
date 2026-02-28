@@ -98,12 +98,25 @@ public class FlywheelConstants {
   public static class DistanceMap {
     public static final InterpolatingDoubleTreeMap SPEED_MAP = new InterpolatingDoubleTreeMap();
 
-    // Key is distance from center of hub in meters
+    // Key is distance from center of hub (converted to meters)
     // Value is RPM
     static {
       SPEED_MAP.put(feetToMeters(3), 900.0);
       SPEED_MAP.put(feetToMeters(5), 990.0);
-      SPEED_MAP.put(inchesToMeters(82), 10200.0);
+      SPEED_MAP.put(inchesToMeters(82), 1020.0);
+    }
+  }
+
+   // Interpolating map for hood position
+  public static class AngleMap {
+    public static final InterpolatingDoubleTreeMap ANGLE_MAP = new InterpolatingDoubleTreeMap();
+
+    // Key is distance from center of hub (converted from feet to meters)
+    // Value is hood position (0.0-1.0)
+    static {
+      ANGLE_MAP.put(feetToMeters(3), 0.5);
+      ANGLE_MAP.put(feetToMeters(5), 0.5);
+      ANGLE_MAP.put(inchesToMeters(82), 0.75);
     }
   }
 }

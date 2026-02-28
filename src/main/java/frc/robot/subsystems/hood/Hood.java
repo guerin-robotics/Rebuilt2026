@@ -21,8 +21,8 @@ public class Hood extends SubsystemBase {
     Logger.processInputs("Hood", inputs);
   }
 
-  public void setHoodPos() {
-    io.setHoodPos();
+  public void setHoodPos(double position) {
+    io.setHoodPos(position);
   }
 
   public void stopHood() {

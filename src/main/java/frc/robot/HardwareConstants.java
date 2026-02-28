@@ -66,7 +66,11 @@ public class HardwareConstants {
     // Slider extension test inches
     public static final double intakeInchTest = 3.0;
     // Hood position (0.0-1.0)
-    public static final double hoodPosTest = 1.0;
+    public static final double hoodPos1Test = 0.0;
+    public static final double hoodPos2Test = 0.25;
+    public static final double hoodPos3Test = 0.5;
+    public static final double hoodPos4Test = 0.75;
+    public static final double hoodPos5Test = 1.0;
   }
 
   public static class ControllerConstants {

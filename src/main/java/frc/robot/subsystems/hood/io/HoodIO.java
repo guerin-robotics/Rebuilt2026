@@ -12,7 +12,7 @@ public interface HoodIO {
 
   public default void updateInputs(HoodIOInputs inputs) {}
 
-  public default void setHoodPos() {}
+  public default void setHoodPos(double position) {}
 
   public default void stopHood() {}
 }

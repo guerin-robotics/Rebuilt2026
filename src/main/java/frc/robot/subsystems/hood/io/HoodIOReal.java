@@ -19,9 +19,9 @@ public class HoodIOReal implements HoodIO {
     inputs.servoPos = hoodServo.getPosition();
   }
 
-  public void setHoodPos() {
-    hoodServo.setPosition(HardwareConstants.TestPositions.hoodPosTest);
-    hoodLeftServo.setPosition(HardwareConstants.TestPositions.hoodPosTest);
+  public void setHoodPos(double position) {
+    hoodServo.setPosition(position);
+    hoodLeftServo.setPosition(position);
   }
 
   public void stopHood() {

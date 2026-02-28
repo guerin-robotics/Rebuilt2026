@@ -102,8 +102,7 @@ public class FlywheelCommands {
    * @return Command that sets flywheel velocity using VelocityTorqueCurrent control, stops
    */
   public static Command setVelocityForHub(Flywheel flywheel) {
-    return Commands.startEnd(
-        () -> flywheel.setSpeedForHub(), () -> flywheel.setFlywheelVoltage(Volts.of(0)), flywheel);
+    return Commands.runOnce(() -> flywheel.setSpeedForHub(), flywheel);
   }
 
   /**
