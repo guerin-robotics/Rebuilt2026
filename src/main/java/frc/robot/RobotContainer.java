@@ -38,6 +38,7 @@ import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.io.FeederIO;
 import frc.robot.subsystems.feeder.io.FeederIOReal;
 import frc.robot.subsystems.flywheel.Flywheel;
+import frc.robot.subsystems.flywheel.ShotCalculator;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.FlywheelIOPhoenix6;
 import frc.robot.subsystems.hood.Hood;
@@ -285,14 +286,21 @@ public class RobotContainer {
     buttonPanel.button(6).onTrue(HoodCommands.setHoodPosForHub(hood));
 
     // Set flywheel velocity based on distance from hub
+    // Put back to whileTrue instead of onTrue/onFalse because we have another command that runs the flywheel
+    // and could have been interfering
     buttonPanel
         .button(10)
-        .onTrue(FlywheelCommands.setVelocityForHub(flywheel))
-        .onFalse(FlywheelCommands.runTorque(flywheel, RotationsPerSecond.of(0)));
+        .whileTrue(FlywheelCommands.setVelocityForHub(flywheel));
 
     // *UNTESTED* Shoot based on distance from hub
     thrustmaster.button(1).onTrue(FlywheelCommands.setVelocityForHub(flywheel)
-        .alongWith(HoodCommands.setHoodPosForHub(hood)));
+        .alongWith(HoodCommands.setHoodPosForHub(hood))
+        .alongWith(PrestageCommands.runTorque(prestage, HardwareConstants.TestVelocities.prestageVelocity))
+        .alongWith(FeederCommands.runVelocityAtRPM(feeder, HardwareConstants.TestVelocities.feederVelocity,
+            flywheel.isFlywheelAtVelocity(ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
+        .alongWith(TransportCommands.runVelocityAtRPM(transport, HardwareConstants.TestVelocities.transportVelocity,
+            flywheel.isFlywheelAtVelocity(ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
+    );
 
     // Set hood to various positions
     buttonPanel

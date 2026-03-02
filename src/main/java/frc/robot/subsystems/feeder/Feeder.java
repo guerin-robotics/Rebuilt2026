@@ -34,4 +34,10 @@ public class Feeder extends SubsystemBase {
   public void setFeederTorqueControl(AngularVelocity feederVelo) {
     io.setFeederTorqueControl(feederVelo);
   }
+
+  public void setFeederVelocityAtRPM(AngularVelocity feederVelo, boolean isAtRPM) {
+    if (isAtRPM) {
+      io.setFeederTorqueControl(feederVelo);
+    }
+  }
 }

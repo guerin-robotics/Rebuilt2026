@@ -34,23 +34,25 @@ public class VisionConstants {
   // 8.75 y
   public static final Transform3d robotToCamera0 =
       new Transform3d(
-          new Translation3d(Inches.of(10.75), Inches.of(-8.75), Inches.of(7.75)),
-          new Rotation3d(Radians.zero(), Radians.of(-0.3490659), Radians.of(0.1745329)));
+          new Translation3d(Inches.of(11.317), Inches.of(11.317), Inches.of(-6.592)),
+          new Rotation3d(Radians.zero(), Radians.of(-0.314159), Radians.of(Math.PI/3)));
 
   // Left Cam
   public static final Transform3d robotToCamera1 =
       new Transform3d(
-          new Translation3d(Inches.of(10.75), Inches.of(8.75), Inches.of(7.75)),
-          new Rotation3d(Radians.zero(), Radians.of(-0.3490659), Radians.of(-0.1745329)));
+          new Translation3d(Inches.of(-11.317), Inches.of(11.317), Inches.of(-6.592)),
+          new Rotation3d(Radians.zero(), Radians.of(-0.314159), Radians.of((2*Math.PI)/3)));
 
+// Shooter right
   public static final Transform3d robotToCamera2 = new Transform3d(
-          new Translation3d(Inches.of(10.75), Inches.of(8.75), Inches.of(7.75)),
-          new Rotation3d(Radians.zero(), Radians.of(-0.3490659), Radians.of(-0.1745329))
+          new Translation3d(Inches.of(3.644), Inches.of(2.271), Inches.of(19.095)),
+          new Rotation3d(Radians.zero(), Radians.of(-0.314159), Radians.of(Math.PI/3))
   );
 
+  // Shooter left
   public static final Transform3d robotToCamera3 = new Transform3d(
-          new Translation3d(Inches.of(10.75), Inches.of(8.75), Inches.of(7.75)),
-          new Rotation3d(Radians.zero(), Radians.of(-0.3490659), Radians.of(-0.1745329))
+          new Translation3d(Inches.of(-3.644), Inches.of(2.271), Inches.of(19.095)),
+          new Rotation3d(Radians.zero(), Radians.of(-0.314159), Radians.of((2*Math.PI)/3))
   );
 
   // Basic filtering thresholds

@@ -34,4 +34,10 @@ public class Transport extends SubsystemBase {
   public void setTransportTorque(AngularVelocity transportVelo) {
     io.setTransportTorque(transportVelo);
   }
+
+  public void setVelocityAtRPM(AngularVelocity transportVelo, boolean isAtRPM) {
+    if (isAtRPM) {
+      io.setTransportTorque(transportVelo);
+    }
+  }
 }

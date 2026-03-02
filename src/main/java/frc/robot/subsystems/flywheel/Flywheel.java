@@ -1,9 +1,15 @@
 package frc.robot.subsystems.flywheel;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
@@ -11,6 +17,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.lib.FieldConstants;
+import frc.robot.RobotState;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.ShooterIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
@@ -89,7 +97,30 @@ public class Flywheel extends SubsystemBase {
     io.setFlywheelTorque(velocity);
   }
 
-  // Checks if flywheel is above low threshold, returns true if so
+  // Definitely getting ahead of ourselves but when we get to shooting on the move...
+  public void shootDynamic(double hoodRadians) {
+    Translation2d fuelToGroundVector = new Translation2d(
+      (FieldConstants.Hub.topCenterPoint.getX()-RobotState.getInstance().getEstimatedPose().getX()),
+      (FieldConstants.Hub.topCenterPoint.getY()-RobotState.getInstance().getEstimatedPose().getY())
+    );
+    Translation2d robotToGroundVector = new Translation2d(
+      (RobotState.getInstance().getFieldRelativeVelocity().vxMetersPerSecond),
+      (RobotState.getInstance().getFieldRelativeVelocity().vyMetersPerSecond)
+    );
+    Translation2d fuelToRobotVector = new Translation2d(
+      (fuelToGroundVector.getX()-robotToGroundVector.getX()),
+      (fuelToGroundVector.getY()-robotToGroundVector.getY())
+    );
+    // This quantity is the angle to the goal - it needs passed to the drivetrain
+    Rotation2d targetHeading = fuelToRobotVector.getAngle();
+    // Our fuelToRobotVector gave us a linear velocity (m/s) which we now convert to rps using flywheel rotations/meter
+    LinearVelocity fuelVelocity = MetersPerSecond.of((fuelToRobotVector.getNorm()/Math.cos(hoodRadians)));
+    AngularVelocity targetVelocity = RotationsPerSecond.of(
+      fuelVelocity.magnitude()*FlywheelConstants.Mechanical.flywheelRotationsPerMeter);
+    io.setFlywheelTorque(targetVelocity);
+  }
+
+  // Checks if flywheel is above threshold, returns true if so
   public boolean isFlywheelAtVelocity(AngularVelocity targetRPM) {
     if (inputs.flywheelVelocity.magnitude() >=
       (targetRPM.magnitude() - FlywheelConstants.Limits.velocityThreshold.magnitude())) {

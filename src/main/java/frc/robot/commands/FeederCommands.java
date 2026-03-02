@@ -30,4 +30,12 @@ public class FeederCommands {
         () -> feeder.setFeederTorqueControl(RotationsPerSecond.of(0)),
         feeder);
   }
+
+  public static Command runVelocityAtRPM(Feeder feeder, AngularVelocity feederVelo, boolean isAtRPM) {
+    return Commands.startEnd(
+      () -> feeder.setFeederVelocityAtRPM(feederVelo, isAtRPM),
+      () -> feeder.setFeederTorqueControl(RotationsPerSecond.of(0)),
+      feeder
+    );
+  }
 }

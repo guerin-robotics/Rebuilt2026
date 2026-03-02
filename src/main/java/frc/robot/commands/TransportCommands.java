@@ -30,5 +30,11 @@ public class TransportCommands {
         () -> transport.setTransportTorque(RotationsPerSecond.of(0)),
         transport);
   }
-
+  
+  public static Command runVelocityAtRPM(Transport transport, AngularVelocity transportVelo, boolean isAtRPM) {
+    return Commands.startEnd(
+        () -> transport.setVelocityAtRPM(transportVelo, isAtRPM),
+        () -> transport.setTransportTorque(RotationsPerSecond.of(0)),
+        transport);
+  }
 }

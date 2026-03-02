@@ -88,6 +88,7 @@ public class FlywheelConstants {
     public static final boolean INVERTED = false;
 
     public static final double flywheelRatio = 1.47;
+    public static final double flywheelRotationsPerMeter = 3.14;
   }
 
   /**
