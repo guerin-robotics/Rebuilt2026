@@ -29,6 +29,7 @@ public class FlywheelConstants {
     public static final AngularVelocity MAX_SPEED = RPM.of(5600);
     public static final AngularAcceleration MAX_ACCEL =
         RevolutionsPerSecond.per(Second).of(5600.0 / 60.0);
+    public static final AngularVelocity velocityThreshold = RPM.of(500);
   }
 
   /** Current limits for the flywheel motors. */
@@ -99,24 +100,11 @@ public class FlywheelConstants {
     public static final InterpolatingDoubleTreeMap SPEED_MAP = new InterpolatingDoubleTreeMap();
 
     // Key is distance from center of hub (converted to meters)
-    // Value is RPM
+    // Value is angular velocity (RPM)
     static {
       SPEED_MAP.put(feetToMeters(3), 900.0);
       SPEED_MAP.put(feetToMeters(5), 990.0);
       SPEED_MAP.put(inchesToMeters(82), 1020.0);
-    }
-  }
-
-   // Interpolating map for hood position
-  public static class AngleMap {
-    public static final InterpolatingDoubleTreeMap ANGLE_MAP = new InterpolatingDoubleTreeMap();
-
-    // Key is distance from center of hub (converted from feet to meters)
-    // Value is hood position (0.0-1.0)
-    static {
-      ANGLE_MAP.put(feetToMeters(3), 0.5);
-      ANGLE_MAP.put(feetToMeters(5), 0.5);
-      ANGLE_MAP.put(inchesToMeters(82), 0.75);
     }
   }
 }

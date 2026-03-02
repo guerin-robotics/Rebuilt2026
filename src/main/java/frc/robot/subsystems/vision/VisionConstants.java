@@ -23,8 +23,10 @@ public class VisionConstants {
       AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
   // Camera names, must match names configured on coprocessor
-  public static String camera0Name = "EagleEyeRight";
-  public static String camera1Name = "EagleEyeLeft";
+  public static String camera0Name = "SwerveRight";
+  public static String camera1Name = "SwerveLeft";
+  public static String camera2Name = "ShooterRight";
+  public static String camera3Name = "ShooterLeft";
 
   // Right Cam
   // 10.75 x
@@ -41,6 +43,16 @@ public class VisionConstants {
           new Translation3d(Inches.of(10.75), Inches.of(8.75), Inches.of(7.75)),
           new Rotation3d(Radians.zero(), Radians.of(-0.3490659), Radians.of(-0.1745329)));
 
+  public static final Transform3d robotToCamera2 = new Transform3d(
+          new Translation3d(Inches.of(10.75), Inches.of(8.75), Inches.of(7.75)),
+          new Rotation3d(Radians.zero(), Radians.of(-0.3490659), Radians.of(-0.1745329))
+  );
+
+  public static final Transform3d robotToCamera3 = new Transform3d(
+          new Translation3d(Inches.of(10.75), Inches.of(8.75), Inches.of(7.75)),
+          new Rotation3d(Radians.zero(), Radians.of(-0.3490659), Radians.of(-0.1745329))
+  );
+
   // Basic filtering thresholds
   public static double maxAmbiguity = 0.3;
   public static double maxZError = 0.75;
@@ -55,7 +67,9 @@ public class VisionConstants {
   public static double[] cameraStdDevFactors =
       new double[] {
         1.0, // Camera 0
-        1.0 // Camera 1
+        1.0, // Camera 1
+        1.0, // Camera 2
+        1.0 // Camera 3
       };
 
   // Multipliers to apply for MegaTag 2 observations
@@ -69,5 +83,9 @@ public class VisionConstants {
     Logger.recordOutput("Vision/Camera0/robot_position", VisionConstants.robotToCamera0);
     Logger.recordOutput("Vision/Camera1/name", VisionConstants.camera1Name);
     Logger.recordOutput("Vision/Camera1/robot_position", VisionConstants.robotToCamera1);
+        Logger.recordOutput("Vision/Camera2/name", VisionConstants.camera2Name);
+    Logger.recordOutput("Vision/Camera2/robot_position", VisionConstants.robotToCamera2);
+        Logger.recordOutput("Vision/Camera3/name", VisionConstants.camera3Name);
+    Logger.recordOutput("Vision/Camera3/robot_position", VisionConstants.robotToCamera3);
   }
 }

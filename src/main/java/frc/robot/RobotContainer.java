@@ -125,7 +125,12 @@ public class RobotContainer {
                 new VisionIOPhotonVisionSim(
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
                 new VisionIOPhotonVisionSim(
-                    VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose));
+                    VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose),
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.camera2Name, VisionConstants.robotToCamera2, drive::getPose),
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.camera3Name, VisionConstants.robotToCamera3, drive::getPose)
+                    );
         flywheel = new Flywheel(new FlywheelIO() {});
         feeder = new Feeder(new FeederIO() {});
         prestage = new Prestage(new PrestageIO() {});
@@ -236,6 +241,7 @@ public class RobotContainer {
 
     // ==================== SUBSYSTEM CONTROLS ====================
     // Full shooting sequence
+    // Spin up flywheel as well as prestage
     buttonPanel
         .button(8)
         .whileTrue(
@@ -243,6 +249,7 @@ public class RobotContainer {
                 .alongWith(
                     PrestageCommands.runTorque(
                         prestage, HardwareConstants.TestVelocities.prestageVelocity)));
+    // Start transport and feeder
     buttonPanel
         .button(9)
         .whileTrue(
@@ -270,16 +277,23 @@ public class RobotContainer {
         .whileTrue(
             intakeSliderCommands.runIntakeForward(
                 intakeSlider, HardwareConstants.TestVoltages.intakeSliderTestVoltage));
-    
+
     // Intake roller
-    buttonPanel.button(3).whileTrue(intakeRollerCommands.runTorque(intakeRoller, HardwareConstants.TestVelocities.rollerVelocity));
+    buttonPanel.button(7).whileTrue(intakeRollerCommands.runTorque(intakeRoller, HardwareConstants.TestVelocities.rollerVelocity));
+
+    // Set hood pos based on distance from hub
+    buttonPanel.button(6).onTrue(HoodCommands.setHoodPosForHub(hood));
 
     // Set flywheel velocity based on distance from hub
     buttonPanel
         .button(10)
         .onTrue(FlywheelCommands.setVelocityForHub(flywheel))
         .onFalse(FlywheelCommands.runTorque(flywheel, RotationsPerSecond.of(0)));
-    
+
+    // *UNTESTED* Shoot based on distance from hub
+    thrustmaster.button(1).onTrue(FlywheelCommands.setVelocityForHub(flywheel)
+        .alongWith(HoodCommands.setHoodPosForHub(hood)));
+
     // Set hood to various positions
     buttonPanel
         .button(1)

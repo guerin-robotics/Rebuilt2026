@@ -7,7 +7,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 
 public class HardwareConstants {
-  public static final int NUMBER_OF_CAMERAS = 2;
+  public static final int NUMBER_OF_CAMERAS = 4;
 
   public static class CanIds {
     // Flywheel

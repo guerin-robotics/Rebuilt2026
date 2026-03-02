@@ -89,6 +89,16 @@ public class Flywheel extends SubsystemBase {
     io.setFlywheelTorque(velocity);
   }
 
+  // Checks if flywheel is above low threshold, returns true if so
+  public boolean isFlywheelAtVelocity(AngularVelocity targetRPM) {
+    if (inputs.flywheelVelocity.magnitude() >=
+      (targetRPM.magnitude() - FlywheelConstants.Limits.velocityThreshold.magnitude())) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /** Returns current flywheel velocity in rad/s for SysId. */
   public double getFFCharacterizationVelocity() {
     if (inputs.flywheelVelocity == null) {

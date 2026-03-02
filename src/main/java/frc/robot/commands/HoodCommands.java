@@ -9,4 +9,8 @@ public class HoodCommands {
   public static Command setHoodPos(Hood hood, double position) {
     return Commands.runOnce(() -> hood.setHoodPos(position), hood);
   }
+
+  public static Command setHoodPosForHub(Hood hood) {
+    return Commands.runOnce(() -> hood.setHoodPosForHub());
+  }
 }
