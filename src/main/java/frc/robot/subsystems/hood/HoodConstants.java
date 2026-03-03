@@ -1,7 +1,8 @@
 package frc.robot.subsystems.hood;
 
-import static edu.wpi.first.math.util.Units.inchesToMeters;
 import static edu.wpi.first.math.util.Units.feetToMeters;
+import static edu.wpi.first.math.util.Units.inchesToMeters;
+
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 
 public class HoodConstants {

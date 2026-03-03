@@ -7,8 +7,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -24,8 +22,8 @@ import frc.robot.commands.FeederCommands;
 import frc.robot.commands.FlywheelCommands;
 import frc.robot.commands.HoodCommands;
 import frc.robot.commands.PrestageCommands;
-import frc.robot.commands.intakeRollerCommands;
 import frc.robot.commands.TransportCommands;
+import frc.robot.commands.intakeRollerCommands;
 import frc.robot.commands.intakeSliderCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -130,8 +128,7 @@ public class RobotContainer {
                 new VisionIOPhotonVisionSim(
                     VisionConstants.camera2Name, VisionConstants.robotToCamera2, drive::getPose),
                 new VisionIOPhotonVisionSim(
-                    VisionConstants.camera3Name, VisionConstants.robotToCamera3, drive::getPose)
-                    );
+                    VisionConstants.camera3Name, VisionConstants.robotToCamera3, drive::getPose));
         flywheel = new Flywheel(new FlywheelIO() {});
         feeder = new Feeder(new FeederIO() {});
         prestage = new Prestage(new PrestageIO() {});
@@ -243,13 +240,16 @@ public class RobotContainer {
     // ==================== SUBSYSTEM CONTROLS ====================
     // Full shooting sequence
     // Spin up flywheel as well as prestage
-    buttonPanel
-        .button(8)
-        .whileTrue(
-            FlywheelCommands.runTorque(flywheel, HardwareConstants.TestVelocities.FlywheelVelocity)
-                .alongWith(
-                    PrestageCommands.runTorque(
-                        prestage, HardwareConstants.TestVelocities.prestageVelocity)));
+    // *Commented out b/c may be interfering with wide-range shooting*
+    // buttonPanel
+    //     .button(8)
+    //     .whileTrue(
+    //          FlywheelCommands.runTorque(flywheel,
+    //          HardwareConstants.TestVelocities.FlywheelVelocity)
+    //              .alongWith(
+    //         PrestageCommands.runTorque(prestage,
+    // HardwareConstants.TestVelocities.prestageVelocity))
+    // );
     // Start transport and feeder
     buttonPanel
         .button(9)
@@ -280,27 +280,40 @@ public class RobotContainer {
                 intakeSlider, HardwareConstants.TestVoltages.intakeSliderTestVoltage));
 
     // Intake roller
-    buttonPanel.button(7).whileTrue(intakeRollerCommands.runTorque(intakeRoller, HardwareConstants.TestVelocities.rollerVelocity));
+    buttonPanel
+        .button(7)
+        .whileTrue(
+            intakeRollerCommands.runTorque(
+                intakeRoller, HardwareConstants.TestVelocities.rollerVelocity));
 
     // Set hood pos based on distance from hub
     buttonPanel.button(6).onTrue(HoodCommands.setHoodPosForHub(hood));
 
     // Set flywheel velocity based on distance from hub
-    // Put back to whileTrue instead of onTrue/onFalse because we have another command that runs the flywheel
-    // and could have been interfering
-    buttonPanel
-        .button(10)
-        .whileTrue(FlywheelCommands.setVelocityForHub(flywheel));
+    buttonPanel.button(10).whileTrue(FlywheelCommands.setVelocityForHub(flywheel));
 
-    // *UNTESTED* Shoot based on distance from hub
-    thrustmaster.button(1).onTrue(FlywheelCommands.setVelocityForHub(flywheel)
-        .alongWith(HoodCommands.setHoodPosForHub(hood))
-        .alongWith(PrestageCommands.runTorque(prestage, HardwareConstants.TestVelocities.prestageVelocity))
-        .alongWith(FeederCommands.runVelocityAtRPM(feeder, HardwareConstants.TestVelocities.feederVelocity,
-            flywheel.isFlywheelAtVelocity(ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
-        .alongWith(TransportCommands.runVelocityAtRPM(transport, HardwareConstants.TestVelocities.transportVelocity,
-            flywheel.isFlywheelAtVelocity(ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
-    );
+    // *UNTESTED* Full shoot sequence based on distance from hub
+    // Not ready to be tested until button 10 above works
+    thrustmaster
+        .button(1)
+        .onTrue(
+            FlywheelCommands.setVelocityForHub(flywheel)
+                .alongWith(HoodCommands.setHoodPosForHub(hood))
+                .alongWith(
+                    PrestageCommands.runTorque(
+                        prestage, HardwareConstants.TestVelocities.prestageVelocity))
+                .alongWith(
+                    FeederCommands.runVelocityAtRPM(
+                        feeder,
+                        HardwareConstants.TestVelocities.feederVelocity,
+                        flywheel.isFlywheelAtVelocity(
+                            ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
+                .alongWith(
+                    TransportCommands.runVelocityAtRPM(
+                        transport,
+                        HardwareConstants.TestVelocities.transportVelocity,
+                        flywheel.isFlywheelAtVelocity(
+                            ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub()))));
 
     // Set hood to various positions
     buttonPanel

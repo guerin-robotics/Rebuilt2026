@@ -31,11 +31,11 @@ public class FeederCommands {
         feeder);
   }
 
-  public static Command runVelocityAtRPM(Feeder feeder, AngularVelocity feederVelo, boolean isAtRPM) {
+  public static Command runVelocityAtRPM(
+      Feeder feeder, AngularVelocity feederVelo, boolean isAtRPM) {
     return Commands.startEnd(
-      () -> feeder.setFeederVelocityAtRPM(feederVelo, isAtRPM),
-      () -> feeder.setFeederTorqueControl(RotationsPerSecond.of(0)),
-      feeder
-    );
+        () -> feeder.setFeederVelocityAtRPM(feederVelo, isAtRPM),
+        () -> feeder.setFeederTorqueControl(RotationsPerSecond.of(0)),
+        feeder);
   }
 }

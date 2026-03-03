@@ -1,9 +1,10 @@
 package frc.robot.subsystems.hood;
 
 import static edu.wpi.first.units.Units.Meters;
-import edu.wpi.first.units.measure.Distance;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.units.measure.Distance;
 import frc.robot.RobotState;
 import org.littletonrobotics.junction.Logger;
 
@@ -30,9 +31,9 @@ public class HoodPosCalculator {
     Logger.recordOutput("Flywheel/ShotCalculator/HoodPos", hoodPos);
 
     if (hoodPos > HoodConstants.Mechanical.hoodMaxPos) {
-        hoodPos = HoodConstants.Mechanical.hoodMaxPos;
+      hoodPos = HoodConstants.Mechanical.hoodMaxPos;
     } else if (hoodPos < HoodConstants.Mechanical.hoodMinPos) {
-        hoodPos = HoodConstants.Mechanical.hoodMinPos;
+      hoodPos = HoodConstants.Mechanical.hoodMinPos;
     }
 
     return hoodPos;
@@ -44,10 +45,9 @@ public class HoodPosCalculator {
 
     return getHoodPosForDistance(distanceMeters);
   }
-  
+
   public Double getHoodPosForHub() {
     Translation3d hub3d = RobotState.getInstance().getAllianceHubTarget();
     return getHoodPosForTarget(hub3d);
   }
-
 }

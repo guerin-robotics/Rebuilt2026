@@ -28,7 +28,7 @@ public class Hood extends SubsystemBase {
   public void setHoodPosForHub() {
     double position = HoodPosCalculator.getInstance().getHoodPosForHub();
     io.setHoodPos(position);
-  } 
+  }
 
   public void stopHood() {
     io.stopHood();

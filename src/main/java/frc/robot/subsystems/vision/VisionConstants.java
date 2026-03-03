@@ -32,28 +32,29 @@ public class VisionConstants {
   // 10.75 x
   // 4.75
   // 8.75 y
+
   public static final Transform3d robotToCamera0 =
       new Transform3d(
           new Translation3d(Inches.of(11.317), Inches.of(11.317), Inches.of(-6.592)),
-          new Rotation3d(Radians.zero(), Radians.of(-0.314159), Radians.of(Math.PI/3)));
+          new Rotation3d(Radians.zero(), Radians.of(-0.314159), Radians.of(Math.PI / 3)));
 
   // Left Cam
   public static final Transform3d robotToCamera1 =
       new Transform3d(
           new Translation3d(Inches.of(-11.317), Inches.of(11.317), Inches.of(-6.592)),
-          new Rotation3d(Radians.zero(), Radians.of(-0.314159), Radians.of((2*Math.PI)/3)));
+          new Rotation3d(Radians.zero(), Radians.of(-0.314159), Radians.of((2 * Math.PI) / 3)));
 
-// Shooter right
-  public static final Transform3d robotToCamera2 = new Transform3d(
+  // Shooter right
+  public static final Transform3d robotToCamera2 =
+      new Transform3d(
           new Translation3d(Inches.of(3.644), Inches.of(2.271), Inches.of(19.095)),
-          new Rotation3d(Radians.zero(), Radians.of(-0.314159), Radians.of(Math.PI/3))
-  );
+          new Rotation3d(Radians.zero(), Radians.of(-0.314159), Radians.of(Math.PI / 3)));
 
   // Shooter left
-  public static final Transform3d robotToCamera3 = new Transform3d(
+  public static final Transform3d robotToCamera3 =
+      new Transform3d(
           new Translation3d(Inches.of(-3.644), Inches.of(2.271), Inches.of(19.095)),
-          new Rotation3d(Radians.zero(), Radians.of(-0.314159), Radians.of((2*Math.PI)/3))
-  );
+          new Rotation3d(Radians.zero(), Radians.of(-0.314159), Radians.of((2 * Math.PI) / 3)));
 
   // Basic filtering thresholds
   public static double maxAmbiguity = 0.3;
@@ -85,9 +86,9 @@ public class VisionConstants {
     Logger.recordOutput("Vision/Camera0/robot_position", VisionConstants.robotToCamera0);
     Logger.recordOutput("Vision/Camera1/name", VisionConstants.camera1Name);
     Logger.recordOutput("Vision/Camera1/robot_position", VisionConstants.robotToCamera1);
-        Logger.recordOutput("Vision/Camera2/name", VisionConstants.camera2Name);
+    Logger.recordOutput("Vision/Camera2/name", VisionConstants.camera2Name);
     Logger.recordOutput("Vision/Camera2/robot_position", VisionConstants.robotToCamera2);
-        Logger.recordOutput("Vision/Camera3/name", VisionConstants.camera3Name);
+    Logger.recordOutput("Vision/Camera3/name", VisionConstants.camera3Name);
     Logger.recordOutput("Vision/Camera3/robot_position", VisionConstants.robotToCamera3);
   }
 }
