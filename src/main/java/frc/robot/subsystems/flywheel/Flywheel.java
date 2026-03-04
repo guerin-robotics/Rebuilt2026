@@ -42,42 +42,27 @@ public class Flywheel extends SubsystemBase {
     Logger.processInputs("Flywheel", inputs);
   }
 
-  /** Manual duty cycle control - for testing motor direction/wiring only. */
-  public void setFlywheelDutyCycle(double output) {
-    io.setFlywheelDutyCycle(output);
-  }
-
   public void setFlywheelVoltage(Voltage volts) {
     io.setFlywheelVoltage(volts);
   }
 
-  /**
-   * Sets flywheel speed using feedforward-only control (no PID). Computes voltage from kS and kV,
-   * then applies via open-loop voltage output.
-   *
-   * @param targetSpeed Desired angular velocity (e.g., RPM.of(3000))
-   */
-  public void setFlywheelSpeed(AngularVelocity targetSpeed) {
-    io.setFlywheelSpeed(targetSpeed);
-  }
-
-  public void setFlywheelTorque(AngularVelocity velocity) {
-    io.setFlywheelTorque(velocity);
+  public void setFlywheelVelocity(AngularVelocity velocity) {
+    io.setFlywheelVelocity(velocity);
   }
 
   public void setSpeedForHub() {
     AngularVelocity velocity = ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub();
-    io.setFlywheelTorque(velocity);
+    io.setFlywheelVelocity(velocity);
   }
 
   public void setSpeedForTarget(Translation3d target) {
     AngularVelocity velocity = ShotCalculator.getInstance().getFlywheelSpeedForTarget(target);
-    io.setFlywheelTorque(velocity);
+    io.setFlywheelVelocity(velocity);
   }
 
   public void setSpeedForDistance(Distance distance) {
     AngularVelocity velocity = ShotCalculator.getInstance().getFlywheelSpeedForDistance(distance);
-    io.setFlywheelTorque(velocity);
+    io.setFlywheelVelocity(velocity);
   }
 
   // Definitely getting ahead of ourselves but when we get to shooting on the move...
@@ -105,7 +90,7 @@ public class Flywheel extends SubsystemBase {
     AngularVelocity targetVelocity =
         RotationsPerSecond.of(
             fuelVelocity.magnitude() * FlywheelConstants.Mechanical.flywheelRotationsPerMeter);
-    io.setFlywheelTorque(targetVelocity);
+    io.setFlywheelVelocity(targetVelocity);
   }
 
   /**

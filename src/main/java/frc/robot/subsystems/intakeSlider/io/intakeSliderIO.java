@@ -22,17 +22,11 @@ public interface intakeSliderIO {
 
   public default void updateInputs(IntakeSliderIOInputs inputs) {}
 
-  public default void setIntakeSliderVoltage(Voltage volts) {}
+  public default void setSliderVoltage(Voltage volts) {}
 
-  public default void setIntakeInch(double inches) {}
+  public default void setSliderInch(double inches) {}
 
-  public default void setIntakeRotations(double rotations) {}
+  public default void setSliderVelocity(AngularVelocity velocity) {}
 
-  public default void setIntakeSliderVelocityTorque(AngularVelocity velocity) {}
-
-  public default void zeroMotor() {}
-
-  public default void intakeJostleByCurrent(double retractVolts, double extension) {}
-
-  public default void intakeHome() {}
+  public default void zeroSliderMotor() {}
 }

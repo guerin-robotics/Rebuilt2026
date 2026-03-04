@@ -8,7 +8,6 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -25,7 +24,6 @@ public class PrestageIOReal implements PrestageIO {
   private final TalonFX prestageLeader;
   private final TalonFX prestageFollower;
 
-  private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
   private final VoltageOut voltageRequest = new VoltageOut(0);
   private final MotionMagicVelocityTorqueCurrentFOC torqueRequest =
       new MotionMagicVelocityTorqueCurrentFOC(0);
@@ -95,11 +93,7 @@ public class PrestageIOReal implements PrestageIO {
     prestageLeader.setControl(voltageRequest.withOutput(volts));
   }
 
-  public void setPrestageSpeed(AngularVelocity speed) {
-    prestageLeader.setControl(velocityRequest.withVelocity(speed));
-  }
-
-  public void setPrestageTorque(AngularVelocity prestageVelo) {
+  public void setPrestageVelocity(AngularVelocity prestageVelo) {
     prestageLeader.setControl(torqueRequest.withVelocity(prestageVelo));
   }
 }

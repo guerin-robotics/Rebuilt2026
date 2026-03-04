@@ -23,7 +23,5 @@ public interface TransportIO {
 
   public default void setTransportVoltage(Voltage volts) {}
 
-  public default void setTransportSpeed(AngularVelocity speed) {}
-
-  public default void setTransportTorque(AngularVelocity transportVelo) {}
+  public default void setTransportVelocity(AngularVelocity transportVelo) {}
 }

@@ -23,11 +23,11 @@ public class intakeRoller extends SubsystemBase {
     Logger.processInputs("Intake Roller", inputs);
   }
 
-  public void setIntakeRollerVoltage(Voltage volts) {
-    io.setIntakeRollerVoltage(volts);
+  public void setRollerVoltage(Voltage volts) {
+    io.setRollerVoltage(volts);
   }
 
-  public void setRollerTorqueControl(AngularVelocity rollerVelo) {
-    io.setRollerTorqueControl(rollerVelo);
+  public void setRollerVelocity(AngularVelocity rollerVelo) {
+    io.setRollerVelocity(rollerVelo);
   }
 }

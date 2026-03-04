@@ -34,26 +34,6 @@ import frc.robot.subsystems.flywheel.Flywheel;
 public class FlywheelCommands {
 
   /**
-   * Runs the shooter at a specific duty cycle (percent output). Stops when the command ends.
-   *
-   * <p><b>Use case:</b> Testing motor direction, wiring, or basic functionality without sensors.
-   *
-   * <p><b>Warning:</b> This is open-loop control with no velocity feedback. Use {@link
-   * #runVelocity} for actual shooting.
-   *
-   * @param shooter The shooter subsystem
-   * @param dutyCycle The motor output (-1.0 to 1.0, where 1.0 = 100% forward)
-   * @return Command that runs shooter at duty cycle, stops on end
-   */
-  public static Command runDutyCycle(Flywheel flywheel, double dutyCycle) {
-    return Commands.startEnd(
-            () -> flywheel.setFlywheelDutyCycle(dutyCycle), // Set duty cycle
-            () -> flywheel.setFlywheelVoltage(Volts.of(0)), // Stop on end
-            flywheel)
-        .withName("FlywheelDutyCycle_" + Math.round(dutyCycle * 100) + "%");
-  }
-
-  /**
    * Runs the shooter at a specific voltage while the command is active. Stops when the command
    * ends.
    *
@@ -63,7 +43,7 @@ public class FlywheelCommands {
    * @param voltage The voltage to apply (e.g., Volts.of(6.0))
    * @return Command that runs shooter at voltage, stops on end
    */
-  public static Command runVoltage(Flywheel flywheel, Voltage voltage) {
+  public static Command setFlywheelVoltage(Flywheel flywheel, Voltage voltage) {
     return Commands.startEnd(
             () -> flywheel.setFlywheelVoltage(voltage), // Apply voltage
             () -> flywheel.setFlywheelVoltage(Volts.of(0)), // Stop on end
@@ -71,27 +51,10 @@ public class FlywheelCommands {
         .withName("FlywheelVoltage_" + voltage.in(Volts) + "V");
   }
 
-  /**
-   * Runs the shooter at a target speed using feedforward-only control. Stops when the command ends.
-   *
-   * <p><b>Use case:</b> Shooting at a known RPM. Uses kS and kV from constants (no PID).
-   *
-   * @param shooter The shooter subsystem
-   * @param targetSpeed Desired angular velocity (e.g., RPM.of(3000))
-   * @return Command that runs shooter at target speed via feedforward, stops on end
-   */
-  public static Command runVelocity(Flywheel flywheel, AngularVelocity targetSpeed) {
+  public static Command setFlywheelVelocity(Flywheel flywheel, AngularVelocity velocity) {
     return Commands.startEnd(
-            () -> flywheel.setFlywheelSpeed(targetSpeed),
-            () -> flywheel.setFlywheelVoltage(Volts.of(0)),
-            flywheel)
-        .withName("FlywheelVelocity_" + targetSpeed.in(RPM) + "RPM");
-  }
-
-  public static Command runTorque(Flywheel flywheel, AngularVelocity velocity) {
-    return Commands.startEnd(
-        () -> flywheel.setFlywheelTorque(velocity),
-        () -> flywheel.setFlywheelTorque(RotationsPerSecond.of(0)),
+        () -> flywheel.setFlywheelVelocity(velocity),
+        () -> flywheel.setFlywheelVelocity(RotationsPerSecond.of(0)),
         flywheel);
   }
 

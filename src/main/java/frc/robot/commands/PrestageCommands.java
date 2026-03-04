@@ -11,7 +11,7 @@ import frc.robot.subsystems.prestage.Prestage;
 
 public class PrestageCommands {
 
-  public static Command runPrestageVoltage(Prestage prestage, Voltage voltage) {
+  public static Command setPrestageVoltage(Prestage prestage, Voltage voltage) {
     return Commands.startEnd(
             () -> prestage.setPrestageVoltage(voltage), // Apply voltage
             () -> prestage.setPrestageVoltage(Volts.of(0)), // Stop on end
@@ -24,10 +24,10 @@ public class PrestageCommands {
         .withName("PrestageStop");
   }
 
-  public static Command runTorque(Prestage prestage, AngularVelocity prestageVelo) {
+  public static Command setPrestageVelocity(Prestage prestage, AngularVelocity prestageVelo) {
     return Commands.startEnd(
-        () -> prestage.setPrestageTorque(prestageVelo),
-        () -> prestage.setPrestageTorque(RotationsPerSecond.of(0)),
+        () -> prestage.setPrestageVelocity(prestageVelo),
+        () -> prestage.setPrestageVelocity(RotationsPerSecond.of(0)),
         prestage);
   }
 }

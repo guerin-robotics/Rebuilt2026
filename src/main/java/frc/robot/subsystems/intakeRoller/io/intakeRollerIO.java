@@ -21,7 +21,7 @@ public interface intakeRollerIO {
 
   public default void updateInputs(intakeRollerIOInputs inputs) {}
 
-  public default void setIntakeRollerVoltage(Voltage volts) {}
+  public default void setRollerVoltage(Voltage volts) {}
 
-  public default void setRollerTorqueControl(AngularVelocity rollerVelo) {}
+  public default void setRollerVelocity(AngularVelocity rollerVelo) {}
 }

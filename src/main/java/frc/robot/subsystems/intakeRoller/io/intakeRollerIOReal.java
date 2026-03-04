@@ -8,7 +8,6 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -26,7 +25,6 @@ public class intakeRollerIOReal implements intakeRollerIO {
   private final TalonFX intakeRollerLeader;
   private final TalonFX intakeRollerFollower;
 
-  private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
   private final VoltageOut voltageRequest = new VoltageOut(0);
   private final MotionMagicVelocityTorqueCurrentFOC torqueRequest =
       new MotionMagicVelocityTorqueCurrentFOC(0);
@@ -93,15 +91,11 @@ public class intakeRollerIOReal implements intakeRollerIO {
         RotationsPerSecond.of(intakeRollerLeader.getClosedLoopError().getValueAsDouble());
   }
 
-  public void setIntakeRollerVoltage(Voltage volts) {
+  public void setRollerVoltage(Voltage volts) {
     intakeRollerLeader.setControl(voltageRequest.withOutput(volts));
   }
 
-  public void setIntakeRollerSpeed(AngularVelocity speed) {
-    intakeRollerLeader.setControl(velocityRequest.withVelocity(speed));
-  }
-
-  public void setRollerTorqueControl(AngularVelocity rollerVelo) {
+  public void setRollerVelocity(AngularVelocity rollerVelo) {
     intakeRollerLeader.setControl(torqueRequest.withVelocity(rollerVelo));
   }
 }

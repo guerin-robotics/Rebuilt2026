@@ -39,15 +39,15 @@ import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.ShotCalculator;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.FlywheelIOPhoenix6;
-import frc.robot.subsystems.hood.Hood;
-import frc.robot.subsystems.hood.io.HoodIO;
-import frc.robot.subsystems.hood.io.HoodIOReal;
 import frc.robot.subsystems.intakeRoller.intakeRoller;
 import frc.robot.subsystems.intakeRoller.io.intakeRollerIO;
 import frc.robot.subsystems.intakeRoller.io.intakeRollerIOReal;
 import frc.robot.subsystems.intakeSlider.intakeSlider;
 import frc.robot.subsystems.intakeSlider.io.intakeSliderIO;
 import frc.robot.subsystems.intakeSlider.io.intakeSliderIOReal;
+import frc.robot.subsystems.hood.Hood;
+import frc.robot.subsystems.hood.io.HoodIO;
+import frc.robot.subsystems.hood.io.HoodIOReal;
 import frc.robot.subsystems.prestage.Prestage;
 import frc.robot.subsystems.prestage.io.PrestageIO;
 import frc.robot.subsystems.prestage.io.PrestageIOReal;
@@ -254,10 +254,10 @@ public class RobotContainer {
     buttonPanel
         .button(9)
         .whileTrue(
-            TransportCommands.runTorque(
+            TransportCommands.setTransportVelocity(
                     transport, HardwareConstants.TestVelocities.transportVelocity)
                 .alongWith(
-                    FeederCommands.runTorque(
+                    FeederCommands.setFeederVelocity(
                         feeder, HardwareConstants.TestVelocities.feederVelocity))
             // .alongWith(
             //     intakeSliderCommands.intakeJostleByCurrent(
@@ -271,19 +271,19 @@ public class RobotContainer {
     thrustmaster
         .button(3)
         .whileTrue(
-            intakeSliderCommands.runIntakeForward(
+            intakeSliderCommands.setSliderVoltage(
                 intakeSlider, HardwareConstants.TestVoltages.intakeSliderTestVoltageIn));
     thrustmaster
         .button(4)
         .whileTrue(
-            intakeSliderCommands.runIntakeForward(
+            intakeSliderCommands.setSliderVoltage(
                 intakeSlider, HardwareConstants.TestVoltages.intakeSliderTestVoltage));
 
     // Intake roller
     buttonPanel
         .button(7)
         .whileTrue(
-            intakeRollerCommands.runTorque(
+            intakeRollerCommands.setRollerVelocity(
                 intakeRoller, HardwareConstants.TestVelocities.rollerVelocity));
 
     // Set hood pos based on distance from hub
@@ -300,7 +300,7 @@ public class RobotContainer {
             FlywheelCommands.setVelocityForHub(flywheel)
                 .alongWith(HoodCommands.setHoodPosForHub(hood))
                 .alongWith(
-                    PrestageCommands.runTorque(
+                    PrestageCommands.setPrestageVelocity(
                         prestage, HardwareConstants.TestVelocities.prestageVelocity))
                 .alongWith(
                     FeederCommands.runVelocityAtRPM(
@@ -313,7 +313,8 @@ public class RobotContainer {
                         transport,
                         HardwareConstants.TestVelocities.transportVelocity,
                         flywheel.isFlywheelAtVelocity(
-                            ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub()))));
+                            ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
+        );
 
     // Set hood to various positions
     buttonPanel

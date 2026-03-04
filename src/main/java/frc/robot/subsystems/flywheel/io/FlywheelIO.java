@@ -58,15 +58,9 @@ public interface FlywheelIO {
   /** Read sensor data from the flywheel motor. */
   public default void updateInputs(ShooterIOInputs inputs) {}
 
-  /** Set the flywheel to a raw duty cycle output (0.0 to 1.0). For testing only. */
-  public default void setFlywheelDutyCycle(double output) {}
-
   /** Set the flywheel to a specific voltage output. For SysId characterization. */
   public default void setFlywheelVoltage(Voltage volts) {}
 
-  // Set flywheel speed
-  public default void setFlywheelSpeed(AngularVelocity targetSpeed) {}
-
   // VelocityTorqueCurrentFOC control
-  public default void setFlywheelTorque(AngularVelocity velocity) {}
+  public default void setFlywheelVelocity(AngularVelocity velocity) {}
 }

@@ -24,18 +24,18 @@ public class TransportCommands {
         .withName("TransportStop");
   }
 
-  public static Command runTorque(Transport transport, AngularVelocity transportVelo) {
+  public static Command setTransportVelocity(Transport transport, AngularVelocity transportVelo) {
     return Commands.startEnd(
-        () -> transport.setTransportTorque(transportVelo),
-        () -> transport.setTransportTorque(RotationsPerSecond.of(0)),
+        () -> transport.setTransportVelocity(transportVelo),
+        () -> transport.setTransportVelocity(RotationsPerSecond.of(0)),
         transport);
   }
 
   public static Command runVelocityAtRPM(
       Transport transport, AngularVelocity transportVelo, boolean isAtRPM) {
     return Commands.startEnd(
-        () -> transport.setVelocityAtRPM(transportVelo, isAtRPM),
-        () -> transport.setTransportTorque(RotationsPerSecond.of(0)),
+        () -> transport.setTransportVelocityAtRPM(transportVelo, isAtRPM),
+        () -> transport.setTransportVelocity(RotationsPerSecond.of(0)),
         transport);
   }
 }

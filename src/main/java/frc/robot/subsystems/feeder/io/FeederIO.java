@@ -23,7 +23,5 @@ public interface FeederIO {
 
   public default void setFeederVoltage(Voltage volts) {}
 
-  public default void setFeederSpeed(AngularVelocity speed) {}
-
-  public default void setFeederTorqueControl(AngularVelocity feederVelo) {}
+  public default void setFeederVelocity(AngularVelocity feederVelo) {}
 }

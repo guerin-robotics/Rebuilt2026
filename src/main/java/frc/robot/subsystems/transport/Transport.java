@@ -27,17 +27,13 @@ public class Transport extends SubsystemBase {
     io.setTransportVoltage(volts);
   }
 
-  public void setTransportSpeed(AngularVelocity speed) {
-    io.setTransportSpeed(speed);
+  public void setTransportVelocity(AngularVelocity transportVelo) {
+    io.setTransportVelocity(transportVelo);
   }
 
-  public void setTransportTorque(AngularVelocity transportVelo) {
-    io.setTransportTorque(transportVelo);
-  }
-
-  public void setVelocityAtRPM(AngularVelocity transportVelo, boolean isAtRPM) {
+  public void setTransportVelocityAtRPM(AngularVelocity transportVelo, boolean isAtRPM) {
     if (isAtRPM) {
-      io.setTransportTorque(transportVelo);
+      io.setTransportVelocity(transportVelo);
     }
   }
 }

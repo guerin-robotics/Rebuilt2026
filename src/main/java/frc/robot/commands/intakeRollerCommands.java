@@ -11,21 +11,23 @@ import frc.robot.subsystems.intakeRoller.intakeRoller;
 
 public class intakeRollerCommands {
 
-  public static Command runIntakeRoller(intakeRoller intakeRoller, Voltage voltage) {
+  public static Command setRollerVoltage(intakeRoller intakeRoller, Voltage voltage) {
     return Commands.startEnd(
-        () -> intakeRoller.setIntakeRollerVoltage(voltage),
-        () -> intakeRoller.setIntakeRollerVoltage(Volts.of(0)),
+        () -> intakeRoller.setRollerVoltage(voltage),
+        () -> intakeRoller.setRollerVoltage(Volts.of(0)),
+        intakeRoller);
+  }
+
+  public static Command setRollerVelocity(intakeRoller intakeRoller, AngularVelocity rollerVelo) {
+    return Commands.startEnd(
+        () -> intakeRoller.setRollerVelocity(rollerVelo),
+        () -> intakeRoller.setRollerVelocity(RotationsPerSecond.of(0)),
         intakeRoller);
   }
 
   public static Command stopIntakeRoller(intakeRoller intakeRoller) {
-    return Commands.runOnce(() -> intakeRoller.setIntakeRollerVoltage(Volts.of(0)), intakeRoller);
+    return Commands.runOnce(() -> intakeRoller.setRollerVoltage(Volts.of(0)), intakeRoller);
   }
 
-  public static Command runTorque(intakeRoller intakeRoller, AngularVelocity rollerVelo) {
-    return Commands.startEnd(
-        () -> intakeRoller.setRollerTorqueControl(rollerVelo),
-        () -> intakeRoller.setRollerTorqueControl(RotationsPerSecond.of(0)),
-        intakeRoller);
-  }
+
 }

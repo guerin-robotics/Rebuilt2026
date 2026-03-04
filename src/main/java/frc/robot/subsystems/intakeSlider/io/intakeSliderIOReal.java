@@ -85,25 +85,21 @@ public class intakeSliderIOReal implements intakeSliderIO {
         RotationsPerSecond.of(intakeSliderMotor.getClosedLoopError().getValueAsDouble());
   }
 
-  public void setIntakeSliderVoltage(Voltage volts) {
+  public void setSliderVoltage(Voltage volts) {
     intakeSliderMotor.setControl(voltageRequest.withOutput(volts));
   }
 
-  public void setIntakeInch(double inches) {
+  public void setSliderInch(double inches) {
     intakeSliderMotor.setControl(
         positionRequest.withPosition(inches * intakeSliderConstants.Mechanical.rotationsPerInch));
   }
 
-  public void setIntakeRotations(double rotations) {
-    intakeSliderMotor.setControl(positionRequest.withPosition(rotations));
-  }
-
-  public void setIntakeSliderVelocityTorque(AngularVelocity velocity) {
+  public void setSliderVelocity(AngularVelocity velocity) {
     intakeSliderMotor.setControl(torqueRequest.withVelocity(velocity));
     Logger.recordOutput("Intake slider torque controls", velocity);
   }
 
-  public void zeroMotor() {
+  public void zeroSliderMotor() {
     intakeSliderMotor.setPosition(0);
   }
 }

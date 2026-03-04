@@ -11,7 +11,7 @@ import frc.robot.subsystems.feeder.Feeder;
 
 public class FeederCommands {
 
-  public static Command runFeederVoltage(Feeder feeder, Voltage voltage) {
+  public static Command setFeederVoltage(Feeder feeder, Voltage voltage) {
     return Commands.startEnd(
             () -> feeder.setFeederVoltage(voltage), // Apply voltage
             () -> feeder.setFeederVoltage(Volts.of(0)), // Stop on end
@@ -24,10 +24,10 @@ public class FeederCommands {
         .withName("FeederStop");
   }
 
-  public static Command runTorque(Feeder feeder, AngularVelocity feederVelo) {
+  public static Command setFeederVelocity(Feeder feeder, AngularVelocity feederVelo) {
     return Commands.startEnd(
-        () -> feeder.setFeederTorqueControl(feederVelo),
-        () -> feeder.setFeederTorqueControl(RotationsPerSecond.of(0)),
+        () -> feeder.setFeederVelocity(feederVelo),
+        () -> feeder.setFeederVelocity(RotationsPerSecond.of(0)),
         feeder);
   }
 
@@ -35,7 +35,7 @@ public class FeederCommands {
       Feeder feeder, AngularVelocity feederVelo, boolean isAtRPM) {
     return Commands.startEnd(
         () -> feeder.setFeederVelocityAtRPM(feederVelo, isAtRPM),
-        () -> feeder.setFeederTorqueControl(RotationsPerSecond.of(0)),
+        () -> feeder.setFeederVelocity(RotationsPerSecond.of(0)),
         feeder);
   }
 }

@@ -1,6 +1,5 @@
 package frc.robot.subsystems.flywheel.io;
 
-import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -8,14 +7,12 @@ import static edu.wpi.first.units.Units.Volts;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.HardwareConstants;
@@ -53,13 +50,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
   private final TalonFX follower3;
 
   // Control requests (reused to avoid allocations)
-  private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
   private final VoltageOut voltageRequest = new VoltageOut(0);
-  // Feedforward controller. kV from constants is V/(rps); SimpleMotorFeedforward expects V/(rad/s).
-  // Conversion: 1 rps = 2π rad/s => kV_rads = kV_rps / (2π)
-  private final SimpleMotorFeedforward feedforward =
-      new SimpleMotorFeedforward(
-          FlywheelConstants.PID.MAIN_KS, FlywheelConstants.PID.MAIN_KV / (2 * Math.PI));
   private final MotionMagicVelocityTorqueCurrentFOC velocityTorqueCurrentRequest =
       new MotionMagicVelocityTorqueCurrentFOC(0);
 
@@ -152,21 +143,11 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
         RotationsPerSecond.of(leader.getClosedLoopReference().getValueAsDouble());
   }
 
-  public void setFlywheelDutyCycle(double output) {
-    leader.setControl(dutyCycleRequest.withOutput(output));
-  }
-
   public void setFlywheelVoltage(Voltage volts) {
     leader.setControl(voltageRequest.withOutput(volts.in(Volts)));
   }
 
-  public void setFlywheelSpeed(AngularVelocity targetSpeed) {
-    double velocityRadPerSec = targetSpeed.in(RadiansPerSecond);
-    double volts = feedforward.calculate(velocityRadPerSec);
-    leader.setControl(voltageRequest.withOutput(volts));
-  }
-
-  public void setFlywheelTorque(AngularVelocity velocity) {
+  public void setFlywheelVelocity(AngularVelocity velocity) {
     config.Slot0.withKS(FlywheelConstants.TorqueControl.KS)
         .withKV(FlywheelConstants.TorqueControl.KV)
         .withKP(FlywheelConstants.TorqueControl.KP);

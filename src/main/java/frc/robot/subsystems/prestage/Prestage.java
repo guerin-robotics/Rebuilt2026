@@ -27,11 +27,7 @@ public class Prestage extends SubsystemBase {
     io.setPrestageVoltage(volts);
   }
 
-  public void setPrestageSpeed(AngularVelocity speed) {
-    io.setPrestageSpeed(speed);
-  }
-
-  public void setPrestageTorque(AngularVelocity prestageVelo) {
-    io.setPrestageTorque(prestageVelo);
+  public void setPrestageVelocity(AngularVelocity prestageVelo) {
+    io.setPrestageVelocity(prestageVelo);
   }
 }

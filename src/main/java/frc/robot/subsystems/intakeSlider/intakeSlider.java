@@ -25,24 +25,20 @@ public class intakeSlider extends SubsystemBase {
     Logger.processInputs("Intake Slider", inputs);
   }
 
-  public void setIntakeSliderVoltage(Voltage volts) {
-    io.setIntakeSliderVoltage(volts);
+  public void setSliderVoltage(Voltage volts) {
+    io.setSliderVoltage(volts);
   }
 
-  public void setIntakeInch(double inches) {
-    io.setIntakeInch(inches);
+  public void setSliderInch(double inches) {
+    io.setSliderInch(inches);
   }
 
-  public void setIntakeRotations(double rotations) {
-    io.setIntakeRotations(rotations);
+  public void setSliderVelocity(AngularVelocity sliderVelo) {
+    io.setSliderVelocity(sliderVelo);
   }
 
-  public void setIntakeSliderVelocityTorque(AngularVelocity sliderVelo) {
-    io.setIntakeSliderVelocityTorque(sliderVelo);
-  }
-
-  public void zeroMotor() {
-    io.zeroMotor();
+  public void zeroSliderMotor() {
+    io.zeroSliderMotor();
   }
 
   // Retract for pulse sequence
@@ -51,18 +47,18 @@ public class intakeSlider extends SubsystemBase {
     double currentPos =
         inputs.intakeSliderPosition * intakeSliderConstants.Mechanical.rotationsPerInch;
     if (inputs.intakeSliderStatorCurrent < 50) {
-      io.setIntakeSliderVoltage(HardwareConstants.TestVoltages.intakeSliderTestVoltageIn);
+      io.setSliderVoltage(HardwareConstants.TestVoltages.intakeSliderTestVoltageIn);
     } else {
-      io.setIntakeInch(currentPos + extensionInches);
+      io.setSliderInch(currentPos + extensionInches);
       new WaitCommand(seconds);
     }
   }
 
   public void intakeHome(AngularVelocity homeVelo) {
     if (inputs.intakeSliderStatorCurrent > 0.5) {
-      io.setIntakeSliderVelocityTorque(homeVelo);
+      io.setSliderVelocity(homeVelo);
     } else {
-      io.zeroMotor();
+      io.zeroSliderMotor();
     }
   }
 }
