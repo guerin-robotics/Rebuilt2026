@@ -19,18 +19,25 @@ public class intakeSliderCommands {
         intakeSlider);
   }
 
-  public static Command stopIntakeSlider(intakeSlider intakeSlider) {
+  public static Command setSliderVelocity(intakeSlider intakeSlider, AngularVelocity sliderVelo) {
+    return Commands.startEnd(
+        () -> intakeSlider.setSliderVelocity(sliderVelo),
+        () -> intakeSlider.setSliderVelocity(RotationsPerSecond.of(0)),
+        intakeSlider);
+  }
+
+  public static Command stopSlider(intakeSlider intakeSlider) {
     return Commands.runOnce(() -> intakeSlider.setSliderVoltage(Volts.of(0)), intakeSlider);
   }
 
-  public static Command setIntakeInch(intakeSlider intakeSlider, double inches) {
+  public static Command setSliderInch(intakeSlider intakeSlider, double inches) {
     return Commands.startEnd(
         () -> intakeSlider.setSliderInch(inches*intakeSliderConstants.Mechanical.rotationsPerInch),
         () -> intakeSlider.setSliderVoltage(Volts.of(0)),
         intakeSlider);
   }
 
-  public static Command intakeJostleByCurrent(
+  public static Command jostleSliderByCurrent(
       intakeSlider intakeSlider,
       AngularVelocity retractVelo,
       double extensionInches,
@@ -43,12 +50,5 @@ public class intakeSliderCommands {
 
   public static Command zeroSlider(intakeSlider intakeSlider) {
     return Commands.runOnce(() -> intakeSlider.zeroSliderMotor());
-  }
-
-  public static Command setSliderVelocity(intakeSlider intakeSlider, AngularVelocity sliderVelo) {
-    return Commands.startEnd(
-        () -> intakeSlider.setSliderVelocity(sliderVelo),
-        () -> intakeSlider.setSliderVelocity(RotationsPerSecond.of(0)),
-        intakeSlider);
   }
 }

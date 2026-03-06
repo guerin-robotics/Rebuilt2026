@@ -59,6 +59,14 @@ public class HardwareConstants {
     public static final AngularVelocity sliderInVelocity = RotationsPerSecond.of(-20.0);
   }
 
+    public static class SpitVelocities {
+    public static final AngularVelocity FlywheelSpitVelocity = RotationsPerSecond.of(17); // rotations/s
+    public static final AngularVelocity feederSpitVelocity = RotationsPerSecond.of(50.0);
+    public static final AngularVelocity rollerSpitVelocity = RotationsPerSecond.of(-10.0);
+    public static final AngularVelocity prestageSpitVelocity = RotationsPerSecond.of(50.0);
+    public static final AngularVelocity transportSpitVelocity = RotationsPerSecond.of(-10.0);
+  }
+
   public static class TestPositions {
     // Slider pulse seconds
     public static final double pulseInches = 1.0;
@@ -71,6 +79,11 @@ public class HardwareConstants {
     public static final double hoodPos3Test = 0.5;
     public static final double hoodPos4Test = 0.75;
     public static final double hoodPos5Test = 1.0;
+  }
+
+  public static class TowerConstants {
+    public static final AngularVelocity FlywheelTowerVelocity = RotationsPerSecond.of(17);
+    public static final double hoodTowerPos = 0.25;
   }
 
   public static class ControllerConstants {

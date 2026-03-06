@@ -44,6 +44,7 @@ public class intakeSliderIOReal implements intakeSliderIO {
         intakeSliderConstants.SoftwareConstants.INVERTED
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+    config.Feedback.SensorToMechanismRatio = intakeSliderConstants.Mechanical.sliderRatio;
 
     // Slot0 gains for position control
     config.Slot0.kS = intakeSliderConstants.PID.KS;

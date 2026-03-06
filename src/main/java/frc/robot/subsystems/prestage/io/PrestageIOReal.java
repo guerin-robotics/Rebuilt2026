@@ -48,6 +48,7 @@ public class PrestageIOReal implements PrestageIO {
         PrestageConstants.SoftwareConstants.INVERTED
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+    config.Feedback.SensorToMechanismRatio = PrestageConstants.Mechanical.prestageRatio;
 
     // Slot0 PID/FF gains for velocity control
     config.Slot0.kS = PrestageConstants.PID.KS;

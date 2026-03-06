@@ -17,6 +17,10 @@ public class PrestageConstants {
     public static final boolean INVERTED = false;
   }
 
+  public static class Mechanical {
+    public static final double prestageRatio = 0.5;
+  }
+
   // NOT Tuned yet - placeholder values
   public static class PID {
     public static final double KS = 10.0;

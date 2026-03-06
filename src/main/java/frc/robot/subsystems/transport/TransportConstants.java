@@ -18,6 +18,10 @@ public class TransportConstants {
     public static final boolean INVERTED = false;
   }
 
+  public static class Mechanical {
+    public static final double transportRatio = 0.44;
+  }
+
   // NOT Tuned yet - placeholder values
   public static class PID {
     public static final double KS = 35;

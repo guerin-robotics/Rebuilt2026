@@ -3,7 +3,6 @@ package frc.robot.subsystems.flywheel;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -66,6 +65,15 @@ public class Flywheel extends SubsystemBase {
   }
 
   // Definitely getting ahead of ourselves but when we get to shooting on the move...
+  /**
+   * For dynamic shooting, we'll want to give the flywheel a velocity based not only on its distance from the hub (basic 
+   * distance-based shooting), but also on the robot's movement. This function calculates that velocity based on known
+   * quantities: robot odometry and hub position.
+   * 
+   * @param hoodRadians The angle, given in radians, at which the hood position causes the fuel to shoot. Distinct
+   * from hood position, which is a 0.0-1.0 scale. Eventually, we'll want this to update based on distance, but for
+   *  now, it's fine to keep it fixed and handle trajectory adjustments by RPM.
+   */
   public void shootDynamic(double hoodRadians) {
     Translation2d fuelToGroundVector =
         new Translation2d(
@@ -81,8 +89,6 @@ public class Flywheel extends SubsystemBase {
         new Translation2d(
             (fuelToGroundVector.getX() - robotToGroundVector.getX()),
             (fuelToGroundVector.getY() - robotToGroundVector.getY()));
-    // This quantity is the angle to the goal - it needs passed to the drivetrain
-    Rotation2d targetHeading = fuelToRobotVector.getAngle();
     // Our fuelToRobotVector gave us a linear velocity (m/s) which we now convert to rps using
     // flywheel rotations/meter
     LinearVelocity fuelVelocity =

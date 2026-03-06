@@ -17,6 +17,10 @@ public class intakeRollerConstants {
     public static final boolean INVERTED = false;
   }
 
+  public static class Mechanical {
+    public static final double rollerRatio = 0.625;
+  }
+
   public static class rollerMagicConstants {
     public static final double rollerAccel = 20.0;
   }

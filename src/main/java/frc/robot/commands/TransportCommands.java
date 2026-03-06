@@ -31,7 +31,7 @@ public class TransportCommands {
         transport);
   }
 
-  public static Command runVelocityAtRPM(
+  public static Command setVelocityAtRPM(
       Transport transport, AngularVelocity transportVelo, boolean isAtRPM) {
     return Commands.startEnd(
         () -> transport.setTransportVelocityAtRPM(transportVelo, isAtRPM),

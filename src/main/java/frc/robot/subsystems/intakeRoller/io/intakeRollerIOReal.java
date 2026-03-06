@@ -50,6 +50,7 @@ public class intakeRollerIOReal implements intakeRollerIO {
         intakeRollerConstants.SoftwareConstants.INVERTED
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+    config.Feedback.SensorToMechanismRatio = intakeRollerConstants.Mechanical.rollerRatio;
 
     var rollerMagic = config.MotionMagic;
     rollerMagic.MotionMagicAcceleration = rollerMagicConstants.rollerAccel;

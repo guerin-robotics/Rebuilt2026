@@ -31,7 +31,7 @@ public class FeederCommands {
         feeder);
   }
 
-  public static Command runVelocityAtRPM(
+  public static Command setVelocityAtRPM(
       Feeder feeder, AngularVelocity feederVelo, boolean isAtRPM) {
     return Commands.startEnd(
         () -> feeder.setFeederVelocityAtRPM(feederVelo, isAtRPM),
