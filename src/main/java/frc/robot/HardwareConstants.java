@@ -59,8 +59,9 @@ public class HardwareConstants {
     public static final AngularVelocity sliderInVelocity = RotationsPerSecond.of(-20.0);
   }
 
-    public static class SpitVelocities {
-    public static final AngularVelocity FlywheelSpitVelocity = RotationsPerSecond.of(17); // rotations/s
+  public static class SpitVelocities {
+    public static final AngularVelocity FlywheelSpitVelocity =
+        RotationsPerSecond.of(17); // rotations/s
     public static final AngularVelocity feederSpitVelocity = RotationsPerSecond.of(50.0);
     public static final AngularVelocity rollerSpitVelocity = RotationsPerSecond.of(-10.0);
     public static final AngularVelocity prestageSpitVelocity = RotationsPerSecond.of(50.0);

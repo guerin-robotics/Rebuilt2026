@@ -260,13 +260,14 @@ public class Drive extends SubsystemBase {
   }
 
   /**
-   * For dynamic shooting, we'll want to give the drivetrain a heading to stick to in order to keep shooting at the hub. This
-   * function calculates that heading based on known quantities: robot odometry and hub position.
-   * 
+   * For dynamic shooting, we'll want to give the drivetrain a heading to stick to in order to keep
+   * shooting at the hub. This function calculates that heading based on known quantities: robot
+   * odometry and hub position.
+   *
    * @return A rotation2d that is the drivetrain's target heading.
    */
   public Rotation2d getHeadingForShootDynamic() {
-        Translation2d fuelToGroundVector =
+    Translation2d fuelToGroundVector =
         new Translation2d(
             (FieldConstants.Hub.topCenterPoint.getX()
                 - RobotState.getInstance().getEstimatedPose().getX()),

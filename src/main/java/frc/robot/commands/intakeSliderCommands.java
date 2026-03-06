@@ -32,7 +32,8 @@ public class intakeSliderCommands {
 
   public static Command setSliderInch(intakeSlider intakeSlider, double inches) {
     return Commands.startEnd(
-        () -> intakeSlider.setSliderInch(inches*intakeSliderConstants.Mechanical.rotationsPerInch),
+        () ->
+            intakeSlider.setSliderInch(inches * intakeSliderConstants.Mechanical.rotationsPerInch),
         () -> intakeSlider.setSliderVoltage(Volts.of(0)),
         intakeSlider);
   }
