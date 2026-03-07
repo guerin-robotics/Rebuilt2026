@@ -22,14 +22,14 @@ public class intakeRollerConstants {
   }
 
   public static class rollerMagicConstants {
-    public static final double rollerAccel = 20.0;
+    public static final double rollerAccel = 60.0;
   }
 
   // NOT Tuned yet - placeholder values
   public static class PID {
-    public static final double KS = 35.0;
-    public static final double KV = 0.12;
-    public static final double KP = 0.0;
+    public static final double KS = 3.5;
+    public static final double KV = 0.0;
+    public static final double KP = 1.0;
     public static final double KI = 0.0;
     public static final double KD = 0.0;
   }

@@ -259,13 +259,13 @@ public class RobotContainer {
     //             .alongWith(
     //                 FeederCommands.setFeederVelocity(
     //                     feeder, HardwareConstants.TestVelocities.feederVelocity))
-            // .alongWith(
-            //     intakeSliderCommands.intakeJostleByCurrent(
-            //         intakeSlider,
-            //         HardwareConstants.TestVelocities.sliderInVelocity,
-            //         HardwareConstants.PulseConstants.pulseInches,
-            //         HardwareConstants.PulseConstants.pulseSeconds))
-           // );
+    // .alongWith(
+    //     intakeSliderCommands.intakeJostleByCurrent(
+    //         intakeSlider,
+    //         HardwareConstants.TestVelocities.sliderInVelocity,
+    //         HardwareConstants.PulseConstants.pulseInches,
+    //         HardwareConstants.PulseConstants.pulseSeconds))
+    // );
 
     // // Buttons on joystick for intake in/out
     // thrustmaster
@@ -418,7 +418,7 @@ public class RobotContainer {
 
     // Intake jostle
     buttonPanel
-        .button(2)
+        .button(8)
         .whileTrue(
             intakeSliderCommands.jostleSliderByCurrent(
                 intakeSlider,
@@ -428,7 +428,7 @@ public class RobotContainer {
 
     // Spit sequence
     buttonPanel
-        .button(3)
+        .button(7)
         .whileTrue(
             FlywheelCommands.setFlywheelVelocity(
                     flywheel, HardwareConstants.SpitVelocities.FlywheelSpitVelocity)
@@ -457,18 +457,51 @@ public class RobotContainer {
                 () -> drive.getHeadingForShootDynamic()));
 
     // Basic velocity controls for tuning
-    buttonPanel.button(1).whileTrue(FlywheelCommands.setFlywheelVelocity(
-        flywheel, HardwareConstants.TestVelocities.FlywheelVelocity));
-    buttonPanel.button(2).whileTrue(PrestageCommands.setPrestageVelocity(
-        prestage, HardwareConstants.TestVelocities.prestageVelocity));
-    buttonPanel.button(3).whileTrue(FeederCommands.setFeederVelocity(
-        feeder, HardwareConstants.TestVelocities.feederVelocity));
-    buttonPanel.button(4).whileTrue(TransportCommands.setTransportVelocity(
-        transport, HardwareConstants.TestVelocities.transportVelocity));
-    buttonPanel.button(5).whileTrue(intakeSliderCommands.setSliderVelocity(
-        intakeSlider, HardwareConstants.TestVelocities.sliderVelocity));
-    buttonPanel.button(6).whileTrue(intakeRollerCommands.setRollerVelocity(
-        intakeRoller, HardwareConstants.TestVelocities.rollerVelocity));
+    buttonPanel
+        .button(1)
+        .whileTrue(
+            FlywheelCommands.setFlywheelVelocity(
+                    flywheel, HardwareConstants.TestVelocities.FlywheelVelocity)
+                .alongWith(
+                    PrestageCommands.setPrestageVelocity(
+                        prestage, HardwareConstants.TestVelocities.prestageVelocity)));
+    // buttonPanel
+    //     .button(2)
+    //     .whileTrue(
+    //         PrestageCommands.setPrestageVelocity(
+    //             prestage, HardwareConstants.TestVelocities.prestageVelocity));
+    buttonPanel
+        .button(3)
+        .whileTrue(
+            FeederCommands.setFeederVelocity(
+                    feeder, HardwareConstants.TestVelocities.feederVelocity)
+                .alongWith(
+                    TransportCommands.setTransportVelocity(
+                        transport, HardwareConstants.TestVelocities.transportVelocity)));
+    // buttonPanel
+    //     .button(4)
+    //     .whileTrue(
+    //         TransportCommands.setTransportVelocity(
+    //             transport, HardwareConstants.TestVelocities.transportVelocity));
+    // buttonPanel
+    //     .button(5)
+    //     .whileTrue(
+    //         intakeSliderCommands.setSliderVoltage(
+    //             intakeSlider, HardwareConstants.TestVoltages.intakeSliderTestVoltage));
+    buttonPanel
+        .button(5)
+        .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos3Test));
+
+    buttonPanel
+        .button(10)
+        .whileTrue(
+            intakeSliderCommands.setSliderVoltage(
+                intakeSlider, HardwareConstants.TestVoltages.intakeSliderTestVoltageIn));
+    buttonPanel
+        .button(6)
+        .whileTrue(
+            intakeRollerCommands.setRollerVelocity(
+                intakeRoller, HardwareConstants.TestVelocities.rollerVelocity));
   }
 
   public Command getAutonomousCommand() {

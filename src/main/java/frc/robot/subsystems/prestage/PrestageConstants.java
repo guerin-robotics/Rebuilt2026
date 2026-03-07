@@ -23,14 +23,20 @@ public class PrestageConstants {
 
   // NOT Tuned yet - placeholder values
   public static class PID {
-    public static final double KS = 10.0;
+    public static final double KS = 15.0;
     public static final double KV = 0.0;
-    public static final double KP = 10.0;
+    public static final double KP = 5.0;
+
+    public static final double followerKS = 5.0;
+    public static final double followerKV = 0.0;
+    public static final double followerKP = 3.0;
+
     public static final double KI = 0.0;
+
     public static final double KD = 0.0;
   }
 
   public static class prestageMagicConstants {
-    public static final double prestageAccel = 20.0;
+    public static final double prestageAccel = 60.0;
   }
 }

@@ -30,4 +30,11 @@ public class PrestageCommands {
         () -> prestage.setPrestageVelocity(RotationsPerSecond.of(0)),
         prestage);
   }
+
+  public static Command setOneVelo(Prestage prestage, AngularVelocity velo) {
+    return Commands.startEnd(
+        () -> prestage.setOneVelo(velo),
+        () -> prestage.setOneVelo(RotationsPerSecond.of(0)),
+        prestage);
+  }
 }

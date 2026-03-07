@@ -10,13 +10,24 @@ public interface PrestageIO {
 
   @AutoLog
   public static class PrestageIOInputs {
-    public Voltage prestageVoltage;
-    public Current prestageStatorAmps;
-    public Current prestageSupplyAmps;
-    public AngularVelocity prestageMotorVelocity;
-    public Temperature prestageMotorTemperature;
-    public AngularVelocity prestageClosedLoopReference;
-    public AngularVelocity prestageClosedLoopError;
+    public Voltage prestageLeftVoltage;
+    public Current prestageLeftStatorAmps;
+    public Current prestageLeftSupplyAmps;
+    public Voltage prestageRightVoltage;
+    public Current prestageRightStatorAmps;
+    public Current prestageRightSupplyAmps;
+
+    public AngularVelocity prestageLeftVelocity;
+    public AngularVelocity prestageRightVelocity;
+
+    public Temperature prestageLeftTemperature;
+    public Temperature prestageRightTemperature;
+
+    public AngularVelocity prestageLeftClosedLoopReference;
+    public AngularVelocity prestageRightClosedLoopReference;
+
+    public AngularVelocity prestageLeftClosedLoopError;
+    public AngularVelocity prestageRightClosedLoopError;
   }
 
   public default void updateInputs(PrestageIOInputs inputs) {}
@@ -24,4 +35,6 @@ public interface PrestageIO {
   public default void setPrestageVoltage(Voltage volts) {}
 
   public default void setPrestageVelocity(AngularVelocity prestageVelo) {}
+
+  public default void setOneVelo(AngularVelocity prestageVelo) {}
 }

@@ -44,17 +44,17 @@ public class HardwareConstants {
     public static final Voltage FeederTestVoltage = Volts.of(3.0);
     public static final Voltage PrestageTestVoltage = Volts.of(5.0);
     public static final Voltage TransportTestVoltage = Volts.of(-3.0);
-    public static final Voltage intakeSliderTestVoltage = Volts.of(10.0);
-    public static final Voltage intakeSliderTestVoltageIn = Volts.of(-10.0);
+    public static final Voltage intakeSliderTestVoltage = Volts.of(3.0);
+    public static final Voltage intakeSliderTestVoltageIn = Volts.of(-3.0);
     public static final Voltage intakeRollerTestVoltage = Volts.of(10.0);
   }
 
   public static class TestVelocities {
     public static final AngularVelocity FlywheelVelocity = RotationsPerSecond.of(17); // rotations/s
     public static final AngularVelocity feederVelocity = RotationsPerSecond.of(50.0);
-    public static final AngularVelocity rollerVelocity = RotationsPerSecond.of(-10.0);
+    public static final AngularVelocity rollerVelocity = RotationsPerSecond.of(-50.0);
     public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(50.0);
-    public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-10.0);
+    public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-40.0);
     public static final AngularVelocity sliderVelocity = RotationsPerSecond.of(20.0);
     public static final AngularVelocity sliderInVelocity = RotationsPerSecond.of(-20.0);
   }
