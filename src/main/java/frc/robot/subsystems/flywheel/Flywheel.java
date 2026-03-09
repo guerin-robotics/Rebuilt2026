@@ -11,6 +11,7 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.FieldConstants;
+import frc.robot.HardwareConstants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.ShooterIOInputsAutoLogged;
@@ -47,6 +48,10 @@ public class Flywheel extends SubsystemBase {
 
   public void setFlywheelVelocity(AngularVelocity velocity) {
     io.setFlywheelVelocity(velocity);
+  }
+
+  public void setFlywheelIdle() {
+    io.setFlywheelVelocity(HardwareConstants.TestVelocities.flywheelIdleVelocity);
   }
 
   public void setSpeedForHub() {

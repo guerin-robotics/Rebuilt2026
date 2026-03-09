@@ -24,9 +24,7 @@ public interface intakeSliderIO {
 
   public default void setSliderVoltage(Voltage volts) {}
 
-  public default void setSliderInch(double inches) {}
-
   public default void setSliderVelocity(AngularVelocity velocity) {}
 
-  public default void zeroSliderMotor() {}
+  public default void zeroSliderEncoder() {}
 }

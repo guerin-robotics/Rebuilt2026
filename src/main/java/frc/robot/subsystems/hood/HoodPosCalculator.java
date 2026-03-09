@@ -28,7 +28,7 @@ public class HoodPosCalculator {
     double distanceMeters = distance.in(Meters);
     double hoodPos = HoodConstants.HoodMap.ANGLE_MAP.get(distanceMeters);
 
-    Logger.recordOutput("Flywheel/ShotCalculator/HoodPos", hoodPos);
+    Logger.recordOutput("Hood/HoodPosCalculator/HoodPos", hoodPos);
 
     if (hoodPos > HoodConstants.Mechanical.hoodMaxPos) {
       hoodPos = HoodConstants.Mechanical.hoodMaxPos;

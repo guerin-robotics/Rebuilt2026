@@ -7,10 +7,10 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.hardware.CANcoder;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.HardwareConstants;
@@ -23,14 +23,15 @@ public class intakeSliderIOReal implements intakeSliderIO {
   private static final CANBus CAN_BUS = new CANBus("rio");
 
   private final TalonFX intakeSliderMotor;
+  private final CANcoder intakeSliderEncoder;
 
   private final VoltageOut voltageRequest = new VoltageOut(0);
-  private final PositionTorqueCurrentFOC positionRequest = new PositionTorqueCurrentFOC(0);
-  private final MotionMagicVelocityTorqueCurrentFOC torqueRequest =
+  private final MotionMagicVelocityTorqueCurrentFOC velocityRequest =
       new MotionMagicVelocityTorqueCurrentFOC(0);
 
   public intakeSliderIOReal() {
     intakeSliderMotor = new TalonFX(HardwareConstants.CanIds.INTAKE_SLIDER_MOTOR_ID, CAN_BUS);
+    intakeSliderEncoder = new CANcoder(HardwareConstants.CanIds.INTAKE_SLIDER_ENCODER_ID, CAN_BUS);
 
     configureSliderMotor();
   }
@@ -73,13 +74,16 @@ public class intakeSliderIOReal implements intakeSliderIO {
 
   @Override
   public void updateInputs(IntakeSliderIOInputs inputs) {
-    inputs.intakeSliderVoltage = intakeSliderMotor.getMotorVoltage().getValue();
+    // Get velocity and position from encoder
     inputs.intakeSliderVelocity =
-        RotationsPerSecond.of(intakeSliderMotor.getVelocity().getValueAsDouble());
+        RotationsPerSecond.of(intakeSliderEncoder.getVelocity().getValueAsDouble());
+    inputs.intakeSliderPosition = intakeSliderEncoder.getAbsolutePosition().getValueAsDouble();
+
+    // Get voltage, current, temperature, and setpoint/error from motor
+    inputs.intakeSliderVoltage = intakeSliderMotor.getMotorVoltage().getValue();
     inputs.intakeSliderStatorCurrent = intakeSliderMotor.getStatorCurrent().getValueAsDouble();
     inputs.intakeSliderSupplyCurrent = intakeSliderMotor.getSupplyCurrent().getValue();
     inputs.intakeSliderTemperature = intakeSliderMotor.getDeviceTemp().getValue();
-    inputs.intakeSliderPosition = intakeSliderMotor.getPosition().getValueAsDouble();
     inputs.intakeSliderClosedLoopReference =
         RotationsPerSecond.of(intakeSliderMotor.getClosedLoopReference().getValueAsDouble());
     inputs.intakeSliderClosedLoopError =
@@ -90,17 +94,12 @@ public class intakeSliderIOReal implements intakeSliderIO {
     intakeSliderMotor.setControl(voltageRequest.withOutput(volts));
   }
 
-  public void setSliderInch(double inches) {
-    intakeSliderMotor.setControl(
-        positionRequest.withPosition(inches * intakeSliderConstants.Mechanical.rotationsPerInch));
-  }
-
   public void setSliderVelocity(AngularVelocity velocity) {
-    intakeSliderMotor.setControl(torqueRequest.withVelocity(velocity));
+    intakeSliderMotor.setControl(velocityRequest.withVelocity(velocity));
     Logger.recordOutput("Intake slider torque controls", velocity);
   }
 
-  public void zeroSliderMotor() {
-    intakeSliderMotor.setPosition(0);
+  public void zeroSliderEncoder() {
+    intakeSliderEncoder.setPosition(0);
   }
 }

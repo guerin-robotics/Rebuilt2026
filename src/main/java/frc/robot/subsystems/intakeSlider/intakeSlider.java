@@ -4,7 +4,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.HardwareConstants;
 import frc.robot.subsystems.intakeSlider.io.IntakeSliderIOInputsAutoLogged;
 import frc.robot.subsystems.intakeSlider.io.intakeSliderIO;
 import org.littletonrobotics.junction.Logger;
@@ -29,27 +28,32 @@ public class intakeSlider extends SubsystemBase {
     io.setSliderVoltage(volts);
   }
 
-  public void setSliderInch(double inches) {
-    io.setSliderInch(inches);
-  }
-
   public void setSliderVelocity(AngularVelocity sliderVelo) {
     io.setSliderVelocity(sliderVelo);
   }
 
-  public void zeroSliderMotor() {
-    io.zeroSliderMotor();
+  // Checks position and defines velocity request accordingly
+  // Encoder provides position in -1.0 to 1.0, so the degree value must be divided by 360 to put it in this range
+  public void setSliderDegree(double angleDegrees, AngularVelocity velocityUp, AngularVelocity velocityDown) {
+    if (inputs.intakeSliderPosition < (angleDegrees/360)) {
+      io.setSliderVelocity(velocityUp);
+    } else if (inputs.intakeSliderPosition > (angleDegrees/360)) {
+      io.setSliderVelocity(velocityDown);    
+    }
+  }
+
+  public void zeroSliderEncoder() {
+    io.zeroSliderEncoder();
   }
 
   // Retract for pulse sequence
   public void intakeJostleByCurrent(
-      AngularVelocity retractVelo, double extensionInches, double seconds) {
-    double currentPos =
-        inputs.intakeSliderPosition * intakeSliderConstants.Mechanical.rotationsPerInch;
+    AngularVelocity upVelocity, AngularVelocity downVelocity, double degreesDown, double seconds) {
+    double currentPos = inputs.intakeSliderPosition;
     if (inputs.intakeSliderStatorCurrent < 50) {
-      io.setSliderVoltage(HardwareConstants.TestVoltages.intakeSliderTestVoltageIn);
+      io.setSliderVelocity(upVelocity);
     } else {
-      io.setSliderInch(currentPos + extensionInches);
+      setSliderDegree((currentPos + degreesDown), upVelocity, downVelocity);
       new WaitCommand(seconds);
     }
   }
@@ -58,7 +62,7 @@ public class intakeSlider extends SubsystemBase {
     if (inputs.intakeSliderStatorCurrent > 0.5) {
       io.setSliderVelocity(homeVelo);
     } else {
-      io.zeroSliderMotor();
+      io.zeroSliderEncoder();
     }
   }
 }

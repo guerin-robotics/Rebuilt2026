@@ -58,6 +58,10 @@ public class FlywheelCommands {
         flywheel);
   }
 
+  public static Command flywheelIdle(Flywheel flywheel) {
+    return Commands.run(() -> flywheel.setFlywheelIdle());
+  }
+
   /**
    * Sets flywheel velocity based on position relative to hub (calculated from odometry).
    *
