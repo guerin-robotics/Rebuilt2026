@@ -20,7 +20,7 @@ public class HoodConstants {
     static {
       ANGLE_MAP.put(feetToMeters(3), 0.5);
       ANGLE_MAP.put(feetToMeters(5), 0.5);
-      ANGLE_MAP.put(inchesToMeters(82), 0.75);
+      ANGLE_MAP.put(inchesToMeters(82), 0.5);
     }
   }
 }

@@ -29,11 +29,13 @@ public class intakeSliderCommands {
     return Commands.runOnce(() -> intakeSlider.setSliderVoltage(Volts.of(0)), intakeSlider);
   }
 
-  public static Command setSliderDegree(intakeSlider intakeSlider, double angleDegree,
-    AngularVelocity velocityUp, AngularVelocity velocityDown) {
+  public static Command setSliderDegree(
+      intakeSlider intakeSlider,
+      double angleDegree,
+      AngularVelocity velocityUp,
+      AngularVelocity velocityDown) {
     return Commands.run(
-        () -> intakeSlider.setSliderDegree(angleDegree, velocityUp, velocityDown),
-        intakeSlider);
+        () -> intakeSlider.setSliderDegree(angleDegree, velocityUp, velocityDown), intakeSlider);
   }
 
   public static Command jostleSliderByCurrent(

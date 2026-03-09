@@ -33,12 +33,14 @@ public class intakeSlider extends SubsystemBase {
   }
 
   // Checks position and defines velocity request accordingly
-  // Encoder provides position in -1.0 to 1.0, so the degree value must be divided by 360 to put it in this range
-  public void setSliderDegree(double angleDegrees, AngularVelocity velocityUp, AngularVelocity velocityDown) {
-    if (inputs.intakeSliderPosition < (angleDegrees/360)) {
+  // Encoder provides position in -1.0 to 1.0, so the degree value must be divided by 360 to put it
+  // in this range
+  public void setSliderDegree(
+      double angleDegrees, AngularVelocity velocityUp, AngularVelocity velocityDown) {
+    if (inputs.intakeSliderPosition < (angleDegrees / 360)) {
       io.setSliderVelocity(velocityUp);
-    } else if (inputs.intakeSliderPosition > (angleDegrees/360)) {
-      io.setSliderVelocity(velocityDown);    
+    } else if (inputs.intakeSliderPosition > (angleDegrees / 360)) {
+      io.setSliderVelocity(velocityDown);
     }
   }
 
@@ -48,7 +50,10 @@ public class intakeSlider extends SubsystemBase {
 
   // Retract for pulse sequence
   public void intakeJostleByCurrent(
-    AngularVelocity upVelocity, AngularVelocity downVelocity, double degreesDown, double seconds) {
+      AngularVelocity upVelocity,
+      AngularVelocity downVelocity,
+      double degreesDown,
+      double seconds) {
     double currentPos = inputs.intakeSliderPosition;
     if (inputs.intakeSliderStatorCurrent < 50) {
       io.setSliderVelocity(upVelocity);

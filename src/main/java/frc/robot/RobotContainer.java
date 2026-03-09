@@ -246,7 +246,8 @@ public class RobotContainer {
 
     // Single-button shoot sequence.
     // Joystick trigger button.
-    // Wide-range (non-dynamic) shooting and hood positioning w/ flywheel/prestage linked and  feeder/transport waiting
+    // Wide-range (non-dynamic) shooting and hood positioning w/ flywheel/prestage linked and
+    // feeder/transport waiting
     // for velocity checker, intake jostle command currently disabled
     thrustmaster
         .button(1)
@@ -280,7 +281,7 @@ public class RobotContainer {
 
     // Shoot from tower
     thrustmaster
-        .button(2)
+        .button(5)
         .onTrue(
             FlywheelCommands.setFlywheelVelocity(
                     flywheel, HardwareConstants.TowerConstants.FlywheelTowerVelocity)
@@ -316,22 +317,28 @@ public class RobotContainer {
         .button(4)
         .whileTrue(
             intakeSliderCommands
-                .setSliderDegree(intakeSlider, HardwareConstants.TestPositions.intakeDegreesDownTest,
+                .setSliderDegree(
+                    intakeSlider,
+                    HardwareConstants.TestPositions.intakeDegreesDownTest,
                     HardwareConstants.TestVelocities.sliderUpVelocity,
                     HardwareConstants.TestVelocities.sliderDownVelocity)
-            .alongWith(
+                .alongWith(
                     intakeRollerCommands.setRollerVelocity(
                         intakeRoller, HardwareConstants.TestVelocities.rollerVelocity)));
 
     // Intake retract
-    thrustmaster.button(3).whileTrue(
-        intakeSliderCommands.setSliderDegree(intakeSlider, HardwareConstants.TestPositions.intakeDegreesUpTest,
-            HardwareConstants.TestVelocities.sliderUpVelocity, HardwareConstants.TestVelocities.sliderDownVelocity));
+    thrustmaster
+        .button(3)
+        .whileTrue(
+            intakeSliderCommands.setSliderDegree(
+                intakeSlider,
+                HardwareConstants.TestPositions.intakeDegreesUpTest,
+                HardwareConstants.TestVelocities.sliderUpVelocity,
+                HardwareConstants.TestVelocities.sliderDownVelocity));
 
     // Intake jostle
-    // Move off button panel
-    buttonPanel
-        .button(9)
+    thrustmaster
+        .button(6)
         .whileTrue(
             intakeSliderCommands.jostleSliderByCurrent(
                 intakeSlider,
@@ -341,9 +348,8 @@ public class RobotContainer {
                 HardwareConstants.TestPositions.pulseSeconds));
 
     // Spit sequence
-    // Move off button panel
-    buttonPanel
-        .button(10)
+    thrustmaster
+        .button(7)
         .whileTrue(
             FlywheelCommands.setFlywheelVelocity(
                     flywheel, HardwareConstants.SpitVelocities.FlywheelSpitVelocity)
@@ -381,7 +387,8 @@ public class RobotContainer {
                 .alongWith(
                     PrestageCommands.setPrestageVelocity(
                         prestage, HardwareConstants.TestVelocities.prestageVelocity))
-                .alongWith(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos3Test)));
+                .alongWith(
+                    HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos3Test)));
     // Transport and feeder
     buttonPanel
         .button(2)
@@ -395,19 +402,35 @@ public class RobotContainer {
     // Move hood
     buttonPanel
         .button(3)
-        .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos3Test));
+        .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos2Test));
 
     // Pivot intake - 4 for up, 5 for down
+    // buttonPanel
+    //     .button(4)
+    //     .whileTrue(
+    //         intakeSliderCommands.setSliderVoltage(
+    //             intakeSlider, HardwareConstants.TestVoltages.intakeSliderTestVoltageUp));
     buttonPanel
         .button(4)
         .whileTrue(
-            intakeSliderCommands.setSliderVoltage(
-                intakeSlider, HardwareConstants.TestVoltages.intakeSliderTestVoltageUp));
+            intakeSliderCommands.setSliderDegree(
+                intakeSlider,
+                HardwareConstants.TestPositions.intakeDegreesUpTest,
+                HardwareConstants.TestVelocities.sliderUpVelocity,
+                HardwareConstants.TestVelocities.sliderDownVelocity));
+    // buttonPanel
+    //     .button(5)
+    //     .whileTrue(
+    //         intakeSliderCommands.setSliderVoltage(
+    //             intakeSlider, HardwareConstants.TestVoltages.intakeSliderTestVoltageDown));
     buttonPanel
         .button(5)
         .whileTrue(
-            intakeSliderCommands.setSliderVoltage(
-                intakeSlider, HardwareConstants.TestVoltages.intakeSliderTestVoltageDown));
+            intakeSliderCommands.setSliderDegree(
+                intakeSlider,
+                HardwareConstants.TestPositions.intakeDegreesDownTest,
+                HardwareConstants.TestVelocities.sliderUpVelocity,
+                HardwareConstants.TestVelocities.sliderDownVelocity));
 
     // Run roller
     buttonPanel
