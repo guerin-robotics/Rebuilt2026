@@ -498,10 +498,15 @@ public class RobotContainer {
             intakeSliderCommands.setSliderVoltage(
                 intakeSlider, HardwareConstants.TestVoltages.intakeSliderTestVoltageIn));
     buttonPanel
+        .button(9)
+        .whileTrue(
+            intakeSliderCommands.setSliderVoltage(
+                intakeSlider, HardwareConstants.TestVoltages.intakeSliderTestVoltage));
+    buttonPanel
         .button(6)
         .whileTrue(
-            intakeRollerCommands.setRollerVelocity(
-                intakeRoller, HardwareConstants.TestVelocities.rollerVelocity));
+            intakeRollerCommands.setRollerVoltage(
+                intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage));
   }
 
   public Command getAutonomousCommand() {
