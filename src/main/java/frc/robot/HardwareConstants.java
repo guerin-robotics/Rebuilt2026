@@ -46,8 +46,9 @@ public class HardwareConstants {
     public static final Voltage PrestageTestVoltage = Volts.of(5.0);
     public static final Voltage TransportTestVoltage = Volts.of(-3.0);
     public static final Voltage intakeSliderTestVoltageUp = Volts.of(10.0);
-    public static final Voltage intakeSliderTestVoltageDown = Volts.of(-10.0);
-    public static final Voltage intakeRollerTestVoltage = Volts.of(10.0);
+    public static final Voltage intakeSliderTestVoltageDown = Volts.of(-8.0);
+    public static final Voltage intakeRollerTestVoltage = Volts.of(12.0);
+    public static final Voltage intakeRollerAgitateVoltage = Volts.of(6);
   }
 
   public static class TestVelocities {
@@ -55,10 +56,11 @@ public class HardwareConstants {
     public static final AngularVelocity flywheelIdleVelocity = RotationsPerSecond.of(10);
     public static final AngularVelocity feederVelocity = RotationsPerSecond.of(50.0);
     public static final AngularVelocity rollerVelocity = RotationsPerSecond.of(-50.0);
+    public static final AngularVelocity rollerAgitateVelocity = RotationsPerSecond.of(-25);
     public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(50.0);
     public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-40.0);
-    public static final AngularVelocity sliderUpVelocity = RotationsPerSecond.of(-20.0);
-    public static final AngularVelocity sliderDownVelocity = RotationsPerSecond.of(20.0);
+    public static final AngularVelocity sliderUpVelocity = RotationsPerSecond.of(60.0);
+    public static final AngularVelocity sliderDownVelocity = RotationsPerSecond.of(-60.0);
   }
 
   public static class SpitVelocities {
@@ -66,15 +68,16 @@ public class HardwareConstants {
         RotationsPerSecond.of(17); // rotations/s
     public static final AngularVelocity feederSpitVelocity = RotationsPerSecond.of(50.0);
     public static final AngularVelocity rollerSpitVelocity = RotationsPerSecond.of(50.0);
+    public static final Voltage rollerSpitVolts = Volts.of(10);
     public static final AngularVelocity prestageSpitVelocity = RotationsPerSecond.of(50.0);
     public static final AngularVelocity transportSpitVelocity = RotationsPerSecond.of(-10.0);
   }
 
   public static class TestPositions {
     // Slider pulse seconds
-    public static final double pulseSeconds = 0.5;
+    public static final double pulseSeconds = 0.25;
     // Slider extension test degrees
-    public static final double intakeDegreesUpTest = 90.0;
+    public static final double intakeDegreesUpTest = 0.0;
     public static final double intakeDegreesDownTest = -90.0;
     // Hood position (0.0-1.0)
     public static final double hoodPos1Test = 0.0;

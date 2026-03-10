@@ -76,7 +76,7 @@ public class intakeSliderIOReal implements intakeSliderIO {
   public void updateInputs(IntakeSliderIOInputs inputs) {
     // Get velocity and position from encoder
     inputs.intakeSliderVelocity =
-        RotationsPerSecond.of(intakeSliderEncoder.getVelocity().getValueAsDouble());
+        RotationsPerSecond.of(intakeSliderMotor.getVelocity().getValueAsDouble());
     inputs.intakeSliderPosition = intakeSliderEncoder.getAbsolutePosition().getValueAsDouble();
 
     // Get voltage, current, temperature, and setpoint/error from motor

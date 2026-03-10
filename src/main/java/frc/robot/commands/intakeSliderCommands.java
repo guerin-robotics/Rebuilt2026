@@ -34,8 +34,10 @@ public class intakeSliderCommands {
       double angleDegree,
       AngularVelocity velocityUp,
       AngularVelocity velocityDown) {
-    return Commands.run(
-        () -> intakeSlider.setSliderDegree(angleDegree, velocityUp, velocityDown), intakeSlider);
+    return Commands.startEnd(
+        () -> intakeSlider.setSliderDegree(angleDegree, velocityUp, velocityDown),
+        () -> intakeSlider.setSliderVoltage(Volts.of(0)),
+        intakeSlider);
   }
 
   public static Command jostleSliderByCurrent(
