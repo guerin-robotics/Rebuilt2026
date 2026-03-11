@@ -55,10 +55,11 @@ public class intakeSlider extends SubsystemBase {
       double degreesDown,
       double seconds) {
     double currentPos = inputs.intakeSliderPosition;
-    if (inputs.intakeSliderStatorCurrent < intakeSliderConstants.Mechanical.sliderJostleCurrentLimit) {
+    if (inputs.intakeSliderStatorCurrent
+        < intakeSliderConstants.Mechanical.sliderJostleCurrentLimit) {
       io.setSliderVelocity(downVelocity);
     } else {
-      setSliderDegree(((360*currentPos) + degreesDown), downVelocity, upVelocity);
+      setSliderDegree(((360 * currentPos) + degreesDown), downVelocity, upVelocity);
       new WaitCommand(seconds);
     }
   }
