@@ -26,5 +26,7 @@ public interface intakeSliderIO {
 
   public default void setSliderVelocity(AngularVelocity velocity) {}
 
+  public default void setSliderPosition(double position) {}
+
   public default void zeroSliderEncoder() {}
 }

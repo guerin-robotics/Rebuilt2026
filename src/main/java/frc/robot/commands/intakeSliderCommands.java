@@ -29,15 +29,8 @@ public class intakeSliderCommands {
     return Commands.runOnce(() -> intakeSlider.setSliderVoltage(Volts.of(0)), intakeSlider);
   }
 
-  public static Command setSliderDegree(
-      intakeSlider intakeSlider,
-      double angleDegree,
-      AngularVelocity velocityUp,
-      AngularVelocity velocityDown) {
-    return Commands.startEnd(
-        () -> intakeSlider.setSliderDegree(angleDegree, velocityUp, velocityDown),
-        () -> intakeSlider.setSliderVoltage(Volts.of(0)),
-        intakeSlider);
+  public static Command setSliderRotations(intakeSlider intakeSlider, double angleRotations) {
+    return Commands.runOnce(() -> intakeSlider.setSliderPosition(angleRotations), intakeSlider);
   }
 
   public static Command jostleSliderByCurrent(

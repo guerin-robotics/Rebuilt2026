@@ -32,16 +32,8 @@ public class intakeSlider extends SubsystemBase {
     io.setSliderVelocity(sliderVelo);
   }
 
-  // Checks position and defines velocity request accordingly
-  // Encoder provides position in -1.0 to 1.0, so the degree value must be divided by 360 to put it
-  // in this range
-  public void setSliderDegree(
-      double angleDegrees, AngularVelocity velocityUp, AngularVelocity velocityDown) {
-    if (inputs.intakeSliderPosition < (angleDegrees / 360)) {
-      io.setSliderVelocity(velocityUp);
-    } else if (inputs.intakeSliderPosition > (angleDegrees / 360)) {
-      io.setSliderVelocity(velocityDown);
-    }
+  public void setSliderPosition(double positionRotations) {
+    io.setSliderPosition(positionRotations);
   }
 
   public void zeroSliderEncoder() {
@@ -55,10 +47,11 @@ public class intakeSlider extends SubsystemBase {
       double degreesDown,
       double seconds) {
     double currentPos = inputs.intakeSliderPosition;
-    if (inputs.intakeSliderStatorCurrent < intakeSliderConstants.Mechanical.sliderJostleCurrentLimit) {
+    if (inputs.intakeSliderStatorCurrent
+        < intakeSliderConstants.Mechanical.sliderJostleCurrentLimit) {
       io.setSliderVelocity(downVelocity);
     } else {
-      setSliderDegree(((360*currentPos) + degreesDown), downVelocity, upVelocity);
+      setSliderPosition(currentPos + degreesDown);
       new WaitCommand(seconds);
     }
   }

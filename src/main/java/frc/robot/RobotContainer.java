@@ -36,7 +36,6 @@ import frc.robot.subsystems.feeder.io.FeederIO;
 import frc.robot.subsystems.feeder.io.FeederIOReal;
 import frc.robot.subsystems.feeder.io.FeederIOSim;
 import frc.robot.subsystems.flywheel.Flywheel;
-import frc.robot.subsystems.flywheel.ShotCalculator;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.FlywheelIOPhoenix6;
 import frc.robot.subsystems.flywheel.io.FlywheelIOSim;
@@ -259,15 +258,22 @@ public class RobotContainer {
     //     .button(1)
     //     .onTrue(
     //         FlywheelCommands.setVelocityForHub(flywheel)
-    //         .alongWith(PrestageCommands.setPrestageVelocity(prestage, HardwareConstants.TestVelocities.prestageVelocity))
+    //         .alongWith(PrestageCommands.setPrestageVelocity(prestage,
+    // HardwareConstants.TestVelocities.prestageVelocity))
     //         .alongWith(HoodCommands.setHoodPosForHub(hood))
-    //         .alongWith(FeederCommands.setVelocityAtRPM(feeder, HardwareConstants.TestVelocities.feederVelocity,
-    //             flywheel.isFlywheelAtVelocity(ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
-    //         .alongWith(TransportCommands.setVelocityAtRPM(transport, HardwareConstants.TestVelocities.transportVelocity,
-    //             flywheel.isFlywheelAtVelocity(ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
+    //         .alongWith(FeederCommands.setVelocityAtRPM(feeder,
+    // HardwareConstants.TestVelocities.feederVelocity,
+    //
+    // flywheel.isFlywheelAtVelocity(ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
+    //         .alongWith(TransportCommands.setVelocityAtRPM(transport,
+    // HardwareConstants.TestVelocities.transportVelocity,
+    //
+    // flywheel.isFlywheelAtVelocity(ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
     //         .alongWith(intakeSliderCommands.jostleSliderByCurrent(intakeSlider,
-    //             HardwareConstants.TestVelocities.sliderUpVelocity, HardwareConstants.TestVelocities.sliderDownVelocity,
-    //             HardwareConstants.TestPositions.intakeDegreesDownTest, HardwareConstants.TestPositions.pulseSeconds))
+    //             HardwareConstants.TestVelocities.sliderUpVelocity,
+    // HardwareConstants.TestVelocities.sliderDownVelocity,
+    //             HardwareConstants.TestPositions.intakeDegreesDownTest,
+    // HardwareConstants.TestPositions.pulseSeconds))
     // );
 
     // Run intake roller
@@ -300,44 +306,39 @@ public class RobotContainer {
                         HardwareConstants.TestVelocities.transportVelocity,
                         flywheel.isFlywheelAtVelocity(
                             HardwareConstants.TowerConstants.FlywheelTowerVelocity)))
-            .alongWith(
-                intakeSliderCommands.jostleSliderByCurrent(intakeSlider,
-                    HardwareConstants.TestVelocities.sliderUpVelocity, HardwareConstants.TestVelocities.sliderDownVelocity,
-                    HardwareConstants.TestPositions.intakeDegreesDownTest, HardwareConstants.TestPositions.pulseSeconds
-                ))
+            // .alongWith(
+            //     intakeSliderCommands.jostleSliderByCurrent(
+            //         intakeSlider,
+            //         HardwareConstants.TestVelocities.sliderUpVelocity,
+            //         HardwareConstants.TestVelocities.sliderDownVelocity,
+            //         HardwareConstants.TestPositions.intakeDegreesDownTest,
+            //         HardwareConstants.TestPositions.pulseSeconds))
             );
 
     // Intake extend
     thrustmaster
         .button(4)
         .whileTrue(
-            intakeSliderCommands.setSliderDegree(
-                intakeSlider,
-                HardwareConstants.TestPositions.intakeDegreesDownTest,
-                HardwareConstants.TestVelocities.sliderUpVelocity,
-                HardwareConstants.TestVelocities.sliderDownVelocity)
-            );
+            intakeSliderCommands.setSliderRotations(
+                intakeSlider, HardwareConstants.TestPositions.intakeDegreesDownTest));
 
     // Intake retract
     thrustmaster
         .button(3)
         .whileTrue(
-            intakeSliderCommands.setSliderDegree(
-                intakeSlider,
-                HardwareConstants.TestPositions.intakeDegreesUpTest,
-                HardwareConstants.TestVelocities.sliderUpVelocity,
-                HardwareConstants.TestVelocities.sliderDownVelocity));
+            intakeSliderCommands.setSliderRotations(
+                intakeSlider, HardwareConstants.TestPositions.intakeDegreesUpTest));
 
     // Intake jostle
-    thrustmaster
-        .button(6)
-        .whileTrue(
-            intakeSliderCommands.jostleSliderByCurrent(
-                intakeSlider,
-                HardwareConstants.TestVelocities.sliderUpVelocity,
-                HardwareConstants.TestVelocities.sliderDownVelocity,
-                HardwareConstants.TestPositions.intakeDegreesDownTest,
-                HardwareConstants.TestPositions.pulseSeconds));
+    // thrustmaster
+    //     .button(6)
+    //     .whileTrue(
+    //         intakeSliderCommands.jostleSliderByCurrent(
+    //             intakeSlider,
+    //             HardwareConstants.TestVelocities.sliderUpVelocity,
+    //             HardwareConstants.TestVelocities.sliderDownVelocity,
+    //             HardwareConstants.TestPositions.intakeDegreesDownTest,
+    //             HardwareConstants.TestPositions.pulseSeconds));
 
     // Spit sequence
     thrustmaster
@@ -402,27 +403,21 @@ public class RobotContainer {
     //     .whileTrue(
     //         intakeSliderCommands.setSliderVoltage(
     //             intakeSlider, HardwareConstants.TestVoltages.intakeSliderTestVoltageUp));
-    buttonPanel
-        .button(4)
-        .whileTrue(
-            intakeSliderCommands.setSliderDegree(
-                intakeSlider,
-                HardwareConstants.TestPositions.intakeDegreesUpTest,
-                HardwareConstants.TestVelocities.sliderUpVelocity,
-                HardwareConstants.TestVelocities.sliderDownVelocity));
+    // buttonPanel
+    //     .button(4)
+    //     .whileTrue(
+    //         intakeSliderCommands.setSliderRotations(
+    //             intakeSlider, HardwareConstants.TestPositions.intakeDegreesUpTest));
     // buttonPanel
     //     .button(5)
     //     .whileTrue(
     //         intakeSliderCommands.setSliderVoltage(
     //             intakeSlider, HardwareConstants.TestVoltages.intakeSliderTestVoltageDown));
-    buttonPanel
-        .button(5)
-        .whileTrue(
-            intakeSliderCommands.setSliderDegree(
-                intakeSlider,
-                HardwareConstants.TestPositions.intakeDegreesDownTest,
-                HardwareConstants.TestVelocities.sliderUpVelocity,
-                HardwareConstants.TestVelocities.sliderDownVelocity));
+    // buttonPanel
+    //     .button(5)
+    //     .whileTrue(
+    //         intakeSliderCommands.setSliderRotations(
+    //             intakeSlider, HardwareConstants.TestPositions.intakeDegreesDownTest));
 
     // Run roller
     buttonPanel
