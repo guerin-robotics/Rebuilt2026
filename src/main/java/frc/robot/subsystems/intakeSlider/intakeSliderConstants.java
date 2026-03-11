@@ -15,14 +15,14 @@ public class intakeSliderConstants {
   }
 
   public static class SoftwareConstants {
-    public static final boolean INVERTED = false;
+    public static final boolean INVERTED = true;
   }
 
   // NOT Tuned yet - placeholder values
   public static class PID {
-    public static final double KG = 20.0;
+    public static final double KG = 10.0;
     public static final double KV = 0.0;
-    public static final double KP = 0.0;
+    public static final double KP = 750.0;
     public static final double KI = 0.0;
     public static final double KD = 0.0;
   }
@@ -30,9 +30,9 @@ public class intakeSliderConstants {
   public static class Mechanical {
     public static final double rotationsPerInch = 1.0;
     public static final double rotationsWhenOut = 21;
-    public static final double sliderRatio = 48;
+    public static final double sliderRatio = 45;
     public static final double sliderJostleCurrentLimit = 70;
-    public static final double magnetOffset = 0.35;
+    public static final double magnetOffset = -0.35;
   }
 
   public static class sliderMagicConstants {

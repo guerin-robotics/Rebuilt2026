@@ -376,12 +376,13 @@ public class RobotContainer {
         .button(1)
         .whileTrue(
             FlywheelCommands.setFlywheelVelocity(
-                    flywheel, HardwareConstants.TestVelocities.FlywheelVelocity)
-                .alongWith(
-                    PrestageCommands.setPrestageVelocity(
-                        prestage, HardwareConstants.TestVelocities.prestageVelocity))
-                .alongWith(
-                    HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos3Test)));
+                flywheel, HardwareConstants.TestVelocities.FlywheelVelocity)
+            // .alongWith(
+            //     PrestageCommands.setPrestageVelocity(
+            //         prestage, HardwareConstants.TestVelocities.prestageVelocity))
+            // .alongWith(
+            //     HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos3Test))
+            );
     // Transport and feeder
     buttonPanel
         .button(2)

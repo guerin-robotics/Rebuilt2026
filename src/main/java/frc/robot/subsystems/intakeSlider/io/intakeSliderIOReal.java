@@ -9,13 +9,14 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.HardwareConstants;
@@ -33,7 +34,7 @@ public class intakeSliderIOReal implements intakeSliderIO {
   private final VoltageOut voltageRequest = new VoltageOut(0);
   private final MotionMagicVelocityTorqueCurrentFOC velocityRequest =
       new MotionMagicVelocityTorqueCurrentFOC(0);
-  private final PositionTorqueCurrentFOC positionRequest = new PositionTorqueCurrentFOC(0);
+  private final MotionMagicTorqueCurrentFOC positionRequest = new MotionMagicTorqueCurrentFOC(0);
 
   public intakeSliderIOReal() {
     intakeSliderMotor = new TalonFX(HardwareConstants.CanIds.INTAKE_SLIDER_MOTOR_ID, CAN_BUS);
@@ -84,6 +85,12 @@ public class intakeSliderIOReal implements intakeSliderIO {
     // feedback.withAbsoluteSensorDiscontinuityPoint(0.0);
     // feedback.withAbsoluteSensorOffset(0.0);
 
+    // Software limits
+    config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.3;
+    config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
+
     intakeSliderMotor.getConfigurator().apply(config);
     intakeSliderMotor.getConfigurator().apply(limits);
     intakeSliderMotor.getConfigurator().apply(feedback);
@@ -96,6 +103,7 @@ public class intakeSliderIOReal implements intakeSliderIO {
 
     magnetConfig.withAbsoluteSensorDiscontinuityPoint(0.625);
     magnetConfig.withMagnetOffset(intakeSliderConstants.Mechanical.magnetOffset);
+    magnetConfig.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
 
     encoderConfig.withMagnetSensor(magnetConfig);
 
