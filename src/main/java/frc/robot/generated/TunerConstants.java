@@ -1,7 +1,5 @@
 package frc.robot.generated;
 
-import static edu.wpi.first.units.Units.*;
-
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.swerve.*;

@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Time;
@@ -107,5 +108,24 @@ public class FlywheelConstants {
       SPEED_MAP.put(feetToMeters(5), 990.0);
       SPEED_MAP.put(inchesToMeters(82), 1020.0);
     }
+  }
+
+  /** Simulation constants for the flywheel. */
+  public static class Sim {
+    /** Four Kraken X60 FOC motors drive the flywheel. */
+    public static final DCMotor FLYWHEEL_MOTOR = DCMotor.getKrakenX60Foc(4);
+
+    /** Number of motors driving the flywheel (used for DCMotorSim). */
+    public static final int NUM_MOTORS = 4;
+
+    /** Moment of inertia of the flywheel (kg·m²). Larger than small rollers due to mass. */
+    public static final double FLYWHEEL_MOI = 0.01;
+
+    // Sim PID gains for TalonFX closed-loop in simulation
+    public static final double KS = 0.0;
+    public static final double KV = 0.12;
+    public static final double KP = 1.0;
+    public static final double KI = 0.0;
+    public static final double KD = 0.0;
   }
 }

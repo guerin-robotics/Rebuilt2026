@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeederCommands;
 import frc.robot.commands.FlywheelCommands;
@@ -35,25 +34,32 @@ import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.io.FeederIO;
 import frc.robot.subsystems.feeder.io.FeederIOReal;
+import frc.robot.subsystems.feeder.io.FeederIOSim;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.ShotCalculator;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.FlywheelIOPhoenix6;
+import frc.robot.subsystems.flywheel.io.FlywheelIOSim;
 import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.hood.io.HoodIO;
 import frc.robot.subsystems.hood.io.HoodIOReal;
+import frc.robot.subsystems.hood.io.HoodIOSim;
 import frc.robot.subsystems.intakeRoller.intakeRoller;
 import frc.robot.subsystems.intakeRoller.io.intakeRollerIO;
 import frc.robot.subsystems.intakeRoller.io.intakeRollerIOReal;
+import frc.robot.subsystems.intakeRoller.io.intakeRollerIOSim;
 import frc.robot.subsystems.intakeSlider.intakeSlider;
 import frc.robot.subsystems.intakeSlider.io.intakeSliderIO;
 import frc.robot.subsystems.intakeSlider.io.intakeSliderIOReal;
+import frc.robot.subsystems.intakeSlider.io.intakeSliderIOSim;
 import frc.robot.subsystems.prestage.Prestage;
 import frc.robot.subsystems.prestage.io.PrestageIO;
 import frc.robot.subsystems.prestage.io.PrestageIOReal;
+import frc.robot.subsystems.prestage.io.PrestageIOSim;
 import frc.robot.subsystems.transport.Transport;
 import frc.robot.subsystems.transport.io.TransportIO;
 import frc.robot.subsystems.transport.io.TransportIOReal;
+import frc.robot.subsystems.transport.io.TransportIOSim;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.io.VisionIO;
@@ -129,13 +135,13 @@ public class RobotContainer {
                     VisionConstants.camera2Name, VisionConstants.robotToCamera2, drive::getPose),
                 new VisionIOPhotonVisionSim(
                     VisionConstants.camera3Name, VisionConstants.robotToCamera3, drive::getPose));
-        flywheel = new Flywheel(new FlywheelIO() {});
-        feeder = new Feeder(new FeederIO() {});
-        prestage = new Prestage(new PrestageIO() {});
-        hood = new Hood(new HoodIO() {});
-        transport = new Transport(new TransportIO() {});
-        intakeSlider = new intakeSlider(new intakeSliderIO() {});
-        intakeRoller = new intakeRoller(new intakeRollerIO() {});
+        flywheel = new Flywheel(new FlywheelIOSim());
+        feeder = new Feeder(new FeederIOSim());
+        prestage = new Prestage(new PrestageIOSim());
+        hood = new Hood(new HoodIOSim());
+        transport = new Transport(new TransportIOSim());
+        intakeSlider = new intakeSlider(new intakeSliderIOSim());
+        intakeRoller = new intakeRoller(new intakeRollerIOSim());
         break;
 
       default:
@@ -163,16 +169,16 @@ public class RobotContainer {
         "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
     autoChooser.addOption(
         "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    // autoChooser.addOption(
+    //     "Drive SysId (Quasistatic Forward)",
+    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    // autoChooser.addOption(
+    //     "Drive SysId (Quasistatic Reverse)",
+    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    // autoChooser.addOption(
+    //     "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    // autoChooser.addOption(
+    //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     configureButtonBindings();
   }
