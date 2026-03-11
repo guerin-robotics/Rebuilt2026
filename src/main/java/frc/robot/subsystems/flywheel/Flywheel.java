@@ -1,6 +1,7 @@
 package frc.robot.subsystems.flywheel;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -16,6 +17,7 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.ShooterIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 /**
  * The Shooter subsystem controls the robot's game piece launching mechanism.
@@ -25,6 +27,7 @@ import org.littletonrobotics.junction.Logger;
 public class Flywheel extends SubsystemBase {
   private final FlywheelIO io;
   private final ShooterIOInputsAutoLogged inputs;
+  private LoggedNetworkNumber tuningRPM;
 
   /**
    * Creates a new Shooter subsystem.
@@ -34,6 +37,7 @@ public class Flywheel extends SubsystemBase {
   public Flywheel(FlywheelIO shooterIO) {
     this.io = shooterIO;
     inputs = new ShooterIOInputsAutoLogged();
+    tuningRPM = new LoggedNetworkNumber("Tune/flywheel/tuningRPM", 20);
   }
 
   @Override
@@ -66,6 +70,15 @@ public class Flywheel extends SubsystemBase {
 
   public void setSpeedForDistance(Distance distance) {
     AngularVelocity velocity = ShotCalculator.getInstance().getFlywheelSpeedForDistance(distance);
+    io.setFlywheelVelocity(velocity);
+  }
+
+  public AngularVelocity getTuningRPM() {
+    return RPM.of(tuningRPM.get());
+  }
+
+  public void setTuningRPM() {
+    AngularVelocity velocity = getTuningRPM();
     io.setFlywheelVelocity(velocity);
   }
 
