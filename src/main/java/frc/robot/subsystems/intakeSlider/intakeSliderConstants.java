@@ -30,6 +30,7 @@ public class intakeSliderConstants {
     public static final double rotationsPerInch = 1.0;
     public static final double rotationsWhenOut = 21;
     public static final double sliderRatio = 0.417;
+    public static final double sliderJostleCurrentLimit = 70;
   }
 
   public static class sliderMagicConstants {

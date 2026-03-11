@@ -5,7 +5,9 @@ import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.ExternalFeedbackConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -68,8 +70,15 @@ public class intakeSliderIOReal implements intakeSliderIO {
     limits.StatorCurrentLimit = intakeSliderConstants.CurrentLimits.INTAKE_SLIDER_MAIN_STATOR_AMP;
     limits.StatorCurrentLimitEnable = true;
 
+    // Cancoder
+    var feedback = new ExternalFeedbackConfigs();
+    feedback.withFusedCANcoder(intakeSliderEncoder);
+    feedback.withAbsoluteSensorDiscontinuityPoint(0);
+    feedback.withAbsoluteSensorOffset(0.0);
+
     intakeSliderMotor.getConfigurator().apply(config);
     intakeSliderMotor.getConfigurator().apply(limits);
+    // intakeSliderMotor.getConfigurator().apply(feedback);
   }
 
   @Override
