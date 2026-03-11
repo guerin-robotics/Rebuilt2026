@@ -5,7 +5,8 @@ import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.ExternalFeedbackConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
@@ -36,6 +37,7 @@ public class intakeSliderIOReal implements intakeSliderIO {
     intakeSliderEncoder = new CANcoder(HardwareConstants.CanIds.INTAKE_SLIDER_ENCODER_ID, CAN_BUS);
 
     configureSliderMotor();
+    configureEncoder();
   }
 
   private void configureSliderMotor() {
@@ -71,14 +73,27 @@ public class intakeSliderIOReal implements intakeSliderIO {
     limits.StatorCurrentLimitEnable = true;
 
     // Cancoder
-    var feedback = new ExternalFeedbackConfigs();
+    var feedback = new FeedbackConfigs();
     feedback.withFusedCANcoder(intakeSliderEncoder);
-    feedback.withAbsoluteSensorDiscontinuityPoint(0);
-    feedback.withAbsoluteSensorOffset(0.0);
+    // feedback.withAbsoluteSensorDiscontinuityPoint(0.0);
+    // feedback.withAbsoluteSensorOffset(0.0);
 
     intakeSliderMotor.getConfigurator().apply(config);
     intakeSliderMotor.getConfigurator().apply(limits);
-    // intakeSliderMotor.getConfigurator().apply(feedback);
+    intakeSliderMotor.getConfigurator().apply(feedback);
+  }
+
+  public void configureEncoder() {
+    var encoderConfig = new CANcoderConfiguration();
+
+    var magnetConfig = new MagnetSensorConfigs();
+
+    magnetConfig.withAbsoluteSensorDiscontinuityPoint(0.625);
+    magnetConfig.withMagnetOffset(0.0);
+
+    encoderConfig.withMagnetSensor(magnetConfig);
+
+    intakeSliderEncoder.getConfigurator().apply(encoderConfig);
   }
 
   @Override
