@@ -39,7 +39,6 @@ import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.FlywheelIOPhoenix6;
 import frc.robot.subsystems.flywheel.io.FlywheelIOSim;
-import frc.robot.subsystems.flywheel.ShotCalculator;
 import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.hood.io.HoodIO;
 import frc.robot.subsystems.hood.io.HoodIOReal;
@@ -264,10 +263,12 @@ public class RobotContainer {
     //         .alongWith(HoodCommands.setHoodPosForHub(hood))
     //         .alongWith(FeederCommands.setVelocityAtRPM(feeder,
     //             HardwareConstants.TestVelocities.feederVelocity,
-    //             flywheel.isFlywheelAtVelocity(ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
+    //
+    // flywheel.isFlywheelAtVelocity(ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
     //         .alongWith(TransportCommands.setVelocityAtRPM(transport,
     //             HardwareConstants.TestVelocities.transportVelocity,
-    //             flywheel.isFlywheelAtVelocity(ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
+    //
+    // flywheel.isFlywheelAtVelocity(ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
     //         // .alongWith(intakeSliderCommands.jostleSliderByCurrent(intakeSlider,
     //         //     HardwareConstants.TestVelocities.sliderUpVelocity,
     //         //     HardwareConstants.TestVelocities.sliderDownVelocity,
@@ -307,19 +308,19 @@ public class RobotContainer {
             //         HardwareConstants.TestPositions.pulseSeconds))
             );
 
-    // Intake extend
-    thrustmaster
-        .button(4)
-        .whileTrue(
-            intakeSliderCommands.setSliderRotations(
-                intakeSlider, HardwareConstants.TestPositions.intakeDegreesDownTest));
-
-    // Intake retract
+    // Intake up
     thrustmaster
         .button(3)
         .whileTrue(
             intakeSliderCommands.setSliderRotations(
                 intakeSlider, HardwareConstants.TestPositions.intakeDegreesUpTest));
+
+    // Intake down
+    thrustmaster
+        .button(4)
+        .whileTrue(
+            intakeSliderCommands.setSliderRotations(
+                intakeSlider, HardwareConstants.TestPositions.intakeDegreesDownTest));
 
     // Run intake roller
     thrustmaster
@@ -375,13 +376,12 @@ public class RobotContainer {
         .button(1)
         .whileTrue(
             FlywheelCommands.setFlywheelVelocity(
-                flywheel, HardwareConstants.TestVelocities.FlywheelVelocity)
-            .alongWith(
-                PrestageCommands.setPrestageVelocity(
-                    prestage, HardwareConstants.TestVelocities.prestageVelocity))
-            .alongWith(
-                HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos3Test))
-            );
+                    flywheel, HardwareConstants.TestVelocities.FlywheelVelocity)
+                .alongWith(
+                    PrestageCommands.setPrestageVelocity(
+                        prestage, HardwareConstants.TestVelocities.prestageVelocity))
+                .alongWith(
+                    HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos3Test)));
     // Transport and feeder
     buttonPanel
         .button(2)

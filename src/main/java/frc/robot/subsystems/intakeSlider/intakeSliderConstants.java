@@ -2,6 +2,7 @@ package frc.robot.subsystems.intakeSlider;
 
 import static edu.wpi.first.units.Units.Seconds;
 
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Time;
 
@@ -15,8 +16,10 @@ public class intakeSliderConstants {
   }
 
   public static class SoftwareConstants {
-    public static final boolean INVERTED = true;
-    public static final double softwareUpperRotationLimit = 0.3;
+    public static final boolean MOTOR_INVERTED = false;
+    public static final SensorDirectionValue ENCODER_DIRECTION =
+        SensorDirectionValue.Clockwise_Positive;
+    public static final double softwareUpperRotationLimit = 0.125;
     public static final double softwareLowerRotationLimit = 0.0;
   }
 
@@ -24,7 +27,7 @@ public class intakeSliderConstants {
   public static class PID {
     public static final double KG = 10.0;
     public static final double KV = 0.0;
-    public static final double KP = 750.0;
+    public static final double KP = 100.0;
     public static final double KI = 0.0;
     public static final double KD = 0.0;
   }
@@ -32,7 +35,7 @@ public class intakeSliderConstants {
   public static class Mechanical {
     public static final double sliderRatio = 45;
     public static final double sliderJostleCurrentLimit = 70;
-    public static final double magnetOffset = -0.35;
+    public static final double magnetOffset = 0.35;
     public static final double magnetSensorDiscontinuityPoint = 0.625;
   }
 

@@ -71,7 +71,7 @@ public class intakeSliderIOSim implements intakeSliderIO {
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     config.MotorOutput.Inverted =
-        intakeSliderConstants.SoftwareConstants.INVERTED
+        intakeSliderConstants.SoftwareConstants.MOTOR_INVERTED
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
     config.Feedback.SensorToMechanismRatio = intakeSliderConstants.Mechanical.sliderRatio;

@@ -17,7 +17,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.HardwareConstants;
@@ -51,7 +50,7 @@ public class intakeSliderIOReal implements intakeSliderIO {
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     config.MotorOutput.Inverted =
-        intakeSliderConstants.SoftwareConstants.INVERTED
+        intakeSliderConstants.SoftwareConstants.MOTOR_INVERTED
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
     config.Feedback.RotorToSensorRatio = intakeSliderConstants.Mechanical.sliderRatio;
@@ -105,7 +104,7 @@ public class intakeSliderIOReal implements intakeSliderIO {
     magnetConfig.withAbsoluteSensorDiscontinuityPoint(
         intakeSliderConstants.Mechanical.magnetSensorDiscontinuityPoint);
     magnetConfig.withMagnetOffset(intakeSliderConstants.Mechanical.magnetOffset);
-    magnetConfig.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+    magnetConfig.SensorDirection = intakeSliderConstants.SoftwareConstants.ENCODER_DIRECTION;
 
     encoderConfig.withMagnetSensor(magnetConfig);
 
