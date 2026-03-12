@@ -66,6 +66,7 @@ public class intakeSliderIOReal implements intakeSliderIO {
 
     var sliderMotionMagic = config.MotionMagic;
     sliderMotionMagic.MotionMagicAcceleration = sliderMagicConstants.sliderAccel;
+    sliderMotionMagic.MotionMagicCruiseVelocity = sliderMagicConstants.sliderVelo;
 
     // Current limits
     var limits = new CurrentLimitsConfigs();

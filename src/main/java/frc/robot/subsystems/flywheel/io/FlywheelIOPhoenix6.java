@@ -80,6 +80,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     config.Slot0.kS = FlywheelConstants.TorqueControl.KS;
     config.Slot0.kV = FlywheelConstants.TorqueControl.KV;
     config.Slot0.kP = FlywheelConstants.TorqueControl.KP;
+    config.Slot0.kD = FlywheelConstants.TorqueControl.KD;
 
     var flywheelMotionMagic = config.MotionMagic;
     flywheelMotionMagic.MotionMagicAcceleration =

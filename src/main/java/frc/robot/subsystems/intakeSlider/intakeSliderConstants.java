@@ -19,7 +19,7 @@ public class intakeSliderConstants {
     public static final boolean MOTOR_INVERTED = false;
     public static final SensorDirectionValue ENCODER_DIRECTION =
         SensorDirectionValue.Clockwise_Positive;
-    public static final double softwareUpperRotationLimit = 0.125;
+    public static final double softwareUpperRotationLimit = 0.25;
     public static final double softwareLowerRotationLimit = 0.0;
   }
 
@@ -27,9 +27,9 @@ public class intakeSliderConstants {
   public static class PID {
     public static final double KG = 10.0;
     public static final double KV = 0.0;
-    public static final double KP = 100.0;
+    public static final double KP = 200;
     public static final double KI = 0.0;
-    public static final double KD = 0.0;
+    public static final double KD = 20;
   }
 
   public static class Mechanical {
@@ -40,7 +40,8 @@ public class intakeSliderConstants {
   }
 
   public static class sliderMagicConstants {
-    public static final double sliderAccel = 60.0;
+    public static final double sliderAccel = 5.0;
+    public static final double sliderVelo = 1;
   }
 
   /** Simulation constants for the intake slider motor. */
