@@ -39,6 +39,7 @@ import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.FlywheelIOPhoenix6;
 import frc.robot.subsystems.flywheel.io.FlywheelIOSim;
+import frc.robot.subsystems.flywheel.ShotCalculator;
 import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.hood.io.HoodIO;
 import frc.robot.subsystems.hood.io.HoodIOReal;
@@ -244,7 +245,7 @@ public class RobotContainer {
 
     // ==================== SUBSYSTEM CONTROLS ====================
 
-    // REVISED SUBSYSTEM CONTROLS - BASICALLY ALL UNTESTED
+    // REVISED SUBSYSTEM CONTROLS
 
     // Set idle command (run at 10 rps) as default
     // flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
@@ -259,29 +260,20 @@ public class RobotContainer {
     //     .onTrue(
     //         FlywheelCommands.setVelocityForHub(flywheel)
     //         .alongWith(PrestageCommands.setPrestageVelocity(prestage,
-    // HardwareConstants.TestVelocities.prestageVelocity))
+    //             HardwareConstants.TestVelocities.prestageVelocity))
     //         .alongWith(HoodCommands.setHoodPosForHub(hood))
     //         .alongWith(FeederCommands.setVelocityAtRPM(feeder,
-    // HardwareConstants.TestVelocities.feederVelocity,
-    //
-    // flywheel.isFlywheelAtVelocity(ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
+    //             HardwareConstants.TestVelocities.feederVelocity,
+    //             flywheel.isFlywheelAtVelocity(ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
     //         .alongWith(TransportCommands.setVelocityAtRPM(transport,
-    // HardwareConstants.TestVelocities.transportVelocity,
-    //
-    // flywheel.isFlywheelAtVelocity(ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
-    //         .alongWith(intakeSliderCommands.jostleSliderByCurrent(intakeSlider,
-    //             HardwareConstants.TestVelocities.sliderUpVelocity,
-    // HardwareConstants.TestVelocities.sliderDownVelocity,
-    //             HardwareConstants.TestPositions.intakeDegreesDownTest,
-    // HardwareConstants.TestPositions.pulseSeconds))
-    // );
-
-    // Run intake roller
-    thrustmaster
-        .button(5)
-        .whileTrue(
-            intakeRollerCommands.setRollerVoltage(
-                intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage));
+    //             HardwareConstants.TestVelocities.transportVelocity,
+    //             flywheel.isFlywheelAtVelocity(ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
+    //         // .alongWith(intakeSliderCommands.jostleSliderByCurrent(intakeSlider,
+    //         //     HardwareConstants.TestVelocities.sliderUpVelocity,
+    //         //     HardwareConstants.TestVelocities.sliderDownVelocity,
+    //         //     HardwareConstants.TestPositions.intakeDegreesDownTest,
+    //         //     HardwareConstants.TestPositions.pulseSeconds))
+    //     );
 
     // Shoot from tower
     thrustmaster
@@ -328,6 +320,13 @@ public class RobotContainer {
         .whileTrue(
             intakeSliderCommands.setSliderRotations(
                 intakeSlider, HardwareConstants.TestPositions.intakeDegreesUpTest));
+
+    // Run intake roller
+    thrustmaster
+        .button(5)
+        .whileTrue(
+            intakeRollerCommands.setRollerVoltage(
+                intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage));
 
     // Intake jostle
     // thrustmaster
@@ -377,11 +376,11 @@ public class RobotContainer {
         .whileTrue(
             FlywheelCommands.setFlywheelVelocity(
                 flywheel, HardwareConstants.TestVelocities.FlywheelVelocity)
-            // .alongWith(
-            //     PrestageCommands.setPrestageVelocity(
-            //         prestage, HardwareConstants.TestVelocities.prestageVelocity))
-            // .alongWith(
-            //     HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos3Test))
+            .alongWith(
+                PrestageCommands.setPrestageVelocity(
+                    prestage, HardwareConstants.TestVelocities.prestageVelocity))
+            .alongWith(
+                HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos3Test))
             );
     // Transport and feeder
     buttonPanel

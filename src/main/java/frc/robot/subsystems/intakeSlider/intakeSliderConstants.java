@@ -16,6 +16,8 @@ public class intakeSliderConstants {
 
   public static class SoftwareConstants {
     public static final boolean INVERTED = true;
+    public static final double softwareUpperRotationLimit = 0.3;
+    public static final double softwareLowerRotationLimit = 0.0;
   }
 
   // NOT Tuned yet - placeholder values
@@ -28,11 +30,10 @@ public class intakeSliderConstants {
   }
 
   public static class Mechanical {
-    public static final double rotationsPerInch = 1.0;
-    public static final double rotationsWhenOut = 21;
     public static final double sliderRatio = 45;
     public static final double sliderJostleCurrentLimit = 70;
     public static final double magnetOffset = -0.35;
+    public static final double magnetSensorDiscontinuityPoint = 0.625;
   }
 
   public static class sliderMagicConstants {

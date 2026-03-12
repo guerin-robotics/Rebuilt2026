@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
@@ -80,16 +81,16 @@ public class intakeSliderIOReal implements intakeSliderIO {
 
     // Cancoder
     var feedback = new FeedbackConfigs();
-    feedback.withFusedCANcoder(intakeSliderEncoder);
-    feedback.withFeedbackRemoteSensorID(42);
-    // feedback.withAbsoluteSensorDiscontinuityPoint(0.0);
-    // feedback.withAbsoluteSensorOffset(0.0);
+    feedback.withFeedbackRemoteSensorID(HardwareConstants.CanIds.INTAKE_SLIDER_ENCODER_ID);
+    feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder);
 
     // Software limits
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.3;
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+        intakeSliderConstants.SoftwareConstants.softwareUpperRotationLimit;
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
+    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
+        intakeSliderConstants.SoftwareConstants.softwareLowerRotationLimit;
 
     intakeSliderMotor.getConfigurator().apply(config);
     intakeSliderMotor.getConfigurator().apply(limits);
@@ -101,9 +102,10 @@ public class intakeSliderIOReal implements intakeSliderIO {
 
     var magnetConfig = new MagnetSensorConfigs();
 
-    magnetConfig.withAbsoluteSensorDiscontinuityPoint(0.625);
+    magnetConfig.withAbsoluteSensorDiscontinuityPoint(
+        intakeSliderConstants.Mechanical.magnetSensorDiscontinuityPoint);
     magnetConfig.withMagnetOffset(intakeSliderConstants.Mechanical.magnetOffset);
-    magnetConfig.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+    magnetConfig.SensorDirection = SensorDirectionValue.Clockwise_Positive;
 
     encoderConfig.withMagnetSensor(magnetConfig);
 
