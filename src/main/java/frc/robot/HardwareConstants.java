@@ -1,5 +1,6 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -52,13 +53,13 @@ public class HardwareConstants {
   }
 
   public static class TestVelocities {
-    public static final AngularVelocity FlywheelVelocity = RotationsPerSecond.of(20); // rotations/s
+    public static final AngularVelocity FlywheelVelocity = RPM.of(1200); // rotations/s
     public static final AngularVelocity flywheelIdleVelocity = RotationsPerSecond.of(10);
     public static final AngularVelocity feederVelocity = RotationsPerSecond.of(80.0);
     public static final AngularVelocity rollerVelocity = RotationsPerSecond.of(-50.0);
     public static final AngularVelocity rollerAgitateVelocity = RotationsPerSecond.of(-25);
     public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(70.0);
-    public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-70.0);
+    public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-100.0);
     public static final AngularVelocity pivotUpVelocity = RotationsPerSecond.of(60.0);
     public static final AngularVelocity pivotDownVelocity = RotationsPerSecond.of(-60.0);
   }
@@ -88,7 +89,7 @@ public class HardwareConstants {
   }
 
   public static class TowerConstants {
-    public static final AngularVelocity FlywheelTowerVelocity = RotationsPerSecond.of(17);
+    public static final AngularVelocity FlywheelTowerVelocity = RPM.of(1600);
     public static final double hoodTowerPos = 0.5;
   }
 

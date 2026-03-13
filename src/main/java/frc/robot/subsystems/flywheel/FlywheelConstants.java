@@ -28,9 +28,9 @@ public class FlywheelConstants {
   public static class Limits {
     public static final AngularVelocity MIN_SPEED = RPM.of(100);
     public static final AngularVelocity MAX_SPEED = RPM.of(5600);
-    public static final AngularAcceleration MAX_ACCEL =
-        RevolutionsPerSecond.per(Second).of(5600.0 / 60.0);
+    public static final AngularAcceleration MAX_ACCEL = RevolutionsPerSecond.per(Second).of(160.0);
     public static final AngularVelocity velocityThreshold = RPM.of(500);
+    public static final AngularVelocity MAX_VELOCITY = RPM.of(185);
   }
 
   /** Current limits for the flywheel motors. */
@@ -54,9 +54,9 @@ public class FlywheelConstants {
     // public static double KV = tunableKV.get();
     // public static double KP = tunableKP.get();
 
-    public static double KS = 10; // 10
-    public static double KV = 0.0;
-    public static double KP = 16; // 13
+    public static double KS = 7.5; // 10
+    public static double KV = 0.0067;
+    public static double KP = 14; // 13
     public static double KD = 0; // 3
   }
 
