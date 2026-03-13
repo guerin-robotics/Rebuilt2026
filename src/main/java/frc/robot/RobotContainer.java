@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.math.util.Units.inchesToMeters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -279,8 +280,8 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> MathUtil.clamp(controller.getLeftY() + getThrustY(), -1.0, 1.0),
-            () -> MathUtil.clamp(controller.getLeftX() + getThrustX(), -1.0, 1.0),
+            () -> MathUtil.clamp(-controller.getLeftY() - getThrustY(), -1.0, 1.0),
+            () -> MathUtil.clamp(-controller.getLeftX() - getThrustX(), -1.0, 1.0),
             () -> MathUtil.clamp(-controller.getRightX() - getThrustRot(), -1.0, 1.0)));
     // Lock to 0° when A button is held (Xbox still controls angle)
     controller
@@ -315,10 +316,19 @@ public class RobotContainer {
                             AllianceFlipUtil.apply(
                                 new Pose2d(
                                     new Translation2d(
-                                        (FieldConstants.fieldLength - (27 / 2)), (27 / 2)),
-                                    drive.getPose().getRotation()))),
-                    drive)
+                                        (inchesToMeters(27 / 2)),
+                                        (FieldConstants.fieldWidth - inchesToMeters(27 / 2))),
+                                    drive.getRotation()))))
                 .ignoringDisable(true));
+
+    controller
+        .rightBumper()
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                drive,
+                () -> MathUtil.clamp(controller.getLeftY() + getThrustY(), -1.0, 1.0),
+                () -> MathUtil.clamp(controller.getLeftX() + getThrustX(), -1.0, 1.0),
+                () -> RobotState.getInstance().getAngleToAllianceHub()));
 
     // ==================== SUBSYSTEM CONTROLS ====================
 
@@ -407,7 +417,7 @@ public class RobotContainer {
     // Move hood
     buttonPanel
         .button(3)
-        .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos2Test));
+        .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
 
     // Intake up
     buttonPanel
@@ -438,6 +448,9 @@ public class RobotContainer {
     buttonPanel.button(8).onTrue(HoodCommands.setHoodPosForHub(hood));
     // Set flywheel velocity based on distance from hub
     buttonPanel.button(9).whileTrue(FlywheelCommands.setVelocityForHub(flywheel));
+
+    // Increase hood pos for tuning
+    buttonPanel.button(10).onTrue(HoodCommands.incrementHoodPos(hood, 0.0));
   }
 
   public Command getAutonomousCommand() {
