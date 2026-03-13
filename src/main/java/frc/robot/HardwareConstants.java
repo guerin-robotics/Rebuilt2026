@@ -27,10 +27,10 @@ public class HardwareConstants {
     public static int TRANSPORT_MOTOR_ID = 38;
 
     // Intake
-    public static int INTAKE_SLIDER_MOTOR_ID = 39;
+    public static int INTAKE_PIVOT_MOTOR_ID = 39;
     public static int INTAKE_ROLLER_LEADER_ID = 40;
     public static int INTAKE_ROLLER_FOLLOWER_ID = 41;
-    public static int INTAKE_SLIDER_ENCODER_ID = 42;
+    public static int INTAKE_PIVOT_ENCODER_ID = 42;
 
     // Climber
     // public static int CLIMBER_MOTOR_ID = 43;
@@ -45,8 +45,8 @@ public class HardwareConstants {
     public static final Voltage FeederTestVoltage = Volts.of(3.0);
     public static final Voltage PrestageTestVoltage = Volts.of(5.0);
     public static final Voltage TransportTestVoltage = Volts.of(-3.0);
-    public static final Voltage intakeSliderTestVoltageUp = Volts.of(10.0);
-    public static final Voltage intakeSliderTestVoltageDown = Volts.of(-8.0);
+    public static final Voltage intakePivotTestVoltageUp = Volts.of(10.0);
+    public static final Voltage intakePivotTestVoltageDown = Volts.of(-8.0);
     public static final Voltage intakeRollerTestVoltage = Volts.of(8.0);
     public static final Voltage intakeRollerAgitateVoltage = Volts.of(6);
   }
@@ -59,8 +59,8 @@ public class HardwareConstants {
     public static final AngularVelocity rollerAgitateVelocity = RotationsPerSecond.of(-25);
     public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(70.0);
     public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-70.0);
-    public static final AngularVelocity sliderUpVelocity = RotationsPerSecond.of(60.0);
-    public static final AngularVelocity sliderDownVelocity = RotationsPerSecond.of(-60.0);
+    public static final AngularVelocity pivotUpVelocity = RotationsPerSecond.of(60.0);
+    public static final AngularVelocity pivotDownVelocity = RotationsPerSecond.of(-60.0);
   }
 
   public static class SpitVelocities {

@@ -14,16 +14,18 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeederCommands;
 import frc.robot.commands.FlywheelCommands;
 import frc.robot.commands.HoodCommands;
+import frc.robot.commands.IntakePivotCommands;
 import frc.robot.commands.PrestageCommands;
 import frc.robot.commands.TransportCommands;
 import frc.robot.commands.intakeRollerCommands;
-import frc.robot.commands.intakeSliderCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -43,14 +45,14 @@ import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.hood.io.HoodIO;
 import frc.robot.subsystems.hood.io.HoodIOReal;
 import frc.robot.subsystems.hood.io.HoodIOSim;
+import frc.robot.subsystems.intakePivot.IntakePivot;
+import frc.robot.subsystems.intakePivot.io.IntakePivotIO;
+import frc.robot.subsystems.intakePivot.io.IntakePivotIOReal;
+import frc.robot.subsystems.intakePivot.io.IntakePivotIOSim;
 import frc.robot.subsystems.intakeRoller.intakeRoller;
 import frc.robot.subsystems.intakeRoller.io.intakeRollerIO;
 import frc.robot.subsystems.intakeRoller.io.intakeRollerIOReal;
 import frc.robot.subsystems.intakeRoller.io.intakeRollerIOSim;
-import frc.robot.subsystems.intakeSlider.intakeSlider;
-import frc.robot.subsystems.intakeSlider.io.intakeSliderIO;
-import frc.robot.subsystems.intakeSlider.io.intakeSliderIOReal;
-import frc.robot.subsystems.intakeSlider.io.intakeSliderIOSim;
 import frc.robot.subsystems.prestage.Prestage;
 import frc.robot.subsystems.prestage.io.PrestageIO;
 import frc.robot.subsystems.prestage.io.PrestageIOReal;
@@ -74,7 +76,7 @@ public class RobotContainer {
   private final Feeder feeder;
   private final Hood hood;
   private final Prestage prestage;
-  private final intakeSlider intakeSlider;
+  private final IntakePivot intakePivot;
   private final intakeRoller intakeRoller;
   private final Transport transport;
 
@@ -88,6 +90,8 @@ public class RobotContainer {
       new CommandJoystick(HardwareConstants.ControllerConstants.JoystickControllerPort);
   private final CommandJoystick buttonPanel =
       new CommandJoystick(HardwareConstants.ControllerConstants.ButtonPanelPort);
+    private final CommandGenericHID keyboard =
+         new CommandGenericHID(3);
 
   public RobotContainer() {
     switch (Constants.currentMode) {
@@ -111,7 +115,7 @@ public class RobotContainer {
         hood = new Hood(new HoodIOReal());
         prestage = new Prestage(new PrestageIOReal());
         transport = new Transport(new TransportIOReal());
-        intakeSlider = new intakeSlider(new intakeSliderIOReal());
+        intakePivot = new IntakePivot(new IntakePivotIOReal());
         intakeRoller = new intakeRoller(new intakeRollerIOReal());
         break;
 
@@ -139,7 +143,7 @@ public class RobotContainer {
         prestage = new Prestage(new PrestageIOSim());
         hood = new Hood(new HoodIOSim());
         transport = new Transport(new TransportIOSim());
-        intakeSlider = new intakeSlider(new intakeSliderIOSim());
+        intakePivot = new IntakePivot(new IntakePivotIOSim());
         intakeRoller = new intakeRoller(new intakeRollerIOSim());
         break;
 
@@ -157,7 +161,7 @@ public class RobotContainer {
         prestage = new Prestage(new PrestageIO() {});
         hood = new Hood(new HoodIO() {});
         transport = new Transport(new TransportIO() {});
-        intakeSlider = new intakeSlider(new intakeSliderIO() {});
+        intakePivot = new IntakePivot(new IntakePivotIO() {});
         intakeRoller = new intakeRoller(new intakeRollerIO() {});
         break;
     }
@@ -274,9 +278,9 @@ public class RobotContainer {
     //                     HardwareConstants.TestVelocities.transportVelocity,
     //                     flywheel.isFlywheelAtVelocity(
     //                         ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
-    // .alongWith(intakeSliderCommands.jostleSliderByCurrent(intakeSlider,
-    //     HardwareConstants.TestVelocities.sliderUpVelocity,
-    //     HardwareConstants.TestVelocities.sliderDownVelocity,
+    // .alongWith(IntakePivotCommands.jostlePivotByCurrent(intakePivot,
+    //     HardwareConstants.TestVelocities.pivotUpVelocity,
+    //     HardwareConstants.TestVelocities.pivotDownVelocity,
     //     HardwareConstants.TestPositions.intakeDegreesDownTest,
     //     HardwareConstants.TestPositions.pulseSeconds))
     // );
@@ -303,10 +307,10 @@ public class RobotContainer {
                         intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage))
 
             // .alongWith(
-            //     intakeSliderCommands.jostleSliderByCurrent(
-            //         intakeSlider,
-            //         HardwareConstants.TestVelocities.sliderUpVelocity,
-            //         HardwareConstants.TestVelocities.sliderDownVelocity,
+            //     IntakePivotCommands.jostlePivotByCurrent(
+            //         intakePivot,
+            //         HardwareConstants.TestVelocities.pivotUpVelocity,
+            //         HardwareConstants.TestVelocities.pivotDownVelocity,
             //         HardwareConstants.TestPositions.intakeDegreesDownTest,
             //         HardwareConstants.TestPositions.pulseSeconds))
             );
@@ -315,15 +319,15 @@ public class RobotContainer {
     thrustmaster
         .button(3)
         .whileTrue(
-            intakeSliderCommands.setSliderRotations(
-                intakeSlider, HardwareConstants.TestPositions.intakeDegreesUpTest));
+            IntakePivotCommands.setPivotRotations(
+                intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest));
 
     // Intake down
     thrustmaster
         .button(4)
         .whileTrue(
-            intakeSliderCommands.setSliderRotations(
-                intakeSlider, HardwareConstants.TestPositions.intakeDegreesDownTest));
+            IntakePivotCommands.setPivotRotations(
+                intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest));
 
     // Run intake roller
     thrustmaster
@@ -336,10 +340,10 @@ public class RobotContainer {
     // thrustmaster
     //     .button(6)
     //     .whileTrue(
-    //         intakeSliderCommands.jostleSliderByCurrent(
-    //             intakeSlider,
-    //             HardwareConstants.TestVelocities.sliderUpVelocity,
-    //             HardwareConstants.TestVelocities.sliderDownVelocity,
+    //         IntakePivotCommands.jostlePivotByCurrent(
+    //             intakePivot,
+    //             HardwareConstants.TestVelocities.pivotUpVelocity,
+    //             HardwareConstants.TestVelocities.pivotDownVelocity,
     //             HardwareConstants.TestPositions.intakeDegreesDownTest,
     //             HardwareConstants.TestPositions.pulseSeconds));
 
@@ -404,23 +408,23 @@ public class RobotContainer {
     // buttonPanel
     //     .button(4)
     //     .whileTrue(
-    //         intakeSliderCommands.setSliderVoltage(
-    //             intakeSlider, HardwareConstants.TestVoltages.intakeSliderTestVoltageUp));
+    //         IntakePivotCommands.setPivotVoltage(
+    //             intakePivot, HardwareConstants.TestVoltages.intakePivotTestVoltageUp));
     // buttonPanel
     //     .button(4)
     //     .whileTrue(
-    //         intakeSliderCommands.setSliderRotations(
-    //             intakeSlider, HardwareConstants.TestPositions.intakeDegreesUpTest));
+    //         IntakePivotCommands.setPivotRotations(
+    //             intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest));
     // buttonPanel
     //     .button(5)
     //     .whileTrue(
-    //         intakeSliderCommands.setSliderVoltage(
-    //             intakeSlider, HardwareConstants.TestVoltages.intakeSliderTestVoltageDown));
+    //         IntakePivotCommands.setPivotVoltage(
+    //             intakePivot, HardwareConstants.TestVoltages.intakePivotTestVoltageDown));
     // buttonPanel
     //     .button(5)
     //     .whileTrue(
-    //         intakeSliderCommands.setSliderRotations(
-    //             intakeSlider, HardwareConstants.TestPositions.intakeDegreesDownTest));
+    //         IntakePivotCommands.setPivotRotations(
+    //             intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest));
 
     // Run roller
     buttonPanel
@@ -441,6 +445,9 @@ public class RobotContainer {
         .whileTrue(
             intakeRollerCommands.setRollerVoltage(
                 intakeRoller, HardwareConstants.SpitVelocities.rollerSpitVolts));
+
+    // k button
+    keyboard.button(0).onTrue(IntakePivotCommands.setPivotRotations(intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest).andThen(new PrintCommand("TES~T~ING^^^^^^^^^^^^^^^^^^^^^^"))); 
   }
 
   public Command getAutonomousCommand() {
