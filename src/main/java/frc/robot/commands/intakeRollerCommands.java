@@ -18,9 +18,7 @@ public class intakeRollerCommands {
   }
 
   public static Command setRollerVelocity(intakeRoller intakeRoller, AngularVelocity rollerVelo) {
-    return Commands.runOnce(
-        () -> intakeRoller.setRollerVelocity(rollerVelo),
-        intakeRoller);
+    return Commands.runOnce(() -> intakeRoller.setRollerVelocity(rollerVelo), intakeRoller);
   }
 
   public static Command stopIntakeRoller(intakeRoller intakeRoller) {

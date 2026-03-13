@@ -26,13 +26,11 @@ public class TransportCommands {
   }
 
   public static Command setTransportVelocity(Transport transport, AngularVelocity transportVelo) {
-    return Commands.runOnce(
-        () -> transport.setTransportVelocity(transportVelo),
-        transport);
+    return Commands.runOnce(() -> transport.setTransportVelocity(transportVelo), transport);
   }
 
-    public static Command setVelocityAfterWait(Transport transport, AngularVelocity transportVelo) {
-      return Commands.sequence(new WaitCommand(0.5), setTransportVelocity(transport, transportVelo))
+  public static Command setVelocityAfterWait(Transport transport, AngularVelocity transportVelo) {
+    return Commands.sequence(new WaitCommand(0.5), setTransportVelocity(transport, transportVelo))
         .finallyDo(() -> transport.setTransportVelocity(RotationsPerSecond.of(0)));
-    }
+  }
 }

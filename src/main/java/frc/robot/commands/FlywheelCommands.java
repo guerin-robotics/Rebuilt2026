@@ -52,9 +52,7 @@ public class FlywheelCommands {
   }
 
   public static Command setFlywheelVelocity(Flywheel flywheel, AngularVelocity velocity) {
-    return Commands.runOnce(
-        () -> flywheel.setFlywheelVelocity(velocity),
-        flywheel);
+    return Commands.runOnce(() -> flywheel.setFlywheelVelocity(velocity), flywheel);
   }
 
   public static Command flywheelIdle(Flywheel flywheel) {

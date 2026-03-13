@@ -26,13 +26,11 @@ public class FeederCommands {
   }
 
   public static Command setFeederVelocity(Feeder feeder, AngularVelocity feederVelo) {
-    return Commands.runOnce(
-        () -> feeder.setFeederVelocity(feederVelo),
-        feeder);
+    return Commands.runOnce(() -> feeder.setFeederVelocity(feederVelo), feeder);
   }
 
   public static Command setVelocityAfterWait(Feeder feeder, AngularVelocity feederVelo) {
-      return Commands.sequence(new WaitCommand(0.5), setFeederVelocity(feeder, feederVelo))
+    return Commands.sequence(new WaitCommand(0.5), setFeederVelocity(feeder, feederVelo))
         .finallyDo(() -> feeder.setFeederVelocity(RotationsPerSecond.of(0)));
-    }
+  }
 }

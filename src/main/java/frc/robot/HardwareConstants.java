@@ -78,9 +78,9 @@ public class HardwareConstants {
   }
 
   public static class TestPositions {
-    // Slider pulse seconds
+    // Pivot pulse seconds
     public static final double pulseSeconds = 0.25;
-    // Slider extension test degrees
+    // Pivot extension test degrees
     public static final double intakeDegreesUpTest = 0.125;
     public static final double intakeDegreesDownTest = 0.0;
     // Hood position (0.0-1.0)
