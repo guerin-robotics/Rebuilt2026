@@ -69,6 +69,10 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.io.VisionIO;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVisionSim;
+
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
@@ -204,7 +208,69 @@ public class RobotContainer {
   private double getThrustRot() {
     return thrustmaster.getRawAxis(2); // twist
   }
-  
+
+
+  // NamedCommands
+  private void registerNamedCommands() {
+    // Auto deploy intake command
+    NamedCommands.registerCommand("DeployIntake", 
+    IntakePivotCommands.setPivotRotations(
+        intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest));
+
+    // Auto retract intake command
+    NamedCommands.registerCommand("RetractIntake", 
+    IntakePivotCommands.setPivotRotations(
+        intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest));
+
+    // Auto Shoot command
+    NamedCommands.registerCommand("Shoot", 
+    Commands.sequence(
+                    // Phase 1: Start flywheel, hood, prestage, feeder, and roller in parallel.
+                    // These are all runOnce commands — they set the PID setpoint and finish
+                    // instantly.
+                    Commands.parallel(
+                        FlywheelCommands.setFlywheelVelocity(
+                            flywheel, HardwareConstants.TowerConstants.FlywheelTowerVelocity),
+                        HoodCommands.setHoodPos(
+                            hood, HardwareConstants.TowerConstants.hoodTowerPos),
+                        PrestageCommands.setPrestageVelocity(
+                            prestage, HardwareConstants.TestVelocities.prestageVelocity),
+                        intakeRollerCommands.setRollerVoltage(
+                            intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage)),
+                    // Phase 2: Wait for the flywheel to spin up before feeding balls
+                    Commands.waitSeconds(0.5),
+                    // Phase 3: Start the transport and feeder to feed balls into the shooter
+                    TransportCommands.setTransportVelocity(
+                        transport, HardwareConstants.TestVelocities.transportVelocity),
+                    FeederCommands.setFeederVelocity(
+                        feeder, HardwareConstants.TestVelocities.feederVelocity),
+                    // Phase 4: Hold all subsystem requirements so the button binding stays alive.
+                    // idle() does nothing but never finishes — it keeps whileTrue from ending.
+                    Commands.idle(flywheel, hood, prestage, feeder, transport, intakeRoller))
+                // Clean up: when the button is released (or any interruption), stop everything.
+                // finallyDo() runs whether the command ends normally or is interrupted.
+                .finallyDo(
+                    () -> {
+                      flywheel.setFlywheelVelocity(RotationsPerSecond.of(0));
+                      prestage.setPrestageVelocity(RotationsPerSecond.of(0));
+                      feeder.setFeederVelocity(RotationsPerSecond.of(0));
+                      transport.setTransportVelocity(RotationsPerSecond.of(0));
+                      intakeRoller.setRollerVoltage(Volts.of(0));
+                    }));
+                }
+  // EventTriggers
+  private void registerEventTriggers() {
+    // Event marker for intake command
+    NamedCommands.registerCommand("DeployIntake", 
+    IntakePivotCommands.setPivotRotations(
+        intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest));
+
+    // Event marker for intake command
+    NamedCommands.registerCommand("RetractIntake", 
+    IntakePivotCommands.setPivotRotations(
+        intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest));
+}
+
   private void configureButtonBindings() {
     // ==================== DRIVE CONTROLS (DO NOT MODIFY) ====================
     // Default command: Xbox + Thrustmaster combined
