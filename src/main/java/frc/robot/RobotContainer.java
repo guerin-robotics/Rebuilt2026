@@ -8,6 +8,9 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.events.EventTrigger;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -201,7 +204,7 @@ public class RobotContainer {
   private double getThrustRot() {
     return thrustmaster.getRawAxis(2); // twist
   }
-
+  
   private void configureButtonBindings() {
     // ==================== DRIVE CONTROLS (DO NOT MODIFY) ====================
     // Default command: Xbox + Thrustmaster combined
@@ -234,6 +237,15 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
+    thrustmaster
+        .button(2)
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        drive.setPose(
+                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+                    drive)
+                .ignoringDisable(true));
     // Manually set the odometry from starting (0,0) to in front of the hub
     // (Used for developing distance-based shooting without vision)
     controller
