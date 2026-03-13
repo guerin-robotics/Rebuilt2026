@@ -7,6 +7,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.transport.Transport;
 
 public class TransportCommands {
@@ -25,17 +26,13 @@ public class TransportCommands {
   }
 
   public static Command setTransportVelocity(Transport transport, AngularVelocity transportVelo) {
-    return Commands.startEnd(
+    return Commands.runOnce(
         () -> transport.setTransportVelocity(transportVelo),
-        () -> transport.setTransportVelocity(RotationsPerSecond.of(0)),
         transport);
   }
 
-  public static Command setVelocityAtRPM(
-      Transport transport, AngularVelocity transportVelo, boolean isAtRPM) {
-    return Commands.startEnd(
-        () -> transport.setTransportVelocityAtRPM(transportVelo, isAtRPM),
-        () -> transport.setTransportVelocity(RotationsPerSecond.of(0)),
-        transport);
-  }
+    public static Command setVelocityAfterWait(Transport transport, AngularVelocity transportVelo) {
+      return Commands.sequence(new WaitCommand(0.5), setTransportVelocity(transport, transportVelo))
+        .finallyDo(() -> transport.setTransportVelocity(RotationsPerSecond.of(0)));
+    }
 }

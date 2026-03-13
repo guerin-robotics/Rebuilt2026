@@ -56,6 +56,13 @@ public class intakeSlider extends SubsystemBase {
     }
   }
 
+  public void intakeJostleByPos(double degreesUp, double degreesDown) {
+    io.setSliderPosition(degreesUp);
+    new WaitCommand(0.25);
+    io.setSliderPosition(degreesDown);
+    new WaitCommand(0.25);
+  }
+
   public void intakeHome(AngularVelocity homeVelo) {
     if (inputs.intakeSliderStatorCurrent > 0.5) {
       io.setSliderVelocity(homeVelo);

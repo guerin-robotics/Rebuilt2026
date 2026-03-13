@@ -68,9 +68,12 @@ public class HardwareConstants {
         RotationsPerSecond.of(17); // rotations/s
     public static final AngularVelocity feederSpitVelocity = RotationsPerSecond.of(50.0);
     public static final AngularVelocity rollerSpitVelocity = RotationsPerSecond.of(50.0);
-    public static final Voltage rollerSpitVolts = Volts.of(10);
     public static final AngularVelocity prestageSpitVelocity = RotationsPerSecond.of(50.0);
     public static final AngularVelocity transportSpitVelocity = RotationsPerSecond.of(-10.0);
+  }
+
+  public static class SpitVoltages {
+    public static final Voltage rollerSpitVolts = Volts.of(10);
   }
 
   public static class TestPositions {
