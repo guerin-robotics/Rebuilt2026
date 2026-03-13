@@ -53,7 +53,7 @@ public class HardwareConstants {
   }
 
   public static class TestVelocities {
-    public static final AngularVelocity FlywheelVelocity = RPM.of(1200); // rotations/s
+    public static final AngularVelocity FlywheelVelocity = RPM.of(600); // rotations/s
     public static final AngularVelocity flywheelIdleVelocity = RotationsPerSecond.of(10);
     public static final AngularVelocity feederVelocity = RotationsPerSecond.of(80.0);
     public static final AngularVelocity rollerVelocity = RotationsPerSecond.of(-50.0);
@@ -81,7 +81,7 @@ public class HardwareConstants {
     // Pivot pulse seconds
     public static final double pulseSeconds = 0.25;
     // Pivot extension test degrees
-    public static final double intakeDegreesUpTest = 0.125;
+    public static final double intakeDegreesUpTest = 0.25;
     public static final double intakeDegreesDownTest = 0.0;
     // Hood position (0.0-1.0)
     public static final double hoodPos1Test = 0.0;
@@ -92,7 +92,7 @@ public class HardwareConstants {
   }
 
   public static class TowerConstants {
-    public static final AngularVelocity FlywheelTowerVelocity = RPM.of(1600);
+    public static final AngularVelocity FlywheelTowerVelocity = RPM.of(1000);
     public static final double hoodTowerPos = 0.5;
   }
 

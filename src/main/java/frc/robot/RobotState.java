@@ -212,7 +212,9 @@ public class RobotState {
   @AutoLogOutput(key = "RobotState/DistanceToAllianceHub_m")
   public Distance getDistanceToAllianceHub() {
     Translation3d hubTarget = getAllianceHubTarget();
-    return getDistanceToPoint(hubTarget.toTranslation2d());
+    Distance distanceToAllianceHub = getDistanceToPoint(hubTarget.toTranslation2d());
+    Logger.recordOutput("RobotState/Distance to Alliance Hub", distanceToAllianceHub);
+    return distanceToAllianceHub;
   }
 
   /**
