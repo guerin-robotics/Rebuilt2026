@@ -16,18 +16,23 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.lib.FieldConstants;
+import frc.lib.AllianceFlipUtil;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeederCommands;
 import frc.robot.commands.FlywheelCommands;
 import frc.robot.commands.HoodCommands;
 import frc.robot.commands.IntakePivotCommands;
 import frc.robot.commands.PrestageCommands;
+import frc.robot.commands.ShootSequences;
+import frc.robot.commands.SpitSequences;
 import frc.robot.commands.TransportCommands;
 import frc.robot.commands.intakeRollerCommands;
 import frc.robot.generated.TunerConstants;
@@ -302,24 +307,14 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    thrustmaster
-        .button(2)
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
-                    drive)
-                .ignoringDisable(true));
-    // Manually set the odometry from starting (0,0) to in front of the hub
-    // (Used for developing distance-based shooting without vision)
+    // Manually set the odometry to field corner
     controller
         .y()
         .onTrue(
             Commands.runOnce(
                     () ->
                         drive.setPose(
-                            new Pose2d(new Translation2d(3, 4), drive.getPose().getRotation())),
+                            AllianceFlipUtil.apply(new Pose2d(new Translation2d((FieldConstants.fieldLength - (27/2)), (27/2)), drive.getPose().getRotation()))),
                     drive)
                 .ignoringDisable(true));
 
@@ -330,67 +325,15 @@ public class RobotContainer {
     // Set idle command (run at 10 rps) as default
     // flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
 
-    // Single-button shoot sequence.
-    // Joystick trigger button.
-    // Wide-range (non-dynamic) shooting and hood positioning w/ flywheel/prestage linked and
-    // feeder/transport waiting for velocity checker, intake jostle command currently disabled
-    // Out of commission until distance-RPM and distance-angle maps exist
+    // Distance-based shooting
     // thrustmaster
     //     .button(1)
-    //     .onTrue(
-    //         FlywheelCommands.setVelocityForHub(flywheel)
-    //             .alongWith(
-    //                 PrestageCommands.setPrestageVelocity(
-    //                     prestage, HardwareConstants.TestVelocities.prestageVelocity))
-    //             .alongWith(HoodCommands.setHoodPosForHub(hood))
-    //             .alongWith(
-    //                 FeederCommands.setVelocityAtRPM(
-    //                     feeder,
-    //                     HardwareConstants.TestVelocities.feederVelocity,
-    //                     flywheel.isFlywheelAtVelocity(
-    //                         ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
-    //             .alongWith(
-    //                 TransportCommands.setVelocityAtRPM(
-    //                     transport,
-    //                     HardwareConstants.TestVelocities.transportVelocity,
-    //                     flywheel.isFlywheelAtVelocity(
-    //                         ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
-    // .alongWith(IntakePivotCommands.jostlePivotByCurrent(intakePivot,
-    //     HardwareConstants.TestVelocities.pivotUpVelocity,
-    //     HardwareConstants.TestVelocities.pivotDownVelocity,
-    //     HardwareConstants.TestPositions.intakeDegreesDownTest,
-    //     HardwareConstants.TestPositions.pulseSeconds))
-    // );
+    //     .whileTrue(ShootSequences.shootByDistance(flywheel, prestage, hood, feeder, transport));
 
     // Shoot from tower
     thrustmaster
         .button(1)
-        .whileTrue(
-            FlywheelCommands.setFlywheelVelocity(
-                    flywheel, HardwareConstants.TowerConstants.FlywheelTowerVelocity)
-                .alongWith(
-                    HoodCommands.setHoodPos(hood, HardwareConstants.TowerConstants.hoodTowerPos))
-                .alongWith(
-                    PrestageCommands.setPrestageVelocity(
-                        prestage, HardwareConstants.TestVelocities.prestageVelocity))
-                .alongWith(
-                    FeederCommands.setFeederVelocity(
-                        feeder, HardwareConstants.TestVelocities.feederVelocity))
-                .alongWith(
-                    TransportCommands.setTransportVelocity(
-                        transport, HardwareConstants.TestVelocities.transportVelocity))
-                .alongWith(
-                    intakeRollerCommands.setRollerVoltage(
-                        intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage))
-
-            // .alongWith(
-            //     IntakePivotCommands.jostlePivotByCurrent(
-            //         intakePivot,
-            //         HardwareConstants.TestVelocities.pivotUpVelocity,
-            //         HardwareConstants.TestVelocities.pivotDownVelocity,
-            //         HardwareConstants.TestPositions.intakeDegreesDownTest,
-            //         HardwareConstants.TestPositions.pulseSeconds))
-            );
+        .whileTrue(ShootSequences.shootForTower(flywheel, prestage, hood, feeder, transport, intakeRoller));
 
     // Intake up
     thrustmaster
@@ -427,21 +370,7 @@ public class RobotContainer {
     // Spit sequence
     thrustmaster
         .button(7)
-        .whileTrue(
-            FlywheelCommands.setFlywheelVelocity(
-                    flywheel, HardwareConstants.SpitVelocities.FlywheelSpitVelocity)
-                .alongWith(
-                    PrestageCommands.setPrestageVelocity(
-                        prestage, HardwareConstants.SpitVelocities.prestageSpitVelocity))
-                .alongWith(
-                    FeederCommands.setFeederVelocity(
-                        feeder, HardwareConstants.SpitVelocities.feederSpitVelocity))
-                .alongWith(
-                    TransportCommands.setTransportVelocity(
-                        transport, HardwareConstants.SpitVelocities.transportSpitVelocity))
-                .alongWith(
-                    intakeRollerCommands.setRollerVelocity(
-                        intakeRoller, HardwareConstants.SpitVelocities.rollerSpitVelocity)));
+        .whileTrue(SpitSequences.spitAll(flywheel, prestage, hood, feeder, transport, intakeRoller));
 
     // Lock to heading calculated by dynamic shoot vectors when A button is held (Xbox still
     // controls angle)
@@ -455,53 +384,30 @@ public class RobotContainer {
                 () -> drive.getHeadingForShootDynamic()));
 
     // Basic controls for testing
+
     // Flywheel, hood, and prestage
     buttonPanel
         .button(1)
-        .whileTrue(
-            FlywheelCommands.setFlywheelVelocity(
-                    flywheel, HardwareConstants.TestVelocities.FlywheelVelocity)
-                .alongWith(
-                    PrestageCommands.setPrestageVelocity(
-                        prestage, HardwareConstants.TestVelocities.prestageVelocity))
-                .alongWith(
-                    HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos3Test)));
+        .whileTrue(ShootSequences.FirstSet(flywheel, prestage, hood,
+            HardwareConstants.TowerConstants.FlywheelTowerVelocity, HardwareConstants.TowerConstants.hoodTowerPos));
+
     // Transport and feeder
     buttonPanel
         .button(2)
-        .whileTrue(
-            FeederCommands.setFeederVelocity(
-                    feeder, HardwareConstants.TestVelocities.feederVelocity)
-                .alongWith(
-                    TransportCommands.setTransportVelocity(
-                        transport, HardwareConstants.TestVelocities.transportVelocity)));
+        .whileTrue(ShootSequences.SecondSet(feeder, transport));
 
     // Move hood
     buttonPanel
         .button(3)
         .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos2Test));
 
-    // Pivot intake - 4 for up, 5 for down
-    // buttonPanel
-    //     .button(4)
-    //     .whileTrue(
-    //         IntakePivotCommands.setPivotVoltage(
-    //             intakePivot, HardwareConstants.TestVoltages.intakePivotTestVoltageUp));
-    // buttonPanel
-    //     .button(4)
-    //     .whileTrue(
-    //         IntakePivotCommands.setPivotRotations(
-    //             intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest));
-    // buttonPanel
-    //     .button(5)
-    //     .whileTrue(
-    //         IntakePivotCommands.setPivotVoltage(
-    //             intakePivot, HardwareConstants.TestVoltages.intakePivotTestVoltageDown));
-    // buttonPanel
-    //     .button(5)
-    //     .whileTrue(
-    //         IntakePivotCommands.setPivotRotations(
-    //             intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest));
+    // Intake up
+    buttonPanel.button(4).whileTrue(intakeSliderCommands.setSliderRotations(intakeSlider,
+        HardwareConstants.TestPositions.intakeDegreesUpTest));
+
+    // Intake down
+    buttonPanel.button(5).whileTrue(intakeSliderCommands.setSliderRotations(intakeSlider,
+        HardwareConstants.TestPositions.intakeDegreesDownTest));
 
     // Run roller
     buttonPanel
@@ -509,27 +415,17 @@ public class RobotContainer {
         .whileTrue(
             intakeRollerCommands.setRollerVoltage(
                 intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage));
+    
+    // Feeder/transport/intkae spit
+    buttonPanel
+        .button(7)
+        .whileTrue(SpitSequences.spitHopper(feeder, transport, intakeRoller));
 
     // Controls for testing distance-based shooting
     // Set hood pos based on distance from hub
-    buttonPanel.button(7).onTrue(HoodCommands.setHoodPosForHub(hood));
+    buttonPanel.button(8).onTrue(HoodCommands.setHoodPosForHub(hood));
     // Set flywheel velocity based on distance from hub
-    buttonPanel.button(8).whileTrue(FlywheelCommands.setVelocityForHub(flywheel));
-
-    // Intake spit
-    buttonPanel
-        .button(9)
-        .whileTrue(
-            intakeRollerCommands.setRollerVoltage(
-                intakeRoller, HardwareConstants.SpitVelocities.rollerSpitVolts));
-
-    // k button
-    keyboard
-        .button(0)
-        .onTrue(
-            IntakePivotCommands.setPivotRotations(
-                    intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest)
-                .andThen(new PrintCommand("TES~T~ING^^^^^^^^^^^^^^^^^^^^^^")));
+    buttonPanel.button(9).whileTrue(FlywheelCommands.setVelocityForHub(flywheel));
   }
 
   public Command getAutonomousCommand() {
