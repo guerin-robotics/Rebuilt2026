@@ -258,28 +258,33 @@ public class RobotContainer {
     //     .button(1)
     //     .onTrue(
     //         FlywheelCommands.setVelocityForHub(flywheel)
-    //         .alongWith(PrestageCommands.setPrestageVelocity(prestage,
-    //             HardwareConstants.TestVelocities.prestageVelocity))
-    //         .alongWith(HoodCommands.setHoodPosForHub(hood))
-    //         .alongWith(FeederCommands.setVelocityAtRPM(feeder,
-    //             HardwareConstants.TestVelocities.feederVelocity,
-    //
-    // flywheel.isFlywheelAtVelocity(ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
-    //         .alongWith(TransportCommands.setVelocityAtRPM(transport,
-    //             HardwareConstants.TestVelocities.transportVelocity,
-    //
-    // flywheel.isFlywheelAtVelocity(ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
-    //         // .alongWith(intakeSliderCommands.jostleSliderByCurrent(intakeSlider,
-    //         //     HardwareConstants.TestVelocities.sliderUpVelocity,
-    //         //     HardwareConstants.TestVelocities.sliderDownVelocity,
-    //         //     HardwareConstants.TestPositions.intakeDegreesDownTest,
-    //         //     HardwareConstants.TestPositions.pulseSeconds))
-    //     );
+    //             .alongWith(
+    //                 PrestageCommands.setPrestageVelocity(
+    //                     prestage, HardwareConstants.TestVelocities.prestageVelocity))
+    //             .alongWith(HoodCommands.setHoodPosForHub(hood))
+    //             .alongWith(
+    //                 FeederCommands.setVelocityAtRPM(
+    //                     feeder,
+    //                     HardwareConstants.TestVelocities.feederVelocity,
+    //                     flywheel.isFlywheelAtVelocity(
+    //                         ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
+    //             .alongWith(
+    //                 TransportCommands.setVelocityAtRPM(
+    //                     transport,
+    //                     HardwareConstants.TestVelocities.transportVelocity,
+    //                     flywheel.isFlywheelAtVelocity(
+    //                         ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub())))
+    // .alongWith(intakeSliderCommands.jostleSliderByCurrent(intakeSlider,
+    //     HardwareConstants.TestVelocities.sliderUpVelocity,
+    //     HardwareConstants.TestVelocities.sliderDownVelocity,
+    //     HardwareConstants.TestPositions.intakeDegreesDownTest,
+    //     HardwareConstants.TestPositions.pulseSeconds))
+    // );
 
     // Shoot from tower
     thrustmaster
         .button(1)
-        .onTrue(
+        .whileTrue(
             FlywheelCommands.setFlywheelVelocity(
                     flywheel, HardwareConstants.TowerConstants.FlywheelTowerVelocity)
                 .alongWith(
@@ -288,17 +293,15 @@ public class RobotContainer {
                     PrestageCommands.setPrestageVelocity(
                         prestage, HardwareConstants.TestVelocities.prestageVelocity))
                 .alongWith(
-                    FeederCommands.setVelocityAtRPM(
-                        feeder,
-                        HardwareConstants.TestVelocities.feederVelocity,
-                        flywheel.isFlywheelAtVelocity(
-                            HardwareConstants.TowerConstants.FlywheelTowerVelocity)))
+                    FeederCommands.setFeederVelocity(
+                        feeder, HardwareConstants.TestVelocities.feederVelocity))
                 .alongWith(
-                    TransportCommands.setVelocityAtRPM(
-                        transport,
-                        HardwareConstants.TestVelocities.transportVelocity,
-                        flywheel.isFlywheelAtVelocity(
-                            HardwareConstants.TowerConstants.FlywheelTowerVelocity)))
+                    TransportCommands.setTransportVelocity(
+                        transport, HardwareConstants.TestVelocities.transportVelocity))
+                .alongWith(
+                    intakeRollerCommands.setRollerVoltage(
+                        intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage))
+
             // .alongWith(
             //     intakeSliderCommands.jostleSliderByCurrent(
             //         intakeSlider,

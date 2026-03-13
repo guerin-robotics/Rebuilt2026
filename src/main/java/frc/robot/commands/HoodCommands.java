@@ -7,7 +7,7 @@ import frc.robot.subsystems.hood.Hood;
 public class HoodCommands {
 
   public static Command setHoodPos(Hood hood, double position) {
-    return Commands.runOnce(() -> hood.setHoodPos(position), hood);
+    return Commands.startEnd(() -> hood.setHoodPos(position), () -> hood.stopHood(), hood);
   }
 
   public static Command setHoodPosForHub(Hood hood) {
