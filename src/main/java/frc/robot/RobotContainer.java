@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -226,38 +227,11 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Shoot",
         Commands.sequence(
-                // Phase 1: Start flywheel, hood, prestage, feeder, and roller in parallel.
-                // These are all runOnce commands — they set the PID setpoint and finish
-                // instantly.
-                Commands.parallel(
-                    FlywheelCommands.setFlywheelVelocity(
-                        flywheel, HardwareConstants.TowerConstants.FlywheelTowerVelocity),
-                    HoodCommands.setHoodPos(hood, HardwareConstants.TowerConstants.hoodTowerPos),
-                    PrestageCommands.setPrestageVelocity(
-                        prestage, HardwareConstants.TestVelocities.prestageVelocity),
-                    intakeRollerCommands.setRollerVoltage(
-                        intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage)),
-                // Phase 2: Wait for the flywheel to spin up before feeding balls
-                Commands.waitSeconds(0.5),
-                // Phase 3: Start the transport and feeder to feed balls into the shooter
-                TransportCommands.setTransportVelocity(
-                    transport, HardwareConstants.TestVelocities.transportVelocity),
-                FeederCommands.setFeederVelocity(
-                    feeder, HardwareConstants.TestVelocities.feederVelocity),
-                // Phase 4: Hold all subsystem requirements so the button binding stays alive.
-                // idle() does nothing but never finishes — it keeps whileTrue from ending.
-                Commands.idle(flywheel, hood, prestage, feeder, transport, intakeRoller))
-            // Clean up: when the button is released (or any interruption), stop everything.
-            // finallyDo() runs whether the command ends normally or is interrupted.
-            .finallyDo(
-                () -> {
-                  flywheel.setFlywheelVelocity(RotationsPerSecond.of(0));
-                  prestage.setPrestageVelocity(RotationsPerSecond.of(0));
-                  feeder.setFeederVelocity(RotationsPerSecond.of(0));
-                  transport.setTransportVelocity(RotationsPerSecond.of(0));
-                  intakeRoller.setRollerVoltage(Volts.of(0));
-                }));
-  }
+                ShootSequences.shootForTower(
+                                flywheel, prestage, hood, feeder, transport, intakeRoller
+                                )));
+}
+  
   // EventTriggers
   private void registerEventTriggers() {
     // Event marker for intake command
@@ -336,8 +310,16 @@ public class RobotContainer {
     thrustmaster
         .button(1)
         .whileTrue(
-            ShootSequences.shootForTower(
-                flywheel, prestage, hood, feeder, transport, intakeRoller));
+            DriveCommands.joystickDriveAtAngle(
+                    drive,
+                    () -> -thrustmaster.getX(),
+                    () -> -thrustmaster.getY(),
+                    () -> RobotState.getInstance().getAngleToAllianceHub())
+                .alongWith(
+                    new WaitCommand(0.5)
+                        .andThen(
+                            ShootSequences.shootForTower(
+                                flywheel, prestage, hood, feeder, transport, intakeRoller))));
 
     // Intake up
     thrustmaster

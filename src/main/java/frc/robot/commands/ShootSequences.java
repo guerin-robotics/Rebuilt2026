@@ -70,7 +70,7 @@ public class ShootSequences {
             intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage));
   }
 
-  public static Command shootByDistance(
+  public static Command shootToHub(
       Flywheel flywheel,
       Prestage prestage,
       Hood hood,
