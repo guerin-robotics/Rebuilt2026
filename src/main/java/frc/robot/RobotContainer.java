@@ -15,6 +15,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -173,10 +174,10 @@ public class RobotContainer {
 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-    autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addOption(
-        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    // autoChooser.addOption(
+    //     "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    // autoChooser.addOption(
+    //     "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     // autoChooser.addOption(
     //     "Drive SysId (Quasistatic Forward)",
     //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -188,7 +189,12 @@ public class RobotContainer {
     // autoChooser.addOption(
     //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    configureButtonBindings();
+    if (RobotBase.isReal()) {
+
+      configureButtonBindings();
+    } else {
+      configureSimButtonBindings();
+    }
   }
 
   private double deadband(double value) {
@@ -449,6 +455,46 @@ public class RobotContainer {
 
     // Increase hood pos for tuning
     buttonPanel.button(10).onTrue(HoodCommands.incrementHoodPos(hood));
+  }
+
+  public void configureSimButtonBindings() {
+    // ==================== DRIVE CONTROLS (DO NOT MODIFY) ====================
+    // Default command: Xbox + Thrustmaster combined
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive,
+            () -> -controller.getLeftY(),
+            () -> -controller.getLeftX(),
+            () -> -controller.getRightTriggerAxis()));
+
+    // Distance-based shooting
+    controller
+        .leftBumper()
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                    drive,
+                    () -> -thrustmaster.getX(),
+                    () -> -thrustmaster.getY(),
+                    () -> RobotState.getInstance().getAngleToAllianceHub())
+                .alongWith(
+                    new WaitCommand(0.5)
+                        .andThen(
+                            ShootSequences.shootToHub(
+                                flywheel, prestage, hood, feeder, transport, intakeRoller))));
+
+    // Intake up
+    controller
+        .a()
+        .onTrue(
+            IntakePivotCommands.setPivotRotations(
+                intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest));
+
+    // Intake down
+    controller
+        .b()
+        .onTrue(
+            IntakePivotCommands.setPivotRotations(
+                intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest));
   }
 
   public Command getAutonomousCommand() {
