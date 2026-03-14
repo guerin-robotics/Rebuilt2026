@@ -18,7 +18,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.AllianceFlipUtil;
@@ -94,7 +93,6 @@ public class RobotContainer {
       new CommandJoystick(HardwareConstants.ControllerConstants.JoystickControllerPort);
   private final CommandJoystick buttonPanel =
       new CommandJoystick(HardwareConstants.ControllerConstants.ButtonPanelPort);
-  private final CommandGenericHID keyboard = new CommandGenericHID(3);
 
   public RobotContainer() {
     switch (Constants.currentMode) {
@@ -112,7 +110,11 @@ public class RobotContainer {
                 new VisionIOPhotonVision(
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0),
                 new VisionIOPhotonVision(
-                    VisionConstants.camera1Name, VisionConstants.robotToCamera1));
+                    VisionConstants.camera1Name, VisionConstants.robotToCamera1),
+                new VisionIOPhotonVision(
+                    VisionConstants.camera2Name, VisionConstants.robotToCamera2),
+                new VisionIOPhotonVision(
+                    VisionConstants.camera3Name, VisionConstants.robotToCamera3));
         flywheel = new Flywheel(new FlywheelIOPhoenix6());
         feeder = new Feeder(new FeederIOReal());
         hood = new Hood(new HoodIOReal());
