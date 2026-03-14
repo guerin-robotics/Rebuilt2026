@@ -25,7 +25,8 @@ public class Hood extends SubsystemBase {
     io.setHoodPos(position);
   }
 
-  public void incrementHoodPos(double position) {
+  public void incrementHoodPos() {
+    double position = inputs.servoPos;
     io.setHoodPos(position + 0.05);
   }
 

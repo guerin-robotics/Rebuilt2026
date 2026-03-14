@@ -1,6 +1,5 @@
 package frc.robot.subsystems.hood;
 
-import static edu.wpi.first.math.util.Units.feetToMeters;
 import static edu.wpi.first.math.util.Units.inchesToMeters;
 
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -18,8 +17,7 @@ public class HoodConstants {
     // Key is distance from center of hub (converted to meters)
     // Value is hood position (0.0-1.0)
     static {
-      ANGLE_MAP.put(feetToMeters(3), 0.5);
-      ANGLE_MAP.put(feetToMeters(5), 0.5);
+      ANGLE_MAP.put(inchesToMeters(24), 0.25);
       ANGLE_MAP.put(inchesToMeters(82), 0.5);
     }
   }

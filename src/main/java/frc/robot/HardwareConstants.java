@@ -48,7 +48,7 @@ public class HardwareConstants {
     public static final Voltage TransportTestVoltage = Volts.of(-3.0);
     public static final Voltage intakePivotTestVoltageUp = Volts.of(10.0);
     public static final Voltage intakePivotTestVoltageDown = Volts.of(-8.0);
-    public static final Voltage intakeRollerTestVoltage = Volts.of(8.0);
+    public static final Voltage intakeRollerTestVoltage = Volts.of(10.0);
     public static final Voltage intakeRollerAgitateVoltage = Volts.of(6);
   }
 
@@ -81,7 +81,7 @@ public class HardwareConstants {
     // Pivot pulse seconds
     public static final double pulseSeconds = 0.25;
     // Pivot extension test degrees
-    public static final double intakeDegreesUpTest = 0.25;
+    public static final double intakeDegreesUpTest = 0.4;
     public static final double intakeDegreesDownTest = 0.0;
     // Hood position (0.0-1.0)
     public static final double hoodPos1Test = 0.0;
@@ -92,7 +92,7 @@ public class HardwareConstants {
   }
 
   public static class TowerConstants {
-    public static final AngularVelocity FlywheelTowerVelocity = RPM.of(1000);
+    public static final AngularVelocity FlywheelTowerVelocity = RPM.of(1200);
     public static final double hoodTowerPos = 0.5;
   }
 

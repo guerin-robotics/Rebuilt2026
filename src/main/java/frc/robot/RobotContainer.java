@@ -8,8 +8,6 @@
 package frc.robot;
 
 import static edu.wpi.first.math.util.Units.inchesToMeters;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.Volts;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -26,14 +24,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.FieldConstants;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.FeederCommands;
 import frc.robot.commands.FlywheelCommands;
 import frc.robot.commands.HoodCommands;
 import frc.robot.commands.IntakePivotCommands;
-import frc.robot.commands.PrestageCommands;
 import frc.robot.commands.ShootSequences;
 import frc.robot.commands.SpitSequences;
-import frc.robot.commands.TransportCommands;
 import frc.robot.commands.intakeRollerCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -228,11 +223,10 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Shoot",
         Commands.sequence(
-                ShootSequences.shootForTower(
-                                flywheel, prestage, hood, feeder, transport, intakeRoller
-                                )));
-}
-  
+            ShootSequences.shootForTower(
+                flywheel, prestage, hood, feeder, transport, intakeRoller)));
+  }
+
   // EventTriggers
   private void registerEventTriggers() {
     // Event marker for intake command
@@ -290,8 +284,8 @@ public class RobotContainer {
                             AllianceFlipUtil.apply(
                                 new Pose2d(
                                     new Translation2d(
-                                        (inchesToMeters(27 / 2)),
-                                        (FieldConstants.fieldWidth - inchesToMeters(27 / 2))),
+                                        (inchesToMeters(33 / 2)),
+                                        (FieldConstants.fieldWidth - inchesToMeters(33 / 2))),
                                     drive.getRotation()))))
                 .ignoringDisable(true));
 
@@ -432,7 +426,7 @@ public class RobotContainer {
     buttonPanel.button(9).whileTrue(FlywheelCommands.setVelocityForHub(flywheel));
 
     // Increase hood pos for tuning
-    buttonPanel.button(10).onTrue(HoodCommands.incrementHoodPos(hood, 0.0));
+    buttonPanel.button(10).onTrue(HoodCommands.incrementHoodPos(hood));
   }
 
   public Command getAutonomousCommand() {
