@@ -17,8 +17,9 @@ public class HoodConstants {
     // Key is distance from center of hub (converted to meters)
     // Value is hood position (0.0-1.0)
     static {
-      ANGLE_MAP.put(inchesToMeters(24), 0.25);
-      ANGLE_MAP.put(inchesToMeters(82), 0.5);
+      ANGLE_MAP.put(inchesToMeters(175), 0.6);
+      ANGLE_MAP.put(inchesToMeters(120), 0.45);
+      ANGLE_MAP.put(inchesToMeters(75), 0.35);
     }
   }
 }

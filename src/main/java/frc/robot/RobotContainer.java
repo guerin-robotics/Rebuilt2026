@@ -107,12 +107,12 @@ public class RobotContainer {
         vision =
             new Vision(
                 drive::addVisionMeasurement,
-                new VisionIOPhotonVision(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0),
+                // new VisionIOPhotonVision(
+                //     VisionConstants.camera0Name, VisionConstants.robotToCamera0),
                 new VisionIOPhotonVision(
                     VisionConstants.camera1Name, VisionConstants.robotToCamera1),
-                new VisionIOPhotonVision(
-                    VisionConstants.camera2Name, VisionConstants.robotToCamera2),
+                // new VisionIOPhotonVision(
+                //     VisionConstants.camera2Name, VisionConstants.robotToCamera2));
                 new VisionIOPhotonVision(
                     VisionConstants.camera3Name, VisionConstants.robotToCamera3));
         flywheel = new Flywheel(new FlywheelIOPhoenix6());
@@ -308,11 +308,6 @@ public class RobotContainer {
     // flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
 
     // Distance-based shooting
-    // thrustmaster
-    //     .button(1)
-    //     .whileTrue(ShootSequences.shootByDistance(flywheel, prestage, hood, feeder, transport));
-
-    // Shoot from tower
     thrustmaster
         .button(1)
         .whileTrue(
@@ -324,8 +319,29 @@ public class RobotContainer {
                 .alongWith(
                     new WaitCommand(0.5)
                         .andThen(
-                            ShootSequences.shootForTower(
+                            ShootSequences.shootToHub(
                                 flywheel, prestage, hood, feeder, transport, intakeRoller))));
+
+    // Shoot from tower
+    // thrustmaster
+    //     .button(1)
+    //     .whileTrue(
+    //         DriveCommands.joystickDriveAtAngle(
+    //                 drive,
+    //                 () -> -thrustmaster.getX(),
+    //                 () -> -thrustmaster.getY(),
+    //                 () -> RobotState.getInstance().getAngleToAllianceHub())
+    //             .alongWith(
+    //                 new WaitCommand(0.5)
+    //                     .andThen(
+    //                         ShootSequences.shootForTower(
+    //                             flywheel, prestage, hood, feeder, transport, intakeRoller))));
+
+    thrustmaster
+        .button(2)
+        .whileTrue(
+            DriveCommands.joystickDriveSnapToNearestXHeading(
+                drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
 
     // Intake up
     thrustmaster
@@ -346,7 +362,11 @@ public class RobotContainer {
         .button(5)
         .whileTrue(
             intakeRollerCommands.setRollerVoltage(
-                intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage));
+                intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage)
+            // .alongWith(
+            //     TransportCommands.runTransportVoltage(
+            //         transport, HardwareConstants.TestVoltages.TransportTestVoltage))
+            );
 
     // Intake jostle
     // thrustmaster

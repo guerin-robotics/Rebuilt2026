@@ -29,8 +29,10 @@ public class ShootSequences {
                 FlywheelCommands.setFlywheelVelocity(
                     flywheel, HardwareConstants.TowerConstants.FlywheelTowerVelocity),
                 PrestageCommands.setPrestageVelocity(
-                    prestage, HardwareConstants.TestVelocities.prestageVelocity),
-                HoodCommands.setHoodPos(hood, HardwareConstants.TowerConstants.hoodTowerPos)),
+                    prestage, HardwareConstants.TestVelocities.prestageVelocity)
+                // ,
+                // HoodCommands.setHoodPos(hood, HardwareConstants.TowerConstants.hoodTowerPos)
+                ),
             Commands.sequence(
                 new WaitCommand(0.5),
                 FeederCommands.setFeederVelocity(
@@ -43,7 +45,7 @@ public class ShootSequences {
             () -> {
               flywheel.setFlywheelVelocity(RotationsPerSecond.of(0));
               prestage.setPrestageVelocity(RotationsPerSecond.of(0));
-              hood.stopHood();
+              hood.setHoodPos(HardwareConstants.TestPositions.hoodPos1Test);
               feeder.setFeederVelocity(RotationsPerSecond.of(0));
               transport.setTransportVelocity(RotationsPerSecond.of(0));
               intakeRoller.setRollerVoltage(Volts.of(0));

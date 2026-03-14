@@ -45,20 +45,20 @@ public class HardwareConstants {
     public static final Voltage FlywheelTestVoltage = Volts.of(6.0); // Volts
     public static final Voltage FeederTestVoltage = Volts.of(3.0);
     public static final Voltage PrestageTestVoltage = Volts.of(5.0);
-    public static final Voltage TransportTestVoltage = Volts.of(-3.0);
+    public static final Voltage TransportTestVoltage = Volts.of(-6.0);
     public static final Voltage intakePivotTestVoltageUp = Volts.of(10.0);
     public static final Voltage intakePivotTestVoltageDown = Volts.of(-8.0);
-    public static final Voltage intakeRollerTestVoltage = Volts.of(10.0);
+    public static final Voltage intakeRollerTestVoltage = Volts.of(12.0);
     public static final Voltage intakeRollerAgitateVoltage = Volts.of(6);
   }
 
   public static class TestVelocities {
     public static final AngularVelocity FlywheelVelocity = RPM.of(600); // rotations/s
     public static final AngularVelocity flywheelIdleVelocity = RotationsPerSecond.of(10);
-    public static final AngularVelocity feederVelocity = RotationsPerSecond.of(80.0);
+    public static final AngularVelocity feederVelocity = RotationsPerSecond.of(100.0);
     public static final AngularVelocity rollerVelocity = RotationsPerSecond.of(-50.0);
     public static final AngularVelocity rollerAgitateVelocity = RotationsPerSecond.of(-25);
-    public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(70.0);
+    public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(100.0);
     public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-100.0);
     public static final AngularVelocity pivotUpVelocity = RotationsPerSecond.of(60.0);
     public static final AngularVelocity pivotDownVelocity = RotationsPerSecond.of(-60.0);
@@ -92,7 +92,7 @@ public class HardwareConstants {
   }
 
   public static class TowerConstants {
-    public static final AngularVelocity FlywheelTowerVelocity = RPM.of(1200);
+    public static final AngularVelocity FlywheelTowerVelocity = RPM.of(900); // 1200
     public static final double hoodTowerPos = 0.5;
   }
 
