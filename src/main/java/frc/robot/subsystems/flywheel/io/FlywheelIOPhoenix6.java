@@ -4,7 +4,9 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -14,10 +16,11 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.flywheel.FlywheelConstants;
-import frc.robot.util.CANUpdateThread;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -25,8 +28,6 @@ import org.littletonrobotics.junction.Logger;
  *
  * <p>Controls 4x TalonFX motors (1 leader + 3 followers) as a single flywheel group. Uses
  * VoltageOut for feedforward control (computed in Flywheel subsystem).
- *
- * <p>Current limits from Constants.CurrentLimits are applied here.
  *
  * <p><b>Hardware:</b>
  *
@@ -40,8 +41,6 @@ import org.littletonrobotics.junction.Logger;
 public class FlywheelIOPhoenix6 implements FlywheelIO {
 
   private static final CANBus CAN_BUS = new CANBus("rio");
-  private TalonFXConfiguration config = new TalonFXConfiguration();
-  private static CANUpdateThread updateThread = new CANUpdateThread();
 
   // 4x TalonFX motors for main flywheel
   private final TalonFX leader;
@@ -53,6 +52,34 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
   private final VoltageOut voltageRequest = new VoltageOut(0);
   private final MotionMagicVelocityTorqueCurrentFOC velocityTorqueCurrentRequest =
       new MotionMagicVelocityTorqueCurrentFOC(0);
+
+  // Cached status signals for LEADER motor
+  private final StatusSignal<AngularVelocity> leaderVelocity;
+  private final StatusSignal<Voltage> leaderMotorVoltage;
+  private final StatusSignal<Current> leaderSupplyCurrent;
+  private final StatusSignal<Current> leaderStatorCurrent;
+  private final StatusSignal<Temperature> leaderTemp;
+  private final StatusSignal<Double> closedLoopReference;
+  private final StatusSignal<Double> closedLoopError;
+
+  // Cached status signals for FOLLOWER 1
+  private final StatusSignal<AngularVelocity> follower1Velocity;
+  private final StatusSignal<Voltage> follower1MotorVoltage;
+  private final StatusSignal<Current> follower1SupplyCurrent;
+  private final StatusSignal<Current> follower1StatorCurrent;
+  private final StatusSignal<Temperature> follower1Temp;
+
+  // Cached status signals for FOLLOWER 2
+  private final StatusSignal<AngularVelocity> follower2Velocity;
+  private final StatusSignal<Voltage> follower2MotorVoltage;
+  private final StatusSignal<Current> follower2SupplyCurrent;
+  private final StatusSignal<Current> follower2StatorCurrent;
+
+  // Cached status signals for FOLLOWER 3
+  private final StatusSignal<AngularVelocity> follower3Velocity;
+  private final StatusSignal<Voltage> follower3MotorVoltage;
+  private final StatusSignal<Current> follower3SupplyCurrent;
+  private final StatusSignal<Current> follower3StatorCurrent;
 
   public FlywheelIOPhoenix6() {
     leader = new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_LEADER_ID, CAN_BUS);
@@ -67,9 +94,68 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     follower3.setControl(new Follower(leaderId, MotorAlignmentValue.Opposed));
 
     configureMotors();
+
+    // Cache signal references once — LEADER
+    leaderVelocity = leader.getVelocity();
+    leaderMotorVoltage = leader.getMotorVoltage();
+    leaderSupplyCurrent = leader.getSupplyCurrent();
+    leaderStatorCurrent = leader.getStatorCurrent();
+    leaderTemp = leader.getDeviceTemp();
+    closedLoopReference = leader.getClosedLoopReference();
+    closedLoopError = leader.getClosedLoopError();
+
+    // Cache signal references once — FOLLOWER 1
+    follower1Velocity = follower1.getVelocity();
+    follower1MotorVoltage = follower1.getMotorVoltage();
+    follower1SupplyCurrent = follower1.getSupplyCurrent();
+    follower1StatorCurrent = follower1.getStatorCurrent();
+    follower1Temp = follower1.getDeviceTemp();
+
+    // Cache signal references once — FOLLOWER 2
+    follower2Velocity = follower2.getVelocity();
+    follower2MotorVoltage = follower2.getMotorVoltage();
+    follower2SupplyCurrent = follower2.getSupplyCurrent();
+    follower2StatorCurrent = follower2.getStatorCurrent();
+
+    // Cache signal references once — FOLLOWER 3
+    follower3Velocity = follower3.getVelocity();
+    follower3MotorVoltage = follower3.getMotorVoltage();
+    follower3SupplyCurrent = follower3.getSupplyCurrent();
+    follower3StatorCurrent = follower3.getStatorCurrent();
+
+    // Set update frequency for all signals (50Hz is plenty for flywheel telemetry)
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        50.0,
+        leaderVelocity,
+        leaderMotorVoltage,
+        leaderSupplyCurrent,
+        leaderStatorCurrent,
+        leaderTemp,
+        closedLoopReference,
+        closedLoopError,
+        follower1Velocity,
+        follower1MotorVoltage,
+        follower1SupplyCurrent,
+        follower1StatorCurrent,
+        follower1Temp,
+        follower2Velocity,
+        follower2MotorVoltage,
+        follower2SupplyCurrent,
+        follower2StatorCurrent,
+        follower3Velocity,
+        follower3MotorVoltage,
+        follower3SupplyCurrent,
+        follower3StatorCurrent);
+
+    // Stop sending signals we didn't register — reduces CAN bus traffic
+    leader.optimizeBusUtilization();
+    follower1.optimizeBusUtilization();
+    follower2.optimizeBusUtilization();
+    follower3.optimizeBusUtilization();
   }
 
   private void configureMotors() {
+    var config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.MotorOutput.Inverted =
         FlywheelConstants.Mechanical.INVERTED
@@ -84,7 +170,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
 
     var flywheelMotionMagic = config.MotionMagic;
     flywheelMotionMagic.MotionMagicAcceleration =
-        FlywheelConstants.flywheelMagicConstants.flywheelAccel; // 60
+        FlywheelConstants.flywheelMagicConstants.flywheelAccel;
 
     // Current limits
     var limits = new CurrentLimitsConfigs();
@@ -109,51 +195,71 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    // Leader motor
-    inputs.leaderVelocity = RotationsPerSecond.of(leader.getVelocity().getValueAsDouble());
-    inputs.leaderAppliedVolts = leader.getMotorVoltage().getValue();
-    inputs.leaderSupplyCurrentAmps = leader.getSupplyCurrent().getValue();
-    inputs.leaderStatorCurrentAmps = leader.getStatorCurrent().getValue();
-    inputs.leaderTemp = leader.getDeviceTemp().getValue();
+    // One batched CAN read for ALL signals on ALL motors
+    BaseStatusSignal.refreshAll(
+        leaderVelocity,
+        leaderMotorVoltage,
+        leaderSupplyCurrent,
+        leaderStatorCurrent,
+        leaderTemp,
+        closedLoopReference,
+        closedLoopError,
+        follower1Velocity,
+        follower1MotorVoltage,
+        follower1SupplyCurrent,
+        follower1StatorCurrent,
+        follower1Temp,
+        follower2Velocity,
+        follower2MotorVoltage,
+        follower2SupplyCurrent,
+        follower2StatorCurrent,
+        follower3Velocity,
+        follower3MotorVoltage,
+        follower3SupplyCurrent,
+        follower3StatorCurrent);
 
-    // Follower 1 motor
-    inputs.follower1Velocity = follower1.getVelocity().getValue();
-    inputs.follower1AppliedVolts = follower1.getMotorVoltage().getValue();
-    inputs.follower1SupplyCurrentAmps = follower1.getSupplyCurrent().getValue();
-    inputs.follower1StatorCurrentAmps = follower1.getStatorCurrent().getValue();
-    inputs.follower1Temp = follower1.getDeviceTemp().getValue();
+    // Leader motor — read from cache
+    inputs.leaderVelocity = leaderVelocity.getValue();
+    inputs.leaderAppliedVolts = leaderMotorVoltage.getValue();
+    inputs.leaderSupplyCurrentAmps = leaderSupplyCurrent.getValue();
+    inputs.leaderStatorCurrentAmps = leaderStatorCurrent.getValue();
+    inputs.leaderTemp = leaderTemp.getValue();
 
-    // Follower 2 motor
-    inputs.follower2Velocity = follower2.getVelocity().getValue();
-    inputs.follower2AppliedVolts = follower2.getMotorVoltage().getValue();
-    inputs.follower2SupplyCurrentAmps = follower2.getSupplyCurrent().getValue();
-    inputs.follower2StatorCurrentAmps = follower2.getStatorCurrent().getValue();
+    // Follower 1 motor — read from cache
+    inputs.follower1Velocity = follower1Velocity.getValue();
+    inputs.follower1AppliedVolts = follower1MotorVoltage.getValue();
+    inputs.follower1SupplyCurrentAmps = follower1SupplyCurrent.getValue();
+    inputs.follower1StatorCurrentAmps = follower1StatorCurrent.getValue();
+    inputs.follower1Temp = follower1Temp.getValue();
 
-    // Follower 3 motor
-    inputs.follower3Velocity = follower3.getVelocity().getValue();
-    inputs.follower3AppliedVolts = follower3.getMotorVoltage().getValue();
-    inputs.follower3SupplyCurrentAmps = follower3.getSupplyCurrent().getValue();
-    inputs.follower3StatorCurrentAmps = follower3.getStatorCurrent().getValue();
+    // Follower 2 motor — read from cache
+    inputs.follower2Velocity = follower2Velocity.getValue();
+    inputs.follower2AppliedVolts = follower2MotorVoltage.getValue();
+    inputs.follower2SupplyCurrentAmps = follower2SupplyCurrent.getValue();
+    inputs.follower2StatorCurrentAmps = follower2StatorCurrent.getValue();
+
+    // Follower 3 motor — read from cache
+    inputs.follower3Velocity = follower3Velocity.getValue();
+    inputs.follower3AppliedVolts = follower3MotorVoltage.getValue();
+    inputs.follower3SupplyCurrentAmps = follower3SupplyCurrent.getValue();
+    inputs.follower3StatorCurrentAmps = follower3StatorCurrent.getValue();
 
     // Combined flywheel velocity (use leader velocity as representative)
     inputs.flywheelVelocity = inputs.leaderVelocity;
 
-    // Setpoint
-    inputs.closedLoopError = RotationsPerSecond.of(leader.getClosedLoopError().getValueAsDouble());
-    inputs.closedLoopReference =
-        RotationsPerSecond.of(leader.getClosedLoopReference().getValueAsDouble());
+    // Setpoint and error
+    inputs.closedLoopError = RotationsPerSecond.of(closedLoopError.getValueAsDouble());
+    inputs.closedLoopReference = RotationsPerSecond.of(closedLoopReference.getValueAsDouble());
   }
 
+  @Override
   public void setFlywheelVoltage(Voltage volts) {
     leader.setControl(voltageRequest.withOutput(volts.in(Volts)));
   }
 
+  @Override
   public void setFlywheelVelocity(AngularVelocity velocity) {
-    config.Slot0.withKS(FlywheelConstants.TorqueControl.KS)
-        .withKV(FlywheelConstants.TorqueControl.KV)
-        .withKP(FlywheelConstants.TorqueControl.KP);
-    leader.getConfigurator().apply(config);
-    updateThread.CTRECheckErrorAndRetry(() -> leader.getConfigurator().apply(config));
+    // PID gains are already configured in configureMotors() — no need to re-apply config each call
     leader.setControl(velocityTorqueCurrentRequest.withVelocity(velocity));
     Logger.recordOutput("Flywheel running", velocity);
   }

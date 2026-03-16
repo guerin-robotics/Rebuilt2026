@@ -3,7 +3,9 @@ package frc.robot.subsystems.transport.io;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
@@ -11,6 +13,8 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.transport.TransportConstants;
@@ -25,14 +29,44 @@ public class TransportIOReal implements TransportIO {
   private final MotionMagicVelocityTorqueCurrentFOC torqueRequest =
       new MotionMagicVelocityTorqueCurrentFOC(0);
 
+  // Cached status signals — created once, refreshed in batch each loop
+  private final StatusSignal<AngularVelocity> velocity;
+  private final StatusSignal<Current> statorCurrent;
+  private final StatusSignal<Current> supplyCurrent;
+  private final StatusSignal<Voltage> motorVoltage;
+  private final StatusSignal<Temperature> deviceTemp;
+  private final StatusSignal<Double> closedLoopReference;
+  private final StatusSignal<Double> closedLoopError;
+
   public TransportIOReal() {
     transportMotor = new TalonFX(HardwareConstants.CanIds.TRANSPORT_MOTOR_ID, CAN_BUS);
-    // Configure motor
     configureTransportMotor();
+
+    // Cache signal references once in the constructor
+    velocity = transportMotor.getVelocity();
+    statorCurrent = transportMotor.getStatorCurrent();
+    supplyCurrent = transportMotor.getSupplyCurrent();
+    motorVoltage = transportMotor.getMotorVoltage();
+    deviceTemp = transportMotor.getDeviceTemp();
+    closedLoopReference = transportMotor.getClosedLoopReference();
+    closedLoopError = transportMotor.getClosedLoopError();
+
+    // Set update frequency for all signals (50Hz is plenty for non-odometry)
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        50.0,
+        velocity,
+        statorCurrent,
+        supplyCurrent,
+        motorVoltage,
+        deviceTemp,
+        closedLoopReference,
+        closedLoopError);
+
+    // Stop sending signals we didn't register — reduces CAN bus traffic
+    transportMotor.optimizeBusUtilization();
   }
 
   private void configureTransportMotor() {
-    // Set current limits, neutral mode, etc. as needed
     var config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
@@ -46,8 +80,6 @@ public class TransportIOReal implements TransportIO {
     config.Slot0.kS = TransportConstants.PID.KS;
     config.Slot0.kV = TransportConstants.PID.KV;
     config.Slot0.kP = TransportConstants.PID.KP;
-    // config.Slot0.kI = TransportConstants.PID.KI;
-    // config.Slot0.kD = TransportConstants.PID.KD;
 
     var transportMagic = config.MotionMagic;
     transportMagic.MotionMagicAcceleration =
@@ -70,22 +102,33 @@ public class TransportIOReal implements TransportIO {
 
   @Override
   public void updateInputs(TransportIOInputs inputs) {
-    // Read sensor values and populate inputs object
-    inputs.TransportMotorVelocity = transportMotor.getVelocity().getValue();
-    inputs.TransportStatorAmps = transportMotor.getStatorCurrent().getValue();
-    inputs.TransportSupplyAmps = transportMotor.getSupplyCurrent().getValue();
-    inputs.TransportVoltage = transportMotor.getMotorVoltage().getValue();
-    inputs.TransportMotorTemperature = transportMotor.getDeviceTemp().getValue();
+    // One batched CAN read for all signals — much faster than individual reads
+    BaseStatusSignal.refreshAll(
+        velocity,
+        statorCurrent,
+        supplyCurrent,
+        motorVoltage,
+        deviceTemp,
+        closedLoopReference,
+        closedLoopError);
+
+    // Read from cache — no additional CAN traffic
+    inputs.TransportMotorVelocity = velocity.getValue();
+    inputs.TransportStatorAmps = statorCurrent.getValue();
+    inputs.TransportSupplyAmps = supplyCurrent.getValue();
+    inputs.TransportVoltage = motorVoltage.getValue();
+    inputs.TransportMotorTemperature = deviceTemp.getValue();
     inputs.transportClosedLoopReference =
-        RotationsPerSecond.of(transportMotor.getClosedLoopReference().getValueAsDouble());
-    inputs.transportClosedLoopError =
-        RotationsPerSecond.of(transportMotor.getClosedLoopError().getValueAsDouble());
+        RotationsPerSecond.of(closedLoopReference.getValueAsDouble());
+    inputs.transportClosedLoopError = RotationsPerSecond.of(closedLoopError.getValueAsDouble());
   }
 
+  @Override
   public void setTransportVoltage(Voltage volts) {
     transportMotor.setControl(voltageRequest.withOutput(volts));
   }
 
+  @Override
   public void setTransportVelocity(AngularVelocity transportVelo) {
     transportMotor.setControl(torqueRequest.withVelocity(transportVelo));
   }

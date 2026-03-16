@@ -1,5 +1,8 @@
 package frc.robot.subsystems.intakePivot;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Rotations;
+
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -36,11 +39,11 @@ public class IntakePivot extends SubsystemBase {
 
     // Determine if we are within tolerance of our goal
     boolean atGoal =
-        Math.abs(inputs.intakePivotPosition - goalPositionRotations)
+        Math.abs(inputs.intakePivotPosition.in(Rotations) - goalPositionRotations)
             < IntakePivotConstants.Visualization.POSITION_TOLERANCE_ROTATIONS;
 
     // Update the visualizer every loop
-    visualizer.update(inputs.intakePivotPosition, goalPositionRotations, atGoal);
+    visualizer.update(inputs.intakePivotPosition.in(Rotations), goalPositionRotations, atGoal);
   }
 
   public void setPivotVoltage(Voltage volts) {
@@ -66,7 +69,7 @@ public class IntakePivot extends SubsystemBase {
    * @return current position from the CANcoder in rotations
    */
   public double getPosition() {
-    return inputs.intakePivotPosition;
+    return inputs.intakePivotPosition.in(Rotations);
   }
 
   /**
@@ -78,8 +81,9 @@ public class IntakePivot extends SubsystemBase {
       AngularVelocity downVelocity,
       double degreesDown,
       double seconds) {
-    double currentPos = inputs.intakePivotPosition;
-    if (inputs.intakePivotStatorCurrent < IntakePivotConstants.Mechanical.pivotJostleCurrentLimit) {
+    double currentPos = inputs.intakePivotPosition.in(Rotations);
+    if (inputs.intakePivotStatorCurrent.in(Amps)
+        < IntakePivotConstants.Mechanical.pivotJostleCurrentLimit) {
       io.setPivotVelocity(downVelocity);
     } else {
       setPivotPosition(currentPos + degreesDown);
@@ -99,7 +103,7 @@ public class IntakePivot extends SubsystemBase {
    * then zero the encoder.
    */
   public void intakeHome(AngularVelocity homeVelo) {
-    if (inputs.intakePivotStatorCurrent > 0.5) {
+    if (inputs.intakePivotStatorCurrent.in(Amps) > 0.5) {
       io.setPivotVelocity(homeVelo);
     } else {
       io.zeroPivotEncoder();

@@ -184,11 +184,11 @@ public class IntakePivotIOSim implements IntakePivotIO {
     // 8. Read values from the hardware objects (just like on real hardware)
     //    Velocity comes from the motor, position comes from the CANcoder
     inputs.intakePivotVelocity = RotationsPerSecond.of(pivotMotor.getVelocity().getValueAsDouble());
-    inputs.intakePivotPosition = pivotEncoder.getAbsolutePosition().getValueAsDouble();
+    inputs.intakePivotPosition = pivotEncoder.getAbsolutePosition().getValue();
 
     // Voltage, current, temperature from the motor
     inputs.intakePivotVoltage = pivotMotor.getMotorVoltage().getValue();
-    inputs.intakePivotStatorCurrent = pivotMotor.getStatorCurrent().getValueAsDouble();
+    inputs.intakePivotStatorCurrent = pivotMotor.getStatorCurrent().getValue();
     inputs.intakePivotSupplyCurrent = pivotMotor.getSupplyCurrent().getValue();
     inputs.intakePivotTemperature = pivotMotor.getDeviceTemp().getValue();
     inputs.intakePivotClosedLoopReference = pivotMotor.getClosedLoopReference().getValueAsDouble();
