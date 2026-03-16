@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intakePivot.io;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
@@ -18,10 +19,10 @@ public interface IntakePivotIO {
   public static class IntakePivotIOInputs {
     public Voltage intakePivotVoltage;
     public Current intakePivotSupplyCurrent;
-    public double intakePivotStatorCurrent;
+    public Current intakePivotStatorCurrent;
     public Temperature intakePivotTemperature;
     public AngularVelocity intakePivotVelocity;
-    public double intakePivotPosition;
+    public Angle intakePivotPosition;
     public AngularVelocity intakePivotClosedLoopReference;
     public AngularVelocity intakePivotClosedLoopError;
   }

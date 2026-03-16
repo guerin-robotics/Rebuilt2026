@@ -3,7 +3,9 @@ package frc.robot.subsystems.intakeRoller.io;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -13,6 +15,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.intakeRoller.intakeRollerConstants;
@@ -29,6 +33,15 @@ public class intakeRollerIOReal implements intakeRollerIO {
   private final MotionMagicVelocityTorqueCurrentFOC torqueRequest =
       new MotionMagicVelocityTorqueCurrentFOC(0);
 
+  // Cached status signals — created once, refreshed in batch each loop
+  private final StatusSignal<AngularVelocity> velocity;
+  private final StatusSignal<Current> statorCurrent;
+  private final StatusSignal<Current> supplyCurrent;
+  private final StatusSignal<Voltage> motorVoltage;
+  private final StatusSignal<Temperature> deviceTemp;
+  private final StatusSignal<Double> closedLoopReference;
+  private final StatusSignal<Double> closedLoopError;
+
   public intakeRollerIOReal() {
     intakeRollerLeader = new TalonFX(HardwareConstants.CanIds.INTAKE_ROLLER_LEADER_ID, CAN_BUS);
     intakeRollerFollower = new TalonFX(HardwareConstants.CanIds.INTAKE_ROLLER_FOLLOWER_ID, CAN_BUS);
@@ -37,12 +50,34 @@ public class intakeRollerIOReal implements intakeRollerIO {
         new Follower(
             HardwareConstants.CanIds.INTAKE_ROLLER_LEADER_ID, MotorAlignmentValue.Aligned));
 
-    // Configure motor
     configureintakeRollerMotor();
+
+    // Cache signal references once in the constructor
+    velocity = intakeRollerLeader.getVelocity();
+    statorCurrent = intakeRollerLeader.getStatorCurrent();
+    supplyCurrent = intakeRollerLeader.getSupplyCurrent();
+    motorVoltage = intakeRollerLeader.getMotorVoltage();
+    deviceTemp = intakeRollerLeader.getDeviceTemp();
+    closedLoopReference = intakeRollerLeader.getClosedLoopReference();
+    closedLoopError = intakeRollerLeader.getClosedLoopError();
+
+    // Set update frequency for all signals (50Hz is plenty for non-odometry)
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        50.0,
+        velocity,
+        statorCurrent,
+        supplyCurrent,
+        motorVoltage,
+        deviceTemp,
+        closedLoopReference,
+        closedLoopError);
+
+    // Stop sending signals we didn't register — reduces CAN bus traffic
+    intakeRollerLeader.optimizeBusUtilization();
+    intakeRollerFollower.optimizeBusUtilization();
   }
 
   private void configureintakeRollerMotor() {
-    // Set current limits, neutral mode, etc. as needed
     var config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
@@ -59,8 +94,6 @@ public class intakeRollerIOReal implements intakeRollerIO {
     config.Slot0.kS = intakeRollerConstants.PID.KS;
     config.Slot0.kV = intakeRollerConstants.PID.KV;
     config.Slot0.kP = intakeRollerConstants.PID.KP;
-    // config.Slot0.kI = intakeRollerConstants.PID.KI;
-    // config.Slot0.kD = intakeRollerConstants.PID.KD;
 
     // Current limits
     var limits = new CurrentLimitsConfigs();
@@ -79,23 +112,33 @@ public class intakeRollerIOReal implements intakeRollerIO {
 
   @Override
   public void updateInputs(intakeRollerIOInputs inputs) {
-    // Read sensor values and populate inputs object
-    inputs.intakeRollerVelocity =
-        RotationsPerSecond.of(intakeRollerLeader.getVelocity().getValueAsDouble());
-    inputs.intakeRollerStatorCurrent = intakeRollerLeader.getStatorCurrent().getValue();
-    inputs.intakeRollerSupplyCurrent = intakeRollerLeader.getSupplyCurrent().getValue();
-    inputs.intakeRollerVoltage = intakeRollerLeader.getMotorVoltage().getValue();
-    inputs.intakeRollerTemperature = intakeRollerLeader.getDeviceTemp().getValue();
+    // One batched CAN read for all signals — much faster than individual reads
+    BaseStatusSignal.refreshAll(
+        velocity,
+        statorCurrent,
+        supplyCurrent,
+        motorVoltage,
+        deviceTemp,
+        closedLoopReference,
+        closedLoopError);
+
+    // Read from cache — no additional CAN traffic
+    inputs.intakeRollerVelocity = velocity.getValue();
+    inputs.intakeRollerStatorCurrent = statorCurrent.getValue();
+    inputs.intakeRollerSupplyCurrent = supplyCurrent.getValue();
+    inputs.intakeRollerVoltage = motorVoltage.getValue();
+    inputs.intakeRollerTemperature = deviceTemp.getValue();
     inputs.rollerClosedLoopReference =
-        RotationsPerSecond.of(intakeRollerLeader.getClosedLoopReference().getValueAsDouble());
-    inputs.rollerClosedLoopError =
-        RotationsPerSecond.of(intakeRollerLeader.getClosedLoopError().getValueAsDouble());
+        RotationsPerSecond.of(closedLoopReference.getValueAsDouble());
+    inputs.rollerClosedLoopError = RotationsPerSecond.of(closedLoopError.getValueAsDouble());
   }
 
+  @Override
   public void setRollerVoltage(Voltage volts) {
     intakeRollerLeader.setControl(voltageRequest.withOutput(volts));
   }
 
+  @Override
   public void setRollerVelocity(AngularVelocity rollerVelo) {
     intakeRollerLeader.setControl(torqueRequest.withVelocity(rollerVelo));
   }
