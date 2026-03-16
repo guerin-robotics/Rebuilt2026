@@ -8,6 +8,7 @@
 package frc.robot;
 
 import static edu.wpi.first.math.util.Units.inchesToMeters;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -23,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.FieldConstants;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.FeederCommands;
 import frc.robot.commands.FlywheelCommands;
 import frc.robot.commands.HoodCommands;
 import frc.robot.commands.IntakePivotCommands;
@@ -409,7 +411,13 @@ public class RobotContainer {
                 HardwareConstants.TowerConstants.hoodTowerPos));
 
     // Transport and feeder
-    buttonPanel.button(2).whileTrue(ShootSequences.SecondSet(feeder, transport));
+    // buttonPanel.button(2).whileTrue(ShootSequences.SecondSet(feeder, transport));
+    buttonPanel
+        .button(2)
+        .whileTrue(
+            FeederCommands.setFeederVelocity(
+                feeder, HardwareConstants.TestVelocities.feederVelocity))
+        .onFalse(FeederCommands.setFeederVelocity(feeder, RotationsPerSecond.of(0)));
 
     // Drop hood
     buttonPanel
@@ -441,7 +449,7 @@ public class RobotContainer {
             intakeRollerCommands.setRollerVoltage(
                 intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage));
 
-    // Feeder/transport/intkae spit
+    // Feeder/transport/intake spit
     buttonPanel.button(7).whileTrue(SpitSequences.spitHopper(feeder, transport, intakeRoller));
 
     // Controls for testing distance-based shooting

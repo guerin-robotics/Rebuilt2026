@@ -40,9 +40,9 @@ public class IntakePivotConstants {
    * TUNED
    */
   public static class PID {
-    public static final double KG = 40.0;
+    public static final double KG = 10.0;
     public static final double KV = 0.0;
-    public static final double KP = 0;
+    public static final double KP = 10;
     public static final double KI = 0.0;
     public static final double KD = 0;
   }
