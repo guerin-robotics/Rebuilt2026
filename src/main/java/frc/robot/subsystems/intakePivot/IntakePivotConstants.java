@@ -54,7 +54,7 @@ public class IntakePivotConstants {
     /** Current threshold (stator amps) used in the jostle routine. */
     public static final double pivotJostleCurrentLimit = 70;
     /** CANcoder magnet offset in rotations. */
-    public static final double magnetOffset = 0.4;
+    public static final double magnetOffset = 0.5;
     /** CANcoder absolute sensor discontinuity point. */
     public static final double magnetSensorDiscontinuityPoint = 0.625;
 
