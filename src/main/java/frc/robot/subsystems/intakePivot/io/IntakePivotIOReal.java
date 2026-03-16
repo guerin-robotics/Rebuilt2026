@@ -64,11 +64,11 @@ public class IntakePivotIOReal implements IntakePivotIO {
 
     // Slot0 gains for position control — Arm_Cosine gravity compensation for a pivot
     config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-    config.Slot0.kS = IntakePivotConstants.PID.KG;
+    config.Slot0.kG = IntakePivotConstants.PID.KG;
     // config.Slot0.kV = IntakePivotConstants.PID.KV;
     config.Slot0.kP = IntakePivotConstants.PID.KP;
     // config.Slot0.kI = IntakePivotConstants.PID.KI;
-    // config.Slot0.kD = IntakePivotConstants.PID.KD;
+    config.Slot0.kD = IntakePivotConstants.PID.KD;
 
     var pivotMotionMagic = config.MotionMagic;
     pivotMotionMagic.MotionMagicAcceleration = PivotMagicConstants.pivotAccel;
@@ -131,9 +131,8 @@ public class IntakePivotIOReal implements IntakePivotIO {
     inputs.intakePivotSupplyCurrent = intakePivotMotor.getSupplyCurrent().getValue();
     inputs.intakePivotTemperature = intakePivotMotor.getDeviceTemp().getValue();
     inputs.intakePivotClosedLoopReference =
-        RotationsPerSecond.of(intakePivotMotor.getClosedLoopReference().getValueAsDouble());
-    inputs.intakePivotClosedLoopError =
-        RotationsPerSecond.of(intakePivotMotor.getClosedLoopError().getValueAsDouble());
+        intakePivotMotor.getClosedLoopReference().getValueAsDouble();
+    inputs.intakePivotClosedLoopError = intakePivotMotor.getClosedLoopError().getValueAsDouble();
   }
 
   public void setPivotVoltage(Voltage volts) {

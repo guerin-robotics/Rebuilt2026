@@ -314,8 +314,8 @@ public class RobotContainer {
     // flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
 
     // Set hood's default command to be at 0.0
-    hood.setDefaultCommand(
-        HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
+    // hood.setDefaultCommand(g
+    //     HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
 
     // Distance-based shooting
     thrustmaster
@@ -388,14 +388,14 @@ public class RobotContainer {
 
     // Lock to heading calculated by dynamic shoot vectors when A button is held (Xbox still
     // controls angle)
-    controller
-        .a()
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> MathUtil.clamp(controller.getLeftY() + getThrustY(), -1.0, 1.0),
-                () -> MathUtil.clamp(controller.getLeftX() + getThrustX(), -1.0, 1.0),
-                () -> drive.getHeadingForShootDynamic()));
+    // controller
+    //     .a()
+    //     .whileTrue(
+    //         DriveCommands.joystickDriveAtAngle(
+    //             drive,
+    //             () -> MathUtil.clamp(controller.getLeftY() + getThrustY(), -1.0, 1.0),
+    //             () -> MathUtil.clamp(controller.getLeftX() + getThrustX(), -1.0, 1.0),
+    //             () -> drive.getHeadingForShootDynamic()));
 
     // Basic controls for testing
 
@@ -428,19 +428,25 @@ public class RobotContainer {
     buttonPanel
         .button(4)
         .whileTrue(
-            // IntakePivotCommands.setPivotRotations(
-            //     intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest)
-            IntakePivotCommands.setPivotVoltage(
-                intakePivot, HardwareConstants.TestVoltages.intakePivotTestVoltageUp));
+            IntakePivotCommands.setPivotRotations(
+                intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest)
+            // IntakePivotCommands.setPivotVoltage(
+            //     intakePivot, HardwareConstants.TestVoltages.intakePivotTestVoltageUp)
+            // IntakePivotCommands.setPivotVelocity(
+            //     intakePivot, HardwareConstants.TestVelocities.pivotUpVelocity)
+            );
 
     // Intake down
     buttonPanel
         .button(5)
         .whileTrue(
-            // IntakePivotCommands.setPivotRotations(
-            //     intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest)
-            IntakePivotCommands.setPivotVoltage(
-                intakePivot, HardwareConstants.TestVoltages.intakePivotTestVoltageDown));
+            IntakePivotCommands.setPivotRotations(
+                intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest)
+            // IntakePivotCommands.setPivotVoltage(
+            //     intakePivot, HardwareConstants.TestVoltages.intakePivotTestVoltageDown)
+            // IntakePivotCommands.setPivotVelocity(
+            //     intakePivot, HardwareConstants.TestVelocities.pivotDownVelocity)
+            );
 
     // Run roller
     buttonPanel

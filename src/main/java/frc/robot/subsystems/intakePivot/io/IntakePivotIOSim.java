@@ -191,10 +191,8 @@ public class IntakePivotIOSim implements IntakePivotIO {
     inputs.intakePivotStatorCurrent = pivotMotor.getStatorCurrent().getValueAsDouble();
     inputs.intakePivotSupplyCurrent = pivotMotor.getSupplyCurrent().getValue();
     inputs.intakePivotTemperature = pivotMotor.getDeviceTemp().getValue();
-    inputs.intakePivotClosedLoopReference =
-        RotationsPerSecond.of(pivotMotor.getClosedLoopReference().getValueAsDouble());
-    inputs.intakePivotClosedLoopError =
-        RotationsPerSecond.of(pivotMotor.getClosedLoopError().getValueAsDouble());
+    inputs.intakePivotClosedLoopReference = pivotMotor.getClosedLoopReference().getValueAsDouble();
+    inputs.intakePivotClosedLoopError = pivotMotor.getClosedLoopError().getValueAsDouble();
   }
 
   @Override

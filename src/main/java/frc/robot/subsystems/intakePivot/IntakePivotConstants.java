@@ -30,9 +30,9 @@ public class IntakePivotConstants {
     public static final SensorDirectionValue ENCODER_DIRECTION =
         SensorDirectionValue.Clockwise_Positive;
     /** Upper software limit in rotations of the mechanism. */
-    public static final double softwareUpperRotationLimit = 0.25;
+    public static final double softwareUpperRotationLimit = 0.5;
     /** Lower software limit in rotations of the mechanism. */
-    public static final double softwareLowerRotationLimit = 0.0;
+    public static final double softwareLowerRotationLimit = 0.05;
   }
 
   /**
@@ -40,11 +40,11 @@ public class IntakePivotConstants {
    * TUNED
    */
   public static class PID {
-    public static final double KG = 10.0;
+    public static final double KG = 17.5; // 6
     public static final double KV = 0.0;
-    public static final double KP = 10;
+    public static final double KP = 500.0; // 80.0
     public static final double KI = 0.0;
-    public static final double KD = 0;
+    public static final double KD = 30.0; // 1.0
   }
 
   /** Mechanical properties of the pivot. */
