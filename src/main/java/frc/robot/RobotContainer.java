@@ -420,15 +420,19 @@ public class RobotContainer {
     buttonPanel
         .button(4)
         .whileTrue(
-            IntakePivotCommands.setPivotRotations(
-                intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest));
+            // IntakePivotCommands.setPivotRotations(
+            //     intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest)
+            IntakePivotCommands.setPivotVoltage(
+                intakePivot, HardwareConstants.TestVoltages.intakePivotTestVoltageUp));
 
     // Intake down
     buttonPanel
         .button(5)
         .whileTrue(
-            IntakePivotCommands.setPivotRotations(
-                intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest));
+            // IntakePivotCommands.setPivotRotations(
+            //     intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest)
+            IntakePivotCommands.setPivotVoltage(
+                intakePivot, HardwareConstants.TestVoltages.intakePivotTestVoltageDown));
 
     // Run roller
     buttonPanel
