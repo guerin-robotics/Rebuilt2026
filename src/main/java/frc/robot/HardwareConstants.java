@@ -102,4 +102,14 @@ public class HardwareConstants {
     public static final int ButtonPanelPort = 0;
     public static final double DEADBAND = 0.08;
   }
+
+  public static class Zones {
+    public enum Zone {
+      ALLIANCE_ZONE,
+      ALLIANCE_TRENCH,
+      NEUTRAL,
+      OPPOSING_TRENCH,
+      OPPOSING_ZONE
+    }
+  }
 }

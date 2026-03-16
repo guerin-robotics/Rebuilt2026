@@ -15,7 +15,6 @@ public class HoodCommands {
   }
 
   public static Command incrementHoodPos(Hood hood) {
-
     return Commands.runOnce(() -> hood.incrementHoodPos());
   }
 }

@@ -54,6 +54,9 @@ public class IntakePivotConstants {
     public static final double magnetOffset = 0.35;
     /** CANcoder absolute sensor discontinuity point. */
     public static final double magnetSensorDiscontinuityPoint = 0.625;
+
+    public static final double pivotJostleDegreesUp = 0.25;
+    public static final double pivotDegreesDown = 0.0;
   }
 
   /** MotionMagic profile constraints. */

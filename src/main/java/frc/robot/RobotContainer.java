@@ -188,7 +188,11 @@ public class RobotContainer {
     // autoChooser.addOption(
     //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    configureButtonBindings();
+    if (Robot.isReal()) {
+      configureButtonBindings();
+    } else if (Robot.isSimulation()) {
+      configureSimBindings();
+    }
   }
 
   private double deadband(double value) {
@@ -307,6 +311,10 @@ public class RobotContainer {
     // Set idle command (run at 10 rps) as default
     // flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
 
+    // Set hood's default command to be at 0.0
+    hood.setDefaultCommand(
+        HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
+
     // Distance-based shooting
     thrustmaster
         .button(1)
@@ -369,21 +377,12 @@ public class RobotContainer {
             );
 
     // Intake jostle
-    // thrustmaster
-    //     .button(6)
-    //     .whileTrue(
-    //         IntakePivotCommands.jostlePivotByCurrent(
-    //             intakePivot,
-    //             HardwareConstants.TestVelocities.pivotUpVelocity,
-    //             HardwareConstants.TestVelocities.pivotDownVelocity,
-    //             HardwareConstants.TestPositions.intakeDegreesDownTest,
-    //             HardwareConstants.TestPositions.pulseSeconds));
+    thrustmaster.button(6).whileTrue(IntakePivotCommands.jostlePivotByPos(intakePivot));
 
     // Spit sequence
     thrustmaster
         .button(7)
-        .whileTrue(
-            SpitSequences.spitAll(flywheel, prestage, hood, feeder, transport, intakeRoller));
+        .whileTrue(SpitSequences.spitAll(flywheel, prestage, feeder, transport, intakeRoller));
 
     // Lock to heading calculated by dynamic shoot vectors when A button is held (Xbox still
     // controls angle)
@@ -412,7 +411,7 @@ public class RobotContainer {
     // Transport and feeder
     buttonPanel.button(2).whileTrue(ShootSequences.SecondSet(feeder, transport));
 
-    // Move hood
+    // Drop hood
     buttonPanel
         .button(3)
         .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
@@ -449,6 +448,46 @@ public class RobotContainer {
 
     // Increase hood pos for tuning
     buttonPanel.button(10).onTrue(HoodCommands.incrementHoodPos(hood));
+  }
+
+  private void configureSimBindings() {
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive,
+            () -> MathUtil.clamp(-controller.getLeftY(), -1.0, 1.0),
+            () -> MathUtil.clamp(-controller.getLeftX(), -1.0, 1.0),
+            () -> MathUtil.clamp(-controller.getRightTriggerAxis(), -1.0, 1.0)));
+
+    controller
+        .a()
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                    drive,
+                    () -> -thrustmaster.getX(),
+                    () -> -thrustmaster.getY(),
+                    () -> RobotState.getInstance().getAngleToAllianceHub())
+                .alongWith(
+                    new WaitCommand(0.5)
+                        .andThen(
+                            ShootSequences.shootToHub(
+                                flywheel, prestage, hood, feeder, transport, intakeRoller))))
+        .onFalse(SpitSequences.spitAfterShoot(flywheel, prestage, feeder, transport, intakeRoller));
+
+    controller.b().whileTrue(IntakePivotCommands.jostlePivotByPos(intakePivot));
+
+    controller
+        .y()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        drive.setPose(
+                            AllianceFlipUtil.apply(
+                                new Pose2d(
+                                    new Translation2d(
+                                        (inchesToMeters(33 / 2)),
+                                        (FieldConstants.fieldWidth - inchesToMeters(33 / 2))),
+                                    drive.getRotation()))))
+                .ignoringDisable(true));
   }
 
   public Command getAutonomousCommand() {
