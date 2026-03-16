@@ -25,9 +25,9 @@ public class FeederConstants {
 
   // NOT Tuned yet - placeholder values
   public static class PID {
-    public static final double KS = 2.0;
+    public static final double KS = 5.0;
     public static final double KV = 0.0;
-    public static final double KP = 1.0;
+    public static final double KP = 3.0;
     public static final double KI = 0.0;
     public static final double KD = 0.0;
   }

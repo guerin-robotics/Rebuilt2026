@@ -68,7 +68,7 @@ public class IntakePivotIOReal implements IntakePivotIO {
     // config.Slot0.kV = IntakePivotConstants.PID.KV;
     config.Slot0.kP = IntakePivotConstants.PID.KP;
     // config.Slot0.kI = IntakePivotConstants.PID.KI;
-    config.Slot0.kD = IntakePivotConstants.PID.KD;
+    // config.Slot0.kD = IntakePivotConstants.PID.KD;
 
     var pivotMotionMagic = config.MotionMagic;
     pivotMotionMagic.MotionMagicAcceleration = PivotMagicConstants.pivotAccel;

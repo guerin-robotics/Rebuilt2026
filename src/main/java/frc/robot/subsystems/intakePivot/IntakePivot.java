@@ -87,6 +87,13 @@ public class IntakePivot extends SubsystemBase {
     }
   }
 
+  public void intakeJostleByPos() {
+    io.setPivotPosition(IntakePivotConstants.Mechanical.pivotJostleDegreesUp);
+    new WaitCommand(0.25);
+    io.setPivotPosition(IntakePivotConstants.Mechanical.pivotDegreesDown);
+    new WaitCommand(0.25);
+  }
+
   /**
    * Slowly drive the pivot toward the home position until stator current indicates a hard stop,
    * then zero the encoder.

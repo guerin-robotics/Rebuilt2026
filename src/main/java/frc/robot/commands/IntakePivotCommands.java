@@ -56,6 +56,13 @@ public class IntakePivotCommands {
         intakePivot);
   }
 
+  public static Command jostlePivotByPos(IntakePivot intakePivot) {
+    return Commands.startEnd(
+        () -> intakePivot.intakeJostleByPos(),
+        () -> intakePivot.setPivotVelocity(RotationsPerSecond.of(0)),
+        intakePivot);
+  }
+
   /** Zero the pivot encoder at the current position. */
   public static Command zeroPivot(IntakePivot intakePivot) {
     return Commands.runOnce(() -> intakePivot.zeroPivotEncoder());

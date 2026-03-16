@@ -8,6 +8,7 @@
 package frc.robot;
 
 import static edu.wpi.first.math.util.Units.inchesToMeters;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.FieldConstants;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.FeederCommands;
 import frc.robot.commands.FlywheelCommands;
 import frc.robot.commands.HoodCommands;
 import frc.robot.commands.IntakePivotCommands;
@@ -189,11 +191,10 @@ public class RobotContainer {
     // autoChooser.addOption(
     //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    if (RobotBase.isReal()) {
-
+    if (Robot.isReal()) {
       configureButtonBindings();
-    } else {
-      configureSimButtonBindings();
+    } else if (Robot.isSimulation()) {
+      configureSimBindings();
     }
   }
 
@@ -313,6 +314,10 @@ public class RobotContainer {
     // Set idle command (run at 10 rps) as default
     // flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
 
+    // Set hood's default command to be at 0.0
+    hood.setDefaultCommand(
+        HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
+
     // Distance-based shooting
     thrustmaster
         .button(1)
@@ -375,21 +380,12 @@ public class RobotContainer {
             );
 
     // Intake jostle
-    // thrustmaster
-    //     .button(6)
-    //     .whileTrue(
-    //         IntakePivotCommands.jostlePivotByCurrent(
-    //             intakePivot,
-    //             HardwareConstants.TestVelocities.pivotUpVelocity,
-    //             HardwareConstants.TestVelocities.pivotDownVelocity,
-    //             HardwareConstants.TestPositions.intakeDegreesDownTest,
-    //             HardwareConstants.TestPositions.pulseSeconds));
+    thrustmaster.button(6).whileTrue(IntakePivotCommands.jostlePivotByPos(intakePivot));
 
     // Spit sequence
     thrustmaster
         .button(7)
-        .whileTrue(
-            SpitSequences.spitAll(flywheel, prestage, hood, feeder, transport, intakeRoller));
+        .whileTrue(SpitSequences.spitAll(flywheel, prestage, feeder, transport, intakeRoller));
 
     // Lock to heading calculated by dynamic shoot vectors when A button is held (Xbox still
     // controls angle)
@@ -416,9 +412,15 @@ public class RobotContainer {
                 HardwareConstants.TowerConstants.hoodTowerPos));
 
     // Transport and feeder
-    buttonPanel.button(2).whileTrue(ShootSequences.SecondSet(feeder, transport));
+    // buttonPanel.button(2).whileTrue(ShootSequences.SecondSet(feeder, transport));
+    buttonPanel
+        .button(2)
+        .whileTrue(
+            FeederCommands.setFeederVelocity(
+                feeder, HardwareConstants.TestVelocities.feederVelocity))
+        .onFalse(FeederCommands.setFeederVelocity(feeder, RotationsPerSecond.of(0)));
 
-    // Move hood
+    // Drop hood
     buttonPanel
         .button(3)
         .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
@@ -427,15 +429,19 @@ public class RobotContainer {
     buttonPanel
         .button(4)
         .whileTrue(
-            IntakePivotCommands.setPivotRotations(
-                intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest));
+            // IntakePivotCommands.setPivotRotations(
+            //     intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest)
+            IntakePivotCommands.setPivotVoltage(
+                intakePivot, HardwareConstants.TestVoltages.intakePivotTestVoltageUp));
 
     // Intake down
     buttonPanel
         .button(5)
         .whileTrue(
-            IntakePivotCommands.setPivotRotations(
-                intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest));
+            // IntakePivotCommands.setPivotRotations(
+            //     intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest)
+            IntakePivotCommands.setPivotVoltage(
+                intakePivot, HardwareConstants.TestVoltages.intakePivotTestVoltageDown));
 
     // Run roller
     buttonPanel
@@ -444,7 +450,7 @@ public class RobotContainer {
             intakeRollerCommands.setRollerVoltage(
                 intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage));
 
-    // Feeder/transport/intkae spit
+    // Feeder/transport/intake spit
     buttonPanel.button(7).whileTrue(SpitSequences.spitHopper(feeder, transport, intakeRoller));
 
     // Controls for testing distance-based shooting
@@ -457,19 +463,16 @@ public class RobotContainer {
     buttonPanel.button(10).onTrue(HoodCommands.incrementHoodPos(hood));
   }
 
-  public void configureSimButtonBindings() {
-    // ==================== DRIVE CONTROLS (DO NOT MODIFY) ====================
-    // Default command: Xbox + Thrustmaster combined
+  private void configureSimBindings() {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightTriggerAxis()));
+            () -> MathUtil.clamp(-controller.getLeftY(), -1.0, 1.0),
+            () -> MathUtil.clamp(-controller.getLeftX(), -1.0, 1.0),
+            () -> MathUtil.clamp(-controller.getRightTriggerAxis(), -1.0, 1.0)));
 
-    // Distance-based shooting
     controller
-        .leftBumper()
+        .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                     drive,
@@ -480,21 +483,24 @@ public class RobotContainer {
                     new WaitCommand(0.5)
                         .andThen(
                             ShootSequences.shootToHub(
-                                flywheel, prestage, hood, feeder, transport, intakeRoller))));
+                                flywheel, prestage, hood, feeder, transport, intakeRoller))))
+        .onFalse(SpitSequences.spitAfterShoot(flywheel, prestage, feeder, transport, intakeRoller));
 
-    // Intake up
-    controller
-        .a()
-        .onTrue(
-            IntakePivotCommands.setPivotRotations(
-                intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest));
+    controller.b().whileTrue(IntakePivotCommands.jostlePivotByPos(intakePivot));
 
-    // Intake down
     controller
-        .b()
+        .y()
         .onTrue(
-            IntakePivotCommands.setPivotRotations(
-                intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest));
+            Commands.runOnce(
+                    () ->
+                        drive.setPose(
+                            AllianceFlipUtil.apply(
+                                new Pose2d(
+                                    new Translation2d(
+                                        (inchesToMeters(33 / 2)),
+                                        (FieldConstants.fieldWidth - inchesToMeters(33 / 2))),
+                                    drive.getRotation()))))
+                .ignoringDisable(true));
   }
 
   public Command getAutonomousCommand() {
