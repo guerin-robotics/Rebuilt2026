@@ -154,6 +154,12 @@
       "waypointRelativePos": 0.92,
       "endWaypointRelativePos": null,
       "command": null
+    },
+    {
+      "name": "RunIntake",
+      "waypointRelativePos": 1.0618146929824555,
+      "endWaypointRelativePos": 3.533031798245615,
+      "command": null
     }
   ],
   "globalConstraints": {
