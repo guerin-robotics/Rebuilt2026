@@ -8,14 +8,21 @@
 package frc.robot;
 
 import static edu.wpi.first.math.util.Units.inchesToMeters;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -72,6 +79,8 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.io.VisionIO;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVisionSim;
+import java.util.List;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
@@ -88,6 +97,23 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+
+  // ── Auto Preview & Starting Pose Check ──────────────────────────────────────
+  // Field2d widget to show the selected auto's path and the robot's current position.
+  // Used during disabled/pre-match to verify the robot is placed correctly.
+  public final Field2d autoPreviewField = new Field2d();
+
+  // Stores the starting pose of the currently selected auto.
+  // Updated when the auto chooser selection changes.
+  private Pose2d autoStartPose = new Pose2d();
+
+  // ── Starting Pose Tolerances ────────────────────────────────────────────────
+  // How close (in inches) the robot needs to be to the auto's starting position
+  // for us to consider it "close enough" to start the match.
+  private static final Distance STARTING_POSE_DRIVE_TOLERANCE = Inches.of(6.0);
+
+  // How close (in degrees) the robot's heading needs to be to the auto's starting heading.
+  private static final double STARTING_POSE_ROT_TOLERANCE_DEGREES = 5.0;
 
   // Controllers
   private final CommandXboxController controller =
@@ -175,6 +201,9 @@ public class RobotContainer {
     }
 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+
+    // Publish the auto preview field to the dashboard so we can see the selected path
+    SmartDashboard.putData("Auto Preview", autoPreviewField);
 
     // autoChooser.addOption(
     //     "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
@@ -511,5 +540,118 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return autoChooser.get();
+  }
+
+  // ==================== AUTO PREVIEW & STARTING POSE CHECK ====================
+
+  /** Tracks the last auto name so we only reload paths when the selection changes. */
+  private String lastAutoName = "";
+
+  /**
+   * Updates the auto path preview on the Field2d when the selected auto changes.
+   *
+   * <p>Call this periodically (e.g., from {@code disabledPeriodic}). It reads the currently
+   * selected auto command's name, loads all paths from that auto file, and draws them on the "Auto
+   * Preview" Field2d widget.
+   */
+  public void updateAutoPreview() {
+    // Get the currently selected auto command
+    Command selectedAuto = autoChooser.get();
+    if (selectedAuto == null) return;
+
+    String autoName = selectedAuto.getName();
+
+    // Only reload if the selection changed
+    if (autoName.equals(lastAutoName)) return;
+    lastAutoName = autoName;
+
+    Logger.recordOutput("Auto/SelectedAuto", autoName);
+
+    // Clear any previously drawn paths
+    autoPreviewField.getObject("path").setPoses();
+
+    try {
+      // Load all paths from the selected auto and draw them on the field
+      List<PathPlannerPath> paths = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
+
+      if (paths.isEmpty()) {
+        Logger.recordOutput("Auto/PreviewStatus", "No paths found for: " + autoName);
+        autoStartPose = new Pose2d();
+        return;
+      }
+
+      // Collect all path poses for visualization
+      List<Pose2d> allPoses = new java.util.ArrayList<>();
+      for (PathPlannerPath path : paths) {
+        // Flip the path for red alliance if needed
+        PathPlannerPath flippedPath = path.flipPath();
+        boolean shouldFlip = AllianceFlipUtil.shouldFlip();
+
+        PathPlannerPath displayPath = shouldFlip ? flippedPath : path;
+        allPoses.addAll(displayPath.getPathPoses());
+      }
+
+      // Draw all path poses on the Field2d
+      autoPreviewField.getObject("path").setPoses(allPoses);
+
+      // Store the starting pose (first point of the first path)
+      autoStartPose = paths.get(0).getStartingHolonomicPose().orElse(new Pose2d());
+      if (AllianceFlipUtil.shouldFlip()) {
+        autoStartPose = AllianceFlipUtil.apply(autoStartPose);
+      }
+
+      Logger.recordOutput("Auto/PreviewStatus", "Loaded " + paths.size() + " paths");
+      Logger.recordOutput("Auto/StartPose", autoStartPose);
+
+    } catch (Exception e) {
+      Logger.recordOutput("Auto/PreviewStatus", "Error loading: " + e.getMessage());
+      autoStartPose = new Pose2d();
+    }
+  }
+
+  /**
+   * Checks and displays the robot's starting pose accuracy relative to the selected autonomous
+   * path.
+   *
+   * <p>This method should be called periodically while the robot is disabled so the drive team can
+   * verify the robot is placed correctly before a match. It publishes:
+   *
+   * <ul>
+   *   <li>The robot's current pose on the auto preview Field2d
+   *   <li>Distance (in inches) from the auto's starting position
+   *   <li>Rotation difference (in degrees) from the auto's starting heading
+   *   <li>Boolean flags indicating if position and rotation are within tolerance
+   * </ul>
+   */
+  public void checkStartPose() {
+    // Show the robot's current pose on the auto preview field
+    Pose2d currentPose = RobotState.getInstance().getEstimatedPose();
+    autoPreviewField.setRobotPose(currentPose);
+
+    // Skip checks if we don't have a valid start pose
+    if (autoStartPose.equals(new Pose2d())) {
+      Logger.recordOutput("Auto/StartCheck/PositionOK", false);
+      Logger.recordOutput("Auto/StartCheck/RotationOK", false);
+      return;
+    }
+
+    // Calculate distance from current pose to auto start pose (in inches)
+    double distanceInches =
+        currentPose.getTranslation().getDistance(autoStartPose.getTranslation())
+            / Meters.of(1).in(Inches);
+
+    // Calculate rotation difference (in degrees)
+    double rotationDifferenceDegrees =
+        Math.abs(currentPose.getRotation().minus(autoStartPose.getRotation()).getDegrees());
+
+    // Check if within tolerance
+    boolean positionOK = distanceInches <= STARTING_POSE_DRIVE_TOLERANCE.in(Inches);
+    boolean rotationOK = rotationDifferenceDegrees <= STARTING_POSE_ROT_TOLERANCE_DEGREES;
+
+    // Log results to dashboard
+    Logger.recordOutput("Auto/StartCheck/DistanceInches", distanceInches);
+    Logger.recordOutput("Auto/StartCheck/RotationDiffDegrees", rotationDifferenceDegrees);
+    Logger.recordOutput("Auto/StartCheck/PositionOK", positionOK);
+    Logger.recordOutput("Auto/StartCheck/RotationOK", rotationOK);
   }
 }
