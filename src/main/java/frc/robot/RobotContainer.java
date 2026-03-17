@@ -15,6 +15,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -259,7 +260,16 @@ public class RobotContainer {
         IntakePivotCommands.setPivotRotations(
             intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest));
 
-    // Auto Shoot command
+    // Auto run intake command
+    NamedCommands.registerCommand(
+        "RunIntake",
+            intakeRollerCommands.setRollerVoltage(
+                    intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage)
+                .alongWith(
+                    TransportCommands.runTransportVoltage(
+                        transport, HardwareConstants.TestVoltages.TransportTestVoltage)));;
+
+    // Auto shoot command
     NamedCommands.registerCommand(
         "Shoot",
         Commands.sequence(
@@ -269,15 +279,15 @@ public class RobotContainer {
 
   // EventTriggers
   private void registerEventTriggers() {
-    // Event marker for intake command
-    NamedCommands.registerCommand(
-        "DeployIntake",
+    // Event marker for intake deploy command
+    new EventTrigger("DeployIntake")
+    .onTrue(
         IntakePivotCommands.setPivotRotations(
             intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest));
 
-    // Event marker for intake command
-    NamedCommands.registerCommand(
-        "RetractIntake",
+    // Event marker for intake retract command
+    new EventTrigger("RetractIntake")
+    .onTrue(
         IntakePivotCommands.setPivotRotations(
             intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest));
   }
