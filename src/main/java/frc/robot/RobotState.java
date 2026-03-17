@@ -412,4 +412,29 @@ public class RobotState {
   public void resetPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, lastModulePositions, pose);
   }
+
+  // ZONE FINDER
+  public HardwareConstants.Zones.Zone getRobotZone() {
+
+    if (AllianceFlipUtil.applyX(RobotState.getInstance().getEstimatedPose().getX())
+        < FieldConstants.LinesVertical.allianceZone) {
+      Logger.recordOutput("RobotState/RobotZone", HardwareConstants.Zones.Zone.ALLIANCE_ZONE);
+      return HardwareConstants.Zones.Zone.ALLIANCE_ZONE;
+    } else if (AllianceFlipUtil.applyX(RobotState.getInstance().getEstimatedPose().getX())
+        < FieldConstants.LinesVertical.neutralZoneNear) {
+      Logger.recordOutput("RobotState/RobotZone", HardwareConstants.Zones.Zone.ALLIANCE_TRENCH);
+      return HardwareConstants.Zones.Zone.ALLIANCE_TRENCH;
+    } else if (AllianceFlipUtil.applyX(RobotState.getInstance().getEstimatedPose().getX())
+        < FieldConstants.LinesVertical.neutralZoneFar) {
+      Logger.recordOutput("RobotState/RobotZone", HardwareConstants.Zones.Zone.NEUTRAL);
+      return HardwareConstants.Zones.Zone.NEUTRAL;
+    } else if (AllianceFlipUtil.applyX(RobotState.getInstance().getEstimatedPose().getX())
+        < FieldConstants.LinesVertical.oppAllianceZone) {
+      Logger.recordOutput("RobotState/RobotZone", HardwareConstants.Zones.Zone.OPPOSING_TRENCH);
+      return HardwareConstants.Zones.Zone.OPPOSING_TRENCH;
+    } else {
+      Logger.recordOutput("RobotState/RobotZone", HardwareConstants.Zones.Zone.OPPOSING_ZONE);
+      return HardwareConstants.Zones.Zone.OPPOSING_ZONE;
+    }
+  }
 }

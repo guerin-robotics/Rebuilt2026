@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intakePivot;
 
+import static edu.wpi.first.units.Units.Amps;
+
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -79,7 +81,8 @@ public class IntakePivot extends SubsystemBase {
       double degreesDown,
       double seconds) {
     double currentPos = inputs.intakePivotPosition;
-    if (inputs.intakePivotStatorCurrent < IntakePivotConstants.Mechanical.pivotJostleCurrentLimit) {
+    if (inputs.intakePivotStatorCurrent.in(Amps)
+        < IntakePivotConstants.Mechanical.pivotJostleCurrentLimit) {
       io.setPivotVelocity(downVelocity);
     } else {
       setPivotPosition(currentPos + degreesDown);
@@ -87,12 +90,19 @@ public class IntakePivot extends SubsystemBase {
     }
   }
 
+  public void intakeJostleByPos() {
+    io.setPivotPosition(IntakePivotConstants.Mechanical.pivotJostleDegreesUp);
+    // new WaitCommand(1);
+    // io.setPivotPosition(IntakePivotConstants.Mechanical.pivotDegreesDown);
+    // new WaitCommand(1);
+  }
+
   /**
    * Slowly drive the pivot toward the home position until stator current indicates a hard stop,
    * then zero the encoder.
    */
   public void intakeHome(AngularVelocity homeVelo) {
-    if (inputs.intakePivotStatorCurrent > 0.5) {
+    if (inputs.intakePivotStatorCurrent.in(Amps) > 0.5) {
       io.setPivotVelocity(homeVelo);
     } else {
       io.zeroPivotEncoder();

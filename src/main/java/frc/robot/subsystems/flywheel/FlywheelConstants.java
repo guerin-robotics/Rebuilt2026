@@ -1,6 +1,5 @@
 package frc.robot.subsystems.flywheel;
 
-import static edu.wpi.first.math.util.Units.feetToMeters;
 import static edu.wpi.first.math.util.Units.inchesToMeters;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RevolutionsPerSecond;
@@ -105,9 +104,9 @@ public class FlywheelConstants {
     // Key is distance from center of hub (converted to meters)
     // Value is angular velocity (RPM)
     static {
-      SPEED_MAP.put(feetToMeters(3), 900.0);
-      SPEED_MAP.put(feetToMeters(5), 990.0);
-      SPEED_MAP.put(inchesToMeters(82), 1020.0);
+      SPEED_MAP.put(inchesToMeters(175), 1300.0);
+      SPEED_MAP.put(inchesToMeters(120), 1100.0);
+      SPEED_MAP.put(inchesToMeters(75), 900.0);
     }
   }
 

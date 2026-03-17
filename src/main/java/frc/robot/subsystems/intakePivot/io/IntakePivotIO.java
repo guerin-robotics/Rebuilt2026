@@ -18,12 +18,12 @@ public interface IntakePivotIO {
   public static class IntakePivotIOInputs {
     public Voltage intakePivotVoltage;
     public Current intakePivotSupplyCurrent;
-    public double intakePivotStatorCurrent;
+    public Current intakePivotStatorCurrent;
     public Temperature intakePivotTemperature;
     public AngularVelocity intakePivotVelocity;
     public double intakePivotPosition;
-    public AngularVelocity intakePivotClosedLoopReference;
-    public AngularVelocity intakePivotClosedLoopError;
+    public double intakePivotClosedLoopReference;
+    public double intakePivotClosedLoopError;
   }
 
   public default void updateInputs(IntakePivotIOInputs inputs) {}

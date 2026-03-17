@@ -24,24 +24,27 @@ public class IntakePivotConstants {
     public static final int INTAKE_PIVOT_MAIN_STATOR_AMP = 70;
   }
 
-  /** Software configuration: motor inversion, encoder direction, and soft limits. */
+  /** Software configuration: motor inversion, encoder direction, and soft limits. NEEDS TUNED */
   public static class SoftwareConstants {
     public static final boolean MOTOR_INVERTED = false;
     public static final SensorDirectionValue ENCODER_DIRECTION =
         SensorDirectionValue.Clockwise_Positive;
     /** Upper software limit in rotations of the mechanism. */
-    public static final double softwareUpperRotationLimit = 0.25;
+    public static final double softwareUpperRotationLimit = 0.5;
     /** Lower software limit in rotations of the mechanism. */
-    public static final double softwareLowerRotationLimit = 0.0;
+    public static final double softwareLowerRotationLimit = 0.05;
   }
 
-  /** PID gains for the real robot's position controller (NOT tuned yet — placeholder values). */
+  /**
+   * PID gains for the real robot's position controller (NOT tuned yet — placeholder values). NEEDS
+   * TUNED
+   */
   public static class PID {
-    public static final double KG = 10.0;
+    public static final double KG = 17.5; // 6
     public static final double KV = 0.0;
-    public static final double KP = 200;
+    public static final double KP = 500.0; // 80.0
     public static final double KI = 0.0;
-    public static final double KD = 20;
+    public static final double KD = 30.0; // 1.0
   }
 
   /** Mechanical properties of the pivot. */
@@ -51,9 +54,12 @@ public class IntakePivotConstants {
     /** Current threshold (stator amps) used in the jostle routine. */
     public static final double pivotJostleCurrentLimit = 70;
     /** CANcoder magnet offset in rotations. */
-    public static final double magnetOffset = 0.35;
+    public static final double magnetOffset = 0.5;
     /** CANcoder absolute sensor discontinuity point. */
     public static final double magnetSensorDiscontinuityPoint = 0.625;
+
+    public static final double pivotJostleDegreesUp = 0.25;
+    public static final double pivotDegreesDown = 0.0;
   }
 
   /** MotionMagic profile constraints. */

@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems.vision;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Radians;
 
@@ -35,26 +36,28 @@ public class VisionConstants {
 
   public static final Transform3d robotToCamera0 =
       new Transform3d(
-          new Translation3d(Inches.of(11.317), Inches.of(11.317), Inches.of(-6.592)),
-          new Rotation3d(Radians.zero(), Radians.of(-0.314159), Radians.of(Math.PI / 3)));
+          new Translation3d(Inches.of(-11.859), Inches.of(-11.508), Inches.of(8.605)),
+          new Rotation3d(Radians.zero(), Degrees.of(-20), Degrees.of(210)));
 
   // Left Cam
   public static final Transform3d robotToCamera1 =
       new Transform3d(
-          new Translation3d(Inches.of(-11.317), Inches.of(11.317), Inches.of(-6.592)),
-          new Rotation3d(Radians.zero(), Radians.of(-0.314159), Radians.of((2 * Math.PI) / 3)));
+          new Translation3d(Inches.of(-11.859), Inches.of(11.508), Inches.of(8.605)),
+          new Rotation3d(Radians.zero(), Degrees.of(-20), Degrees.of(150)));
 
   // Shooter right
   public static final Transform3d robotToCamera2 =
       new Transform3d(
-          new Translation3d(Inches.of(3.644), Inches.of(2.271), Inches.of(19.095)),
-          new Rotation3d(Radians.zero(), Radians.of(-0.314159), Radians.of(Math.PI / 3)));
+          new Translation3d(Inches.of(3.945), Inches.of(-1.417), Inches.of(19.233388)),
+          new Rotation3d(Radians.zero(), Degrees.of(-10), Degrees.of(-40)));
 
   // Shooter left
   public static final Transform3d robotToCamera3 =
       new Transform3d(
-          new Translation3d(Inches.of(-3.644), Inches.of(2.271), Inches.of(19.095)),
-          new Rotation3d(Radians.zero(), Radians.of(-0.314159), Radians.of((2 * Math.PI) / 3)));
+          new Translation3d(Inches.of(3.945), Inches.of(1.417), Inches.of(19.233388)),
+          new Rotation3d(Radians.zero(), Degrees.of(-10), Degrees.of(40)));
+
+  // new Rotation3d(Radians.zero(), Radians.of(-0.314159), Radians.of((2 * Math.PI) / 3)));
 
   // Basic filtering thresholds
   public static double maxAmbiguity = 0.3;

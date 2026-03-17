@@ -14,7 +14,7 @@ public class HoodCommands {
     return Commands.run(() -> hood.setHoodPosForHub());
   }
 
-  public static Command incrementHoodPos(Hood hood, double position) {
-    return Commands.runOnce(() -> hood.incrementHoodPos(position));
+  public static Command incrementHoodPos(Hood hood) {
+    return Commands.runOnce(() -> hood.incrementHoodPos());
   }
 }

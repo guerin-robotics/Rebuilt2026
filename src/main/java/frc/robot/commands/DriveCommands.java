@@ -151,6 +151,47 @@ public class DriveCommands {
   }
 
   /**
+   * Field relative drive command that snaps the robot to the nearest "straight" X-axis heading.
+   *
+   * <p>The two X-axis headings are 0° (facing the red alliance wall) and 180° (facing the blue
+   * alliance wall). The command picks whichever heading is closest to the robot's current heading
+   * so the robot doesn't spin around. For example:
+   *
+   * <ul>
+   *   <li>If the robot is roughly facing the red wall (heading between -90° and 90°), it snaps to
+   *       0°.
+   *   <li>If the robot is roughly facing the blue wall (heading outside that range), it snaps to
+   *       180°.
+   * </ul>
+   *
+   * <p>This is useful for quickly straightening out to drive through the trench.
+   *
+   * @param drive The drive subsystem
+   * @param xSupplier Joystick X axis (left/right translation)
+   * @param ySupplier Joystick Y axis (forward/back translation)
+   */
+  public static Command joystickDriveSnapToNearestXHeading(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+
+    return joystickDriveAtAngle(
+        drive,
+        xSupplier,
+        ySupplier,
+        () -> {
+          // Get the robot's current heading in radians (-PI to PI)
+          double currentRadians = drive.getRotation().getRadians();
+
+          // If the absolute heading is <= 90° (PI/2), the robot is closer to 0° (facing red wall)
+          // Otherwise, it's closer to 180° (facing blue wall)
+          if (Math.abs(currentRadians) <= Math.PI / 2.0) {
+            return Rotation2d.kZero; // Snap to 0°
+          } else {
+            return Rotation2d.kPi; // Snap to 180°
+          }
+        });
+  }
+
+  /**
    * Measures the velocity feedforward constants for the drive motors.
    *
    * <p>This command should only be used in voltage control mode.

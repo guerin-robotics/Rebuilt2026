@@ -188,13 +188,11 @@ public class IntakePivotIOSim implements IntakePivotIO {
 
     // Voltage, current, temperature from the motor
     inputs.intakePivotVoltage = pivotMotor.getMotorVoltage().getValue();
-    inputs.intakePivotStatorCurrent = pivotMotor.getStatorCurrent().getValueAsDouble();
+    inputs.intakePivotStatorCurrent = pivotMotor.getStatorCurrent().getValue();
     inputs.intakePivotSupplyCurrent = pivotMotor.getSupplyCurrent().getValue();
     inputs.intakePivotTemperature = pivotMotor.getDeviceTemp().getValue();
-    inputs.intakePivotClosedLoopReference =
-        RotationsPerSecond.of(pivotMotor.getClosedLoopReference().getValueAsDouble());
-    inputs.intakePivotClosedLoopError =
-        RotationsPerSecond.of(pivotMotor.getClosedLoopError().getValueAsDouble());
+    inputs.intakePivotClosedLoopReference = pivotMotor.getClosedLoopReference().getValueAsDouble();
+    inputs.intakePivotClosedLoopError = pivotMotor.getClosedLoopError().getValueAsDouble();
   }
 
   @Override

@@ -8,19 +8,24 @@
 package frc.robot;
 
 import static edu.wpi.first.math.util.Units.inchesToMeters;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.Volts;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.AllianceFlipUtil;
@@ -30,7 +35,6 @@ import frc.robot.commands.FeederCommands;
 import frc.robot.commands.FlywheelCommands;
 import frc.robot.commands.HoodCommands;
 import frc.robot.commands.IntakePivotCommands;
-import frc.robot.commands.PrestageCommands;
 import frc.robot.commands.ShootSequences;
 import frc.robot.commands.SpitSequences;
 import frc.robot.commands.TransportCommands;
@@ -75,6 +79,8 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.io.VisionIO;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVisionSim;
+import java.util.List;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
@@ -92,6 +98,23 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
+  // ── Auto Preview & Starting Pose Check ──────────────────────────────────────
+  // Field2d widget to show the selected auto's path and the robot's current position.
+  // Used during disabled/pre-match to verify the robot is placed correctly.
+  public final Field2d autoPreviewField = new Field2d();
+
+  // Stores the starting pose of the currently selected auto.
+  // Updated when the auto chooser selection changes.
+  private Pose2d autoStartPose = new Pose2d();
+
+  // ── Starting Pose Tolerances ────────────────────────────────────────────────
+  // How close (in inches) the robot needs to be to the auto's starting position
+  // for us to consider it "close enough" to start the match.
+  private static final Distance STARTING_POSE_DRIVE_TOLERANCE = Inches.of(6.0);
+
+  // How close (in degrees) the robot's heading needs to be to the auto's starting heading.
+  private static final double STARTING_POSE_ROT_TOLERANCE_DEGREES = 5.0;
+
   // Controllers
   private final CommandXboxController controller =
       new CommandXboxController(HardwareConstants.ControllerConstants.XboxControllerPort);
@@ -99,7 +122,6 @@ public class RobotContainer {
       new CommandJoystick(HardwareConstants.ControllerConstants.JoystickControllerPort);
   private final CommandJoystick buttonPanel =
       new CommandJoystick(HardwareConstants.ControllerConstants.ButtonPanelPort);
-  private final CommandGenericHID keyboard = new CommandGenericHID(3);
 
   public RobotContainer() {
     switch (Constants.currentMode) {
@@ -117,7 +139,11 @@ public class RobotContainer {
                 new VisionIOPhotonVision(
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0),
                 new VisionIOPhotonVision(
-                    VisionConstants.camera1Name, VisionConstants.robotToCamera1));
+                    VisionConstants.camera1Name, VisionConstants.robotToCamera1),
+                new VisionIOPhotonVision(
+                    VisionConstants.camera2Name, VisionConstants.robotToCamera2),
+                new VisionIOPhotonVision(
+                    VisionConstants.camera3Name, VisionConstants.robotToCamera3));
         flywheel = new Flywheel(new FlywheelIOPhoenix6());
         feeder = new Feeder(new FeederIOReal());
         hood = new Hood(new HoodIOReal());
@@ -176,10 +202,13 @@ public class RobotContainer {
 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-    autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addOption(
-        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    // Publish the auto preview field to the dashboard so we can see the selected path
+    SmartDashboard.putData("Auto Preview", autoPreviewField);
+
+    // autoChooser.addOption(
+    //     "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    // autoChooser.addOption(
+    //     "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     // autoChooser.addOption(
     //     "Drive SysId (Quasistatic Forward)",
     //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -191,7 +220,11 @@ public class RobotContainer {
     // autoChooser.addOption(
     //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    configureButtonBindings();
+    if (Robot.isReal()) {
+      configureButtonBindings();
+    } else if (Robot.isSimulation()) {
+      configureSimBindings();
+    }
   }
 
   private double deadband(double value) {
@@ -228,11 +261,10 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Shoot",
         Commands.sequence(
-                ShootSequences.shootForTower(
-                                flywheel, prestage, hood, feeder, transport, intakeRoller
-                                )));
-}
-  
+            ShootSequences.shootForTower(
+                flywheel, prestage, hood, feeder, transport, intakeRoller)));
+  }
+
   // EventTriggers
   private void registerEventTriggers() {
     // Event marker for intake command
@@ -290,8 +322,8 @@ public class RobotContainer {
                             AllianceFlipUtil.apply(
                                 new Pose2d(
                                     new Translation2d(
-                                        (inchesToMeters(27 / 2)),
-                                        (FieldConstants.fieldWidth - inchesToMeters(27 / 2))),
+                                        (inchesToMeters(33 / 2)),
+                                        (FieldConstants.fieldWidth - inchesToMeters(33 / 2))),
                                     drive.getRotation()))))
                 .ignoringDisable(true));
 
@@ -311,12 +343,11 @@ public class RobotContainer {
     // Set idle command (run at 10 rps) as default
     // flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
 
-    // Distance-based shooting
-    // thrustmaster
-    //     .button(1)
-    //     .whileTrue(ShootSequences.shootByDistance(flywheel, prestage, hood, feeder, transport));
+    // Set hood's default command to be at 0.0
+    // hood.setDefaultCommand(g
+    //     HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
 
-    // Shoot from tower
+    // Distance-based shooting
     thrustmaster
         .button(1)
         .whileTrue(
@@ -328,8 +359,29 @@ public class RobotContainer {
                 .alongWith(
                     new WaitCommand(0.5)
                         .andThen(
-                            ShootSequences.shootForTower(
+                            ShootSequences.shootToHub(
                                 flywheel, prestage, hood, feeder, transport, intakeRoller))));
+
+    // Shoot from tower
+    // thrustmaster
+    //     .button(1)
+    //     .whileTrue(
+    //         DriveCommands.joystickDriveAtAngle(
+    //                 drive,
+    //                 () -> -thrustmaster.getX(),
+    //                 () -> -thrustmaster.getY(),
+    //                 () -> RobotState.getInstance().getAngleToAllianceHub())
+    //             .alongWith(
+    //                 new WaitCommand(0.5)
+    //                     .andThen(
+    //                         ShootSequences.shootForTower(
+    //                             flywheel, prestage, hood, feeder, transport, intakeRoller))));
+
+    thrustmaster
+        .button(2)
+        .whileTrue(
+            DriveCommands.joystickDriveSnapToNearestXHeading(
+                drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
 
     // Intake up
     thrustmaster
@@ -349,36 +401,31 @@ public class RobotContainer {
     thrustmaster
         .button(5)
         .whileTrue(
-            intakeRollerCommands.setRollerVoltage(
-                intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage));
+            intakeRollerCommands
+                .setRollerVoltage(
+                    intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage)
+                .alongWith(
+                    TransportCommands.runTransportVoltage(
+                        transport, HardwareConstants.TestVoltages.TransportTestVoltage)));
 
     // Intake jostle
-    // thrustmaster
-    //     .button(6)
-    //     .whileTrue(
-    //         IntakePivotCommands.jostlePivotByCurrent(
-    //             intakePivot,
-    //             HardwareConstants.TestVelocities.pivotUpVelocity,
-    //             HardwareConstants.TestVelocities.pivotDownVelocity,
-    //             HardwareConstants.TestPositions.intakeDegreesDownTest,
-    //             HardwareConstants.TestPositions.pulseSeconds));
+    thrustmaster.button(6).whileTrue(IntakePivotCommands.jostlePivotByPos(intakePivot));
 
     // Spit sequence
     thrustmaster
         .button(7)
-        .whileTrue(
-            SpitSequences.spitAll(flywheel, prestage, hood, feeder, transport, intakeRoller));
+        .whileTrue(SpitSequences.spitAll(flywheel, prestage, feeder, transport, intakeRoller));
 
     // Lock to heading calculated by dynamic shoot vectors when A button is held (Xbox still
     // controls angle)
-    controller
-        .a()
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> MathUtil.clamp(controller.getLeftY() + getThrustY(), -1.0, 1.0),
-                () -> MathUtil.clamp(controller.getLeftX() + getThrustX(), -1.0, 1.0),
-                () -> drive.getHeadingForShootDynamic()));
+    // controller
+    //     .a()
+    //     .whileTrue(
+    //         DriveCommands.joystickDriveAtAngle(
+    //             drive,
+    //             () -> MathUtil.clamp(controller.getLeftY() + getThrustY(), -1.0, 1.0),
+    //             () -> MathUtil.clamp(controller.getLeftX() + getThrustX(), -1.0, 1.0),
+    //             () -> drive.getHeadingForShootDynamic()));
 
     // Basic controls for testing
 
@@ -394,9 +441,15 @@ public class RobotContainer {
                 HardwareConstants.TowerConstants.hoodTowerPos));
 
     // Transport and feeder
-    buttonPanel.button(2).whileTrue(ShootSequences.SecondSet(feeder, transport));
+    // buttonPanel.button(2).whileTrue(ShootSequences.SecondSet(feeder, transport));
+    buttonPanel
+        .button(2)
+        .whileTrue(
+            FeederCommands.setFeederVelocity(
+                feeder, HardwareConstants.TestVelocities.feederVelocity))
+        .onFalse(FeederCommands.setFeederVelocity(feeder, RotationsPerSecond.of(0)));
 
-    // Move hood
+    // Drop hood
     buttonPanel
         .button(3)
         .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
@@ -406,14 +459,24 @@ public class RobotContainer {
         .button(4)
         .whileTrue(
             IntakePivotCommands.setPivotRotations(
-                intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest));
+                intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest)
+            // IntakePivotCommands.setPivotVoltage(
+            //     intakePivot, HardwareConstants.TestVoltages.intakePivotTestVoltageUp)
+            // IntakePivotCommands.setPivotVelocity(
+            //     intakePivot, HardwareConstants.TestVelocities.pivotUpVelocity)
+            );
 
     // Intake down
     buttonPanel
         .button(5)
         .whileTrue(
             IntakePivotCommands.setPivotRotations(
-                intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest));
+                intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest)
+            // IntakePivotCommands.setPivotVoltage(
+            //     intakePivot, HardwareConstants.TestVoltages.intakePivotTestVoltageDown)
+            // IntakePivotCommands.setPivotVelocity(
+            //     intakePivot, HardwareConstants.TestVelocities.pivotDownVelocity)
+            );
 
     // Run roller
     buttonPanel
@@ -422,7 +485,7 @@ public class RobotContainer {
             intakeRollerCommands.setRollerVoltage(
                 intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage));
 
-    // Feeder/transport/intkae spit
+    // Feeder/transport/intake spit
     buttonPanel.button(7).whileTrue(SpitSequences.spitHopper(feeder, transport, intakeRoller));
 
     // Controls for testing distance-based shooting
@@ -432,10 +495,163 @@ public class RobotContainer {
     buttonPanel.button(9).whileTrue(FlywheelCommands.setVelocityForHub(flywheel));
 
     // Increase hood pos for tuning
-    buttonPanel.button(10).onTrue(HoodCommands.incrementHoodPos(hood, 0.0));
+    buttonPanel.button(10).onTrue(HoodCommands.incrementHoodPos(hood));
+  }
+
+  private void configureSimBindings() {
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive,
+            () -> MathUtil.clamp(-controller.getLeftY(), -1.0, 1.0),
+            () -> MathUtil.clamp(-controller.getLeftX(), -1.0, 1.0),
+            () -> MathUtil.clamp(-controller.getRightTriggerAxis(), -1.0, 1.0)));
+
+    controller
+        .a()
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                    drive,
+                    () -> -thrustmaster.getX(),
+                    () -> -thrustmaster.getY(),
+                    () -> RobotState.getInstance().getAngleToAllianceHub())
+                .alongWith(
+                    new WaitCommand(0.5)
+                        .andThen(
+                            ShootSequences.shootToHub(
+                                flywheel, prestage, hood, feeder, transport, intakeRoller))))
+        .onFalse(SpitSequences.spitAfterShoot(flywheel, prestage, feeder, transport, intakeRoller));
+
+    controller.b().whileTrue(IntakePivotCommands.jostlePivotByPos(intakePivot));
+
+    controller
+        .y()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        drive.setPose(
+                            AllianceFlipUtil.apply(
+                                new Pose2d(
+                                    new Translation2d(
+                                        (inchesToMeters(33 / 2)),
+                                        (FieldConstants.fieldWidth - inchesToMeters(33 / 2))),
+                                    drive.getRotation()))))
+                .ignoringDisable(true));
   }
 
   public Command getAutonomousCommand() {
     return autoChooser.get();
+  }
+
+  // ==================== AUTO PREVIEW & STARTING POSE CHECK ====================
+
+  /** Tracks the last auto name so we only reload paths when the selection changes. */
+  private String lastAutoName = "";
+
+  /**
+   * Updates the auto path preview on the Field2d when the selected auto changes.
+   *
+   * <p>Call this periodically (e.g., from {@code disabledPeriodic}). It reads the currently
+   * selected auto command's name, loads all paths from that auto file, and draws them on the "Auto
+   * Preview" Field2d widget.
+   */
+  public void updateAutoPreview() {
+    // Get the currently selected auto command
+    Command selectedAuto = autoChooser.get();
+    if (selectedAuto == null) return;
+
+    String autoName = selectedAuto.getName();
+
+    // Only reload if the selection changed
+    if (autoName.equals(lastAutoName)) return;
+    lastAutoName = autoName;
+
+    Logger.recordOutput("Auto/SelectedAuto", autoName);
+
+    // Clear any previously drawn paths
+    autoPreviewField.getObject("path").setPoses();
+
+    try {
+      // Load all paths from the selected auto and draw them on the field
+      List<PathPlannerPath> paths = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
+
+      if (paths.isEmpty()) {
+        Logger.recordOutput("Auto/PreviewStatus", "No paths found for: " + autoName);
+        autoStartPose = new Pose2d();
+        return;
+      }
+
+      // Collect all path poses for visualization
+      List<Pose2d> allPoses = new java.util.ArrayList<>();
+      for (PathPlannerPath path : paths) {
+        // Flip the path for red alliance if needed
+        PathPlannerPath flippedPath = path.flipPath();
+        boolean shouldFlip = AllianceFlipUtil.shouldFlip();
+
+        PathPlannerPath displayPath = shouldFlip ? flippedPath : path;
+        allPoses.addAll(displayPath.getPathPoses());
+      }
+
+      // Draw all path poses on the Field2d
+      autoPreviewField.getObject("path").setPoses(allPoses);
+
+      // Store the starting pose (first point of the first path)
+      autoStartPose = paths.get(0).getStartingHolonomicPose().orElse(new Pose2d());
+      if (AllianceFlipUtil.shouldFlip()) {
+        autoStartPose = AllianceFlipUtil.apply(autoStartPose);
+      }
+
+      Logger.recordOutput("Auto/PreviewStatus", "Loaded " + paths.size() + " paths");
+      Logger.recordOutput("Auto/StartPose", autoStartPose);
+
+    } catch (Exception e) {
+      Logger.recordOutput("Auto/PreviewStatus", "Error loading: " + e.getMessage());
+      autoStartPose = new Pose2d();
+    }
+  }
+
+  /**
+   * Checks and displays the robot's starting pose accuracy relative to the selected autonomous
+   * path.
+   *
+   * <p>This method should be called periodically while the robot is disabled so the drive team can
+   * verify the robot is placed correctly before a match. It publishes:
+   *
+   * <ul>
+   *   <li>The robot's current pose on the auto preview Field2d
+   *   <li>Distance (in inches) from the auto's starting position
+   *   <li>Rotation difference (in degrees) from the auto's starting heading
+   *   <li>Boolean flags indicating if position and rotation are within tolerance
+   * </ul>
+   */
+  public void checkStartPose() {
+    // Show the robot's current pose on the auto preview field
+    Pose2d currentPose = RobotState.getInstance().getEstimatedPose();
+    autoPreviewField.setRobotPose(currentPose);
+
+    // Skip checks if we don't have a valid start pose
+    if (autoStartPose.equals(new Pose2d())) {
+      Logger.recordOutput("Auto/StartCheck/PositionOK", false);
+      Logger.recordOutput("Auto/StartCheck/RotationOK", false);
+      return;
+    }
+
+    // Calculate distance from current pose to auto start pose (in inches)
+    double distanceInches =
+        currentPose.getTranslation().getDistance(autoStartPose.getTranslation())
+            / Meters.of(1).in(Inches);
+
+    // Calculate rotation difference (in degrees)
+    double rotationDifferenceDegrees =
+        Math.abs(currentPose.getRotation().minus(autoStartPose.getRotation()).getDegrees());
+
+    // Check if within tolerance
+    boolean positionOK = distanceInches <= STARTING_POSE_DRIVE_TOLERANCE.in(Inches);
+    boolean rotationOK = rotationDifferenceDegrees <= STARTING_POSE_ROT_TOLERANCE_DEGREES;
+
+    // Log results to dashboard
+    Logger.recordOutput("Auto/StartCheck/DistanceInches", distanceInches);
+    Logger.recordOutput("Auto/StartCheck/RotationDiffDegrees", rotationDifferenceDegrees);
+    Logger.recordOutput("Auto/StartCheck/PositionOK", positionOK);
+    Logger.recordOutput("Auto/StartCheck/RotationOK", rotationOK);
   }
 }
