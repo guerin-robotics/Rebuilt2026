@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.HardwareConstants;
@@ -99,7 +100,8 @@ public class ShootSequences {
               feeder.setFeederVelocity(RotationsPerSecond.of(0));
               transport.setTransportVelocity(RotationsPerSecond.of(0));
               intakeRoller.setRollerVoltage(Volts.of(0));
-            });
+            })
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
   }
 
   public static Command FirstSet(

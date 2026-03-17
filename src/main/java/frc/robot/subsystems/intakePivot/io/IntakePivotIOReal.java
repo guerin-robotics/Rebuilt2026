@@ -1,6 +1,5 @@
 package frc.robot.subsystems.intakePivot.io;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -177,7 +176,7 @@ public class IntakePivotIOReal implements IntakePivotIO {
 
     // Read from cache — no additional CAN traffic
     inputs.intakePivotVelocity = velocity.getValue();
-    inputs.intakePivotPosition = encoderPosition.getValue();
+    inputs.intakePivotPosition = encoderPosition.getValueAsDouble();
     inputs.intakePivotVoltage = motorVoltage.getValue();
     inputs.intakePivotStatorCurrent = statorCurrent.getValue();
     inputs.intakePivotSupplyCurrent = supplyCurrent.getValue();

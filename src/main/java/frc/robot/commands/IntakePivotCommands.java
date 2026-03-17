@@ -7,6 +7,8 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.HardwareConstants;
 import frc.robot.subsystems.intakePivot.IntakePivot;
 
 /**
@@ -57,10 +59,12 @@ public class IntakePivotCommands {
   }
 
   public static Command jostlePivotByPos(IntakePivot intakePivot) {
-    return Commands.startEnd(
-        () -> intakePivot.intakeJostleByPos(),
-        () -> intakePivot.setPivotVelocity(RotationsPerSecond.of(0)),
-        intakePivot);
+    return Commands.sequence(
+            setPivotRotations(intakePivot, HardwareConstants.TestPositions.intakeJostleTest),
+            new WaitCommand(0.75),
+            setPivotRotations(intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest),
+            new WaitCommand(0.75))
+        .repeatedly();
   }
 
   /** Zero the pivot encoder at the current position. */

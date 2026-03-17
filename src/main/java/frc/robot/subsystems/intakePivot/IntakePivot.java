@@ -1,7 +1,6 @@
 package frc.robot.subsystems.intakePivot;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Rotations;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
@@ -39,11 +38,11 @@ public class IntakePivot extends SubsystemBase {
 
     // Determine if we are within tolerance of our goal
     boolean atGoal =
-        Math.abs(inputs.intakePivotPosition.in(Rotations) - goalPositionRotations)
+        Math.abs(inputs.intakePivotPosition - goalPositionRotations)
             < IntakePivotConstants.Visualization.POSITION_TOLERANCE_ROTATIONS;
 
     // Update the visualizer every loop
-    visualizer.update(inputs.intakePivotPosition.in(Rotations), goalPositionRotations, atGoal);
+    visualizer.update(inputs.intakePivotPosition, goalPositionRotations, atGoal);
   }
 
   public void setPivotVoltage(Voltage volts) {
@@ -69,7 +68,7 @@ public class IntakePivot extends SubsystemBase {
    * @return current position from the CANcoder in rotations
    */
   public double getPosition() {
-    return inputs.intakePivotPosition.in(Rotations);
+    return inputs.intakePivotPosition;
   }
 
   /**
@@ -81,7 +80,7 @@ public class IntakePivot extends SubsystemBase {
       AngularVelocity downVelocity,
       double degreesDown,
       double seconds) {
-    double currentPos = inputs.intakePivotPosition.in(Rotations);
+    double currentPos = inputs.intakePivotPosition;
     if (inputs.intakePivotStatorCurrent.in(Amps)
         < IntakePivotConstants.Mechanical.pivotJostleCurrentLimit) {
       io.setPivotVelocity(downVelocity);
@@ -93,9 +92,9 @@ public class IntakePivot extends SubsystemBase {
 
   public void intakeJostleByPos() {
     io.setPivotPosition(IntakePivotConstants.Mechanical.pivotJostleDegreesUp);
-    new WaitCommand(0.25);
-    io.setPivotPosition(IntakePivotConstants.Mechanical.pivotDegreesDown);
-    new WaitCommand(0.25);
+    // new WaitCommand(1);
+    // io.setPivotPosition(IntakePivotConstants.Mechanical.pivotDegreesDown);
+    // new WaitCommand(1);
   }
 
   /**

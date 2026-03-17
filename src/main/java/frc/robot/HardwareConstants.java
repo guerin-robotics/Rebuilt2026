@@ -45,7 +45,7 @@ public class HardwareConstants {
     public static final Voltage FlywheelTestVoltage = Volts.of(6.0); // Volts
     public static final Voltage FeederTestVoltage = Volts.of(3.0);
     public static final Voltage PrestageTestVoltage = Volts.of(5.0);
-    public static final Voltage TransportTestVoltage = Volts.of(-6.0);
+    public static final Voltage TransportTestVoltage = Volts.of(0.0);
     public static final Voltage intakePivotTestVoltageUp = Volts.of(10.0);
     public static final Voltage intakePivotTestVoltageDown = Volts.of(-8.0);
     public static final Voltage intakeRollerTestVoltage = Volts.of(12.0);
@@ -55,10 +55,11 @@ public class HardwareConstants {
   public static class TestVelocities {
     public static final AngularVelocity FlywheelVelocity = RPM.of(600); // rotations/s
     public static final AngularVelocity flywheelIdleVelocity = RotationsPerSecond.of(5);
-    public static final AngularVelocity feederVelocity = RotationsPerSecond.of(100.0);
+    public static final AngularVelocity feederVelocity = RotationsPerSecond.of(180.0);
     public static final AngularVelocity rollerVelocity = RotationsPerSecond.of(-50.0);
     public static final AngularVelocity rollerAgitateVelocity = RotationsPerSecond.of(-25);
-    public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(100.0);
+    public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(200.0);
+    public static final AngularVelocity transportIntakeVelocity = RotationsPerSecond.of(0.0);
     public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-100.0);
     public static final AngularVelocity pivotUpVelocity = RotationsPerSecond.of(60.0);
     public static final AngularVelocity pivotDownVelocity = RotationsPerSecond.of(-60.0);
@@ -83,9 +84,10 @@ public class HardwareConstants {
     // Pivot extension test degrees
     public static final double intakeDegreesUpTest = 0.45;
     public static final double intakeDegreesDownTest = 0.075;
+    public static final double intakeJostleTest = 0.25;
     // Hood position (0.0-1.0)
     public static final double hoodPos1Test = 0.0;
-    public static final double hoodPos2Test = 0.25;
+    public static final double hoodPos2Test = 0.125;
     public static final double hoodPos3Test = 0.5;
     public static final double hoodPos4Test = 0.75;
     public static final double hoodPos5Test = 1.0;
