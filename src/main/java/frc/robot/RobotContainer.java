@@ -224,6 +224,8 @@ public class RobotContainer {
       configureButtonBindings();
     } else if (Robot.isSimulation()) {
       configureSimBindings();
+      registerEventTriggers();
+      registerNamedCommands();
     }
   }
 
