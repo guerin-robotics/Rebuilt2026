@@ -118,7 +118,7 @@ public class Flywheel extends SubsystemBase {
     io.setFlywheelVelocity(targetVelocity);
   }
 
-  public static boolean safeToShoot() {
+  public static boolean zoneSafeToShoot() {
     return (RobotState.getInstance().getRobotZone() == HardwareConstants.Zones.Zone.ALLIANCE_ZONE);
   }
 }

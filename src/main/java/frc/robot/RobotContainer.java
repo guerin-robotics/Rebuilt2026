@@ -363,9 +363,10 @@ public class RobotContainer {
 
     // Default commands
     // Flywheel (10 rps)
-    flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
-    // Hood (down)
-    hood.setDefaultCommand(HoodCommands.setHoodPosForHub(hood));
+    // flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
+    // Hood (set for hub)
+    // hood.setDefaultCommand(
+    //     HoodCommands.setHoodPosForHub(hood));
 
     // Distance-based shooting
     thrustmaster
@@ -379,10 +380,10 @@ public class RobotContainer {
                 .alongWith(
                     new WaitCommand(0.15)
                         .andThen(
-                            ShootSequences.shootToHub(
+                            ShootSequences.zonePassOrShoot(
                                 flywheel, prestage, hood, feeder, transport, intakeRoller))));
 
-    // Shoot to tune map
+    // Shoot for map tuning
     thrustmaster
         .button(9)
         .whileTrue(
@@ -454,7 +455,13 @@ public class RobotContainer {
     // Basic controls for testing
 
     // Flywheel, hood, and prestage
-    buttonPanel.button(1).whileTrue(ShootSequences.FirstSet(flywheel, prestage, hood));
+    // buttonPanel.button(1).whileTrue(ShootSequences.FirstSet(flywheel, prestage, hood));
+    buttonPanel
+        .button(1)
+        .whileTrue(
+            PrestageCommands.setPrestageVelocity(
+                prestage, HardwareConstants.TestVelocities.prestageVelocity))
+        .onFalse(PrestageCommands.setPrestageVelocity(prestage, RotationsPerSecond.of(0)));
 
     // Transport and feeder
     buttonPanel.button(2).whileTrue(ShootSequences.SecondSet(feeder, transport));
@@ -487,7 +494,7 @@ public class RobotContainer {
 
     // Feeder/transport/intake spit
     buttonPanel.button(7).whileTrue(SpitSequences.spitHopper(feeder, transport, intakeRoller));
-    // Clear shooter spit
+    // Flywheel/prestage/feeder spit
     buttonPanel.button(8).whileTrue(SpitSequences.clearShooter(flywheel, prestage, feeder));
 
     // Distance map tuning controls

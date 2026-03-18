@@ -58,7 +58,7 @@ public class HardwareConstants {
     public static final AngularVelocity feederVelocity = RotationsPerSecond.of(180.0);
     public static final AngularVelocity rollerVelocity = RotationsPerSecond.of(-50.0);
     public static final AngularVelocity rollerAgitateVelocity = RotationsPerSecond.of(-25);
-    public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(200.0);
+    public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(100.0);
     public static final AngularVelocity transportIntakeVelocity = RotationsPerSecond.of(0.0);
     public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-100.0);
     public static final AngularVelocity pivotUpVelocity = RotationsPerSecond.of(60.0);
