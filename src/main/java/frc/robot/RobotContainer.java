@@ -221,12 +221,13 @@ public class RobotContainer {
     // autoChooser.addOption(
     //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
+    registerEventTriggers();
+    registerNamedCommands();
+
     if (Robot.isReal()) {
       configureButtonBindings();
     } else if (Robot.isSimulation()) {
       configureSimBindings();
-      registerEventTriggers();
-      registerNamedCommands();
     }
   }
 
@@ -263,11 +264,12 @@ public class RobotContainer {
     // Auto run intake command
     NamedCommands.registerCommand(
         "RunIntake",
-            intakeRollerCommands.setRollerVoltage(
-                    intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage)
-                .alongWith(
-                    TransportCommands.runTransportVoltage(
-                        transport, HardwareConstants.TestVoltages.TransportTestVoltage)));;
+        intakeRollerCommands
+            .setRollerVoltage(intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage)
+            .alongWith(
+                TransportCommands.runTransportVoltage(
+                    transport, HardwareConstants.TestVoltages.TransportTestVoltage)));
+    ;
 
     // Auto shoot command
     NamedCommands.registerCommand(
@@ -281,15 +283,15 @@ public class RobotContainer {
   private void registerEventTriggers() {
     // Event marker for intake deploy command
     new EventTrigger("DeployIntake")
-    .onTrue(
-        IntakePivotCommands.setPivotRotations(
-            intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest));
+        .onTrue(
+            IntakePivotCommands.setPivotRotations(
+                intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest));
 
     // Event marker for intake retract command
     new EventTrigger("RetractIntake")
-    .onTrue(
-        IntakePivotCommands.setPivotRotations(
-            intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest));
+        .onTrue(
+            IntakePivotCommands.setPivotRotations(
+                intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest));
   }
 
   private void configureButtonBindings() {
