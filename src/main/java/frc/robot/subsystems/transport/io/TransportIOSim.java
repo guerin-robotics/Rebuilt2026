@@ -71,7 +71,7 @@ public class TransportIOSim implements TransportIO {
     config.MotionMagic.MotionMagicAcceleration =
         TransportConstants.transportMagicConstants.transportAccel;
 
-    // Sim-specific PID gains (Slot0)
+    // Sim-specific PID gains (tuned for the physics model)
     config.Slot0.kS = TransportConstants.Sim.KS;
     config.Slot0.kV = TransportConstants.Sim.KV;
     config.Slot0.kP = TransportConstants.Sim.KP;

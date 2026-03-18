@@ -105,6 +105,7 @@ public class IntakePivotIOSim implements IntakePivotIO {
 
     // Slot0 gains — Arm_Cosine gravity compensation for a pivot
     config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+    config.Slot0.kG = IntakePivotConstants.Sim.KG;
     config.Slot0.kS = IntakePivotConstants.Sim.KS;
     config.Slot0.kV = IntakePivotConstants.Sim.KV;
     config.Slot0.kP = IntakePivotConstants.Sim.KP;

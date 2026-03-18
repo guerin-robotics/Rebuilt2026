@@ -56,7 +56,7 @@ public class FlywheelCommands {
   }
 
   public static Command flywheelIdle(Flywheel flywheel) {
-    return Commands.run(() -> flywheel.setFlywheelIdle());
+    return Commands.run(() -> flywheel.setFlywheelIdle(), flywheel);
   }
 
   /**

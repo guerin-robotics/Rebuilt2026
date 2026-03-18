@@ -276,15 +276,12 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Shoot",
         DriveCommands.joystickDriveAtAngle(
-                    drive,
-                    () -> 0,
-                    () -> 0,
-                    () -> RobotState.getInstance().getAngleToAllianceHub())
-                .alongWith(
-                    new WaitCommand(0.1)
-                        .andThen(
-                            ShootSequences.shootToHub(
-                                flywheel, prestage, hood, feeder, transport, intakeRoller))));
+                drive, () -> 0, () -> 0, () -> RobotState.getInstance().getAngleToAllianceHub())
+            .alongWith(
+                new WaitCommand(0.1)
+                    .andThen(
+                        ShootSequences.shootToHub(
+                            flywheel, prestage, hood, feeder, transport, intakeRoller))));
   }
 
   // EventTriggers
@@ -524,6 +521,7 @@ public class RobotContainer {
   }
 
   private void configureSimBindings() {
+    // ==================== DRIVE (SIM) ====================
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
@@ -531,13 +529,18 @@ public class RobotContainer {
             () -> MathUtil.clamp(-controller.getLeftX(), -1.0, 1.0),
             () -> MathUtil.clamp(-controller.getRightTriggerAxis(), -1.0, 1.0)));
 
+    // ==================== FLYWHEEL TEST (SIM) ====================
+    // Set flywheel idle as default command so it's always spinning slowly
+    flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
+
+    // A button: full shoot sequence (drive-at-angle + shoot to hub)
     controller
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                     drive,
-                    () -> -thrustmaster.getX(),
-                    () -> -thrustmaster.getY(),
+                    () -> 0.0,
+                    () -> 0.0,
                     () -> RobotState.getInstance().getAngleToAllianceHub())
                 .alongWith(
                     new WaitCommand(0.5)
@@ -546,10 +549,60 @@ public class RobotContainer {
                                 flywheel, prestage, hood, feeder, transport, intakeRoller))))
         .onFalse(SpitSequences.spitAfterShoot(flywheel, prestage, feeder, transport, intakeRoller));
 
+    // ==================== INTAKE PIVOT TEST (SIM) ====================
+    // B button: jostle pivot
     controller.b().whileTrue(IntakePivotCommands.jostlePivotByPos(intakePivot));
 
+    // Left bumper: intake down
+    controller
+        .leftBumper()
+        .whileTrue(
+            IntakePivotCommands.setPivotRotations(
+                intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest));
+
+    // Right bumper: intake up
+    controller
+        .rightBumper()
+        .whileTrue(
+            IntakePivotCommands.setPivotRotations(
+                intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest));
+
+    // ==================== INTAKE ROLLER + TRANSPORT TEST (SIM) ====================
+    // X button: run intake roller + transport together (simulates intaking a ball)
+    controller
+        .x()
+        .whileTrue(
+            intakeRollerCommands
+                .setRollerVoltage(
+                    intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage)
+                .alongWith(
+                    TransportCommands.runTransportVoltage(
+                        transport, HardwareConstants.TestVoltages.TransportTestVoltage)));
+
+    // ==================== PRESTAGE + FEEDER TEST (SIM) ====================
+    // Y button: run prestage and feeder at velocity setpoints
     controller
         .y()
+        .whileTrue(
+            PrestageCommands.setPrestageVelocity(
+                    prestage, HardwareConstants.TestVelocities.prestageVelocity)
+                .alongWith(
+                    FeederCommands.setFeederVelocity(
+                        feeder, HardwareConstants.TestVelocities.feederVelocity)))
+        .onFalse(
+            PrestageCommands.stop(prestage)
+                .alongWith(FeederCommands.setFeederVelocity(feeder, RotationsPerSecond.of(0))));
+
+    // ==================== SPIT TEST (SIM) ====================
+    // Start button: spit all
+    controller
+        .start()
+        .whileTrue(SpitSequences.spitAll(flywheel, prestage, feeder, transport, intakeRoller));
+
+    // ==================== RESET POSE (SIM) ====================
+    // Back button: reset pose to field corner
+    controller
+        .back()
         .onTrue(
             Commands.runOnce(
                     () ->
