@@ -117,9 +117,6 @@ public class DriveCommands {
             new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
 
-    Logger.recordOutput("AutoAim/targetAngle", rotationSupplier.get());
-    Logger.recordOutput("AutoAim/currentAngle", drive.getRotation());
-
     // Construct command
     return Commands.run(
             () -> {
@@ -131,6 +128,11 @@ public class DriveCommands {
               double omega =
                   angleController.calculate(
                       drive.getRotation().getRadians(), rotationSupplier.get().getRadians());
+
+              // Log target and current angles every loop for debugging
+              Logger.recordOutput("AutoAim/TargetAngle", rotationSupplier.get());
+              Logger.recordOutput("AutoAim/CurrentAngle", drive.getRotation());
+              Logger.recordOutput("AutoAim/AngleErrorRad", angleController.getPositionError());
 
               // Convert to field relative speeds & send command
               ChassisSpeeds speeds =
