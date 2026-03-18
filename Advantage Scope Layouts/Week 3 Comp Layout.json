@@ -21,12 +21,11 @@
             "/RealOutputs/SwerveStates/SetpointsOptimized/0",
             "/RealOutputs",
             "/RealOutputs/Odometry/Robot",
-            "/RealOutputs/RobotState",
-            "/RealOutputs/Alerts"
+            "/RealOutputs/RobotState"
           ]
         },
         "tabs": {
-          "selected": 12,
+          "selected": 8,
           "tabs": [
             {
               "type": 0,
@@ -159,14 +158,14 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  5.978678090645441,
-                  6.494620196795988,
-                  1.3280862408869254
+                  9.78823244703555,
+                  10.791418650397397,
+                  1.2950148492143319
                 ],
                 "cameraTarget": [
-                  0.8241248168328381,
-                  -2.3370030229484238,
-                  -2.2463339095178028
+                  2.1093649046820184,
+                  -2.36527239263259,
+                  -4.029888671547139
                 ]
               },
               "controlsHeight": 200
@@ -369,7 +368,7 @@
                 "leftLockedRange": null,
                 "rightLockedRange": null,
                 "leftUnitConversion": {
-                  "autoTarget": null,
+                  "autoTarget": "rotations/minute",
                   "preset": null
                 },
                 "rightUnitConversion": {
@@ -435,11 +434,11 @@
                 "leftLockedRange": null,
                 "rightLockedRange": null,
                 "leftUnitConversion": {
-                  "autoTarget": null,
+                  "autoTarget": "rotations/minute",
                   "preset": null
                 },
                 "rightUnitConversion": {
-                  "autoTarget": null,
+                  "autoTarget": "rotations/minute",
                   "preset": null
                 },
                 "leftFilter": 0,
@@ -538,7 +537,7 @@
               },
               "controllerUUID": "4cbpue7zdlnd19co0x94ic629pk5tqr4",
               "renderer": null,
-              "controlsHeight": 200
+              "controlsHeight": 394
             },
             {
               "type": 1,
@@ -592,7 +591,7 @@
                 "leftLockedRange": null,
                 "rightLockedRange": null,
                 "leftUnitConversion": {
-                  "autoTarget": null,
+                  "autoTarget": "rotations/minute",
                   "preset": null
                 },
                 "rightUnitConversion": {
