@@ -96,7 +96,7 @@ public class PrestageIOReal implements PrestageIO {
 
   private void configurePrestageMotor() {
     var config = new TalonFXConfiguration();
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     config.MotorOutput.Inverted =
         PrestageConstants.SoftwareConstants.INVERTED
@@ -113,7 +113,7 @@ public class PrestageIOReal implements PrestageIO {
     prestageMagic.MotionMagicAcceleration = PrestageConstants.prestageMagicConstants.prestageAccel;
 
     var followerConfig = new TalonFXConfiguration();
-    followerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    followerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     followerConfig.MotorOutput.Inverted =
         PrestageConstants.SoftwareConstants.INVERTED

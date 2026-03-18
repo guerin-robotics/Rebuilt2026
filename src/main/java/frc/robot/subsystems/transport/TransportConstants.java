@@ -20,7 +20,7 @@ public class TransportConstants {
   }
 
   public static class Mechanical {
-    public static final double transportRatio = 0.44;
+    public static final double transportRatio = 1 / 0.44;
   }
 
   // NOT Tuned yet - placeholder values

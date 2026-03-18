@@ -68,7 +68,7 @@ public class FeederIOReal implements FeederIO {
 
   private void configureFeederMotor() {
     var config = new TalonFXConfiguration();
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     config.MotorOutput.Inverted =
         FeederConstants.SoftwareConstants.INVERTED

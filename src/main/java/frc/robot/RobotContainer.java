@@ -36,6 +36,7 @@ import frc.robot.commands.FeederCommands;
 import frc.robot.commands.FlywheelCommands;
 import frc.robot.commands.HoodCommands;
 import frc.robot.commands.IntakePivotCommands;
+import frc.robot.commands.PrestageCommands;
 import frc.robot.commands.ShootSequences;
 import frc.robot.commands.SpitSequences;
 import frc.robot.commands.TransportCommands;
@@ -447,12 +448,15 @@ public class RobotContainer {
     buttonPanel
         .button(1)
         .whileTrue(
-            ShootSequences.FirstSet(
-                flywheel,
-                prestage,
-                hood,
-                HardwareConstants.TowerConstants.FlywheelTowerVelocity,
-                HardwareConstants.TowerConstants.hoodTowerPos));
+            // ShootSequences.FirstSet(
+            //     flywheel,
+            //     prestage,
+            //     hood,
+            //     HardwareConstants.TowerConstants.FlywheelTowerVelocity,
+            //     HardwareConstants.TowerConstants.hoodTowerPos)
+            PrestageCommands.setPrestageVelocity(
+                prestage, HardwareConstants.TestVelocities.prestageVelocity))
+        .onFalse(PrestageCommands.stop(prestage));
 
     // Transport and feeder
     // buttonPanel.button(2).whileTrue(ShootSequences.SecondSet(feeder, transport));
