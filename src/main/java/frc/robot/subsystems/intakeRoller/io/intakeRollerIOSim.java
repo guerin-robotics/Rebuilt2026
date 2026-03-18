@@ -82,7 +82,7 @@ public class intakeRollerIOSim implements intakeRollerIO {
     config.MotionMagic.MotionMagicAcceleration =
         intakeRollerConstants.rollerMagicConstants.rollerAccel;
 
-    // Sim-specific PID gains (Slot0)
+    // Sim-specific PID gains (tuned for the physics model)
     config.Slot0.kS = intakeRollerConstants.Sim.KS;
     config.Slot0.kV = intakeRollerConstants.Sim.KV;
     config.Slot0.kP = intakeRollerConstants.Sim.KP;

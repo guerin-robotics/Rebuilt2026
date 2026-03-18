@@ -118,21 +118,7 @@ public class Flywheel extends SubsystemBase {
     io.setFlywheelVelocity(targetVelocity);
   }
 
-  /**
-   * Checks if flywheel is above acceptable threshold below target velocity
-   *
-   * @param targetRPM
-   * @return true if flywheel is above threshold, false otherwise
-   */
-  public boolean isFlywheelAtVelocity(AngularVelocity targetRPM) {
-    if (inputs.flywheelVelocity == null) {
-      inputs.flywheelVelocity = RotationsPerSecond.of(0);
-    }
-    if (inputs.flywheelVelocity.magnitude()
-        >= (targetRPM.magnitude() - FlywheelConstants.Limits.velocityThreshold.magnitude())) {
-      return true;
-    } else {
-      return false;
-    }
+  public static boolean zoneSafeToShoot() {
+    return (RobotState.getInstance().getRobotZone() == HardwareConstants.Zones.Zone.ALLIANCE_ZONE);
   }
 }

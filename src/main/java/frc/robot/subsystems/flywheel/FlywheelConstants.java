@@ -11,6 +11,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Time;
+import frc.robot.Constants;
 
 /**
  * Constants for the shooter subsystem.
@@ -41,6 +42,11 @@ public class FlywheelConstants {
     public static final int SHOOTER_MAIN_STATOR_AMP = 60;
   }
 
+  /**
+   * Torque-current PID/FF gains used on the real robot.
+   *
+   * <p>These are tuned for MotionMagicVelocityTorqueCurrentFOC on real hardware.
+   */
   public static class TorqueControl {
     // private static LoggedNetworkNumber tunableKS = new LoggedNetworkNumber("Tune/flywheel/KS",
     // 20.0);
@@ -53,9 +59,9 @@ public class FlywheelConstants {
     // public static double KV = tunableKV.get();
     // public static double KP = tunableKP.get();
 
-    public static double KS = 7.5; // 10
-    public static double KV = 0.0067;
-    public static double KP = 14; // 13
+    public static double KS = 4.5; // 10
+    public static double KV = 0.5;
+    public static double KP = 11; // 13
     public static double KD = 0; // 3
   }
 
@@ -121,11 +127,36 @@ public class FlywheelConstants {
     /** Moment of inertia of the flywheel (kg·m²). Larger than small rollers due to mass. */
     public static final double FLYWHEEL_MOI = 0.01;
 
-    // Sim PID gains for TalonFX closed-loop in simulation
-    public static final double KS = 0.0;
-    public static final double KV = 0.12;
-    public static final double KP = 1.0;
+    // Sim-specific torque-current PID gains.
+    // The TalonFX firmware still runs TorqueCurrentFOC in sim and produces
+    // a motor voltage output that we feed into DCMotorSim.
+    // These gains are tuned for the physics model, not real hardware.
+    public static final double KS = 4.0;
+    public static final double KV = 0.005;
+    public static final double KP = 8.0;
     public static final double KI = 0.0;
     public static final double KD = 0.0;
+  }
+
+  /**
+   * Helper to get the correct Slot0 gains for the current robot mode.
+   *
+   * <p>Real robot uses hardware-tuned torque-current gains; sim uses gains tuned for the physics
+   * model. Both use the same MotionMagicVelocityTorqueCurrentFOC control request.
+   */
+  public static double getKS() {
+    return Constants.currentMode == Constants.Mode.SIM ? Sim.KS : TorqueControl.KS;
+  }
+
+  public static double getKV() {
+    return Constants.currentMode == Constants.Mode.SIM ? Sim.KV : TorqueControl.KV;
+  }
+
+  public static double getKP() {
+    return Constants.currentMode == Constants.Mode.SIM ? Sim.KP : TorqueControl.KP;
+  }
+
+  public static double getKD() {
+    return Constants.currentMode == Constants.Mode.SIM ? Sim.KD : TorqueControl.KD;
   }
 }

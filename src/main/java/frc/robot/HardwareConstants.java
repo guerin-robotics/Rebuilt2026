@@ -58,7 +58,7 @@ public class HardwareConstants {
     public static final AngularVelocity feederVelocity = RotationsPerSecond.of(180.0);
     public static final AngularVelocity rollerVelocity = RotationsPerSecond.of(-50.0);
     public static final AngularVelocity rollerAgitateVelocity = RotationsPerSecond.of(-25);
-    public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(200.0);
+    public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(100.0);
     public static final AngularVelocity transportIntakeVelocity = RotationsPerSecond.of(0.0);
     public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-100.0);
     public static final AngularVelocity pivotUpVelocity = RotationsPerSecond.of(60.0);
@@ -94,8 +94,17 @@ public class HardwareConstants {
   }
 
   public static class TowerConstants {
-    public static final AngularVelocity FlywheelTowerVelocity = RPM.of(900); // 1200
+    public static final AngularVelocity FlywheelTowerVelocity = RPM.of(1200);
     public static final double hoodTowerPos = 0.5;
+  }
+
+  public static class PassConstants {
+    public static final AngularVelocity FlywheelPassVelocity = RPM.of(1200);
+    public static final double hoodPassPos = 0.75;
+  }
+
+  public static class TuningConstants {
+    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(900);
   }
 
   public static class ControllerConstants {
@@ -108,10 +117,14 @@ public class HardwareConstants {
   public static class Zones {
     public enum Zone {
       ALLIANCE_ZONE,
+      NEAR_ALLIANCE_TRENCH,
       ALLIANCE_TRENCH,
       NEUTRAL,
       OPPOSING_TRENCH,
+      NEAR_OPPOSING_TRENCH,
       OPPOSING_ZONE
     }
+
+    public static final double zoneOffset = 0.5;
   }
 }

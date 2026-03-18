@@ -58,25 +58,59 @@ public class SpitSequences {
             });
   }
 
+  public static Command clearShooter(Flywheel flywheel, Prestage prestage, Feeder feeder) {
+    return Commands.parallel(
+            FlywheelCommands.setFlywheelVelocity(
+                flywheel, HardwareConstants.SpitVelocities.FlywheelSpitVelocity),
+            PrestageCommands.setPrestageVelocity(
+                prestage, HardwareConstants.SpitVelocities.prestageSpitVelocity),
+            FeederCommands.setFeederVelocity(
+                feeder, HardwareConstants.SpitVelocities.feederSpitVelocity))
+        .finallyDo(
+            () -> {
+              flywheel.setFlywheelVelocity(RotationsPerSecond.of(0));
+              prestage.setPrestageVelocity(RotationsPerSecond.of(0));
+              feeder.setFeederVelocity(RotationsPerSecond.of(0));
+            });
+  }
+
   public static Command spitAfterShoot(
       Flywheel flywheel,
       Prestage prestage,
       Feeder feeder,
       Transport transport,
       intakeRoller intakeRoller) {
+    // Use deadline group: WaitCommand(0.5) is the deadline that controls duration.
+    // The motor commands use Commands.run() so they continuously apply setpoints
+    // and don't finish immediately (which would prematurely end a race group).
     return Commands.sequence(
-        Commands.race(
-            new WaitCommand(0.5),
-            FlywheelCommands.setFlywheelVelocity(
-                flywheel, HardwareConstants.SpitVelocities.FlywheelSpitVelocity),
-            PrestageCommands.setPrestageVelocity(
-                prestage, HardwareConstants.SpitVelocities.prestageSpitVelocity),
-            FeederCommands.setFeederVelocity(
-                feeder, HardwareConstants.SpitVelocities.feederSpitVelocity),
-            TransportCommands.setTransportVelocity(
-                transport, HardwareConstants.SpitVelocities.transportSpitVelocity),
-            intakeRollerCommands.setRollerVelocity(
-                intakeRoller, HardwareConstants.SpitVelocities.rollerSpitVelocity)),
+        new WaitCommand(0.5)
+            .deadlineFor(
+                Commands.run(
+                    () ->
+                        flywheel.setFlywheelVelocity(
+                            HardwareConstants.SpitVelocities.FlywheelSpitVelocity),
+                    flywheel),
+                Commands.run(
+                    () ->
+                        prestage.setPrestageVelocity(
+                            HardwareConstants.SpitVelocities.prestageSpitVelocity),
+                    prestage),
+                Commands.run(
+                    () ->
+                        feeder.setFeederVelocity(
+                            HardwareConstants.SpitVelocities.feederSpitVelocity),
+                    feeder),
+                Commands.run(
+                    () ->
+                        transport.setTransportVelocity(
+                            HardwareConstants.SpitVelocities.transportSpitVelocity),
+                    transport),
+                Commands.run(
+                    () ->
+                        intakeRoller.setRollerVelocity(
+                            HardwareConstants.SpitVelocities.rollerSpitVelocity),
+                    intakeRoller)),
         Commands.parallel(
             FlywheelCommands.setFlywheelVelocity(flywheel, RotationsPerSecond.of(0)),
             PrestageCommands.setPrestageVelocity(prestage, RotationsPerSecond.of(0)),

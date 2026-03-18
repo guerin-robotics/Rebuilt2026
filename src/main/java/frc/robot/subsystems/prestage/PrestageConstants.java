@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Time;
+import frc.robot.Constants;
 
 public class PrestageConstants {
   /** Current limits for the prestage motors. */
@@ -19,18 +20,18 @@ public class PrestageConstants {
   }
 
   public static class Mechanical {
-    public static final double prestageRatio = 1 / 0.5;
+    public static final double prestageRatio = 0.5;
   }
 
-  // NOT Tuned yet - placeholder values
+  // Real robot PID gains for torque-current velocity control
   public static class PID {
     public static final double KS = 4.0;
     public static final double KV = 0.0;
     public static final double KP = 5.0;
 
-    public static final double followerKS = 0.0;
+    public static final double followerKS = 5.5;
     public static final double followerKV = 0.0;
-    public static final double followerKP = 0.0;
+    public static final double followerKP = 5.0;
 
     public static final double KI = 0.0;
 
@@ -52,18 +53,38 @@ public class PrestageConstants {
     /** Moment of inertia of each prestage roller (kg·m²). Approximate value. */
     public static final double PRESTAGE_MOI = 0.001;
 
-    // Sim PID gains for the left TalonFX closed-loop in simulation
-    public static final double LEFT_KS = 0.0;
-    public static final double LEFT_KV = 0.12;
-    public static final double LEFT_KP = 1.0;
+    // Sim-specific torque-current PID gains for the left motor
+    public static final double LEFT_KS = 2.0;
+    public static final double LEFT_KV = 0.0;
+    public static final double LEFT_KP = 3.0;
     public static final double LEFT_KI = 0.0;
     public static final double LEFT_KD = 0.0;
 
-    // Sim PID gains for the right TalonFX closed-loop in simulation
-    public static final double RIGHT_KS = 0.0;
-    public static final double RIGHT_KV = 0.12;
-    public static final double RIGHT_KP = 1.0;
+    // Sim-specific torque-current PID gains for the right motor
+    public static final double RIGHT_KS = 2.0;
+    public static final double RIGHT_KV = 0.0;
+    public static final double RIGHT_KP = 3.0;
     public static final double RIGHT_KI = 0.0;
     public static final double RIGHT_KD = 0.0;
+  }
+
+  /** Returns the appropriate left KS for the current mode (real vs sim). */
+  public static double getLeftKS() {
+    return Constants.currentMode == Constants.Mode.SIM ? Sim.LEFT_KS : PID.KS;
+  }
+
+  /** Returns the appropriate left KP for the current mode (real vs sim). */
+  public static double getLeftKP() {
+    return Constants.currentMode == Constants.Mode.SIM ? Sim.LEFT_KP : PID.KP;
+  }
+
+  /** Returns the appropriate right KS for the current mode (real vs sim). */
+  public static double getRightKS() {
+    return Constants.currentMode == Constants.Mode.SIM ? Sim.RIGHT_KS : PID.followerKS;
+  }
+
+  /** Returns the appropriate right KP for the current mode (real vs sim). */
+  public static double getRightKP() {
+    return Constants.currentMode == Constants.Mode.SIM ? Sim.RIGHT_KP : PID.followerKP;
   }
 }
