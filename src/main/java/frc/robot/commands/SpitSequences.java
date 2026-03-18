@@ -58,6 +58,22 @@ public class SpitSequences {
             });
   }
 
+  public static Command clearShooter(Flywheel flywheel, Prestage prestage, Feeder feeder) {
+    return Commands.parallel(
+            FlywheelCommands.setFlywheelVelocity(
+                flywheel, HardwareConstants.SpitVelocities.FlywheelSpitVelocity),
+            PrestageCommands.setPrestageVelocity(
+                prestage, HardwareConstants.SpitVelocities.prestageSpitVelocity),
+            FeederCommands.setFeederVelocity(
+                feeder, HardwareConstants.SpitVelocities.feederSpitVelocity))
+        .finallyDo(
+            () -> {
+              flywheel.setFlywheelVelocity(RotationsPerSecond.of(0));
+              prestage.setPrestageVelocity(RotationsPerSecond.of(0));
+              feeder.setFeederVelocity(RotationsPerSecond.of(0));
+            });
+  }
+
   public static Command spitAfterShoot(
       Flywheel flywheel,
       Prestage prestage,

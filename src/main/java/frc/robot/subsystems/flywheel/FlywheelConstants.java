@@ -48,9 +48,20 @@ public class FlywheelConstants {
    * <p>These are tuned for MotionMagicVelocityTorqueCurrentFOC on real hardware.
    */
   public static class TorqueControl {
-    public static double KS = 7.5; // 10
-    public static double KV = 0.0067;
-    public static double KP = 14; // 13
+    // private static LoggedNetworkNumber tunableKS = new LoggedNetworkNumber("Tune/flywheel/KS",
+    // 20.0);
+    // private static LoggedNetworkNumber tunableKV = new LoggedNetworkNumber("Tune/flywheel/KV",
+    // 0.12);
+    // private static LoggedNetworkNumber tunableKP = new LoggedNetworkNumber("Tune/flywheel/KP",
+    // 30.0);
+
+    // public static double KS = tunableKS.get();
+    // public static double KV = tunableKV.get();
+    // public static double KP = tunableKP.get();
+
+    public static double KS = 4.5; // 10
+    public static double KV = 0.5;
+    public static double KP = 11; // 13
     public static double KD = 0; // 3
   }
 
