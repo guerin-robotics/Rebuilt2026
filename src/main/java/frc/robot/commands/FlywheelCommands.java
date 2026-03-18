@@ -8,7 +8,9 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotState;
 import frc.robot.subsystems.flywheel.Flywheel;
+import frc.lib.FieldConstants;
 
 /**
  * Command factory methods for controlling the shooter subsystem.
@@ -57,6 +59,22 @@ public class FlywheelCommands {
 
   public static Command flywheelIdle(Flywheel flywheel) {
     return Commands.run(() -> flywheel.setFlywheelIdle(), flywheel);
+  }
+
+  public static Command setPassVelocity(Flywheel flywheel) {
+    if (RobotState.getInstance().getEstimatedPose().getY() > (FieldConstants.fieldWidth/2)) {
+      return setVelocityForTarget(flywheel, new Translation3d(
+        FieldConstants.Tower.leftUpright.getX() + Meters.of(0.5).magnitude(),
+        FieldConstants.Tower.leftUpright.getY() + Meters.of(0.5).magnitude(),
+        0
+      ));
+    } else {
+      return setVelocityForTarget(flywheel, new Translation3d(
+        FieldConstants.Tower.rightUpright.getX() + Meters.of(0.5).magnitude(),
+        FieldConstants.Tower.rightUpright.getY() - Meters.of(0.5).magnitude(),
+        0
+      ));
+    }
   }
 
   /**
