@@ -202,6 +202,12 @@ public class RobotContainer {
         break;
     }
 
+    // IMPORTANT: Register named commands and event triggers BEFORE building the auto chooser.
+    // AutoBuilder.buildAutoChooser() parses the .auto files and resolves named commands at
+    // build time. If commands aren't registered yet, they resolve to Commands.none().
+    registerNamedCommands();
+    registerEventTriggers();
+
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Publish the auto preview field to the dashboard so we can see the selected path
@@ -221,9 +227,6 @@ public class RobotContainer {
     //     "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     // autoChooser.addOption(
     //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
-    registerEventTriggers();
-    registerNamedCommands();
 
     if (Robot.isReal()) {
       configureButtonBindings();
