@@ -181,15 +181,9 @@ public class IntakePivotIOReal implements IntakePivotIO {
     inputs.intakePivotStatorCurrent = statorCurrent.getValue();
     inputs.intakePivotSupplyCurrent = supplyCurrent.getValue();
     inputs.intakePivotTemperature = deviceTemp.getValue();
-    // The TalonFX closed-loop reference and error are reported in rotor rotations
-    // (before the gear ratio). Divide by the gear ratio to convert them back to
-    // mechanism rotations so they match intakePivotPosition and are human-readable.
     inputs.intakePivotClosedLoopReference =
-        intakePivotMotor.getClosedLoopReference().getValueAsDouble()
-            / IntakePivotConstants.Mechanical.pivotRatio;
-    inputs.intakePivotClosedLoopError =
-        intakePivotMotor.getClosedLoopError().getValueAsDouble()
-            / IntakePivotConstants.Mechanical.pivotRatio;
+        intakePivotMotor.getClosedLoopReference().getValueAsDouble();
+    inputs.intakePivotClosedLoopError = intakePivotMotor.getClosedLoopError().getValueAsDouble();
   }
 
   @Override
