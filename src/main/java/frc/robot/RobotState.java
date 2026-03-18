@@ -324,6 +324,19 @@ public class RobotState {
     return new Rotation2d(robotToHub.getX(), robotToHub.getY());
   }
 
+  // Gets angle to any target
+  public Rotation2d getAngleToTarget(Translation2d target) {
+    // Get current robot position
+    Pose2d currentPose = getEstimatedPose();
+
+    // Calculate the vector from robot to target
+    Translation2d robotToTarget = target.minus(currentPose.getTranslation());
+
+    // Calculate the angle using atan2
+    // This gives us the direction we need to face to point at the hub
+    return new Rotation2d(robotToTarget.getX(), robotToTarget.getY()); 
+  }
+
   // ==================== ODOMETRY UPDATES ====================
 
   /**

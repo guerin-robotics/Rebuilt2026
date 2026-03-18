@@ -3,10 +3,15 @@ package frc.robot.commands;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.lang.reflect.Field;
+
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.math.geometry.Translation3d;
+import frc.lib.FieldConstants;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.flywheel.Flywheel;
@@ -15,6 +20,8 @@ import frc.robot.subsystems.intakeRoller.intakeRoller;
 import frc.robot.subsystems.prestage.Prestage;
 import frc.robot.subsystems.transport.Transport;
 import org.littletonrobotics.junction.Logger;
+
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.FieldCentric;
 
 public class ShootSequences {
 
@@ -170,8 +177,7 @@ public class ShootSequences {
       intakeRoller intakeRoller) {
     return Commands.parallel(
             Commands.parallel(
-                FlywheelCommands.setFlywheelVelocity(
-                    flywheel, HardwareConstants.PassConstants.FlywheelPassVelocity),
+                FlywheelCommands.setPassVelocity(flywheel),
                 PrestageCommands.setPrestageVelocity(
                     prestage, HardwareConstants.TestVelocities.prestageVelocity),
                 HoodCommands.setHoodPos(hood, HardwareConstants.PassConstants.hoodPassPos)),

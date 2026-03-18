@@ -73,6 +73,20 @@ public class Flywheel extends SubsystemBase {
     io.setFlywheelVelocity(velocity);
   }
 
+  public Translation2d getPassTarget() {
+    Translation2d passTarget;
+    if (RobotState.getInstance().getEstimatedPose().getY() > (FieldConstants.fieldWidth/2)) {
+      passTarget = new Translation2d(
+        FieldConstants.Tower.leftUpright.getX() + 0.5,
+        FieldConstants.Tower.leftUpright.getY() + 0.5);
+    } else {
+      passTarget = new Translation2d(
+        FieldConstants.Tower.rightUpright.getX() + 0.5,
+        FieldConstants.Tower.rightUpright.getY() - 0.5);
+    }
+    return passTarget;
+  }
+
   public AngularVelocity getTuningRPM() {
     return RPM.of(tuningRPM.get());
   }
