@@ -8,8 +8,8 @@
 package frc.robot;
 
 import static edu.wpi.first.math.util.Units.inchesToMeters;
+import static edu.wpi.first.math.util.Units.metersToInches;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -654,9 +654,9 @@ public class RobotContainer {
     }
 
     // Calculate distance from current pose to auto start pose (in inches)
+    // getDistance() returns meters, so convert meters → inches
     double distanceInches =
-        currentPose.getTranslation().getDistance(autoStartPose.getTranslation())
-            / Meters.of(1).in(Inches);
+        metersToInches(currentPose.getTranslation().getDistance(autoStartPose.getTranslation()));
 
     // Calculate rotation difference (in degrees)
     double rotationDifferenceDegrees =

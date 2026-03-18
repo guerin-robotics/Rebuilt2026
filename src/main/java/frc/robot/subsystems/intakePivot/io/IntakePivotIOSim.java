@@ -5,15 +5,13 @@ import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.CANcoderSimState;
@@ -53,11 +51,12 @@ public class IntakePivotIOSim implements IntakePivotIO {
   // WPILib physics model for the pivot arm
   private final SingleJointedArmSim pivotPhysicsSim;
 
-  // Control requests (reused to avoid allocations)
+  // Control requests — use voltage-based control in sim because TorqueCurrentFOC
+  // does not produce motor voltage output in the TalonFX sim state, which means
+  // the physics sim never receives any input and the position never moves.
   private final VoltageOut voltageRequest = new VoltageOut(0);
-  private final MotionMagicVelocityTorqueCurrentFOC velocityRequest =
-      new MotionMagicVelocityTorqueCurrentFOC(0);
-  private final MotionMagicTorqueCurrentFOC positionRequest = new MotionMagicTorqueCurrentFOC(0);
+  private final MotionMagicVelocityVoltage velocityRequest = new MotionMagicVelocityVoltage(0);
+  private final MotionMagicVoltage positionRequest = new MotionMagicVoltage(0);
 
   public IntakePivotIOSim() {
     pivotMotor = new TalonFX(HardwareConstants.CanIds.INTAKE_PIVOT_MOTOR_ID);
@@ -68,6 +67,11 @@ public class IntakePivotIOSim implements IntakePivotIO {
 
     motorSimState = pivotMotor.getSimState();
     encoderSimState = pivotEncoder.getSimState();
+
+    // Per the CTRE docs: SensorOffset is subtracted from the raw position before
+    // the magnet offset config is added. Setting it to the magnet offset cancels
+    // out the offset, so setRawPosition(mechanismPos) → reported = mechanismPos.
+    encoderSimState.SensorOffset = IntakePivotConstants.Mechanical.magnetOffset;
 
     // SingleJointedArmSim models a pivot joint with gravity
     pivotPhysicsSim =
@@ -94,6 +98,8 @@ public class IntakePivotIOSim implements IntakePivotIO {
         IntakePivotConstants.SoftwareConstants.MOTOR_INVERTED
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+    // In sim we use the internal rotor sensor — we inject rotor position directly
+    // via setRawRotorPosition(mechanismPos * gearRatio), so no RemoteCANcoder needed.
     config.Feedback.RotorToSensorRatio = IntakePivotConstants.Mechanical.pivotRatio;
     config.Feedback.SensorToMechanismRatio = 1;
 
@@ -117,31 +123,29 @@ public class IntakePivotIOSim implements IntakePivotIO {
     limits.StatorCurrentLimit = IntakePivotConstants.CurrentLimits.INTAKE_PIVOT_MAIN_STATOR_AMP;
     limits.StatorCurrentLimitEnable = false;
 
-    // CANcoder remote feedback (match real robot)
-    var feedback = new FeedbackConfigs();
-    feedback.withFeedbackRemoteSensorID(HardwareConstants.CanIds.INTAKE_PIVOT_ENCODER_ID);
-    feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder);
-
-    // Software limits
-    config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-        IntakePivotConstants.SoftwareConstants.softwareUpperRotationLimit;
-    config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-        IntakePivotConstants.SoftwareConstants.softwareLowerRotationLimit;
+    // Disable software limits in simulation.
+    // The soft limits exist to protect real hardware from over-travel.
+    // In sim, gravity can push the arm past the lower limit at startup before
+    // the controller has a chance to react, which immediately clamps motor
+    // output to 0 V and freezes the simulation permanently.
+    config.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
+    config.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
 
     pivotMotor.getConfigurator().apply(config);
     pivotMotor.getConfigurator().apply(limits);
-    pivotMotor.getConfigurator().apply(feedback);
   }
 
-  /** Configures the CANcoder with magnet offset and sensor direction (matches real robot). */
+  /** Configures the CANcoder for simulation. */
   private void configureEncoder() {
     var encoderConfig = new CANcoderConfiguration();
 
     var magnetConfig = new MagnetSensorConfigs();
     magnetConfig.withAbsoluteSensorDiscontinuityPoint(
         IntakePivotConstants.Mechanical.magnetSensorDiscontinuityPoint);
+    // Keep the real magnet offset so the CANcoder reports positions in the same
+    // range as on real hardware. CANcoderSimState.SensorOffset compensates for this
+    // automatically — set it equal to the magnet offset so that when we call
+    // setRawPosition(mechanismPos), the reported position equals mechanismPos.
     magnetConfig.withMagnetOffset(IntakePivotConstants.Mechanical.magnetOffset);
     magnetConfig.SensorDirection = IntakePivotConstants.SoftwareConstants.ENCODER_DIRECTION;
 
@@ -182,7 +186,6 @@ public class IntakePivotIOSim implements IntakePivotIO {
         BatterySim.calculateDefaultBatteryLoadedVoltage(pivotPhysicsSim.getCurrentDrawAmps()));
 
     // 8. Read values from the hardware objects (just like on real hardware)
-    //    Velocity comes from the motor, position comes from the CANcoder
     inputs.intakePivotVelocity = RotationsPerSecond.of(pivotMotor.getVelocity().getValueAsDouble());
     inputs.intakePivotPosition = pivotEncoder.getAbsolutePosition().getValueAsDouble();
 
