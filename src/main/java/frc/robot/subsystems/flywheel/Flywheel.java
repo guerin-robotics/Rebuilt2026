@@ -1,5 +1,6 @@
 package frc.robot.subsystems.flywheel;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -13,6 +14,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.FieldConstants;
 import frc.robot.HardwareConstants;
+import frc.robot.Robot;
 import frc.robot.RobotState;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.ShooterIOInputsAutoLogged;
@@ -44,6 +46,20 @@ public class Flywheel extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Flywheel", inputs);
+
+    // Report energy usage for all 4 flywheel motors
+    Robot.batteryLogger.reportCurrentUsage(
+        "Flywheel",
+        inputs.leaderSupplyCurrentAmps != null ? inputs.leaderSupplyCurrentAmps.in(Amps) : 0.0,
+        inputs.follower1SupplyCurrentAmps != null
+            ? inputs.follower1SupplyCurrentAmps.in(Amps)
+            : 0.0,
+        inputs.follower2SupplyCurrentAmps != null
+            ? inputs.follower2SupplyCurrentAmps.in(Amps)
+            : 0.0,
+        inputs.follower3SupplyCurrentAmps != null
+            ? inputs.follower3SupplyCurrentAmps.in(Amps)
+            : 0.0);
   }
 
   public void setFlywheelVoltage(Voltage volts) {
