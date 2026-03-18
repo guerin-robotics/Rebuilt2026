@@ -33,7 +33,7 @@ public class ShootSequences {
                     prestage, HardwareConstants.TestVelocities.prestageVelocity),
                 HoodCommands.setHoodPos(hood, HardwareConstants.TowerConstants.hoodTowerPos)),
             Commands.sequence(
-                new WaitCommand(0.5),
+                new WaitCommand(0.15),
                 FeederCommands.setFeederVelocity(
                     feeder, HardwareConstants.TestVelocities.feederVelocity),
                 TransportCommands.setTransportVelocity(
@@ -85,7 +85,7 @@ public class ShootSequences {
                     prestage, HardwareConstants.TestVelocities.prestageVelocity),
                 HoodCommands.setHoodPosForHub(hood)),
             Commands.sequence(
-                new WaitCommand(0.5),
+                new WaitCommand(0.15),
                 FeederCommands.setFeederVelocity(
                     feeder, HardwareConstants.TestVelocities.feederVelocity),
                 TransportCommands.setTransportVelocity(
