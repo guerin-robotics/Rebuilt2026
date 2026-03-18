@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Time;
+import frc.robot.Constants;
 
 public class TransportConstants {
 
@@ -23,7 +24,7 @@ public class TransportConstants {
     public static final double transportRatio = 1 / 0.44;
   }
 
-  // NOT Tuned yet - placeholder values
+  // Real robot PID gains for torque-current velocity control
   public static class PID {
     public static final double KS = 14.0;
     public static final double KV = 0.0;
@@ -47,11 +48,31 @@ public class TransportConstants {
     /** Moment of inertia of the transport mechanism (kg·m²). Approximate value. */
     public static final double TRANSPORT_MOI = 0.001;
 
-    // Sim PID gains for TalonFX closed-loop in simulation
-    public static final double KS = 0.0;
-    public static final double KV = 0.12;
-    public static final double KP = 1.0;
+    // Sim-specific torque-current PID gains
+    public static final double KS = 8.0;
+    public static final double KV = 0.0;
+    public static final double KP = 2.0;
     public static final double KI = 0.0;
     public static final double KD = 0.0;
+  }
+
+  /** Returns the appropriate KS for the current mode (real vs sim). */
+  public static double getKS() {
+    return Constants.currentMode == Constants.Mode.SIM ? Sim.KS : PID.KS;
+  }
+
+  /** Returns the appropriate KV for the current mode (real vs sim). */
+  public static double getKV() {
+    return Constants.currentMode == Constants.Mode.SIM ? Sim.KV : PID.KV;
+  }
+
+  /** Returns the appropriate KP for the current mode (real vs sim). */
+  public static double getKP() {
+    return Constants.currentMode == Constants.Mode.SIM ? Sim.KP : PID.KP;
+  }
+
+  /** Returns the appropriate KD for the current mode (real vs sim). */
+  public static double getKD() {
+    return Constants.currentMode == Constants.Mode.SIM ? Sim.KD : PID.KD;
   }
 }

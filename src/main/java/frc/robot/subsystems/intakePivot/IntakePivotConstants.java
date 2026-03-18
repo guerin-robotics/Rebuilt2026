@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Time;
+import frc.robot.Constants;
 
 /**
  * Constants for the intake pivot mechanism.
@@ -95,12 +96,14 @@ public class IntakePivotConstants {
     /** Starting angle of the arm in radians (at the retracted/stowed position). */
     public static final double STARTING_ANGLE_RAD = MIN_ANGLE_RAD;
 
-    // Sim PID gains for TalonFX closed-loop in simulation
+    // Sim-specific torque-current PID gains
+    // Tuned for SingleJointedArmSim physics model
     public static final double KS = 0.0;
-    public static final double KV = 0.12;
-    public static final double KP = 1.0;
+    public static final double KG = 10.0;
+    public static final double KV = 0.0;
+    public static final double KP = 300.0;
     public static final double KI = 0.0;
-    public static final double KD = 0.0;
+    public static final double KD = 15.0;
   }
 
   /** Visualization constants for the Mechanism2d and 3D pose output. */
@@ -118,5 +121,20 @@ public class IntakePivotConstants {
      * Tolerance in rotations — when the measured position is this close to goal, "atGoal" = true.
      */
     public static final double POSITION_TOLERANCE_ROTATIONS = 0.005;
+  }
+
+  /** Returns the appropriate KG for the current mode (real vs sim). */
+  public static double getKG() {
+    return Constants.currentMode == Constants.Mode.SIM ? Sim.KG : PID.KG;
+  }
+
+  /** Returns the appropriate KP for the current mode (real vs sim). */
+  public static double getKP() {
+    return Constants.currentMode == Constants.Mode.SIM ? Sim.KP : PID.KP;
+  }
+
+  /** Returns the appropriate KD for the current mode (real vs sim). */
+  public static double getKD() {
+    return Constants.currentMode == Constants.Mode.SIM ? Sim.KD : PID.KD;
   }
 }

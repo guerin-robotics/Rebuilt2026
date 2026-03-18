@@ -11,10 +11,10 @@ public class HoodCommands {
   }
 
   public static Command setHoodPosForHub(Hood hood) {
-    return Commands.run(() -> hood.setHoodPosForHub());
+    return Commands.run(() -> hood.setHoodPosForHub(), hood);
   }
 
   public static Command incrementHoodPos(Hood hood) {
-    return Commands.runOnce(() -> hood.incrementHoodPos());
+    return Commands.runOnce(() -> hood.incrementHoodPos(), hood);
   }
 }

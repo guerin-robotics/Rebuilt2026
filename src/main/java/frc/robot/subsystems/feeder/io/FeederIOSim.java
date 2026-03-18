@@ -77,7 +77,7 @@ public class FeederIOSim implements FeederIO {
     // Motion Magic acceleration
     config.MotionMagic.MotionMagicAcceleration = FeederConstants.feederMagicConstants.feederAccel;
 
-    // Sim-specific PID gains (Slot0)
+    // Sim-specific PID gains (tuned for the physics model)
     config.Slot0.kS = FeederConstants.Sim.KS;
     config.Slot0.kV = FeederConstants.Sim.KV;
     config.Slot0.kP = FeederConstants.Sim.KP;

@@ -93,18 +93,15 @@ public class FlywheelIOSim implements FlywheelIO {
     config.MotionMagic.MotionMagicAcceleration =
         FlywheelConstants.flywheelMagicConstants.flywheelAccel;
 
-    // Sim-specific PID gains (Slot0)
+    // Use sim-specific PID gains (tuned for the physics model)
     config.Slot0.kS = FlywheelConstants.Sim.KS;
     config.Slot0.kV = FlywheelConstants.Sim.KV;
     config.Slot0.kP = FlywheelConstants.Sim.KP;
     config.Slot0.kI = FlywheelConstants.Sim.KI;
     config.Slot0.kD = FlywheelConstants.Sim.KD;
 
-    // Apply config to all motors
+    // Apply config to leader only — followers mirror leader output
     leader.getConfigurator().apply(config);
-    follower1.getConfigurator().apply(config);
-    follower2.getConfigurator().apply(config);
-    follower3.getConfigurator().apply(config);
   }
 
   @Override
