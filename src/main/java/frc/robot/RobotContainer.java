@@ -275,9 +275,16 @@ public class RobotContainer {
     // Auto shoot command
     NamedCommands.registerCommand(
         "Shoot",
-        Commands.sequence(
-            ShootSequences.shootForTower(
-                flywheel, prestage, hood, feeder, transport, intakeRoller)));
+        DriveCommands.joystickDriveAtAngle(
+                    drive,
+                    () -> 0,
+                    () -> 0,
+                    () -> RobotState.getInstance().getAngleToAllianceHub())
+                .alongWith(
+                    new WaitCommand(0.1)
+                        .andThen(
+                            ShootSequences.shootToHub(
+                                flywheel, prestage, hood, feeder, transport, intakeRoller))));
   }
 
   // EventTriggers
@@ -356,7 +363,7 @@ public class RobotContainer {
     // REVISED SUBSYSTEM CONTROLS
 
     // Set idle command (run at 10 rps) as default
-    // flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
+    flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
 
     // Set hood's default command to be at 0.0
     // hood.setDefaultCommand(g
@@ -372,7 +379,7 @@ public class RobotContainer {
                     () -> -thrustmaster.getY(),
                     () -> RobotState.getInstance().getAngleToAllianceHub())
                 .alongWith(
-                    new WaitCommand(0.5)
+                    new WaitCommand(0.15)
                         .andThen(
                             ShootSequences.shootToHub(
                                 flywheel, prestage, hood, feeder, transport, intakeRoller))));
