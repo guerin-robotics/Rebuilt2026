@@ -3,25 +3,19 @@ package frc.robot.commands;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
-import java.lang.reflect.Field;
-
-import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.math.geometry.Translation3d;
-import frc.lib.FieldConstants;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.hood.Hood;
+import frc.robot.subsystems.intakePivot.IntakePivot;
 import frc.robot.subsystems.intakeRoller.intakeRoller;
 import frc.robot.subsystems.prestage.Prestage;
 import frc.robot.subsystems.transport.Transport;
 import org.littletonrobotics.junction.Logger;
-
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.FieldCentric;
 
 public class ShootSequences {
 
@@ -40,8 +34,7 @@ public class ShootSequences {
                   FlywheelCommands.setFlywheelVelocity(
                       flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity),
                   PrestageCommands.setPrestageVelocity(
-                      prestage, HardwareConstants.TestVelocities.prestageVelocity),
-                  HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test)),
+                      prestage, HardwareConstants.TestVelocities.prestageVelocity)),
               Commands.sequence(
                   new WaitCommand(0.5),
                   FeederCommands.setFeederVelocity(
@@ -135,7 +128,8 @@ public class ShootSequences {
       Hood hood,
       Feeder feeder,
       Transport transport,
-      intakeRoller intakeRoller) {
+      intakeRoller intakeRoller,
+      IntakePivot intakePivot) {
     final boolean zoneSafeToShoot = Flywheel.zoneSafeToShoot();
     Logger.recordOutput("Flywheel/zoneSafeToShoot", zoneSafeToShoot);
     if (Flywheel.zoneSafeToShoot()) {
@@ -144,7 +138,8 @@ public class ShootSequences {
                   FlywheelCommands.setVelocityForHub(flywheel),
                   PrestageCommands.setPrestageVelocity(
                       prestage, HardwareConstants.TestVelocities.prestageVelocity),
-                  HoodCommands.setHoodPosForHub(hood)),
+                  HoodCommands.setHoodPosForHub(hood),
+                  IntakePivotCommands.jostlePivotByPos(intakePivot)),
               Commands.sequence(
                   new WaitCommand(0.15),
                   FeederCommands.setFeederVelocity(
@@ -206,11 +201,12 @@ public class ShootSequences {
       Hood hood,
       Feeder feeder,
       Transport transport,
-      intakeRoller intakeRoller) {
+      intakeRoller intakeRoller,
+      IntakePivot intakePivot) {
     final boolean zoneSafeToShoot = Flywheel.zoneSafeToShoot();
     Logger.recordOutput("Flywheel/zoneSafeToShoot", zoneSafeToShoot);
     if (Flywheel.zoneSafeToShoot()) {
-      return shootToHub(flywheel, prestage, hood, feeder, transport, intakeRoller);
+      return shootToHub(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot);
     } else {
       return pass(flywheel, prestage, hood, feeder, transport, intakeRoller);
     }

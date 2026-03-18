@@ -104,7 +104,7 @@ public class HardwareConstants {
   }
 
   public static class TuningConstants {
-    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(900);
+    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(2600);
   }
 
   public static class ControllerConstants {
@@ -115,6 +115,7 @@ public class HardwareConstants {
   }
 
   public static class Zones {
+
     public enum Zone {
       ALLIANCE_ZONE,
       NEAR_ALLIANCE_TRENCH,
