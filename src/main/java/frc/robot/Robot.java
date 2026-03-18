@@ -7,10 +7,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.BatteryLogger;
 import org.littletonrobotics.junction.AutoLogOutputManager;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -28,6 +30,9 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
+
+  /** Shared battery logger instance — subsystems call reportCurrentUsage() each loop. */
+  public static final BatteryLogger batteryLogger = new BatteryLogger();
 
   // Field2d widget to display the robot's current pose on the dashboard.
   // This is updated every loop so the drive team can always see where the robot thinks it is.
@@ -100,6 +105,12 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    // Update battery logger with current voltage and roboRIO current, then log all metrics.
+    // This runs AFTER all subsystem periodic() methods, so every subsystem has reported its draw.
+    batteryLogger.setBatteryVoltage(RobotController.getBatteryVoltage());
+    batteryLogger.setRioCurrent(RobotController.getInputCurrent());
+    batteryLogger.periodic();
 
     // Update the robot's pose on the main field map dashboard widget every loop.
     // This must be in robotPeriodic() so it runs in ALL modes (disabled, teleop, auto, test).

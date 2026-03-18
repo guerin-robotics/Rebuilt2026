@@ -138,4 +138,14 @@ public class Module {
   public double getFFCharacterizationVelocity() {
     return Units.radiansToRotations(inputs.driveVelocityRadPerSec);
   }
+
+  /** Returns the drive motor supply current in amps. */
+  public double getDriveCurrentAmps() {
+    return inputs.driveCurrentAmps;
+  }
+
+  /** Returns the turn motor supply current in amps. */
+  public double getTurnCurrentAmps() {
+    return inputs.turnCurrentAmps;
+  }
 }
