@@ -53,9 +53,9 @@ public class FlywheelConstants {
     // public static double KV = tunableKV.get();
     // public static double KP = tunableKP.get();
 
-    public static double KS = 7.5; // 10
-    public static double KV = 0.0067;
-    public static double KP = 14; // 13
+    public static double KS = 4.5; // 10
+    public static double KV = 0.5;
+    public static double KP = 11; // 13
     public static double KD = 0; // 3
   }
 

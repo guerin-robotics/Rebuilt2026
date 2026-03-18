@@ -24,33 +24,54 @@ public class Hood extends SubsystemBase {
   }
 
   public void setHoodPos(double position) {
-    if (isHoodSafe()) {
+    final boolean hoodCheck = isHoodSafeVelo();
+    Logger.recordOutput("Hood/isHoodSafeVelo", hoodCheck);
+    if (isHoodSafeVelo()) {
       io.setHoodPos(position);
     }
   }
 
   public void incrementHoodPos() {
+    final boolean hoodCheck = isHoodSafeVelo();
+    Logger.recordOutput("Hood/isHoodSafeVelo", hoodCheck);
     double position = inputs.servoPos;
-    if (isHoodSafe()) {
+    if (isHoodSafeVelo()) {
       io.setHoodPos(position + 0.05);
     }
   }
 
   public void setHoodPosForHub() {
+    final boolean hoodCheck = isHoodSafeVelo();
+    Logger.recordOutput("Hood/isHoodSafeVelo", hoodCheck);
     double position = HoodPosCalculator.getInstance().getHoodPosForHub();
-    if (isHoodSafe()) {
+    if (isHoodSafeVelo()) {
       io.setHoodPos(position);
     }
   }
 
-  public boolean isHoodSafe() {
-    if (RobotState.getInstance().getRobotZone() == HardwareConstants.Zones.Zone.ALLIANCE_TRENCH
-        || RobotState.getInstance().getRobotZone()
-            == HardwareConstants.Zones.Zone.OPPOSING_TRENCH) {
-      return false;
-    } else {
-      return true;
-    }
+  // Returns false if robot is in or near a trench zone
+  public boolean isHoodSafePos() {
+    return !((RobotState.getInstance().getRobotZone()
+            == HardwareConstants.Zones.Zone.ALLIANCE_TRENCH)
+        || (RobotState.getInstance().getRobotZone() == HardwareConstants.Zones.Zone.OPPOSING_TRENCH)
+        || (RobotState.getInstance().getRobotZone()
+            == HardwareConstants.Zones.Zone.NEAR_ALLIANCE_TRENCH)
+        || (RobotState.getInstance().getRobotZone()
+            == HardwareConstants.Zones.Zone.NEAR_OPPOSING_TRENCH));
+  }
+
+  // Returns false if robot is in a trench zone, or if it is near a trench zone and moving towards
+  // the trench
+  public boolean isHoodSafeVelo() {
+    return !((RobotState.getInstance().getRobotZone()
+            == HardwareConstants.Zones.Zone.ALLIANCE_TRENCH)
+        || (RobotState.getInstance().getRobotZone() == HardwareConstants.Zones.Zone.OPPOSING_TRENCH)
+        || (RobotState.getInstance().getRobotZone()
+                == HardwareConstants.Zones.Zone.NEAR_ALLIANCE_TRENCH
+            && RobotState.getInstance().getFieldRelativeVelocity().vxMetersPerSecond > 0)
+        || (RobotState.getInstance().getRobotZone()
+                == HardwareConstants.Zones.Zone.NEAR_OPPOSING_TRENCH
+            && RobotState.getInstance().getFieldRelativeVelocity().vxMetersPerSecond < 0));
   }
 
   public void stopHood() {
