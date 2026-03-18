@@ -32,9 +32,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.FieldConstants;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.FeederCommands;
 import frc.robot.commands.FlywheelCommands;
 import frc.robot.commands.HoodCommands;
 import frc.robot.commands.IntakePivotCommands;
+import frc.robot.commands.PrestageCommands;
 import frc.robot.commands.ShootSequences;
 import frc.robot.commands.SpitSequences;
 import frc.robot.commands.TransportCommands;
@@ -70,8 +72,6 @@ import frc.robot.subsystems.prestage.Prestage;
 import frc.robot.subsystems.prestage.io.PrestageIO;
 import frc.robot.subsystems.prestage.io.PrestageIOReal;
 import frc.robot.subsystems.prestage.io.PrestageIOSim;
-import frc.robot.commands.PrestageCommands;
-import frc.robot.commands.FeederCommands;
 import frc.robot.subsystems.transport.Transport;
 import frc.robot.subsystems.transport.io.TransportIO;
 import frc.robot.subsystems.transport.io.TransportIOReal;
@@ -363,7 +363,7 @@ public class RobotContainer {
 
     // Default commands
     // Flywheel (10 rps)
-    flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
+    // flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // Hood (set for hub)
     // hood.setDefaultCommand(
     //     HoodCommands.setHoodPosForHub(hood));
@@ -455,7 +455,13 @@ public class RobotContainer {
     // Basic controls for testing
 
     // Flywheel, hood, and prestage
-    buttonPanel.button(1).whileTrue(ShootSequences.FirstSet(flywheel, prestage, hood));
+    // buttonPanel.button(1).whileTrue(ShootSequences.FirstSet(flywheel, prestage, hood));
+    buttonPanel
+        .button(1)
+        .whileTrue(
+            PrestageCommands.setPrestageVelocity(
+                prestage, HardwareConstants.TestVelocities.prestageVelocity))
+        .onFalse(PrestageCommands.setPrestageVelocity(prestage, RotationsPerSecond.of(0)));
 
     // Transport and feeder
     buttonPanel.button(2).whileTrue(ShootSequences.SecondSet(feeder, transport));
@@ -524,7 +530,7 @@ public class RobotContainer {
                             ShootSequences.shootToHub(
                                 flywheel, prestage, hood, feeder, transport, intakeRoller))))
         .onFalse(SpitSequences.spitAfterShoot(flywheel, prestage, feeder, transport, intakeRoller));
-    
+
     // B button maps correctly
     controller.b().whileTrue(HoodCommands.setHoodPosForHub(hood));
 
