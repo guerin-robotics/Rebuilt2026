@@ -46,6 +46,8 @@ public class Hood extends SubsystemBase {
     double position = HoodPosCalculator.getInstance().getHoodPosForHub();
     if (isHoodSafeVelo()) {
       io.setHoodPos(position);
+    } else {
+      io.setHoodPos(HardwareConstants.TestPositions.hoodPos1Test);
     }
   }
 

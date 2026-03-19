@@ -371,8 +371,7 @@ public class RobotContainer {
     // Flywheel (10 rps)
     flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // Hood (set for hub)
-    // hood.setDefaultCommand(
-    //     HoodCommands.setHoodPosForHub(hood));
+    hood.setDefaultCommand(HoodCommands.setHoodPosForHub(hood));
 
     // Distance-based shooting
     thrustmaster
