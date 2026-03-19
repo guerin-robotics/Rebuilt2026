@@ -94,13 +94,13 @@ public class Flywheel extends SubsystemBase {
     if (RobotState.getInstance().getEstimatedPose().getY() > (FieldConstants.fieldWidth / 2)) {
       passTarget =
           new Translation2d(
-              FieldConstants.Tower.leftUpright.getX() + 0.5,
-              FieldConstants.Tower.leftUpright.getY() + 0.5);
+              (FieldConstants.LinesVertical.neutralZoneNear / 2),
+              ((FieldConstants.fieldWidth + FieldConstants.LinesHorizontal.center) / 2));
     } else {
       passTarget =
           new Translation2d(
-              FieldConstants.Tower.rightUpright.getX() + 0.5,
-              FieldConstants.Tower.rightUpright.getY() - 0.5);
+              (FieldConstants.LinesVertical.neutralZoneNear / 2),
+              ((FieldConstants.LinesHorizontal.center) / 2));
     }
     return passTarget;
   }
