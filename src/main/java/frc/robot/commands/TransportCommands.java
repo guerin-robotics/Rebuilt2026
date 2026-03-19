@@ -12,7 +12,7 @@ import frc.robot.subsystems.transport.Transport;
 
 public class TransportCommands {
 
-  public static Command runTransportVoltage(Transport transport, Voltage voltage) {
+  public static Command setTransportVoltage(Transport transport, Voltage voltage) {
     return Commands.startEnd(
             () -> transport.setTransportVoltage(voltage), // Apply voltage
             () -> transport.setTransportVoltage(Volts.of(0)), // Stop on end
@@ -21,7 +21,7 @@ public class TransportCommands {
   }
 
   public static Command stop(Transport transport) {
-    return Commands.runOnce(() -> transport.setTransportVoltage(Volts.of(0)), transport)
+    return Commands.runOnce(() -> transport.setTransportVelocity(RotationsPerSecond.of(0)), transport)
         .withName("TransportStop");
   }
 
