@@ -156,6 +156,7 @@ public class ShootSequences {
                 feeder.setFeederVelocity(RotationsPerSecond.of(0));
                 transport.setTransportVelocity(RotationsPerSecond.of(0));
                 intakeRoller.setRollerVoltage(Volts.of(0));
+                intakePivot.setPivotPosition(HardwareConstants.TestPositions.intakeDegreesDownTest);
               })
           .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     } else {
