@@ -21,7 +21,7 @@ public class FeederConstants {
   }
 
   public static class Mechanical {
-    public static final double feederRatio = 1 / 0.417;
+    public static final double feederRatio = 0.417;
   }
 
   // Real robot PID gains for torque-current velocity control
