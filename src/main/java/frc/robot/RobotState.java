@@ -151,6 +151,25 @@ public class RobotState {
     return getEstimatedPose().getRotation();
   }
 
+  // Returns the robot's pose after a time interval
+  public Pose2d getFuturePose() {
+    // Current position and rotation
+    double currentPoseX = getEstimatedPose().getX();
+    double currentPoseY = getEstimatedPose().getY();
+    double currentRadians = getEstimatedPose().getRotation().getRadians();
+    // Change in position and rotation (velocity)
+    double veloX = getFieldRelativeVelocity().vxMetersPerSecond;
+    double veloY = getFieldRelativeVelocity().vyMetersPerSecond;
+    double veloRad = getFieldRelativeVelocity().omegaRadiansPerSecond;
+    // Calculate pose after given time interval (accounting for velocity, but not acceleration)
+    Pose2d futurePose = new Pose2d(
+      (currentPoseX + (veloX * HardwareConstants.Zones.timeInterval)),
+      (currentPoseY + (veloY * HardwareConstants.Zones.timeInterval)),
+      new Rotation2d((currentRadians + (veloRad * HardwareConstants.Zones.timeInterval)))
+    );
+    return futurePose;
+  }
+
   // ==================== VELOCITY GETTERS ====================
 
   /**
@@ -429,41 +448,41 @@ public class RobotState {
   // ZONE FINDER
   public HardwareConstants.Zones.Zone getRobotZone() {
 
-    if (AllianceFlipUtil.applyX(RobotState.getInstance().getEstimatedPose().getX())
+    if (AllianceFlipUtil.applyX(RobotState.getInstance().getFuturePose().getX())
         < FieldConstants.LinesVertical.allianceZone
             - Meters.of(HardwareConstants.Zones.zoneOffset).magnitude()) {
       Logger.recordOutput("RobotState/RobotZone", HardwareConstants.Zones.Zone.ALLIANCE_ZONE);
       return HardwareConstants.Zones.Zone.ALLIANCE_ZONE;
-    } else if (AllianceFlipUtil.applyX(RobotState.getInstance().getEstimatedPose().getX())
+    } else if (AllianceFlipUtil.applyX(RobotState.getInstance().getFuturePose().getX())
         < FieldConstants.LinesVertical.allianceZone) {
       Logger.recordOutput(
           "RobotState/RobotZone", HardwareConstants.Zones.Zone.NEAR_ALLIANCE_TRENCH);
       return HardwareConstants.Zones.Zone.NEAR_ALLIANCE_TRENCH;
-    } else if (AllianceFlipUtil.applyX(RobotState.getInstance().getEstimatedPose().getX())
+    } else if (AllianceFlipUtil.applyX(RobotState.getInstance().getFuturePose().getX())
         < FieldConstants.LinesVertical.neutralZoneNear) {
       Logger.recordOutput("RobotState/RobotZone", HardwareConstants.Zones.Zone.ALLIANCE_TRENCH);
       return HardwareConstants.Zones.Zone.ALLIANCE_TRENCH;
-    } else if (AllianceFlipUtil.applyX(RobotState.getInstance().getEstimatedPose().getX())
+    } else if (AllianceFlipUtil.applyX(RobotState.getInstance().getFuturePose().getX())
         < FieldConstants.LinesVertical.neutralZoneNear
             + Meters.of(HardwareConstants.Zones.zoneOffset).magnitude()) {
       Logger.recordOutput(
           "RobotState/RobotZone", HardwareConstants.Zones.Zone.NEAR_ALLIANCE_TRENCH);
       return HardwareConstants.Zones.Zone.NEAR_ALLIANCE_TRENCH;
-    } else if (AllianceFlipUtil.applyX(RobotState.getInstance().getEstimatedPose().getX())
+    } else if (AllianceFlipUtil.applyX(RobotState.getInstance().getFuturePose().getX())
         < FieldConstants.LinesVertical.neutralZoneFar
             - Meters.of(HardwareConstants.Zones.zoneOffset).magnitude()) {
       Logger.recordOutput("RobotState/RobotZone", HardwareConstants.Zones.Zone.NEUTRAL);
       return HardwareConstants.Zones.Zone.NEUTRAL;
-    } else if (AllianceFlipUtil.applyX(RobotState.getInstance().getEstimatedPose().getX())
+    } else if (AllianceFlipUtil.applyX(RobotState.getInstance().getFuturePose().getX())
         < FieldConstants.LinesVertical.neutralZoneFar) {
       Logger.recordOutput(
           "RobotState/RobotZone", HardwareConstants.Zones.Zone.NEAR_OPPOSING_TRENCH);
       return HardwareConstants.Zones.Zone.NEAR_OPPOSING_TRENCH;
-    } else if (AllianceFlipUtil.applyX(RobotState.getInstance().getEstimatedPose().getX())
+    } else if (AllianceFlipUtil.applyX(RobotState.getInstance().getFuturePose().getX())
         < FieldConstants.LinesVertical.oppAllianceZone) {
       Logger.recordOutput("RobotState/RobotZone", HardwareConstants.Zones.Zone.OPPOSING_TRENCH);
       return HardwareConstants.Zones.Zone.OPPOSING_TRENCH;
-    } else if (AllianceFlipUtil.applyX(RobotState.getInstance().getEstimatedPose().getX())
+    } else if (AllianceFlipUtil.applyX(RobotState.getInstance().getFuturePose().getX())
         < FieldConstants.LinesVertical.oppAllianceZone
             + Meters.of(HardwareConstants.Zones.zoneOffset).magnitude()) {
       Logger.recordOutput(

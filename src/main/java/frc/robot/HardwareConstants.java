@@ -127,5 +127,6 @@ public class HardwareConstants {
     }
 
     public static final double zoneOffset = 0.5;
+    public static final double timeInterval = 1;
   }
 }

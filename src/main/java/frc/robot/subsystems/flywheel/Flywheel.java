@@ -89,19 +89,22 @@ public class Flywheel extends SubsystemBase {
     io.setFlywheelVelocity(velocity);
   }
 
-  public Translation2d getPassTarget() {
-    Translation2d passTarget;
+  public Translation3d getPassTarget() {
+    Translation3d passTarget;
     if (RobotState.getInstance().getEstimatedPose().getY() > (FieldConstants.fieldWidth / 2)) {
       passTarget =
-          new Translation2d(
+          new Translation3d(
               (FieldConstants.LinesVertical.neutralZoneNear / 2),
-              ((FieldConstants.fieldWidth + FieldConstants.LinesHorizontal.center) / 2));
+              ((3 * FieldConstants.LinesHorizontal.center) / 4),
+              0);
     } else {
       passTarget =
-          new Translation2d(
+          new Translation3d(
               (FieldConstants.LinesVertical.neutralZoneNear / 2),
-              ((FieldConstants.LinesHorizontal.center) / 2));
+              ((FieldConstants.LinesHorizontal.center) / 4),
+              0);
     }
+    Logger.recordOutput("Flywheel/passTarget", passTarget);
     return passTarget;
   }
 

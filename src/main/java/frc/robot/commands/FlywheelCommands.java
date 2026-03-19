@@ -8,8 +8,6 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.lib.FieldConstants;
-import frc.robot.RobotState;
 import frc.robot.subsystems.flywheel.Flywheel;
 
 /**
@@ -62,21 +60,7 @@ public class FlywheelCommands {
   }
 
   public static Command setPassVelocity(Flywheel flywheel) {
-    if (RobotState.getInstance().getEstimatedPose().getY() > (FieldConstants.fieldWidth / 2)) {
-      return setVelocityForTarget(
-          flywheel,
-          new Translation3d(
-              FieldConstants.Tower.leftUpright.getX() + Meters.of(0.5).magnitude(),
-              FieldConstants.Tower.leftUpright.getY() + Meters.of(0.5).magnitude(),
-              0));
-    } else {
-      return setVelocityForTarget(
-          flywheel,
-          new Translation3d(
-              FieldConstants.Tower.rightUpright.getX() + Meters.of(0.5).magnitude(),
-              FieldConstants.Tower.rightUpright.getY() - Meters.of(0.5).magnitude(),
-              0));
-    }
+    return setVelocityForTarget(flywheel, flywheel.getPassTarget());
   }
 
   /**
@@ -127,7 +111,7 @@ public class FlywheelCommands {
    * @return Instant command that stops the shooter
    */
   public static Command stop(Flywheel shooter) {
-    return Commands.runOnce(() -> shooter.setFlywheelVoltage(Volts.of(0)), shooter)
+    return Commands.runOnce(() -> shooter.setFlywheelVelocity(RotationsPerSecond.of(0)), shooter)
         .withName("FlywheelStop");
   }
 }

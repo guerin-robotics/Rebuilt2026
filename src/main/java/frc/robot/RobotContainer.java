@@ -392,7 +392,9 @@ public class RobotContainer {
                                 feeder,
                                 transport,
                                 intakeRoller,
-                                intakePivot))));
+                                intakePivot))))
+        .onFalse(
+            ShootSequences.shootEndBehavior(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
 
     // Shoot for map tuning
     // thrustmaster
@@ -417,12 +419,19 @@ public class RobotContainer {
                     drive,
                     () -> -thrustmaster.getX(),
                     () -> -thrustmaster.getY(),
-                    () -> RobotState.getInstance().getAngleToTarget(flywheel.getPassTarget()))
+                    () ->
+                        RobotState.getInstance()
+                            .getAngleToTarget(
+                                new Translation2d(
+                                    flywheel.getPassTarget().getX(),
+                                    flywheel.getPassTarget().getY())))
                 .alongWith(
                     new WaitCommand(0.5)
                         .andThen(
                             ShootSequences.pass(
-                                flywheel, prestage, hood, feeder, transport, intakeRoller))));
+                                flywheel, prestage, hood, feeder, transport, intakeRoller))))
+        .onFalse(
+            ShootSequences.shootEndBehavior(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
 
     thrustmaster
         .button(2)
@@ -476,7 +485,9 @@ public class RobotContainer {
                     new WaitCommand(0.5)
                         .andThen(
                             ShootSequences.shootForTower(
-                                flywheel, prestage, hood, feeder, transport, intakeRoller))));
+                                flywheel, prestage, hood, feeder, transport, intakeRoller))))
+        .onFalse(
+            ShootSequences.shootEndBehavior(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
 
     // Basic controls for testing
 

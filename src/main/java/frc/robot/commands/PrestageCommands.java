@@ -20,7 +20,7 @@ public class PrestageCommands {
   }
 
   public static Command stop(Prestage prestage) {
-    return Commands.runOnce(() -> prestage.setPrestageVoltage(Volts.of(0)), prestage)
+    return Commands.runOnce(() -> prestage.setPrestageVelocity(RotationsPerSecond.of(0)), prestage)
         .withName("PrestageStop");
   }
 

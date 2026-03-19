@@ -21,7 +21,7 @@ public class FeederCommands {
   }
 
   public static Command stop(Feeder feeder) {
-    return Commands.runOnce(() -> feeder.setFeederVoltage(Volts.of(0)), feeder)
+    return Commands.runOnce(() -> feeder.setFeederVelocity(RotationsPerSecond.of(0)), feeder)
         .withName("FeederStop");
   }
 
