@@ -271,7 +271,7 @@ public class RobotContainer {
         intakeRollerCommands
             .setRollerVoltage(intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage)
             .alongWith(
-                TransportCommands.runTransportVoltage(
+                TransportCommands.setTransportVoltage(
                     transport, HardwareConstants.TestVoltages.TransportTestVoltage)));
 
     // Auto shoot command
@@ -372,6 +372,9 @@ public class RobotContainer {
     flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // Hood (set for hub)
     hood.setDefaultCommand(HoodCommands.setHoodPosForHub(hood));
+    // Intake rollers
+    intakeRoller.setDefaultCommand(intakeRollerCommands.setRollerVoltage(intakeRoller,
+        HardwareConstants.TestVoltages.intakeRollerAgitateVoltage));
 
     // Distance-based shooting
     thrustmaster
@@ -461,7 +464,7 @@ public class RobotContainer {
                 .setRollerVoltage(
                     intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage)
                 .alongWith(
-                    TransportCommands.runTransportVoltage(
+                    TransportCommands.setTransportVoltage(
                         transport, HardwareConstants.TestVoltages.TransportTestVoltage)));
 
     // Intake jostle
@@ -595,7 +598,7 @@ public class RobotContainer {
                 .setRollerVoltage(
                     intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage)
                 .alongWith(
-                    TransportCommands.runTransportVoltage(
+                    TransportCommands.setTransportVoltage(
                         transport, HardwareConstants.TestVoltages.TransportTestVoltage)));
 
     // ==================== PRESTAGE + FEEDER TEST (SIM) ====================

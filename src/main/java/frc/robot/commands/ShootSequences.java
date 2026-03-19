@@ -39,8 +39,8 @@ public class ShootSequences {
                   new WaitCommand(0.5),
                   FeederCommands.setFeederVelocity(
                       feeder, HardwareConstants.TestVelocities.feederVelocity),
-                  TransportCommands.setTransportVelocity(
-                      transport, HardwareConstants.TestVelocities.transportVelocity),
+                  TransportCommands.setTransportVoltage(
+                      transport, HardwareConstants.TestVoltages.TransportTestVoltage),
                   intakeRollerCommands.setRollerVoltage(
                       intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage)))
           .finallyDo(
@@ -49,7 +49,7 @@ public class ShootSequences {
                 prestage.setPrestageVelocity(RotationsPerSecond.of(0));
                 hood.setHoodPos(HardwareConstants.TestPositions.hoodPos1Test);
                 feeder.setFeederVelocity(RotationsPerSecond.of(0));
-                transport.setTransportVelocity(RotationsPerSecond.of(0));
+                transport.setTransportVoltage(Volts.of(0));
                 intakeRoller.setRollerVoltage(Volts.of(0));
               });
     } else {
@@ -78,8 +78,8 @@ public class ShootSequences {
                   new WaitCommand(0.15),
                   FeederCommands.setFeederVelocity(
                       feeder, HardwareConstants.TestVelocities.feederVelocity),
-                  TransportCommands.setTransportVelocity(
-                      transport, HardwareConstants.TestVelocities.transportVelocity),
+                  TransportCommands.setTransportVoltage(
+                      transport, HardwareConstants.TestVoltages.TransportTestVoltage),
                   intakeRollerCommands.setRollerVoltage(
                       intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage)))
           .finallyDo(
@@ -88,7 +88,7 @@ public class ShootSequences {
                 prestage.setPrestageVelocity(RotationsPerSecond.of(0));
                 hood.setHoodPos(HardwareConstants.TestPositions.hoodPos1Test);
                 feeder.setFeederVelocity(RotationsPerSecond.of(0));
-                transport.setTransportVelocity(RotationsPerSecond.of(0));
+                transport.setTransportVoltage(Volts.of(0));
                 intakeRoller.setRollerVoltage(Volts.of(0));
               });
     } else {
@@ -113,8 +113,8 @@ public class ShootSequences {
               prestage, HardwareConstants.TestVelocities.prestageVelocity),
           HoodCommands.setHoodPos(hood, HardwareConstants.TowerConstants.hoodTowerPos),
           FeederCommands.setFeederVelocity(feeder, HardwareConstants.TestVelocities.feederVelocity),
-          TransportCommands.setTransportVelocity(
-              transport, HardwareConstants.TestVelocities.transportVelocity),
+          TransportCommands.setTransportVoltage(
+              transport, HardwareConstants.TestVoltages.TransportTestVoltage),
           intakeRollerCommands.setRollerVoltage(
               intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage));
     } else {
@@ -144,8 +144,8 @@ public class ShootSequences {
                   new WaitCommand(0.15),
                   FeederCommands.setFeederVelocity(
                       feeder, HardwareConstants.TestVelocities.feederVelocity),
-                  TransportCommands.setTransportVelocity(
-                      transport, HardwareConstants.TestVelocities.transportVelocity),
+                  TransportCommands.setTransportVoltage(
+                      transport, HardwareConstants.TestVoltages.TransportTestVoltage),
                   intakeRollerCommands.setRollerVoltage(
                       intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage)))
         .finallyDo(
@@ -154,7 +154,7 @@ public class ShootSequences {
                 prestage.setPrestageVelocity(RotationsPerSecond.of(0));
                 hood.setHoodPos(HardwareConstants.TestPositions.hoodPos1Test);
                 feeder.setFeederVelocity(RotationsPerSecond.of(0));
-                transport.setTransportVelocity(RotationsPerSecond.of(0));
+                transport.setTransportVoltage(Volts.of(0));
                 intakeRoller.setRollerVoltage(Volts.of(0));
                 intakePivot.setPivotPosition(HardwareConstants.TestPositions.intakeDegreesDownTest);
               })
@@ -181,8 +181,8 @@ public class ShootSequences {
                 new WaitCommand(0.5),
                 FeederCommands.setFeederVelocity(
                     feeder, HardwareConstants.TestVelocities.feederVelocity),
-                TransportCommands.setTransportVelocity(
-                    transport, HardwareConstants.TestVelocities.transportVelocity),
+                TransportCommands.setTransportVoltage(
+                    transport, HardwareConstants.TestVoltages.TransportTestVoltage),
                 intakeRollerCommands.setRollerVoltage(
                     intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage)))
         .finallyDo(
@@ -191,7 +191,7 @@ public class ShootSequences {
               prestage.setPrestageVelocity(RotationsPerSecond.of(0));
               hood.setHoodPos(HardwareConstants.TestPositions.hoodPos1Test);
               feeder.setFeederVelocity(RotationsPerSecond.of(0));
-              transport.setTransportVelocity(RotationsPerSecond.of(0));
+              transport.setTransportVoltage(Volts.of(0));
               intakeRoller.setRollerVoltage(Volts.of(0));
             });
   }
@@ -252,12 +252,12 @@ public class ShootSequences {
     return Commands.parallel(
             FeederCommands.setFeederVelocity(
                 feeder, HardwareConstants.TestVelocities.feederVelocity),
-            TransportCommands.setTransportVelocity(
-                transport, HardwareConstants.TestVelocities.transportVelocity))
+            TransportCommands.setTransportVoltage(
+                transport, HardwareConstants.TestVoltages.TransportTestVoltage))
         .finallyDo(
             () -> {
               feeder.setFeederVelocity(RotationsPerSecond.of(0));
-              transport.setTransportVelocity(RotationsPerSecond.of(0));
+              transport.setTransportVoltage(Volts.of(0));
             });
   }
 

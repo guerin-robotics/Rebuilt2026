@@ -28,8 +28,8 @@ public class SpitSequences {
                 prestage, HardwareConstants.SpitVelocities.prestageSpitVelocity),
             FeederCommands.setFeederVelocity(
                 feeder, HardwareConstants.SpitVelocities.feederSpitVelocity),
-            TransportCommands.setTransportVelocity(
-                transport, HardwareConstants.SpitVelocities.transportSpitVelocity),
+            TransportCommands.setTransportVoltage(
+                transport, HardwareConstants.SpitVoltages.transportSpitVolts),
             intakeRollerCommands.setRollerVelocity(
                 intakeRoller, HardwareConstants.SpitVelocities.rollerSpitVelocity))
         .finallyDo(
@@ -37,7 +37,7 @@ public class SpitSequences {
               flywheel.setFlywheelVelocity(RotationsPerSecond.of(0));
               prestage.setPrestageVelocity(RotationsPerSecond.of(0));
               feeder.setFeederVelocity(RotationsPerSecond.of(0));
-              transport.setTransportVelocity(RotationsPerSecond.of(0));
+              transport.setTransportVoltage(Volts.of(0));
               intakeRoller.setRollerVoltage(Volts.of(0));
             });
   }
@@ -46,14 +46,14 @@ public class SpitSequences {
     return Commands.parallel(
             FeederCommands.setFeederVelocity(
                 feeder, HardwareConstants.SpitVelocities.feederSpitVelocity),
-            TransportCommands.setTransportVelocity(
-                transport, HardwareConstants.SpitVelocities.transportSpitVelocity),
+            TransportCommands.setTransportVoltage(
+                transport, HardwareConstants.SpitVoltages.transportSpitVolts),
             intakeRollerCommands.setRollerVelocity(
                 intakeRoller, HardwareConstants.SpitVelocities.rollerSpitVelocity))
         .finallyDo(
             () -> {
               feeder.setFeederVelocity(RotationsPerSecond.of(0));
-              transport.setTransportVelocity(RotationsPerSecond.of(0));
+              transport.setTransportVoltage(Volts.of(0));
               intakeRoller.setRollerVoltage(Volts.of(0));
             });
   }
@@ -103,19 +103,19 @@ public class SpitSequences {
                     feeder),
                 Commands.run(
                     () ->
-                        transport.setTransportVelocity(
-                            HardwareConstants.SpitVelocities.transportSpitVelocity),
+                        transport.setTransportVoltage(
+                            HardwareConstants.SpitVoltages.transportSpitVolts),
                     transport),
                 Commands.run(
                     () ->
-                        intakeRoller.setRollerVelocity(
-                            HardwareConstants.SpitVelocities.rollerSpitVelocity),
+                        intakeRoller.setRollerVoltage(
+                            HardwareConstants.SpitVoltages.rollerSpitVolts),
                     intakeRoller)),
         Commands.parallel(
             FlywheelCommands.setFlywheelVelocity(flywheel, RotationsPerSecond.of(0)),
             PrestageCommands.setPrestageVelocity(prestage, RotationsPerSecond.of(0)),
             FeederCommands.setFeederVelocity(feeder, RotationsPerSecond.of(0)),
-            TransportCommands.setTransportVelocity(transport, RotationsPerSecond.of(0)),
-            intakeRollerCommands.setRollerVelocity(intakeRoller, RotationsPerSecond.of(0))));
+            TransportCommands.setTransportVoltage(transport, Volts.of(0)),
+            intakeRollerCommands.setRollerVoltage(intakeRoller, Volts.of(0))));
   }
 }
