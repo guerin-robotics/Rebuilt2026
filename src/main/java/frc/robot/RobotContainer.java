@@ -11,6 +11,7 @@ import static edu.wpi.first.math.util.Units.inchesToMeters;
 import static edu.wpi.first.math.util.Units.metersToInches;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -293,18 +294,52 @@ public class RobotContainer {
   }
 
   // EventTriggers
+  //
+  // IMPORTANT: Event trigger commands must NOT declare subsystem requirements that overlap
+  // with ANY command in the auto command group. A SequentialCommandGroup's requirements are
+  // the UNION of all its sub-commands' requirements. So even though "DeployIntake" fires
+  // during the path-following step, the auto group also includes the "Shoot" named command
+  // which requires intakePivot (via ShootSequences.shootToHub → jostlePivotByPos).
+  //
+  // If an EventTrigger schedules a command that shares a requirement with the auto group,
+  // WPILib's scheduler will INTERRUPT the entire auto group to resolve the conflict.
+  //
+  // Fix: Use Commands.runOnce() WITHOUT passing the subsystem as a requirement.
+  // The subsystem method is still called (so the hardware moves), but the command
+  // doesn't "require" the subsystem, avoiding the scheduling conflict.
   private void registerEventTriggers() {
-    // Event marker for intake deploy command
+    // Event marker for intake deploy command (no subsystem requirement to avoid auto interruption)
     new EventTrigger("DeployIntake")
         .onTrue(
-            IntakePivotCommands.setPivotRotations(
-                intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest));
+            Commands.runOnce(
+                () ->
+                    intakePivot.setPivotPosition(
+                        HardwareConstants.TestPositions.intakeDegreesDownTest)));
 
-    // Event marker for intake retract command
+    // Event marker for intake retract command (no subsystem requirement to avoid auto interruption)
     new EventTrigger("RetractIntake")
         .onTrue(
-            IntakePivotCommands.setPivotRotations(
-                intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest));
+            Commands.runOnce(
+                () ->
+                    intakePivot.setPivotPosition(
+                        HardwareConstants.TestPositions.intakeDegreesUpTest)));
+
+    // Event marker for running intake rollers + transport while in a zoned area
+    // Uses whileTrue because this is a zoned event marker (has start AND end positions in the path)
+    // No subsystem requirements declared to avoid interrupting the auto command group
+    new EventTrigger("RunIntake")
+        .whileTrue(
+            Commands.startEnd(
+                () -> {
+                  intakeRoller.setRollerVoltage(
+                      HardwareConstants.TestVoltages.intakeRollerTestVoltage);
+                  transport.setTransportVoltage(
+                      HardwareConstants.TestVoltages.TransportTestVoltage);
+                },
+                () -> {
+                  intakeRoller.setRollerVoltage(Volts.of(0));
+                  transport.setTransportVoltage(Volts.of(0));
+                }));
   }
 
   private void configureButtonBindings() {
