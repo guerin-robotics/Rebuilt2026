@@ -59,14 +59,36 @@ public class VisionConstants {
 
   // new Rotation3d(Radians.zero(), Radians.of(-0.314159), Radians.of((2 * Math.PI) / 3)));
 
-  // Basic filtering thresholds
+  // ---- Filtering thresholds ----
+
+  // Single-tag ambiguity above this is rejected (multi-tag is always trusted)
   public static double maxAmbiguity = 0.2;
+
+  // Estimated pose Z (height) must be below this to be realistic
   public static double maxZError = 0.75;
 
-  // Standard deviation baselines, for 1 meter distance and 1 tag
-  // (Adjusted automatically based on distance and # of tags)
+  // Tags farther than this are unreliable — reject the observation entirely.
+  // At long range, small pixel errors become large pose errors.
+  public static double maxDistanceMeters = 4.0;
+
+  // If the robot is spinning faster than this (rad/s), vision is unreliable
+  // because motion blur and timestamp misalignment degrade the estimate.
+  public static double maxAngularVelocityRadPerSec = 2.0;
+
+  // Maximum pitch or roll (radians) allowed in an estimated pose.
+  // A real robot on flat carpet should never be tilted more than ~10°.
+  // Large pitch/roll in the estimate means the solve is wrong.
+  public static double maxPitchRollRadians = Math.toRadians(10.0);
+
+  // ---- Standard deviation baselines ----
+  // For 1 meter distance and 1 tag. Automatically scaled by distance² / tagCount.
   public static double linearStdDevBaseline = 0.02; // Meters
   public static double angularStdDevBaseline = 0.06; // Radians
+
+
+  // windham uses 0.01 for linear baseline and 0.01 for angular baseline. 
+  // we could consider using these in a practice match. 
+  // we should consider putting the shooter cameras back to a 10 std dev as well
 
   // Standard deviation multipliers for each camera
   // (Adjust to trust some cameras more than others)
