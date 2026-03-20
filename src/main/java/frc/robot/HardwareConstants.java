@@ -45,7 +45,7 @@ public class HardwareConstants {
     public static final Voltage FlywheelTestVoltage = Volts.of(6.0); // Volts
     public static final Voltage FeederTestVoltage = Volts.of(3.0);
     public static final Voltage PrestageTestVoltage = Volts.of(5.0);
-    public static final Voltage TransportTestVoltage = Volts.of(12.0);
+    public static final Voltage TransportTestVoltage = Volts.of(-12.0);
     public static final Voltage intakePivotTestVoltageUp = Volts.of(10.0);
     public static final Voltage intakePivotTestVoltageDown = Volts.of(-8.0);
     public static final Voltage intakeRollerTestVoltage = Volts.of(12.0);
@@ -105,7 +105,7 @@ public class HardwareConstants {
   }
 
   public static class TuningConstants {
-    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(2600);
+    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(2000);
   }
 
   public static class ControllerConstants {

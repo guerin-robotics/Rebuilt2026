@@ -162,11 +162,11 @@ public class RobotState {
     double veloY = getFieldRelativeVelocity().vyMetersPerSecond;
     double veloRad = getFieldRelativeVelocity().omegaRadiansPerSecond;
     // Calculate pose after given time interval (accounting for velocity, but not acceleration)
-    Pose2d futurePose = new Pose2d(
-      (currentPoseX + (veloX * HardwareConstants.Zones.timeInterval)),
-      (currentPoseY + (veloY * HardwareConstants.Zones.timeInterval)),
-      new Rotation2d((currentRadians + (veloRad * HardwareConstants.Zones.timeInterval)))
-    );
+    Pose2d futurePose =
+        new Pose2d(
+            (currentPoseX + (veloX * HardwareConstants.Zones.timeInterval)),
+            (currentPoseY + (veloY * HardwareConstants.Zones.timeInterval)),
+            new Rotation2d((currentRadians + (veloRad * HardwareConstants.Zones.timeInterval))));
     return futurePose;
   }
 

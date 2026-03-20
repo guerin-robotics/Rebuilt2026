@@ -340,19 +340,19 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     // Manually set the odometry to field corner
-    controller
-        .y()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            AllianceFlipUtil.apply(
-                                new Pose2d(
-                                    new Translation2d(
-                                        (inchesToMeters(33 / 2)),
-                                        (FieldConstants.fieldWidth - inchesToMeters(33 / 2))),
-                                    drive.getRotation()))))
-                .ignoringDisable(true));
+    // controller
+    //     .y()
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () ->
+    //                     drive.setPose(
+    //                         AllianceFlipUtil.apply(
+    //                             new Pose2d(
+    //                                 new Translation2d(
+    //                                     (inchesToMeters(33 / 2)),
+    //                                     (FieldConstants.fieldWidth - inchesToMeters(33 / 2))),
+    //                                 drive.getRotation()))))
+    //             .ignoringDisable(true));
 
     controller
         .rightBumper()
@@ -373,8 +373,9 @@ public class RobotContainer {
     // Hood (set for hub)
     hood.setDefaultCommand(HoodCommands.setHoodPosForHub(hood));
     // Intake rollers
-    intakeRoller.setDefaultCommand(intakeRollerCommands.setRollerVoltage(intakeRoller,
-        HardwareConstants.TestVoltages.intakeRollerAgitateVoltage));
+    intakeRoller.setDefaultCommand(
+        intakeRollerCommands.setRollerVoltage(
+            intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage));
 
     // Distance-based shooting
     thrustmaster
@@ -397,7 +398,8 @@ public class RobotContainer {
                                 intakeRoller,
                                 intakePivot))))
         .onFalse(
-            ShootSequences.shootEndBehavior(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
+            ShootSequences.shootEndBehavior(
+                flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
 
     // Shoot for map tuning
     // thrustmaster
@@ -434,7 +436,8 @@ public class RobotContainer {
                             ShootSequences.pass(
                                 flywheel, prestage, hood, feeder, transport, intakeRoller))))
         .onFalse(
-            ShootSequences.shootEndBehavior(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
+            ShootSequences.shootEndBehavior(
+                flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
 
     thrustmaster
         .button(2)
@@ -490,7 +493,8 @@ public class RobotContainer {
                             ShootSequences.shootForTower(
                                 flywheel, prestage, hood, feeder, transport, intakeRoller))))
         .onFalse(
-            ShootSequences.shootEndBehavior(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
+            ShootSequences.shootEndBehavior(
+                flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
 
     // Basic controls for testing
 
@@ -501,8 +505,8 @@ public class RobotContainer {
     buttonPanel.button(2).whileTrue(ShootSequences.SecondSet(feeder, transport));
 
     // Drop hood
-    buttonPanel
-        .button(3)
+    controller
+        .y()
         .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
 
     // Intake up
@@ -533,7 +537,7 @@ public class RobotContainer {
 
     // Distance map tuning controls
     // Increase hood pos incrementally
-    buttonPanel.button(10).onTrue(HoodCommands.incrementHoodPos(hood));
+    controller.leftBumper().onTrue(HoodCommands.incrementHoodPos(hood));
   }
 
   private void configureSimBindings() {
