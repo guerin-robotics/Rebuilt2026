@@ -611,8 +611,28 @@ public class RobotContainer {
         .onFalse(SpitSequences.spitAfterShoot(flywheel, prestage, feeder, transport, intakeRoller));
 
     // B button maps correctly
-
-    controller.b().whileTrue(HoodCommands.setHoodPosForHub(hood));
+    controller
+        .b()
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                    drive,
+                    () -> -thrustmaster.getY(),
+                    () -> -thrustmaster.getX(),
+                    () -> RobotState.getInstance().getAngleToAllianceHub())
+                .alongWith(
+                    new WaitCommand(0.15)
+                        .andThen(
+                            ShootSequences.zonePassOrShoot(
+                                flywheel,
+                                prestage,
+                                hood,
+                                feeder,
+                                transport,
+                                intakeRoller,
+                                intakePivot))))
+        .onFalse(
+            ShootSequences.shootEndBehavior(
+                flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
 
     // Left bumper: intake down
     controller
