@@ -21,7 +21,8 @@ public class TransportCommands {
   }
 
   public static Command stop(Transport transport) {
-    return Commands.runOnce(() -> transport.setTransportVelocity(RotationsPerSecond.of(0)), transport)
+    return Commands.runOnce(
+            () -> transport.setTransportVelocity(RotationsPerSecond.of(0)), transport)
         .withName("TransportStop");
   }
 

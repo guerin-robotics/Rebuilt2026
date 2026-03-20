@@ -11,6 +11,7 @@ import static edu.wpi.first.math.util.Units.inchesToMeters;
 import static edu.wpi.first.math.util.Units.metersToInches;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -293,18 +294,52 @@ public class RobotContainer {
   }
 
   // EventTriggers
+  //
+  // IMPORTANT: Event trigger commands must NOT declare subsystem requirements that overlap
+  // with ANY command in the auto command group. A SequentialCommandGroup's requirements are
+  // the UNION of all its sub-commands' requirements. So even though "DeployIntake" fires
+  // during the path-following step, the auto group also includes the "Shoot" named command
+  // which requires intakePivot (via ShootSequences.shootToHub → jostlePivotByPos).
+  //
+  // If an EventTrigger schedules a command that shares a requirement with the auto group,
+  // WPILib's scheduler will INTERRUPT the entire auto group to resolve the conflict.
+  //
+  // Fix: Use Commands.runOnce() WITHOUT passing the subsystem as a requirement.
+  // The subsystem method is still called (so the hardware moves), but the command
+  // doesn't "require" the subsystem, avoiding the scheduling conflict.
   private void registerEventTriggers() {
-    // Event marker for intake deploy command
+    // Event marker for intake deploy command (no subsystem requirement to avoid auto interruption)
     new EventTrigger("DeployIntake")
         .onTrue(
-            IntakePivotCommands.setPivotRotations(
-                intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest));
+            Commands.runOnce(
+                () ->
+                    intakePivot.setPivotPosition(
+                        HardwareConstants.TestPositions.intakeDegreesDownTest)));
 
-    // Event marker for intake retract command
+    // Event marker for intake retract command (no subsystem requirement to avoid auto interruption)
     new EventTrigger("RetractIntake")
         .onTrue(
-            IntakePivotCommands.setPivotRotations(
-                intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest));
+            Commands.runOnce(
+                () ->
+                    intakePivot.setPivotPosition(
+                        HardwareConstants.TestPositions.intakeDegreesUpTest)));
+
+    // Event marker for running intake rollers + transport while in a zoned area
+    // Uses whileTrue because this is a zoned event marker (has start AND end positions in the path)
+    // No subsystem requirements declared to avoid interrupting the auto command group
+    new EventTrigger("RunIntake")
+        .whileTrue(
+            Commands.startEnd(
+                () -> {
+                  intakeRoller.setRollerVoltage(
+                      HardwareConstants.TestVoltages.intakeRollerTestVoltage);
+                  transport.setTransportVoltage(
+                      HardwareConstants.TestVoltages.TransportTestVoltage);
+                },
+                () -> {
+                  intakeRoller.setRollerVoltage(Volts.of(0));
+                  transport.setTransportVoltage(Volts.of(0));
+                }));
   }
 
   private void configureButtonBindings() {
@@ -340,19 +375,19 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     // Manually set the odometry to field corner
-    controller
-        .y()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            AllianceFlipUtil.apply(
-                                new Pose2d(
-                                    new Translation2d(
-                                        (inchesToMeters(33 / 2)),
-                                        (FieldConstants.fieldWidth - inchesToMeters(33 / 2))),
-                                    drive.getRotation()))))
-                .ignoringDisable(true));
+    // controller
+    //     .y()
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () ->
+    //                     drive.setPose(
+    //                         AllianceFlipUtil.apply(
+    //                             new Pose2d(
+    //                                 new Translation2d(
+    //                                     (inchesToMeters(33 / 2)),
+    //                                     (FieldConstants.fieldWidth - inchesToMeters(33 / 2))),
+    //                                 drive.getRotation()))))
+    //             .ignoringDisable(true));
 
     controller
         .rightBumper()
@@ -373,8 +408,9 @@ public class RobotContainer {
     // Hood (set for hub)
     hood.setDefaultCommand(HoodCommands.setHoodPosForHub(hood));
     // Intake rollers
-    intakeRoller.setDefaultCommand(intakeRollerCommands.setRollerVoltage(intakeRoller,
-        HardwareConstants.TestVoltages.intakeRollerAgitateVoltage));
+    intakeRoller.setDefaultCommand(
+        intakeRollerCommands.setRollerVoltage(
+            intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage));
 
     // Distance-based shooting
     thrustmaster
@@ -397,7 +433,8 @@ public class RobotContainer {
                                 intakeRoller,
                                 intakePivot))))
         .onFalse(
-            ShootSequences.shootEndBehavior(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
+            ShootSequences.shootEndBehavior(
+                flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
 
     // Shoot for map tuning
     // thrustmaster
@@ -414,32 +451,11 @@ public class RobotContainer {
     //                         ShootSequences.mapTuningShoot(
     //                             flywheel, prestage, hood, feeder, transport, intakeRoller))));
 
-    // Pass
-    thrustmaster
-        .button(10)
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                    drive,
-                    () -> -thrustmaster.getX(),
-                    () -> -thrustmaster.getY(),
-                    () ->
-                        RobotState.getInstance()
-                            .getAngleToTarget(
-                                new Translation2d(
-                                    flywheel.getPassTarget().getX(),
-                                    flywheel.getPassTarget().getY())))
-                .alongWith(
-                    new WaitCommand(0.5)
-                        .andThen(
-                            ShootSequences.pass(
-                                flywheel, prestage, hood, feeder, transport, intakeRoller))))
-        .onFalse(
-            ShootSequences.shootEndBehavior(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
-
+    // Align for bump
     thrustmaster
         .button(2)
         .whileTrue(
-            DriveCommands.joystickDriveSnapToNearestXHeading(
+            DriveCommands.joystickDriveAlignForBump(
                 drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
 
     // Intake up
@@ -490,7 +506,40 @@ public class RobotContainer {
                             ShootSequences.shootForTower(
                                 flywheel, prestage, hood, feeder, transport, intakeRoller))))
         .onFalse(
-            ShootSequences.shootEndBehavior(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
+            ShootSequences.shootEndBehavior(
+                flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
+
+    
+    // Pass
+    thrustmaster
+        .button(11)
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                    drive,
+                    () -> -thrustmaster.getX(),
+                    () -> -thrustmaster.getY(),
+                    () ->
+                        RobotState.getInstance()
+                            .getAngleToTarget(
+                                new Translation2d(
+                                    flywheel.getPassTarget().getX(),
+                                    flywheel.getPassTarget().getY())))
+                .alongWith(
+                    new WaitCommand(0.5)
+                        .andThen(
+                            ShootSequences.pass(
+                                flywheel, prestage, hood, feeder, transport, intakeRoller))))
+        .onFalse(
+            ShootSequences.shootEndBehavior(
+                flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
+    
+                // Align for trench
+    thrustmaster
+        .button(12)
+        .whileTrue(
+            DriveCommands.joystickDriveSnapToNearestXHeading(
+                drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY())
+        );
 
     // Basic controls for testing
 
@@ -501,8 +550,8 @@ public class RobotContainer {
     buttonPanel.button(2).whileTrue(ShootSequences.SecondSet(feeder, transport));
 
     // Drop hood
-    buttonPanel
-        .button(3)
+    controller
+        .y()
         .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
 
     // Intake up
@@ -533,7 +582,7 @@ public class RobotContainer {
 
     // Distance map tuning controls
     // Increase hood pos incrementally
-    buttonPanel.button(10).onTrue(HoodCommands.incrementHoodPos(hood));
+    controller.leftBumper().onTrue(HoodCommands.incrementHoodPos(hood));
   }
 
   private void configureSimBindings() {
@@ -572,8 +621,28 @@ public class RobotContainer {
         .onFalse(SpitSequences.spitAfterShoot(flywheel, prestage, feeder, transport, intakeRoller));
 
     // B button maps correctly
-
-    controller.b().whileTrue(HoodCommands.setHoodPosForHub(hood));
+    controller
+        .b()
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                    drive,
+                    () -> -thrustmaster.getY(),
+                    () -> -thrustmaster.getX(),
+                    () -> flywheel.getShootAngleForZone())
+                .alongWith(
+                    new WaitCommand(0.15)
+                        .andThen(
+                            ShootSequences.zonePassOrShoot(
+                                flywheel,
+                                prestage,
+                                hood,
+                                feeder,
+                                transport,
+                                intakeRoller,
+                                intakePivot))))
+        .onFalse(
+            ShootSequences.shootEndBehavior(
+                flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
 
     // Left bumper: intake down
     controller

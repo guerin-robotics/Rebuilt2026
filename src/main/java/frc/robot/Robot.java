@@ -120,7 +120,9 @@ public class Robot extends LoggedRobot {
     // Threads.setCurrentThreadPriority(false, 10);
 
     RobotState.getInstance().getDistanceToAllianceHub();
-    RobotState.getInstance().getRobotZone();
+    RobotState.getInstance().getRobotZone(RobotState.getInstance().getEstimatedPose());
+    RobotState.getInstance().zoneSafeToShoot();
+    RobotState.getInstance().isHoodSafeVelo();
   }
 
   /** This function is called once when the robot is disabled. */

@@ -1,16 +1,19 @@
 package frc.robot.subsystems.flywheel;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.FieldConstants;
 import frc.robot.HardwareConstants;
@@ -91,18 +94,36 @@ public class Flywheel extends SubsystemBase {
 
   public Translation3d getPassTarget() {
     Translation3d passTarget;
-    if (RobotState.getInstance().getEstimatedPose().getY() > (FieldConstants.fieldWidth / 2)) {
-      passTarget =
-          new Translation3d(
-              (FieldConstants.LinesVertical.neutralZoneNear / 2),
-              ((3 * FieldConstants.LinesHorizontal.center) / 4),
-              0);
+    // if (RobotState.getInstance().getEstimatedPose().getY()
+    //     > (AllianceFlipUtil.applyY(FieldConstants.fieldWidth / 2))) {
+    //   passTarget =
+    //       new Translation3d(
+    //           (AllianceFlipUtil.applyY(FieldConstants.LinesVertical.neutralZoneNear / 2)),
+    //           ((3 * AllianceFlipUtil.applyY(FieldConstants.LinesHorizontal.center)) / 4),
+    //           0);
+    // } else {
+    //   passTarget =
+    //       new Translation3d(
+    //           (AllianceFlipUtil.applyY(FieldConstants.LinesVertical.neutralZoneNear / 2)),
+    //           ((AllianceFlipUtil.applyY(FieldConstants.LinesHorizontal.center)) / 4),
+    //           0);
+    // }
+    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+      if (RobotState.getInstance().getEstimatedPose().getY() > (FieldConstants.fieldWidth / 2)) {
+        passTarget =
+            new Translation3d(Meters.of(14.373).magnitude(), Meters.of(6.136).magnitude(), 0);
+      } else {
+        passTarget =
+            new Translation3d(Meters.of(13.950).magnitude(), Meters.of(2.293).magnitude(), 0);
+      }
     } else {
-      passTarget =
-          new Translation3d(
-              (FieldConstants.LinesVertical.neutralZoneNear / 2),
-              ((FieldConstants.LinesHorizontal.center) / 4),
-              0);
+      if (RobotState.getInstance().getEstimatedPose().getY() < (FieldConstants.fieldWidth / 2)) {
+        passTarget =
+            new Translation3d(Meters.of(1.993).magnitude(), Meters.of(2.114).magnitude(), 0);
+      } else {
+        passTarget =
+            new Translation3d(Meters.of(2.135).magnitude(), Meters.of(6.129).magnitude(), 0);
+      }
     }
     Logger.recordOutput("Flywheel/passTarget", passTarget);
     return passTarget;
@@ -115,6 +136,19 @@ public class Flywheel extends SubsystemBase {
   public void setTuningRPM() {
     AngularVelocity velocity = getTuningRPM();
     io.setFlywheelVelocity(velocity);
+  }
+
+  // Returns angle to hub if shooting, returns angle to passing target if passing
+  public Rotation2d getShootAngleForZone() {
+    if (RobotState.getInstance().getRobotZone(RobotState.getInstance().getFuturePose())
+        == HardwareConstants.Zones.Zone.ALLIANCE_ZONE) {
+      Logger.recordOutput("RobotState/zoneSafeToShoot", true);
+      return RobotState.getInstance().getAngleToAllianceHub();
+    } else {
+      Logger.recordOutput("RobotState/zoneSafeToShoot", false);
+      return RobotState.getInstance()
+          .getAngleToTarget(new Translation2d(getPassTarget().getX(), getPassTarget().getY()));
+    }
   }
 
   // Definitely getting ahead of ourselves but when we get to shooting on the move...
@@ -151,9 +185,5 @@ public class Flywheel extends SubsystemBase {
         RotationsPerSecond.of(
             fuelVelocity.magnitude() * FlywheelConstants.Mechanical.flywheelRotationsPerMeter);
     io.setFlywheelVelocity(targetVelocity);
-  }
-
-  public static boolean zoneSafeToShoot() {
-    return (RobotState.getInstance().getRobotZone() == HardwareConstants.Zones.Zone.ALLIANCE_ZONE);
   }
 }

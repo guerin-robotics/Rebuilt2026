@@ -197,6 +197,30 @@ public class DriveCommands {
         });
   }
 
+  public static Command joystickDriveAlignForBump(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+    return joystickDriveAtAngle(
+        drive,
+        xSupplier,
+        ySupplier,
+        () -> {
+          // Get the robot's current heading in radians (-PI to PI)
+          double currentRadians = drive.getRotation().getRadians();
+
+          // If the absolute heading is <= 90° (PI/2), the robot is closer to 45° (facing red wall)
+          // Otherwise, it's closer to 135° (facing blue wall)
+          if (Math.abs(currentRadians) <= Math.PI / 2.0) {
+            return Rotation2d.fromRadians(Math.PI / 4.0); // Snap to 45°
+          } else if (Math.abs(currentRadians) <= Math.PI) {
+            return Rotation2d.fromRadians((3 * Math.PI) / 4.0); // Snap to 135°
+          } else if (Math.abs(currentRadians) <= ((3 * Math.PI) / 2.0)) {
+            return Rotation2d.fromRadians((5 * Math.PI) / 4.0); // Snap to 225°
+          } else {
+            return Rotation2d.fromRadians((7 * Math.PI) / 4.0); // Snap to 315°
+          }
+        });
+  }
+
   /**
    * Measures the velocity feedforward constants for the drive motors.
    *

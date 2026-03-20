@@ -45,7 +45,7 @@ public class HardwareConstants {
     public static final Voltage FlywheelTestVoltage = Volts.of(6.0); // Volts
     public static final Voltage FeederTestVoltage = Volts.of(3.0);
     public static final Voltage PrestageTestVoltage = Volts.of(5.0);
-    public static final Voltage TransportTestVoltage = Volts.of(12.0);
+    public static final Voltage TransportTestVoltage = Volts.of(-12.0);
     public static final Voltage intakePivotTestVoltageUp = Volts.of(10.0);
     public static final Voltage intakePivotTestVoltageDown = Volts.of(-8.0);
     public static final Voltage intakeRollerTestVoltage = Volts.of(12.0);
@@ -87,8 +87,8 @@ public class HardwareConstants {
     public static final double intakeDegreesDownTest = 0.075;
     public static final double intakeJostleTest = 0.25;
     // Hood position (0.0-1.0)
-    public static final double hoodPos1Test = 0.0;
-    public static final double hoodPos2Test = 0.125;
+    public static final double hoodPos1Test = 0.2;
+    public static final double hoodPos2Test = 0.25;
     public static final double hoodPos3Test = 0.5;
     public static final double hoodPos4Test = 0.75;
     public static final double hoodPos5Test = 1.0;
@@ -105,7 +105,7 @@ public class HardwareConstants {
   }
 
   public static class TuningConstants {
-    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(2600);
+    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(2000);
   }
 
   public static class ControllerConstants {
@@ -127,7 +127,7 @@ public class HardwareConstants {
       OPPOSING_ZONE
     }
 
-    public static final double zoneOffset = 0.5;
+    public static final double zoneOffset = 0.3;
     public static final double timeInterval = 1;
   }
 }

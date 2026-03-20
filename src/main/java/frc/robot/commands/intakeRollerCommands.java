@@ -23,6 +23,7 @@ public class intakeRollerCommands {
   }
 
   public static Command stopIntakeRoller(intakeRoller intakeRoller) {
-    return Commands.runOnce(() -> intakeRoller.setRollerVelocity(RotationsPerSecond.of(0)), intakeRoller);
+    return Commands.runOnce(
+        () -> intakeRoller.setRollerVelocity(RotationsPerSecond.of(0)), intakeRoller);
   }
 }
