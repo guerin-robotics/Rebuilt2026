@@ -509,7 +509,6 @@ public class RobotContainer {
             ShootSequences.shootEndBehavior(
                 flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
 
-    
     // Pass
     thrustmaster
         .button(11)
@@ -532,14 +531,13 @@ public class RobotContainer {
         .onFalse(
             ShootSequences.shootEndBehavior(
                 flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
-    
-                // Align for trench
+
+    // Align for trench
     thrustmaster
         .button(12)
         .whileTrue(
             DriveCommands.joystickDriveSnapToNearestXHeading(
-                drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY())
-        );
+                drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
 
     // Basic controls for testing
 
