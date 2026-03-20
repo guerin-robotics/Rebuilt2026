@@ -451,33 +451,11 @@ public class RobotContainer {
     //                         ShootSequences.mapTuningShoot(
     //                             flywheel, prestage, hood, feeder, transport, intakeRoller))));
 
-    // Pass
-    thrustmaster
-        .button(10)
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                    drive,
-                    () -> -thrustmaster.getX(),
-                    () -> -thrustmaster.getY(),
-                    () ->
-                        RobotState.getInstance()
-                            .getAngleToTarget(
-                                new Translation2d(
-                                    flywheel.getPassTarget().getX(),
-                                    flywheel.getPassTarget().getY())))
-                .alongWith(
-                    new WaitCommand(0.5)
-                        .andThen(
-                            ShootSequences.pass(
-                                flywheel, prestage, hood, feeder, transport, intakeRoller))))
-        .onFalse(
-            ShootSequences.shootEndBehavior(
-                flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
-
+    // Align for bump
     thrustmaster
         .button(2)
         .whileTrue(
-            DriveCommands.joystickDriveSnapToNearestXHeading(
+            DriveCommands.joystickDriveAlignForBump(
                 drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
 
     // Intake up
@@ -530,6 +508,38 @@ public class RobotContainer {
         .onFalse(
             ShootSequences.shootEndBehavior(
                 flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
+
+    
+    // Pass
+    thrustmaster
+        .button(11)
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                    drive,
+                    () -> -thrustmaster.getX(),
+                    () -> -thrustmaster.getY(),
+                    () ->
+                        RobotState.getInstance()
+                            .getAngleToTarget(
+                                new Translation2d(
+                                    flywheel.getPassTarget().getX(),
+                                    flywheel.getPassTarget().getY())))
+                .alongWith(
+                    new WaitCommand(0.5)
+                        .andThen(
+                            ShootSequences.pass(
+                                flywheel, prestage, hood, feeder, transport, intakeRoller))))
+        .onFalse(
+            ShootSequences.shootEndBehavior(
+                flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
+    
+                // Align for trench
+    thrustmaster
+        .button(12)
+        .whileTrue(
+            DriveCommands.joystickDriveSnapToNearestXHeading(
+                drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY())
+        );
 
     // Basic controls for testing
 
@@ -618,7 +628,7 @@ public class RobotContainer {
                     drive,
                     () -> -thrustmaster.getY(),
                     () -> -thrustmaster.getX(),
-                    () -> RobotState.getInstance().getAngleToAllianceHub())
+                    () -> flywheel.getShootAngleForZone())
                 .alongWith(
                     new WaitCommand(0.15)
                         .andThen(

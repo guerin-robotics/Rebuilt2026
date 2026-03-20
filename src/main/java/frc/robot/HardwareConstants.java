@@ -127,7 +127,7 @@ public class HardwareConstants {
       OPPOSING_ZONE
     }
 
-    public static final double zoneOffset = 0.5;
+    public static final double zoneOffset = 0.3;
     public static final double timeInterval = 1;
   }
 }
