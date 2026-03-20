@@ -87,8 +87,8 @@ public class HardwareConstants {
     public static final double intakeDegreesDownTest = 0.075;
     public static final double intakeJostleTest = 0.25;
     // Hood position (0.0-1.0)
-    public static final double hoodPos1Test = 0.0;
-    public static final double hoodPos2Test = 0.125;
+    public static final double hoodPos1Test = 0.2;
+    public static final double hoodPos2Test = 0.25;
     public static final double hoodPos3Test = 0.5;
     public static final double hoodPos4Test = 0.75;
     public static final double hoodPos5Test = 1.0;
