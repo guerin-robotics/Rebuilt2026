@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.HardwareConstants;
+import frc.robot.RobotState;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.hood.Hood;
@@ -15,7 +16,6 @@ import frc.robot.subsystems.intakePivot.IntakePivot;
 import frc.robot.subsystems.intakeRoller.intakeRoller;
 import frc.robot.subsystems.prestage.Prestage;
 import frc.robot.subsystems.transport.Transport;
-import org.littletonrobotics.junction.Logger;
 
 public class ShootSequences {
 
@@ -26,8 +26,6 @@ public class ShootSequences {
       Feeder feeder,
       Transport transport,
       intakeRoller intakeRoller) {
-    final boolean zoneSafeToShoot = Flywheel.zoneSafeToShoot();
-    Logger.recordOutput("Flywheel/zoneSafeToShoot", zoneSafeToShoot);
     return Commands.parallel(
             Commands.parallel(
                 FlywheelCommands.setFlywheelVelocity(
@@ -60,9 +58,7 @@ public class ShootSequences {
       Feeder feeder,
       Transport transport,
       intakeRoller intakeRoller) {
-    final boolean zoneSafeToShoot = Flywheel.zoneSafeToShoot();
-    Logger.recordOutput("Flywheel/zoneSafeToShoot", zoneSafeToShoot);
-    if (zoneSafeToShoot) {
+    if (RobotState.getInstance().zoneSafeToShoot()) {
       return Commands.parallel(
               Commands.parallel(
                   FlywheelCommands.setFlywheelVelocity(
@@ -99,9 +95,7 @@ public class ShootSequences {
       Feeder feeder,
       Transport transport,
       intakeRoller intakeRoller) {
-    final boolean zoneSafeToShoot = Flywheel.zoneSafeToShoot();
-    Logger.recordOutput("Flywheel/zoneSafeToShoot", zoneSafeToShoot);
-    if (zoneSafeToShoot) {
+    if (RobotState.getInstance().zoneSafeToShoot()) {
       return Commands.parallel(
           FlywheelCommands.setFlywheelVelocity(
               flywheel, HardwareConstants.TowerConstants.FlywheelTowerVelocity),
@@ -126,9 +120,7 @@ public class ShootSequences {
       Transport transport,
       intakeRoller intakeRoller,
       IntakePivot intakePivot) {
-    final boolean zoneSafeToShoot = Flywheel.zoneSafeToShoot();
-    Logger.recordOutput("Flywheel/zoneSafeToShoot", zoneSafeToShoot);
-    if (Flywheel.zoneSafeToShoot()) {
+    if (RobotState.getInstance().zoneSafeToShoot()) {
       return Commands.parallel(
               Commands.parallel(
                   FlywheelCommands.setVelocityForHub(flywheel),
@@ -200,9 +192,7 @@ public class ShootSequences {
       Transport transport,
       intakeRoller intakeRoller,
       IntakePivot intakePivot) {
-    final boolean zoneSafeToShoot = Flywheel.zoneSafeToShoot();
-    Logger.recordOutput("Flywheel/zoneSafeToShoot", zoneSafeToShoot);
-    if (Flywheel.zoneSafeToShoot()) {
+    if (RobotState.getInstance().zoneSafeToShoot()) {
       return shootToHub(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot);
     } else {
       return pass(flywheel, prestage, hood, feeder, transport, intakeRoller);

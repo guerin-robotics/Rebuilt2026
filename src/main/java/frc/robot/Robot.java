@@ -121,6 +121,8 @@ public class Robot extends LoggedRobot {
 
     RobotState.getInstance().getDistanceToAllianceHub();
     RobotState.getInstance().getRobotZone();
+    RobotState.getInstance().zoneSafeToShoot();
+    RobotState.getInstance().isHoodSafeVelo();
   }
 
   /** This function is called once when the robot is disabled. */
