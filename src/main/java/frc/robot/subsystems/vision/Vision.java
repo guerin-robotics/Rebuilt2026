@@ -4,7 +4,6 @@
 // Use of this source code is governed by a BSD
 // license that can be found in the LICENSE file
 // at the root directory of this project.
-// comment
 
 package frc.robot.subsystems.vision;
 
@@ -20,6 +19,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotState;
 import frc.robot.subsystems.vision.io.VisionIO;
 import frc.robot.subsystems.vision.io.VisionIO.PoseObservationType;
 import frc.robot.subsystems.vision.io.VisionIOInputsAutoLogged;
@@ -27,6 +27,23 @@ import java.util.LinkedList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
+/**
+ * Vision subsystem that processes AprilTag observations from multiple cameras and feeds validated
+ * pose estimates into the drivetrain's pose estimator.
+ *
+ * <p><b>Change log (2026-03-20):</b> Added three new rejection filters
+ *
+ * <ul>
+ *   <li><b>Average tag distance filter</b> — observations where all tags are farther than {@link
+ *       VisionConstants#maxDistanceMeters} are rejected because pixel errors grow with distance.
+ *   <li><b>Angular velocity filter</b> — all observations are rejected when the robot is spinning
+ *       faster than {@link VisionConstants#maxAngularVelocityRadPerSec} because motion blur and
+ *       timestamp misalignment degrade accuracy.
+ *   <li><b>Pitch/roll filter</b> — estimated poses with pitch or roll larger than {@link
+ *       VisionConstants#maxPitchRollRadians} are rejected because a robot on flat carpet should
+ *       never be significantly tilted; large tilt means the solve is wrong.
+ * </ul>
+ */
 public class Vision extends SubsystemBase {
   private final VisionConsumer consumer;
   private final VisionIO[] io;
@@ -68,6 +85,13 @@ public class Vision extends SubsystemBase {
       Logger.processInputs("Vision/Camera" + Integer.toString(i), inputs[i]);
     }
 
+    // --- Angular velocity pre-filter ---
+    // If the robot is spinning fast, vision estimates are unreliable due to
+    // motion blur and timestamp misalignment. Reject ALL observations this cycle.
+    boolean robotSpinningTooFast =
+        Math.abs(RobotState.getInstance().getFieldRelativeVelocity().omegaRadiansPerSecond)
+            > maxAngularVelocityRadPerSec;
+
     // Initialize logging values
     List<Pose3d> allTagPoses = new LinkedList<>();
     List<Pose3d> allRobotPoses = new LinkedList<>();
@@ -95,13 +119,23 @@ public class Vision extends SubsystemBase {
 
       // Loop over pose observations
       for (var observation : inputs[cameraIndex].poseObservations) {
+
+        // Extract pitch and roll from the estimated pose rotation
+        double pitch = Math.abs(observation.pose().getRotation().getY());
+        double roll = Math.abs(observation.pose().getRotation().getX());
+
         // Check whether to reject pose
         boolean rejectPose =
-            observation.tagCount() == 0 // Must have at least one tag
+            robotSpinningTooFast // Robot spinning too fast — vision unreliable
+                || observation.tagCount() == 0 // Must have at least one tag
                 || (observation.tagCount() == 1
                     && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
                 || Math.abs(observation.pose().getZ())
                     > maxZError // Must have realistic Z coordinate
+                || observation.averageTagDistance()
+                    > maxDistanceMeters // Tags too far away — pose error grows with distance
+                || pitch > maxPitchRollRadians // Pitch too large — robot is on flat ground
+                || roll > maxPitchRollRadians // Roll too large — robot is on flat ground
 
                 // Must be within the field boundaries
                 || observation.pose().getX() < 0.0
