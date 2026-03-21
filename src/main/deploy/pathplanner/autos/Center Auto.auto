@@ -7,7 +7,26 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Auto"
+            "pathName": "Center Path"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 4.5
+                }
+              }
+            ]
           }
         }
       ]
