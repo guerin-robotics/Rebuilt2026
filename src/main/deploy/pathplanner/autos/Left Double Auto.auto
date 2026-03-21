@@ -23,7 +23,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 4.5
+                  "waitTime": 4.0
                 }
               }
             ]
@@ -32,7 +32,7 @@
         {
           "type": "named",
           "data": {
-            "name": "stopAll"
+            "name": "StopAll"
           }
         },
         {
@@ -63,7 +63,7 @@
         {
           "type": "named",
           "data": {
-            "name": "stopAll"
+            "name": "StopAll"
           }
         }
       ]

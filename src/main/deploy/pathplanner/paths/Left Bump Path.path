@@ -84,12 +84,12 @@
         "y": 5.672835720486112
       },
       "prevControl": {
-        "x": 3.013848217119224,
+        "x": 3.0138482171192242,
         "y": 5.7059733196000355
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left Bump End Pos"
     }
   ],
   "rotationTargets": [
