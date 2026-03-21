@@ -25,14 +25,14 @@
                 "data": {
                   "waitTime": 4.5
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "StopAll"
-                }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopAll"
           }
         },
         {
@@ -56,14 +56,14 @@
                 "data": {
                   "waitTime": 4.5
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "StopAll"
-                }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopAll"
           }
         }
       ]

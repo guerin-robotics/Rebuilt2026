@@ -203,7 +203,9 @@ public class ShootSequences {
             PrestageCommands.stop(prestage),
             FeederCommands.stop(feeder),
             TransportCommands.stop(transport),
-            intakeRollerCommands.stopIntakeRoller(intakeRoller)),
+            intakeRollerCommands.stopIntakeRoller(intakeRoller),
+            IntakePivotCommands.setPivotRotations(
+                intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest)),
         new WaitCommand(0.25),
         FlywheelCommands.setFlywheelVelocity(
             flywheel, HardwareConstants.TestVelocities.FlywheelVelocity));

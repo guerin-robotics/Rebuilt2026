@@ -49,7 +49,7 @@ public class HardwareConstants {
     public static final Voltage intakePivotTestVoltageUp = Volts.of(10.0);
     public static final Voltage intakePivotTestVoltageDown = Volts.of(-8.0);
     public static final Voltage intakeRollerTestVoltage = Volts.of(12.0);
-    public static final Voltage intakeRollerAgitateVoltage = Volts.of(6);
+    public static final Voltage intakeRollerAgitateVoltage = Volts.of(3);
   }
 
   public static class TestVelocities {
