@@ -23,7 +23,7 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.vision.io.VisionIO;
 import frc.robot.subsystems.vision.io.VisionIO.PoseObservationType;
 import frc.robot.subsystems.vision.io.VisionIOInputsAutoLogged;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
@@ -92,22 +92,23 @@ public class Vision extends SubsystemBase {
         Math.abs(RobotState.getInstance().getFieldRelativeVelocity().omegaRadiansPerSecond)
             > maxAngularVelocityRadPerSec;
 
-    // Initialize logging values
-    List<Pose3d> allTagPoses = new LinkedList<>();
-    List<Pose3d> allRobotPoses = new LinkedList<>();
-    List<Pose3d> allRobotPosesAccepted = new LinkedList<>();
-    List<Pose3d> allRobotPosesRejected = new LinkedList<>();
+    // Initialize logging values — ArrayList is faster than LinkedList for iteration and toArray()
+    List<Pose3d> allTagPoses = new ArrayList<>();
+    List<Pose3d> allRobotPoses = new ArrayList<>();
+    List<Pose3d> allRobotPosesAccepted = new ArrayList<>();
+    List<Pose3d> allRobotPosesRejected = new ArrayList<>();
 
     // Loop over cameras
     for (int cameraIndex = 0; cameraIndex < io.length; cameraIndex++) {
       // Update disconnected alert
       disconnectedAlerts[cameraIndex].set(!inputs[cameraIndex].connected);
 
-      // Initialize logging values
-      List<Pose3d> tagPoses = new LinkedList<>();
-      List<Pose3d> robotPoses = new LinkedList<>();
-      List<Pose3d> robotPosesAccepted = new LinkedList<>();
-      List<Pose3d> robotPosesRejected = new LinkedList<>();
+      // Initialize logging values — ArrayList is faster than LinkedList for iteration and toArray()
+      List<Pose3d> tagPoses = new ArrayList<>(inputs[cameraIndex].tagIds.length);
+      List<Pose3d> robotPoses = new ArrayList<>(inputs[cameraIndex].poseObservations.length);
+      List<Pose3d> robotPosesAccepted =
+          new ArrayList<>(inputs[cameraIndex].poseObservations.length);
+      List<Pose3d> robotPosesRejected = new ArrayList<>();
 
       // Add tag poses
       for (int tagId : inputs[cameraIndex].tagIds) {

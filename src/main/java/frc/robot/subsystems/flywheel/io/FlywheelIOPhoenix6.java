@@ -123,21 +123,18 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     follower3SupplyCurrent = follower3.getSupplyCurrent();
     follower3StatorCurrent = follower3.getStatorCurrent();
 
-    // Set update frequency for all signals (50Hz is plenty for flywheel telemetry)
+    // 50Hz for signals we need every loop (velocity, voltage, current, closed-loop reference)
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         leaderVelocity,
         leaderMotorVoltage,
         leaderSupplyCurrent,
         leaderStatorCurrent,
-        leaderTemp,
         closedLoopReference,
-        closedLoopError,
         follower1Velocity,
         follower1MotorVoltage,
         follower1SupplyCurrent,
         follower1StatorCurrent,
-        follower1Temp,
         follower2Velocity,
         follower2MotorVoltage,
         follower2SupplyCurrent,
@@ -146,6 +143,10 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
         follower3MotorVoltage,
         follower3SupplyCurrent,
         follower3StatorCurrent);
+
+    // 10Hz for diagnostic-only signals (temperature, closed-loop error)
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        10.0, leaderTemp, closedLoopError, follower1Temp);
 
     // Stop sending signals we didn't register — reduces CAN bus traffic
     leader.optimizeBusUtilization();

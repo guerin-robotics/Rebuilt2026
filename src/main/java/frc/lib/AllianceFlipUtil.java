@@ -12,6 +12,25 @@ import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants;
 
 public class AllianceFlipUtil {
+
+  /**
+   * Cached result of {@link #shouldFlip()}. Updated once per robot loop via {@link #refresh()} so
+   * that the dozens of alliance checks each cycle don't each create an {@code Optional} from {@code
+   * DriverStation.getAlliance()}.
+   */
+  private static boolean cachedShouldFlip = false;
+
+  /**
+   * Call once at the top of {@code robotPeriodic()} to snapshot the current alliance. Every
+   * subsequent {@link #shouldFlip()} call in the same loop returns the cached value for free.
+   */
+  public static void refresh() {
+    cachedShouldFlip =
+        !Constants.disableHAL
+            && DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
+  }
+
   public static double applyX(double x) {
     return shouldFlip() ? FieldConstants.fieldLength - x : x;
   }
@@ -48,8 +67,6 @@ public class AllianceFlipUtil {
   }
 
   public static boolean shouldFlip() {
-    return !Constants.disableHAL
-        && DriverStation.getAlliance().isPresent()
-        && DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
+    return cachedShouldFlip;
   }
 }
