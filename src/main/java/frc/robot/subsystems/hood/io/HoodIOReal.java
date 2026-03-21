@@ -2,6 +2,7 @@ package frc.robot.subsystems.hood.io;
 
 import edu.wpi.first.wpilibj.PWM;
 import frc.robot.HardwareConstants;
+import frc.robot.subsystems.hood.HoodConstants;
 
 public class HoodIOReal implements HoodIO {
 
@@ -22,7 +23,7 @@ public class HoodIOReal implements HoodIO {
   @Override
   public void setHoodPos(double position) {
     hoodServo.setPosition(position);
-    hoodLeftServo.setPosition(position);
+    hoodLeftServo.setPosition(position + HoodConstants.Mechanical.leftServoOffset);
   }
 
   public void stopHood() {

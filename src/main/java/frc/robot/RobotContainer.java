@@ -291,6 +291,11 @@ public class RobotContainer {
                             transport,
                             intakeRoller,
                             intakePivot))));
+
+    // Stop all subsystems after shooting
+    NamedCommands.registerCommand(
+        "stopAll",
+        ShootSequences.stopAll(flywheel, prestage, hood, feeder, transport, intakeRoller));
   }
 
   // EventTriggers

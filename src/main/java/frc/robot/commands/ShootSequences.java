@@ -113,6 +113,39 @@ public class ShootSequences {
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
   }
 
+  public static Command autoShootToHub(
+      Flywheel flywheel,
+      Prestage prestage,
+      Hood hood,
+      Feeder feeder,
+      Transport transport,
+      intakeRoller intakeRoller,
+      IntakePivot intakePivot) {
+    return Commands.parallel(
+            Commands.parallel(
+                FlywheelCommands.setVelocityForHub(flywheel),
+                PrestageCommands.setPrestageVelocity(
+                    prestage, HardwareConstants.TestVelocities.prestageVelocity),
+                HoodCommands.setHoodPosForHub(hood),
+                IntakePivotCommands.jostlePivotByPos(intakePivot)),
+            Commands.sequence(
+                new WaitCommand(0.15),
+                FeederCommands.setFeederVelocity(
+                    feeder, HardwareConstants.TestVelocities.feederVelocity),
+                TransportCommands.setTransportVoltage(
+                    transport, HardwareConstants.TestVoltages.TransportTestVoltage),
+                intakeRollerCommands.setRollerVoltage(
+                    intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage)))
+        .finallyDo(
+            () -> {
+              FlywheelCommands.flywheelIdle(flywheel);
+              PrestageCommands.setPrestageVelocity(prestage, RotationsPerSecond.of(0));
+              FeederCommands.setFeederVelocity(feeder, RotationsPerSecond.of(0));
+              TransportCommands.setTransportVoltage(transport, Volts.of(0));
+              HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test);
+            });
+  }
+
   public static Command pass(
       Flywheel flywheel,
       Prestage prestage,

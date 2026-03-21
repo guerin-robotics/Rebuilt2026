@@ -30,6 +30,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "stopAll"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Left Near Path"
@@ -52,6 +58,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopAll"
           }
         }
       ]
