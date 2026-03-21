@@ -145,8 +145,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
         follower3StatorCurrent);
 
     // 10Hz for diagnostic-only signals (temperature, closed-loop error)
-    BaseStatusSignal.setUpdateFrequencyForAll(
-        10.0, leaderTemp, closedLoopError, follower1Temp);
+    BaseStatusSignal.setUpdateFrequencyForAll(10.0, leaderTemp, closedLoopError, follower1Temp);
 
     // Stop sending signals we didn't register — reduces CAN bus traffic
     leader.optimizeBusUtilization();

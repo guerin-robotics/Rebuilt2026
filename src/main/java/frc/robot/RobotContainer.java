@@ -455,7 +455,7 @@ public class RobotContainer {
     thrustmaster
         .button(2)
         .whileTrue(
-            DriveCommands.joystickDriveAlignForBump(
+            DriveCommands.joystickDriveSnapToNearestXHeading(
                 drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
 
     // Intake up
