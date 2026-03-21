@@ -108,7 +108,8 @@ public class Flywheel extends SubsystemBase {
     //           ((AllianceFlipUtil.applyY(FieldConstants.LinesHorizontal.center)) / 4),
     //           0);
     // }
-    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+    if (DriverStation.getAlliance().isEmpty()
+        || DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
       if (RobotState.getInstance().getEstimatedPose().getY() > (FieldConstants.fieldWidth / 2)) {
         passTarget =
             new Translation3d(Meters.of(14.373).magnitude(), Meters.of(6.136).magnitude(), 0);
