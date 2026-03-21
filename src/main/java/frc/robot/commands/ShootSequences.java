@@ -145,13 +145,14 @@ public class ShootSequences {
       Transport transport,
       intakeRoller intakeRoller,
       IntakePivot intakePivot) {
-    if (RobotState.getInstance().zoneSafeToShoot()) {
-      Logger.recordOutput("Flywheel/shootOrPass", "shooting");
-      return shootToHub(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot);
-    } else {
-      Logger.recordOutput("Flywheel/shootOrPass", "passing");
-      return pass(flywheel, prestage, hood, feeder, transport, intakeRoller);
-    }
+    return Commands.either(
+        shootToHub(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
+        pass(flywheel, prestage, hood, feeder, transport, intakeRoller),
+        () -> {
+          boolean safeToShoot = RobotState.getInstance().zoneSafeToShoot();
+          Logger.recordOutput("RobotState/shootOrPass", safeToShoot ? "shooting" : "passing");
+          return safeToShoot;
+        });
   }
 
   public static Command shootEndBehavior(

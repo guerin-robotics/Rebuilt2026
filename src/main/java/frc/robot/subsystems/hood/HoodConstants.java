@@ -18,10 +18,10 @@ public class HoodConstants {
     // Value is hood position (0.0-1.0)
     static {
       ANGLE_MAP.put(inchesToMeters(68), 0.45);
+      ANGLE_MAP.put(inchesToMeters(96), 0.5);
+      ANGLE_MAP.put(inchesToMeters(120), 0.5);
       ANGLE_MAP.put(inchesToMeters(130), 0.5);
       ANGLE_MAP.put(inchesToMeters(163), 0.55);
-      ANGLE_MAP.put(inchesToMeters(120), 0.5);
-      ANGLE_MAP.put(inchesToMeters(96), 0.5);
     }
   }
 }

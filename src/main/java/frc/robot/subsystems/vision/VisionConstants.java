@@ -85,19 +85,18 @@ public class VisionConstants {
   public static double linearStdDevBaseline = 0.02; // Meters
   public static double angularStdDevBaseline = 0.06; // Radians
 
-
-  // windham uses 0.01 for linear baseline and 0.01 for angular baseline. 
-  // we could consider using these in a practice match. 
+  // windham uses 0.01 for linear baseline and 0.01 for angular baseline.
+  // we could consider using these in a practice match.
   // we should consider putting the shooter cameras back to a 10 std dev as well
 
   // Standard deviation multipliers for each camera
   // (Adjust to trust some cameras more than others)
   public static double[] cameraStdDevFactors =
       new double[] {
-        10.0, // Camera 0
-        10.0, // Camera 1
-        50.0, // Camera 2
-        50.0 // Camera 3
+        5.0, // Camera 0
+        5.0, // Camera 1
+        10.0, // Camera 2
+        10.0 // Camera 3
       };
 
   // Multipliers to apply for MegaTag 2 observations
