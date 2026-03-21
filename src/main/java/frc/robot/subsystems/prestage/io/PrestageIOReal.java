@@ -71,22 +71,26 @@ public class PrestageIOReal implements PrestageIO {
     rightClosedLoopReference = prestageRight.getClosedLoopReference();
     rightClosedLoopError = prestageRight.getClosedLoopError();
 
-    // Set update frequency for all signals (50Hz is plenty for non-odometry)
+    // 50Hz for signals we need every loop (velocity, voltage, current, closed-loop reference)
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         leftVelocity,
         leftStatorCurrent,
         leftSupplyCurrent,
         leftMotorVoltage,
-        leftDeviceTemp,
         leftClosedLoopReference,
-        leftClosedLoopError,
         rightVelocity,
         rightStatorCurrent,
         rightSupplyCurrent,
         rightMotorVoltage,
+        rightClosedLoopReference);
+
+    // 10Hz for diagnostic-only signals (temperature, closed-loop error)
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        10.0,
+        leftDeviceTemp,
+        leftClosedLoopError,
         rightDeviceTemp,
-        rightClosedLoopReference,
         rightClosedLoopError);
 
     // Stop sending signals we didn't register — reduces CAN bus traffic

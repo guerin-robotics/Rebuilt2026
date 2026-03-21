@@ -51,16 +51,12 @@ public class FeederIOReal implements FeederIO {
     closedLoopReference = feederMotor.getClosedLoopReference();
     closedLoopError = feederMotor.getClosedLoopError();
 
-    // Set update frequency for all signals (50Hz is plenty for non-odometry)
+    // 50Hz for signals we need every loop (velocity, voltage, current, closed-loop reference)
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0,
-        velocity,
-        statorCurrent,
-        supplyCurrent,
-        motorVoltage,
-        deviceTemp,
-        closedLoopReference,
-        closedLoopError);
+        50.0, velocity, statorCurrent, supplyCurrent, motorVoltage, closedLoopReference);
+
+    // 10Hz for diagnostic-only signals (temperature, closed-loop error)
+    BaseStatusSignal.setUpdateFrequencyForAll(10.0, deviceTemp, closedLoopError);
 
     // Stop sending signals we didn't register — reduces CAN bus traffic
     feederMotor.optimizeBusUtilization();
