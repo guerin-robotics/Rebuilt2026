@@ -87,11 +87,7 @@ public class PrestageIOReal implements PrestageIO {
 
     // 10Hz for diagnostic-only signals (temperature, closed-loop error)
     BaseStatusSignal.setUpdateFrequencyForAll(
-        10.0,
-        leftDeviceTemp,
-        leftClosedLoopError,
-        rightDeviceTemp,
-        rightClosedLoopError);
+        10.0, leftDeviceTemp, leftClosedLoopError, rightDeviceTemp, rightClosedLoopError);
 
     // Stop sending signals we didn't register — reduces CAN bus traffic
     prestageLeft.optimizeBusUtilization();
