@@ -116,7 +116,20 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "DeployIntake",
+      "waypointRelativePos": 0.4313518170426064,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "RunIntake",
+      "waypointRelativePos": 0.7995085369674183,
+      "endWaypointRelativePos": 2.5006363565162903,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 4.12,
     "maxAcceleration": 3.5,
