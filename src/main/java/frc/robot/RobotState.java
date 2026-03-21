@@ -519,14 +519,14 @@ public class RobotState {
 
   // Returns false if robot's estimated future pose is in a trench zone or is moving towards it
   public boolean isHoodSafeVelo() {
-    if ((RobotState.getInstance().getRobotZone(getFuturePose())
+    if ((RobotState.getInstance().getRobotZone(getEstimatedPose())
             == HardwareConstants.Zones.Zone.ALLIANCE_TRENCH)
-        || (RobotState.getInstance().getRobotZone(getFuturePose())
+        || (RobotState.getInstance().getRobotZone(getEstimatedPose())
             == HardwareConstants.Zones.Zone.OPPOSING_TRENCH)
-        || (RobotState.getInstance().getRobotZone(getFuturePose())
+        || (RobotState.getInstance().getRobotZone(getEstimatedPose())
                 == HardwareConstants.Zones.Zone.NEAR_ALLIANCE_TRENCH
             && RobotState.getInstance().getFieldRelativeVelocity().vxMetersPerSecond > 0)
-        || (RobotState.getInstance().getRobotZone(getFuturePose())
+        || (RobotState.getInstance().getRobotZone(getEstimatedPose())
                 == HardwareConstants.Zones.Zone.NEAR_OPPOSING_TRENCH
             && RobotState.getInstance().getFieldRelativeVelocity().vxMetersPerSecond < 0)) {
       Logger.recordOutput("RobotState/isHoodSafeVelo", false);
