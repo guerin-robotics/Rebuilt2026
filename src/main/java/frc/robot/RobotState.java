@@ -495,7 +495,7 @@ public class RobotState {
 
   // Returns false is the robot isn't in the alliance zone
   public boolean zoneSafeToShoot() {
-    if (RobotState.getInstance().getRobotZone(getEstimatedPose())
+    if (RobotState.getInstance().getRobotZone(getFuturePose())
         == HardwareConstants.Zones.Zone.ALLIANCE_ZONE) {
       Logger.recordOutput("RobotState/zoneSafeToShoot", true);
       return true;
