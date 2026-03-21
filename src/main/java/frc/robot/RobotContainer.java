@@ -837,4 +837,8 @@ public class RobotContainer {
     Logger.recordOutput("Auto/StartCheck/PositionOK", positionOK);
     Logger.recordOutput("Auto/StartCheck/RotationOK", rotationOK);
   }
+
+  public Command getAutoStopCommand() {
+    return ShootSequences.stopAll(flywheel, prestage, hood, feeder, transport, intakeRoller);
+  }
 }
