@@ -340,6 +340,12 @@ public class RobotContainer {
                   intakeRoller.setRollerVoltage(Volts.of(0));
                   transport.setTransportVoltage(Volts.of(0));
                 }));
+
+    // Event marker for setting the hood position to down
+    new EventTrigger("HoodDown")
+        .onTrue(
+            HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test)
+        );
   }
 
   private void configureButtonBindings() {
@@ -406,7 +412,7 @@ public class RobotContainer {
     // Flywheel (10 rps)
     flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // Hood (set for hub)
-    hood.setDefaultCommand(HoodCommands.setHoodPosForHub(hood));
+    hood.setDefaultCommand(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
     // Intake rollers
     intakeRoller.setDefaultCommand(
         intakeRollerCommands.setRollerVoltage(
