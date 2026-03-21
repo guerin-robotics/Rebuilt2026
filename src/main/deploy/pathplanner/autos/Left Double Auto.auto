@@ -25,6 +25,12 @@
                 "data": {
                   "waitTime": 4.5
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StopAll"
+                }
               }
             ]
           }
@@ -55,6 +61,12 @@
                 "type": "wait",
                 "data": {
                   "waitTime": 4.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StopAll"
                 }
               }
             ]
