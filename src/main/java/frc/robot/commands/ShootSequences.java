@@ -119,6 +119,7 @@ public class ShootSequences {
       Hood hood,
       Feeder feeder,
       Transport transport,
+      IntakePivot intakePivot,
       intakeRoller intakeRoller) {
     return Commands.parallel(
             Commands.parallel(
@@ -133,7 +134,8 @@ public class ShootSequences {
                 TransportCommands.setTransportVoltage(
                     transport, HardwareConstants.TestVoltages.TransportTestVoltage),
                 intakeRollerCommands.setRollerVoltage(
-                    intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage)))
+                    intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage),
+                IntakePivotCommands.jostlePivotByPos(intakePivot)))
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
   }
 
@@ -147,7 +149,7 @@ public class ShootSequences {
       IntakePivot intakePivot) {
     return Commands.either(
         shootToHub(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
-        pass(flywheel, prestage, hood, feeder, transport, intakeRoller),
+        pass(flywheel, prestage, hood, feeder, transport, intakePivot, intakeRoller),
         () -> {
           boolean safe = RobotState.getInstance().zoneSafeToShoot();
           Logger.recordOutput("Flywheel/shootOrPass", safe ? "shooting" : "passing");

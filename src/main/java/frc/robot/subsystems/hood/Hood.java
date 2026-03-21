@@ -24,14 +24,14 @@ public class Hood extends SubsystemBase {
   }
 
   public void setHoodPos(double position) {
-    if (RobotState.getInstance().isHoodSafeVelo()) {
+    if (RobotState.getInstance().isHoodSafeVelo(RobotState.getInstance().getEstimatedPose())) {
       io.setHoodPos(position);
     }
   }
 
   public void incrementHoodPos() {
     double position = inputs.servoPos;
-    if (RobotState.getInstance().isHoodSafeVelo()) {
+    if (RobotState.getInstance().isHoodSafeVelo(RobotState.getInstance().getEstimatedPose())) {
       io.setHoodPos(position + 0.05);
     }
   }
@@ -55,7 +55,7 @@ public class Hood extends SubsystemBase {
    */
   public void setHoodPosForHub() {
     double position = HoodPosCalculator.getInstance().getHoodPosForHub();
-    if (RobotState.getInstance().isHoodSafeVelo()) {
+    if (RobotState.getInstance().isHoodSafeVelo(RobotState.getInstance().getEstimatedPose())) {
       io.setHoodPos(position);
     } else {
       io.setHoodPos(HardwareConstants.TestPositions.hoodPos1Test);

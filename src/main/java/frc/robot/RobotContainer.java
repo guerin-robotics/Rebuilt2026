@@ -343,9 +343,7 @@ public class RobotContainer {
 
     // Event marker for setting the hood position to down
     new EventTrigger("HoodDown")
-        .onTrue(
-            HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test)
-        );
+        .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
   }
 
   private void configureButtonBindings() {
@@ -412,7 +410,8 @@ public class RobotContainer {
     // Flywheel (10 rps)
     flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // Hood (set for hub)
-    hood.setDefaultCommand(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
+    hood.setDefaultCommand(
+        HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
     // Intake rollers
     intakeRoller.setDefaultCommand(
         intakeRollerCommands.setRollerVoltage(
@@ -533,7 +532,13 @@ public class RobotContainer {
                     new WaitCommand(0.5)
                         .andThen(
                             ShootSequences.pass(
-                                flywheel, prestage, hood, feeder, transport, intakeRoller))))
+                                flywheel,
+                                prestage,
+                                hood,
+                                feeder,
+                                transport,
+                                intakePivot,
+                                intakeRoller))))
         .onFalse(
             ShootSequences.shootEndBehavior(
                 flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
@@ -542,7 +547,7 @@ public class RobotContainer {
     thrustmaster
         .button(12)
         .whileTrue(
-            DriveCommands.joystickDriveSnapToNearestXHeading(
+            DriveCommands.joystickDriveAlignForBump(
                 drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
 
     // Basic controls for testing

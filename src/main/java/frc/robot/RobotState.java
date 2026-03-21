@@ -513,10 +513,10 @@ public class RobotState {
   }
 
   // Returns false if robot's estimated pose is in a trench zone or is moving towards it
-  public boolean isHoodSafeVelo() {
+  public boolean isHoodSafeVelo(Pose2d pose) {
     // Compute zone and velocity once — previously called getRobotZone(getFuturePose()) 4 times
     // and getFieldRelativeVelocity() 2 times per invocation
-    HardwareConstants.Zones.Zone futureZone = getRobotZone(getEstimatedPose());
+    HardwareConstants.Zones.Zone futureZone = getRobotZone(pose);
     double vxMetersPerSecond = getFieldRelativeVelocity().vxMetersPerSecond;
 
     boolean unsafe =
