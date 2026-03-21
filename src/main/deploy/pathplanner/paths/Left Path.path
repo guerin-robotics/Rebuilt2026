@@ -12,7 +12,7 @@
         "y": 7.652923330912902
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left Start Pos"
     },
     {
       "anchor": {
@@ -136,7 +136,7 @@
       "minWaypointRelativePos": 2.2448895676691736,
       "maxWaypointRelativePos": 3.2478681576797386,
       "constraints": {
-        "maxVelocity": 4.12,
+        "maxVelocity": 2.62,
         "maxAcceleration": 1.5,
         "maxAngularVelocity": 440.0,
         "maxAngularAcceleration": 1020.0,
@@ -157,6 +157,12 @@
       "name": "RunIntake",
       "waypointRelativePos": 1.762511748120301,
       "endWaypointRelativePos": 3.7467105263157907,
+      "command": null
+    },
+    {
+      "name": "DeployIntake",
+      "waypointRelativePos": 3.4824365601503775,
+      "endWaypointRelativePos": null,
       "command": null
     }
   ],

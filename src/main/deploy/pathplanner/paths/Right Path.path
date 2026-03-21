@@ -12,7 +12,7 @@
         "y": 0.5429668683865038
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Right Start Pos"
     },
     {
       "anchor": {
@@ -142,7 +142,21 @@
       "rotationDegrees": 0.0
     }
   ],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.414816337719297,
+      "maxWaypointRelativePos": 3.809347587719299,
+      "constraints": {
+        "maxVelocity": 2.6,
+        "maxAcceleration": 3.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 1020.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
@@ -155,6 +169,12 @@
       "name": "RunIntake",
       "waypointRelativePos": 0.9328399122807025,
       "endWaypointRelativePos": 4.05578399122807,
+      "command": null
+    },
+    {
+      "name": "DeployIntake",
+      "waypointRelativePos": 3.9869791666666696,
+      "endWaypointRelativePos": null,
       "command": null
     }
   ],
