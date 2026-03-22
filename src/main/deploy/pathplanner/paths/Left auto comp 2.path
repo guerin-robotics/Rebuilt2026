@@ -151,7 +151,7 @@
     },
     {
       "waypointRelativePos": 2.912104283054005,
-      "rotationDegrees": -90.4853631489147
+      "rotationDegrees": -90.48536314891471
     },
     {
       "waypointRelativePos": 4.765363128491586,
@@ -192,7 +192,7 @@
     {
       "name": "RunIntake",
       "waypointRelativePos": 2.75,
-      "endWaypointRelativePos": 3.838427947598216,
+      "endWaypointRelativePos": 4.293449781659371,
       "command": null
     }
   ],

@@ -164,7 +164,7 @@
       "minWaypointRelativePos": 1.85,
       "maxWaypointRelativePos": 2.8262008733624633,
       "constraints": {
-        "maxVelocity": 1.8,
+        "maxVelocity": 1.6,
         "maxAcceleration": 3.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 1020.0,
@@ -183,8 +183,8 @@
     },
     {
       "name": "RunIntake",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
+      "waypointRelativePos": 1.4707423580786163,
+      "endWaypointRelativePos": 3.3851528384279366,
       "command": null
     }
   ],
