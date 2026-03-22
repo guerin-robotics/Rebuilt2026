@@ -414,9 +414,9 @@ public class RobotContainer {
     // Default commands
     // Flywheel (10 rps)
     flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
-    // Hood (set for hub)
-    // hood.setDefaultCommand(
-    //     HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
+    // Hood (set down)
+    hood.setDefaultCommand(
+        HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
     // Intake rollers
     // intakeRoller.setDefaultCommand(
     //     intakeRollerCommands.setRollerVoltage(
@@ -464,11 +464,11 @@ public class RobotContainer {
     //                         ShootSequences.mapTuningShoot(
     //                             flywheel, prestage, hood, feeder, transport, intakeRoller))));
 
-    // Align for bump
+    // Align for sweep
     thrustmaster
         .button(2)
         .whileTrue(
-            DriveCommands.joystickDriveSnapToNearestXHeading(
+            DriveCommands.joystickDriveAlignForSweepToAllianceZone(
                 drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
 
     // Intake up
