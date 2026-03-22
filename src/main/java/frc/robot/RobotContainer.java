@@ -638,7 +638,7 @@ public class RobotContainer {
     controller
         .b()
         .whileTrue(
-            DriveCommands.joystickDriveAlignForSweep(
+            DriveCommands.joystickDriveAlignForSweepToAllianceZone(
                 drive, () -> controller.getLeftX(), () -> controller.getLeftY()));
 
     // Left bumper: intake down

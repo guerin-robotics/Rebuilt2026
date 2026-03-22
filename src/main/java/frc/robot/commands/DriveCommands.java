@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.lib.AllianceFlipUtil;
 import frc.lib.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.text.DecimalFormat;
@@ -222,6 +223,30 @@ public class DriveCommands {
         });
   }
 
+  public static Command joystickDriveAlignForSweepToAllianceZone(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+    return joystickDriveAtAngle(
+        drive,
+        xSupplier,
+        ySupplier,
+        () -> {
+          // Get the robot's y-coordinate (which side it's on)
+          double fieldSide =
+              AllianceFlipUtil.applyY(frc.robot.RobotState.getInstance().getEstimatedPose().getY());
+          Rotation2d targetRotation;
+
+          // If on near side (low y), set rotation to -45
+          if (fieldSide < (FieldConstants.fieldWidth / 2)) {
+            targetRotation = Rotation2d.fromRadians((5 * Math.PI) / 4);
+          }
+          // If on far side (high y), set rotation to 45
+          else {
+            targetRotation = Rotation2d.fromRadians((3 * Math.PI) / 4);
+          }
+          return AllianceFlipUtil.apply(targetRotation);
+        });
+  }
+
   public static Command joystickDriveAlignForSweep(
       Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
     return joystickDriveAtAngle(
@@ -230,18 +255,30 @@ public class DriveCommands {
         ySupplier,
         () -> {
           // Get the robot's current heading in radians (-PI to PI)
-          double currentRadians = drive.getRotation().getRadians();
+          Rotation2d currentRotation = AllianceFlipUtil.apply(drive.getRotation());
+          double currentRadians = currentRotation.getRadians();
           // Get the robot's y-coordinate (which side it's on)
-          double fieldSide = frc.robot.RobotState.getInstance().getEstimatedPose().getY();
+          double fieldSide =
+              AllianceFlipUtil.applyY(frc.robot.RobotState.getInstance().getEstimatedPose().getY());
+          Rotation2d targetRotation;
 
           // If on near side (low y), set rotation to -45
           if (fieldSide < (FieldConstants.fieldWidth / 2)) {
-            return Rotation2d.fromDegrees(-45);
+            if (currentRadians > (Math.PI / 2) && currentRadians < ((3 * Math.PI) / 2)) {
+              targetRotation = Rotation2d.fromRadians((5 * Math.PI) / 4);
+            } else {
+              targetRotation = Rotation2d.fromRadians((7 * Math.PI) / 4);
+            }
           }
           // If on far side (high y), set rotation to 45
           else {
-            return Rotation2d.fromDegrees(45);
+            if (currentRadians > (Math.PI / 2) && currentRadians < ((3 * Math.PI) / 2)) {
+              targetRotation = Rotation2d.fromRadians((3 * Math.PI) / 4);
+            } else {
+              targetRotation = Rotation2d.fromRadians(Math.PI / 4);
+            }
           }
+          return AllianceFlipUtil.apply(targetRotation);
         });
   }
 
