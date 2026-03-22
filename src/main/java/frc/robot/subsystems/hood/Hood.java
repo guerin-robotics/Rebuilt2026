@@ -31,9 +31,9 @@ public class Hood extends SubsystemBase {
 
   public void incrementHoodPos() {
     double position = inputs.servoPos;
-    if (RobotState.getInstance().isHoodSafeVelo(RobotState.getInstance().getEstimatedPose())) {
-      io.setHoodPos(position + 0.05);
-    }
+    // if (RobotState.getInstance().isHoodSafeVelo(RobotState.getInstance().getEstimatedPose())) {
+    io.setHoodPos(position + 0.05);
+    // }
   }
 
   /**
