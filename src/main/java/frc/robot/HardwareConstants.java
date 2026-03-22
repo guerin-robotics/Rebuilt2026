@@ -105,7 +105,8 @@ public class HardwareConstants {
   }
 
   public static class TuningConstants {
-    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(2000);
+    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(2300);
+    public static final double HoodTuningPos = 0.55;
   }
 
   public static class ControllerConstants {

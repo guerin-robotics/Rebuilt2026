@@ -415,51 +415,51 @@ public class RobotContainer {
     // Flywheel (10 rps)
     flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // Hood (set for hub)
-    hood.setDefaultCommand(
-        HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
+    // hood.setDefaultCommand(
+    //     HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
     // Intake rollers
-    intakeRoller.setDefaultCommand(
-        intakeRollerCommands.setRollerVoltage(
-            intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage));
+    // intakeRoller.setDefaultCommand(
+    //     intakeRollerCommands.setRollerVoltage(
+    //         intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage));
 
     // Distance-based shooting
-    thrustmaster
-        .button(1)
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                    drive,
-                    () -> -thrustmaster.getY(),
-                    () -> -thrustmaster.getX(),
-                    () -> flywheel.getShootAngleForZone())
-                .alongWith(
-                    new WaitCommand(0.15)
-                        .andThen(
-                            ShootSequences.zonePassOrShoot(
-                                flywheel,
-                                prestage,
-                                hood,
-                                feeder,
-                                transport,
-                                intakeRoller,
-                                intakePivot))))
-        .onFalse(
-            ShootSequences.shootEndBehavior(
-                flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
-
-    // Shoot for map tuning
     // thrustmaster
     //     .button(1)
     //     .whileTrue(
     //         DriveCommands.joystickDriveAtAngle(
     //                 drive,
-    //                 () -> -thrustmaster.getX(),
     //                 () -> -thrustmaster.getY(),
-    //                 () -> RobotState.getInstance().getAngleToAllianceHub())
+    //                 () -> -thrustmaster.getX(),
+    //                 () -> flywheel.getShootAngleForZone())
     //             .alongWith(
-    //                 new WaitCommand(0.5)
+    //                 new WaitCommand(0.15)
     //                     .andThen(
-    //                         ShootSequences.mapTuningShoot(
-    //                             flywheel, prestage, hood, feeder, transport, intakeRoller))));
+    //                         ShootSequences.zonePassOrShoot(
+    //                             flywheel,
+    //                             prestage,
+    //                             hood,
+    //                             feeder,
+    //                             transport,
+    //                             intakeRoller,
+    //                             intakePivot))))
+    //     .onFalse(
+    //         ShootSequences.shootEndBehavior(
+    //             flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
+
+    // Shoot for map tuning
+    thrustmaster
+        .button(1)
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                    drive,
+                    () -> -thrustmaster.getX(),
+                    () -> -thrustmaster.getY(),
+                    () -> RobotState.getInstance().getAngleToAllianceHub())
+                .alongWith(
+                    new WaitCommand(0.5)
+                        .andThen(
+                            ShootSequences.mapTuningShoot(
+                                flywheel, prestage, hood, feeder, transport, intakeRoller))));
 
     // Align for bump
     thrustmaster

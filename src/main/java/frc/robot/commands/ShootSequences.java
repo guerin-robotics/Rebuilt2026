@@ -32,7 +32,8 @@ public class ShootSequences {
             FlywheelCommands.setFlywheelVelocity(
                 flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity),
             PrestageCommands.setPrestageVelocity(
-                prestage, HardwareConstants.TestVelocities.prestageVelocity)),
+                prestage, HardwareConstants.TestVelocities.prestageVelocity),
+            HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos)),
         Commands.sequence(
             new WaitCommand(0.5),
             FeederCommands.setFeederVelocity(
