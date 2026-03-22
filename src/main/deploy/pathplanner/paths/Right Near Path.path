@@ -48,16 +48,16 @@
     },
     {
       "anchor": {
-        "x": 6.3582419677391,
-        "y": 3.335425621923347
+        "x": 6.48878313253012,
+        "y": 3.41212048192771
       },
       "prevControl": {
-        "x": 7.3085942437515765,
-        "y": 3.795456248680215
+        "x": 7.4391354085425965,
+        "y": 3.872151108684578
       },
       "nextControl": {
-        "x": 5.3217118275316455,
-        "y": 2.833679456751055
+        "x": 5.4522529923226655,
+        "y": 2.910374316755418
       },
       "isLocked": false,
       "linkedName": null
@@ -142,9 +142,9 @@
     {
       "name": "Constraints Zone",
       "minWaypointRelativePos": 1.7966400375939853,
-      "maxWaypointRelativePos": 3.58640742481203,
+      "maxWaypointRelativePos": 3.4401746724890816,
       "constraints": {
-        "maxVelocity": 2.62,
+        "maxVelocity": 1.92,
         "maxAcceleration": 3.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 1020.0,
@@ -165,12 +165,6 @@
       "name": "RunIntake",
       "waypointRelativePos": 1.8325305451127805,
       "endWaypointRelativePos": 3.7535831766917322,
-      "command": null
-    },
-    {
-      "name": "DeployIntake",
-      "waypointRelativePos": 3.0383576127819545,
-      "endWaypointRelativePos": null,
       "command": null
     }
   ],

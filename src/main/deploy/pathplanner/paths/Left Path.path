@@ -52,12 +52,12 @@
         "y": 4.593652920622363
       },
       "prevControl": {
-        "x": 8.0046606110189,
-        "y": 4.673023088116065
+        "x": 8.013463992149955,
+        "y": 4.5998441611340155
       },
       "nextControl": {
-        "x": 7.156711100187803,
-        "y": 4.481398214229298
+        "x": 5.669204819277109,
+        "y": 4.559530120481927
       },
       "isLocked": false,
       "linkedName": null
@@ -157,12 +157,6 @@
       "name": "RunIntake",
       "waypointRelativePos": 1.762511748120301,
       "endWaypointRelativePos": 3.7467105263157907,
-      "command": null
-    },
-    {
-      "name": "DeployIntake",
-      "waypointRelativePos": 3.4824365601503775,
-      "endWaypointRelativePos": null,
       "command": null
     }
   ],
