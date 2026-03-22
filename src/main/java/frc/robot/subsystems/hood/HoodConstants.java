@@ -9,6 +9,8 @@ public class HoodConstants {
   public static class Mechanical {
     public static double hoodMaxPos = 1.0;
     public static double hoodMinPos = 0.0;
+
+    public static double leftServoOffset = 0.06;
   }
 
   public class HoodMap {

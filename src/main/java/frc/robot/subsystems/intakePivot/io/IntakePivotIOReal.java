@@ -77,9 +77,15 @@ public class IntakePivotIOReal implements IntakePivotIO {
     // Cache signal reference — encoder
     encoderPosition = intakePivotEncoder.getAbsolutePosition();
 
-    // 50Hz for signals we need every loop (velocity, voltage, current, position, closed-loop reference)
+    // 50Hz for signals we need every loop (velocity, voltage, current, position, closed-loop
+    // reference)
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0, velocity, motorVoltage, statorCurrent, supplyCurrent, encoderPosition,
+        50.0,
+        velocity,
+        motorVoltage,
+        statorCurrent,
+        supplyCurrent,
+        encoderPosition,
         closedLoopReference);
 
     // 10Hz for diagnostic-only signals (temperature, closed-loop error)

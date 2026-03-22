@@ -49,7 +49,7 @@ public class HardwareConstants {
     public static final Voltage intakePivotTestVoltageUp = Volts.of(10.0);
     public static final Voltage intakePivotTestVoltageDown = Volts.of(-8.0);
     public static final Voltage intakeRollerTestVoltage = Volts.of(12.0);
-    public static final Voltage intakeRollerAgitateVoltage = Volts.of(6);
+    public static final Voltage intakeRollerAgitateVoltage = Volts.of(3);
   }
 
   public static class TestVelocities {
@@ -87,7 +87,7 @@ public class HardwareConstants {
     public static final double intakeDegreesDownTest = 0.075;
     public static final double intakeJostleTest = 0.25;
     // Hood position (0.0-1.0)
-    public static final double hoodPos1Test = 0.2;
+    public static final double hoodPos1Test = 0.1;
     public static final double hoodPos2Test = 0.25;
     public static final double hoodPos3Test = 0.5;
     public static final double hoodPos4Test = 0.75;
@@ -95,7 +95,7 @@ public class HardwareConstants {
   }
 
   public static class TowerConstants {
-    public static final AngularVelocity FlywheelTowerVelocity = RPM.of(1200);
+    public static final AngularVelocity FlywheelTowerVelocity = RPM.of(2300);
     public static final double hoodTowerPos = 0.5;
   }
 
@@ -105,7 +105,8 @@ public class HardwareConstants {
   }
 
   public static class TuningConstants {
-    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(2000);
+    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(2300);
+    public static final double HoodTuningPos = 0.55;
   }
 
   public static class ControllerConstants {
@@ -128,6 +129,6 @@ public class HardwareConstants {
     }
 
     public static final double zoneOffset = 0.3;
-    public static final double timeInterval = 1;
+    public static final double timeInterval = 0.25;
   }
 }

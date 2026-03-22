@@ -291,6 +291,11 @@ public class RobotContainer {
                             transport,
                             intakeRoller,
                             intakePivot))));
+
+    // Stop all subsystems after shooting
+    NamedCommands.registerCommand(
+        "stopAll",
+        ShootSequences.stopAll(flywheel, prestage, hood, feeder, transport, intakeRoller));
   }
 
   // EventTriggers
@@ -340,6 +345,10 @@ public class RobotContainer {
                   intakeRoller.setRollerVoltage(Volts.of(0));
                   transport.setTransportVoltage(Volts.of(0));
                 }));
+
+    // Event marker for setting the hood position to down
+    new EventTrigger("HoodDown")
+        .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
   }
 
   private void configureButtonBindings() {
@@ -406,56 +415,57 @@ public class RobotContainer {
     // Flywheel (10 rps)
     flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // Hood (set for hub)
-    hood.setDefaultCommand(HoodCommands.setHoodPosForHub(hood));
+    // hood.setDefaultCommand(
+    //     HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
     // Intake rollers
-    intakeRoller.setDefaultCommand(
-        intakeRollerCommands.setRollerVoltage(
-            intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage));
+    // intakeRoller.setDefaultCommand(
+    //     intakeRollerCommands.setRollerVoltage(
+    //         intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage));
 
     // Distance-based shooting
-    thrustmaster
-        .button(1)
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                    drive,
-                    () -> -thrustmaster.getY(),
-                    () -> -thrustmaster.getX(),
-                    () -> flywheel.getShootAngleForZone())
-                .alongWith(
-                    new WaitCommand(0.15)
-                        .andThen(
-                            ShootSequences.zonePassOrShoot(
-                                flywheel,
-                                prestage,
-                                hood,
-                                feeder,
-                                transport,
-                                intakeRoller,
-                                intakePivot))))
-        .onFalse(
-            ShootSequences.shootEndBehavior(
-                flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
-
-    // Shoot for map tuning
     // thrustmaster
     //     .button(1)
     //     .whileTrue(
     //         DriveCommands.joystickDriveAtAngle(
     //                 drive,
-    //                 () -> -thrustmaster.getX(),
     //                 () -> -thrustmaster.getY(),
-    //                 () -> RobotState.getInstance().getAngleToAllianceHub())
+    //                 () -> -thrustmaster.getX(),
+    //                 () -> flywheel.getShootAngleForZone())
     //             .alongWith(
-    //                 new WaitCommand(0.5)
+    //                 new WaitCommand(0.15)
     //                     .andThen(
-    //                         ShootSequences.mapTuningShoot(
-    //                             flywheel, prestage, hood, feeder, transport, intakeRoller))));
+    //                         ShootSequences.zonePassOrShoot(
+    //                             flywheel,
+    //                             prestage,
+    //                             hood,
+    //                             feeder,
+    //                             transport,
+    //                             intakeRoller,
+    //                             intakePivot))))
+    //     .onFalse(
+    //         ShootSequences.shootEndBehavior(
+    //             flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
+
+    // Shoot for map tuning
+    thrustmaster
+        .button(1)
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                    drive,
+                    () -> -thrustmaster.getX(),
+                    () -> -thrustmaster.getY(),
+                    () -> RobotState.getInstance().getAngleToAllianceHub())
+                .alongWith(
+                    new WaitCommand(0.5)
+                        .andThen(
+                            ShootSequences.mapTuningShoot(
+                                flywheel, prestage, hood, feeder, transport, intakeRoller))));
 
     // Align for bump
     thrustmaster
         .button(2)
         .whileTrue(
-            DriveCommands.joystickDriveAlignForBump(
+            DriveCommands.joystickDriveSnapToNearestXHeading(
                 drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
 
     // Intake up
@@ -527,7 +537,13 @@ public class RobotContainer {
                     new WaitCommand(0.5)
                         .andThen(
                             ShootSequences.pass(
-                                flywheel, prestage, hood, feeder, transport, intakeRoller))))
+                                flywheel,
+                                prestage,
+                                hood,
+                                feeder,
+                                transport,
+                                intakePivot,
+                                intakeRoller))))
         .onFalse(
             ShootSequences.shootEndBehavior(
                 flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
@@ -536,7 +552,7 @@ public class RobotContainer {
     thrustmaster
         .button(12)
         .whileTrue(
-            DriveCommands.joystickDriveSnapToNearestXHeading(
+            DriveCommands.joystickDriveAlignForBump(
                 drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
 
     // Basic controls for testing
@@ -820,5 +836,9 @@ public class RobotContainer {
     Logger.recordOutput("Auto/StartCheck/RotationDiffDegrees", rotationDifferenceDegrees);
     Logger.recordOutput("Auto/StartCheck/PositionOK", positionOK);
     Logger.recordOutput("Auto/StartCheck/RotationOK", rotationOK);
+  }
+
+  public Command getAutoStopCommand() {
+    return ShootSequences.stopAll(flywheel, prestage, hood, feeder, transport, intakeRoller);
   }
 }
