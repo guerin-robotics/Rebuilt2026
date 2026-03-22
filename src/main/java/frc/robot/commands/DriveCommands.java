@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.lib.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -217,6 +218,29 @@ public class DriveCommands {
             return Rotation2d.fromRadians((5 * Math.PI) / 4.0); // Snap to 225°
           } else {
             return Rotation2d.fromRadians((7 * Math.PI) / 4.0); // Snap to 315°
+          }
+        });
+  }
+
+  public static Command joystickDriveAlignForSweep(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+    return joystickDriveAtAngle(
+        drive,
+        xSupplier,
+        ySupplier,
+        () -> {
+          // Get the robot's current heading in radians (-PI to PI)
+          double currentRadians = drive.getRotation().getRadians();
+          // Get the robot's y-coordinate (which side it's on)
+          double fieldSide = frc.robot.RobotState.getInstance().getEstimatedPose().getY();
+
+          // If on near side (low y), set rotation to -45
+          if (fieldSide < (FieldConstants.fieldWidth / 2)) {
+            return Rotation2d.fromDegrees(-45);
+          }
+          // If on far side (high y), set rotation to 45
+          else {
+            return Rotation2d.fromDegrees(45);
           }
         });
   }

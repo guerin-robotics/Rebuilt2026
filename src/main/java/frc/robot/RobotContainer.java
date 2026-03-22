@@ -638,25 +638,8 @@ public class RobotContainer {
     controller
         .b()
         .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                    drive,
-                    () -> -thrustmaster.getY(),
-                    () -> -thrustmaster.getX(),
-                    () -> flywheel.getShootAngleForZone())
-                .alongWith(
-                    new WaitCommand(0.15)
-                        .andThen(
-                            ShootSequences.zonePassOrShoot(
-                                flywheel,
-                                prestage,
-                                hood,
-                                feeder,
-                                transport,
-                                intakeRoller,
-                                intakePivot))))
-        .onFalse(
-            ShootSequences.shootEndBehavior(
-                flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
+            DriveCommands.joystickDriveAlignForSweep(
+                drive, () -> controller.getLeftX(), () -> controller.getLeftY()));
 
     // Left bumper: intake down
     controller

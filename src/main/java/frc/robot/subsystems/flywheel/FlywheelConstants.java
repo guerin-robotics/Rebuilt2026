@@ -114,6 +114,7 @@ public class FlywheelConstants {
       SPEED_MAP.put(inchesToMeters(96), 2000.0);
       SPEED_MAP.put(inchesToMeters(120), 2300.0);
       SPEED_MAP.put(inchesToMeters(130), 2500.0);
+      SPEED_MAP.put(inchesToMeters(150), 2300.0);
       SPEED_MAP.put(inchesToMeters(163), 2800.0);
     }
   }
