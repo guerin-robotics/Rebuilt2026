@@ -77,17 +77,19 @@ public class IntakePivotIOReal implements IntakePivotIO {
     // Cache signal reference — encoder
     encoderPosition = intakePivotEncoder.getAbsolutePosition();
 
-    // Set update frequency for all signals (50Hz is plenty for non-odometry)
+    // 50Hz for signals we need every loop (velocity, voltage, current, position, closed-loop
+    // reference)
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         velocity,
         motorVoltage,
         statorCurrent,
         supplyCurrent,
-        deviceTemp,
-        closedLoopReference,
-        closedLoopError,
-        encoderPosition);
+        encoderPosition,
+        closedLoopReference);
+
+    // 10Hz for diagnostic-only signals (temperature, closed-loop error)
+    BaseStatusSignal.setUpdateFrequencyForAll(10.0, deviceTemp, closedLoopError);
 
     // Stop sending signals we didn't register — reduces CAN bus traffic
     intakePivotMotor.optimizeBusUtilization();
@@ -96,7 +98,7 @@ public class IntakePivotIOReal implements IntakePivotIO {
 
   private void configurePivotMotor() {
     var config = new TalonFXConfiguration();
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     config.MotorOutput.Inverted =
         IntakePivotConstants.SoftwareConstants.MOTOR_INVERTED
@@ -181,9 +183,8 @@ public class IntakePivotIOReal implements IntakePivotIO {
     inputs.intakePivotStatorCurrent = statorCurrent.getValue();
     inputs.intakePivotSupplyCurrent = supplyCurrent.getValue();
     inputs.intakePivotTemperature = deviceTemp.getValue();
-    inputs.intakePivotClosedLoopReference =
-        intakePivotMotor.getClosedLoopReference().getValueAsDouble();
-    inputs.intakePivotClosedLoopError = intakePivotMotor.getClosedLoopError().getValueAsDouble();
+    inputs.intakePivotClosedLoopReference = closedLoopReference.getValueAsDouble();
+    inputs.intakePivotClosedLoopError = closedLoopError.getValueAsDouble();
   }
 
   @Override

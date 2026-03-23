@@ -20,7 +20,7 @@ public class intakeRollerConstants {
   }
 
   public static class Mechanical {
-    public static final double rollerRatio = 1 / 0.625;
+    public static final double rollerRatio = 24 / 11;
   }
 
   public static class rollerMagicConstants {

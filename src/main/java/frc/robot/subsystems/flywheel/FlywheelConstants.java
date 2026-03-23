@@ -110,10 +110,11 @@ public class FlywheelConstants {
     // Key is distance from center of hub (converted to meters)
     // Value is angular velocity (RPM)
     static {
-      SPEED_MAP.put(inchesToMeters(68), 2000.0);
+      SPEED_MAP.put(inchesToMeters(70), 1700.0);
       SPEED_MAP.put(inchesToMeters(96), 2000.0);
-      SPEED_MAP.put(inchesToMeters(120), 2300.0);
+      SPEED_MAP.put(inchesToMeters(120), 2400.0);
       SPEED_MAP.put(inchesToMeters(130), 2500.0);
+      SPEED_MAP.put(inchesToMeters(150), 2500.0);
       SPEED_MAP.put(inchesToMeters(163), 2800.0);
     }
   }

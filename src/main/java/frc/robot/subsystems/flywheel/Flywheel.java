@@ -1,6 +1,5 @@
 package frc.robot.subsystems.flywheel;
 
-import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RPM;
@@ -17,7 +16,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.FieldConstants;
 import frc.robot.HardwareConstants;
-import frc.robot.Robot;
 import frc.robot.RobotState;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.ShooterIOInputsAutoLogged;
@@ -49,20 +47,6 @@ public class Flywheel extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Flywheel", inputs);
-
-    // Report energy usage for all 4 flywheel motors
-    Robot.batteryLogger.reportCurrentUsage(
-        "Flywheel",
-        inputs.leaderSupplyCurrentAmps != null ? inputs.leaderSupplyCurrentAmps.in(Amps) : 0.0,
-        inputs.follower1SupplyCurrentAmps != null
-            ? inputs.follower1SupplyCurrentAmps.in(Amps)
-            : 0.0,
-        inputs.follower2SupplyCurrentAmps != null
-            ? inputs.follower2SupplyCurrentAmps.in(Amps)
-            : 0.0,
-        inputs.follower3SupplyCurrentAmps != null
-            ? inputs.follower3SupplyCurrentAmps.in(Amps)
-            : 0.0);
   }
 
   public void setFlywheelVoltage(Voltage volts) {
@@ -108,7 +92,8 @@ public class Flywheel extends SubsystemBase {
     //           ((AllianceFlipUtil.applyY(FieldConstants.LinesHorizontal.center)) / 4),
     //           0);
     // }
-    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+    if (DriverStation.getAlliance().isEmpty()
+        || DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
       if (RobotState.getInstance().getEstimatedPose().getY() > (FieldConstants.fieldWidth / 2)) {
         passTarget =
             new Translation3d(Meters.of(14.373).magnitude(), Meters.of(6.136).magnitude(), 0);

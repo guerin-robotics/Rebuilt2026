@@ -24,21 +24,38 @@ public class Hood extends SubsystemBase {
   }
 
   public void setHoodPos(double position) {
-    if (RobotState.getInstance().isHoodSafeVelo()) {
+    if (RobotState.getInstance().isHoodSafeVelo(RobotState.getInstance().getEstimatedPose())) {
       io.setHoodPos(position);
     }
   }
 
   public void incrementHoodPos() {
     double position = inputs.servoPos;
-    if (RobotState.getInstance().isHoodSafeVelo()) {
-      io.setHoodPos(position + 0.05);
-    }
+    // if (RobotState.getInstance().isHoodSafeVelo(RobotState.getInstance().getEstimatedPose())) {
+    io.setHoodPos(position + 0.05);
+    // }
   }
 
+  /**
+   * Sets the hood to the calculated position for the alliance hub.
+   *
+   * <p><b>Performance note:</b> This runs as the default command (every 20 ms). The call chain is:
+   *
+   * <ol>
+   *   <li>{@code HoodPosCalculator.getHoodPosForHub()} → {@code getAllianceHubTarget()} → {@code
+   *       AllianceFlipUtil} (cached) → {@code getDistanceToPoint()} → {@code Pose2d.getTranslation
+   *       .getDistance()} → interpolation table lookup
+   *   <li>{@code RobotState.isHoodSafeVelo()} → {@code getRobotZone()} + velocity check (now caches
+   *       zone result internally)
+   * </ol>
+   *
+   * Both paths are now optimised (AllianceFlipUtil caches alliance per-loop, RobotState caches zone
+   * per call). Further reduction would require caching the hood position across loops, but the
+   * distance changes every loop so the lookup is necessary.
+   */
   public void setHoodPosForHub() {
     double position = HoodPosCalculator.getInstance().getHoodPosForHub();
-    if (RobotState.getInstance().isHoodSafeVelo()) {
+    if (RobotState.getInstance().isHoodSafeVelo(RobotState.getInstance().getEstimatedPose())) {
       io.setHoodPos(position);
     } else {
       io.setHoodPos(HardwareConstants.TestPositions.hoodPos1Test);

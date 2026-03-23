@@ -7,12 +7,11 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.util.BatteryLogger;
+import frc.lib.AllianceFlipUtil;
 import org.littletonrobotics.junction.AutoLogOutputManager;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -30,9 +29,6 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
-
-  /** Shared battery logger instance — subsystems call reportCurrentUsage() each loop. */
-  public static final BatteryLogger batteryLogger = new BatteryLogger();
 
   // Field2d widget to display the robot's current pose on the dashboard.
   // This is updated every loop so the drive team can always see where the robot thinks it is.
@@ -106,11 +102,9 @@ public class Robot extends LoggedRobot {
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    // Update battery logger with current voltage and roboRIO current, then log all metrics.
-    // This runs AFTER all subsystem periodic() methods, so every subsystem has reported its draw.
-    batteryLogger.setBatteryVoltage(RobotController.getBatteryVoltage());
-    batteryLogger.setRioCurrent(RobotController.getInputCurrent());
-    batteryLogger.periodic();
+    // Refresh the cached alliance color once per loop so that AllianceFlipUtil.shouldFlip()
+    // doesn't call DriverStation.getAlliance() (which creates an Optional) 20-30+ times per cycle.
+    AllianceFlipUtil.refresh();
 
     // Update the robot's pose on the main field map dashboard widget every loop.
     // This must be in robotPeriodic() so it runs in ALL modes (disabled, teleop, auto, test).
@@ -119,10 +113,13 @@ public class Robot extends LoggedRobot {
     // Return to non-RT thread priority (do not modify the first argument)
     // Threads.setCurrentThreadPriority(false, 10);
 
-    RobotState.getInstance().getDistanceToAllianceHub();
-    RobotState.getInstance().getRobotZone(RobotState.getInstance().getEstimatedPose());
-    RobotState.getInstance().zoneSafeToShoot();
-    RobotState.getInstance().isHoodSafeVelo();
+    // These calls are redundant — @AutoLogOutput annotations already log these values every loop,
+    // and subsystems/commands call them when they actually need the result. Each one triggers a
+    // cascade of zone/pose/velocity calculations that wastes loop time.
+    // RobotState.getInstance().getDistanceToAllianceHub();
+    // RobotState.getInstance().getRobotZone(RobotState.getInstance().getEstimatedPose());
+    // RobotState.getInstance().zoneSafeToShoot();
+    // RobotState.getInstance().isHoodSafeVelo(RobotState.getInstance().getFuturePose());
   }
 
   /** This function is called once when the robot is disabled. */
@@ -167,6 +164,8 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+
+    CommandScheduler.getInstance().schedule(robotContainer.getAutoStopCommand());
   }
 
   /** This function is called periodically during operator control. */

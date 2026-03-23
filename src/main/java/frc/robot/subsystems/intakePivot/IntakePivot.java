@@ -6,7 +6,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Robot;
 import frc.robot.subsystems.intakePivot.io.IntakePivotIO;
 import frc.robot.subsystems.intakePivot.io.IntakePivotIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
@@ -44,11 +43,6 @@ public class IntakePivot extends SubsystemBase {
 
     // Update the visualizer every loop
     visualizer.update(inputs.intakePivotPosition, goalPositionRotations, atGoal);
-
-    // Report energy usage
-    Robot.batteryLogger.reportCurrentUsage(
-        "IntakePivot",
-        inputs.intakePivotSupplyCurrent != null ? inputs.intakePivotSupplyCurrent.in(Amps) : 0.0);
   }
 
   public void setPivotVoltage(Voltage volts) {

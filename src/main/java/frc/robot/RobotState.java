@@ -495,45 +495,39 @@ public class RobotState {
 
   // Returns false is the robot isn't in the alliance zone
   public boolean zoneSafeToShoot() {
-    if (RobotState.getInstance().getRobotZone(getEstimatedPose())
-        == HardwareConstants.Zones.Zone.ALLIANCE_ZONE) {
-      Logger.recordOutput("RobotState/zoneSafeToShoot", true);
-      return true;
-    } else {
-      Logger.recordOutput("RobotState/zoneSafeToShoot", false);
-      return false;
-    }
+    // Compute zone once and reuse — avoids calling getRobotZone() + getFuturePose() repeatedly
+    HardwareConstants.Zones.Zone futureZone = getRobotZone(getFuturePose());
+    boolean safe = (futureZone == HardwareConstants.Zones.Zone.ALLIANCE_ZONE);
+    Logger.recordOutput("RobotState/zoneSafeToShoot", safe);
+    return safe;
   }
 
   // Returns false if robot is in or near a trench zone
   public boolean isHoodSafePos() {
-    return !((RobotState.getInstance().getRobotZone(getEstimatedPose())
-            == HardwareConstants.Zones.Zone.ALLIANCE_TRENCH)
-        || (RobotState.getInstance().getRobotZone(getEstimatedPose())
-            == HardwareConstants.Zones.Zone.OPPOSING_TRENCH)
-        || (RobotState.getInstance().getRobotZone(getEstimatedPose())
-            == HardwareConstants.Zones.Zone.NEAR_ALLIANCE_TRENCH)
-        || (RobotState.getInstance().getRobotZone(getEstimatedPose())
-            == HardwareConstants.Zones.Zone.NEAR_OPPOSING_TRENCH));
+    // Compute zone once and reuse — previously called getRobotZone(getEstimatedPose()) 4 times
+    HardwareConstants.Zones.Zone currentZone = getRobotZone(getEstimatedPose());
+    return !(currentZone == HardwareConstants.Zones.Zone.ALLIANCE_TRENCH
+        || currentZone == HardwareConstants.Zones.Zone.OPPOSING_TRENCH
+        || currentZone == HardwareConstants.Zones.Zone.NEAR_ALLIANCE_TRENCH
+        || currentZone == HardwareConstants.Zones.Zone.NEAR_OPPOSING_TRENCH);
   }
 
-  // Returns false if robot's estimated future pose is in a trench zone or is moving towards it
-  public boolean isHoodSafeVelo() {
-    if ((RobotState.getInstance().getRobotZone(getEstimatedPose())
-            == HardwareConstants.Zones.Zone.ALLIANCE_TRENCH)
-        || (RobotState.getInstance().getRobotZone(getEstimatedPose())
-            == HardwareConstants.Zones.Zone.OPPOSING_TRENCH)
-        || (RobotState.getInstance().getRobotZone(getEstimatedPose())
-                == HardwareConstants.Zones.Zone.NEAR_ALLIANCE_TRENCH
-            && RobotState.getInstance().getFieldRelativeVelocity().vxMetersPerSecond > 0)
-        || (RobotState.getInstance().getRobotZone(getEstimatedPose())
-                == HardwareConstants.Zones.Zone.NEAR_OPPOSING_TRENCH
-            && RobotState.getInstance().getFieldRelativeVelocity().vxMetersPerSecond < 0)) {
-      Logger.recordOutput("RobotState/isHoodSafeVelo", false);
-      return false;
-    } else {
-      Logger.recordOutput("RobotState/isHoodSafeVelo", true);
-      return true;
-    }
+  // Returns false if robot's estimated pose is in a trench zone or is moving towards it
+  public boolean isHoodSafeVelo(Pose2d pose) {
+    // Compute zone and velocity once — previously called getRobotZone(getFuturePose()) 4 times
+    // and getFieldRelativeVelocity() 2 times per invocation
+    HardwareConstants.Zones.Zone futureZone = getRobotZone(pose);
+    double vxMetersPerSecond = getFieldRelativeVelocity().vxMetersPerSecond;
+
+    boolean unsafe =
+        (futureZone == HardwareConstants.Zones.Zone.ALLIANCE_TRENCH)
+            || (futureZone == HardwareConstants.Zones.Zone.OPPOSING_TRENCH)
+            || (futureZone == HardwareConstants.Zones.Zone.NEAR_ALLIANCE_TRENCH
+                && vxMetersPerSecond > 0)
+            || (futureZone == HardwareConstants.Zones.Zone.NEAR_OPPOSING_TRENCH
+                && vxMetersPerSecond < 0);
+
+    Logger.recordOutput("RobotState/isHoodSafeVelo", !unsafe);
+    return !unsafe;
   }
 }
