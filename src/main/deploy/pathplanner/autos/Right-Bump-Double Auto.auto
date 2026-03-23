@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left Bump Path"
+            "pathName": "Right-Bump-Path"
           }
         },
         {
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left Bump Near Path"
+            "pathName": "Right Bump-Near-Path"
           }
         },
         {

@@ -7,38 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left Path"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 4.0
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "StopAll"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Left Near Path"
+            "pathName": "Right-Path-1"
           }
         },
         {
@@ -63,7 +32,7 @@
         {
           "type": "named",
           "data": {
-            "name": "StopAll"
+            "name": "stopAll"
           }
         }
       ]

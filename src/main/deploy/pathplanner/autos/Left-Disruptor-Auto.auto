@@ -7,7 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Right Bump Path"
+            "pathName": "Left-Disruptor-Path-1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left-Disruptor-Path-2"
           }
         },
         {
@@ -23,13 +29,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 4.5
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "StopAll"
+                  "waitTime": 6.0
                 }
               }
             ]

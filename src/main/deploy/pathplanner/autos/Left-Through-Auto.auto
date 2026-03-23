@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left Bump Path"
+            "pathName": "Left-Through-Path"
           }
         },
         {
@@ -25,14 +25,14 @@
                 "data": {
                   "waitTime": 4.5
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "StopAll"
-                }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopAll"
           }
         }
       ]

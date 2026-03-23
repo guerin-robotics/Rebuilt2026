@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.2354414062500005,
-        "y": 2.328141999421297
+        "x": 3.1548716724537043,
+        "y": 2.465530454282408
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.2354414062500005,
-        "y": 2.328141999421297
+        "x": 4.154871672453704,
+        "y": 2.465530454282408
       },
       "isLocked": false,
       "linkedName": "Right Bump End Pos"
@@ -80,12 +80,12 @@
     },
     {
       "anchor": {
-        "x": 3.2354414062500005,
-        "y": 2.328141999421297
+        "x": 3.1548716724537043,
+        "y": 2.465530454282408
       },
       "prevControl": {
-        "x": 3.5348222656250003,
-        "y": 2.360619212962963
+        "x": 3.454252531828704,
+        "y": 2.498007667824074
       },
       "nextControl": null,
       "isLocked": false,
@@ -129,13 +129,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 51.83976900902222
+    "rotation": 48.96365216731063
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 51.83976900902222
+    "rotation": 48.96365216731063
   },
   "useDefaultConstraints": true
 }

@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Right Bump Path"
+            "pathName": "Left-Path"
           }
         },
         {
@@ -32,13 +32,13 @@
         {
           "type": "named",
           "data": {
-            "name": "stopAll"
+            "name": "StopAll"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Right Bump Near Path"
+            "pathName": "Left-Near-Path"
           }
         },
         {
@@ -54,7 +54,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 4.0
+                  "waitTime": 4.5
                 }
               }
             ]
@@ -63,7 +63,7 @@
         {
           "type": "named",
           "data": {
-            "name": "stopAll"
+            "name": "StopAll"
           }
         }
       ]

@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left Through Path"
+            "pathName": "Center-Path"
           }
         },
         {
@@ -25,14 +25,14 @@
                 "data": {
                   "waitTime": 4.5
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StopAll"
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "stopAll"
           }
         }
       ]
