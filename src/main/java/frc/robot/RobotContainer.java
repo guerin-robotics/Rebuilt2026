@@ -447,7 +447,13 @@ public class RobotContainer {
     //                 new WaitCommand(0.5)
     //                     .andThen(
     //                         ShootSequences.mapTuningShoot(
-    //                             flywheel, prestage, hood, feeder, transport, intakeRoller))));
+    //                             flywheel,
+    //                             prestage,
+    //                             hood,
+    //                             intakePivot,
+    //                             feeder,
+    //                             transport,
+    //                             intakeRoller))));
 
     // Align for sweep
     thrustmaster
@@ -544,12 +550,18 @@ public class RobotContainer {
                 drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
 
     // Drop hood
-    controller
-        .y()
-        .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
+    // controller
+    //     .y()
+    //     .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
 
     // Bump hood pos up
     controller.leftBumper().onTrue(HoodCommands.incrementHoodPos(hood));
+
+    controller
+        .y()
+        .whileTrue(
+            intakeRollerCommands.setRollerVelocity(
+                intakeRoller, HardwareConstants.TestVelocities.rollerVelocity));
   }
 
   private void configureSimBindings() {
