@@ -111,11 +111,14 @@ public class FlywheelConstants {
     // Value is angular velocity (RPM)
     static {
       SPEED_MAP.put(inchesToMeters(70), 1700.0);
-      SPEED_MAP.put(inchesToMeters(96), 2000.0);
-      SPEED_MAP.put(inchesToMeters(120), 2400.0);
+      SPEED_MAP.put(inchesToMeters(83), 1950.0);
+      SPEED_MAP.put(inchesToMeters(90), 1950.0);
+      SPEED_MAP.put(inchesToMeters(100), 2000.0);
+      SPEED_MAP.put(inchesToMeters(120), 2100.0);
       SPEED_MAP.put(inchesToMeters(130), 2500.0);
       SPEED_MAP.put(inchesToMeters(150), 2500.0);
       SPEED_MAP.put(inchesToMeters(163), 2800.0);
+      SPEED_MAP.put(inchesToMeters(205), 2800.0);
     }
   }
 

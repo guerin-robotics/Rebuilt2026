@@ -24,6 +24,7 @@ public class ShootSequences {
       Flywheel flywheel,
       Prestage prestage,
       Hood hood,
+      IntakePivot intakePivot,
       Feeder feeder,
       Transport transport,
       intakeRoller intakeRoller) {
@@ -33,15 +34,17 @@ public class ShootSequences {
                 flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity),
             PrestageCommands.setPrestageVelocity(
                 prestage, HardwareConstants.TestVelocities.prestageVelocity),
-            HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos)),
+            HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos),
+            IntakePivotCommands.jostlePivotByPos(intakePivot)),
         Commands.sequence(
             new WaitCommand(0.5),
-            FeederCommands.setFeederVelocity(
-                feeder, HardwareConstants.TestVelocities.feederVelocity),
-            TransportCommands.setTransportVoltage(
-                transport, HardwareConstants.TestVoltages.TransportTestVoltage),
-            intakeRollerCommands.setRollerVoltage(
-                intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage)));
+            Commands.parallel(
+                FeederCommands.setFeederVelocity(
+                    feeder, HardwareConstants.TestVelocities.feederVelocity),
+                TransportCommands.setTransportVoltage(
+                    transport, HardwareConstants.TestVoltages.TransportTestVoltage),
+                intakeRollerCommands.setRollerVoltage(
+                    intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage))));
   }
 
   public static Command shootForTower(

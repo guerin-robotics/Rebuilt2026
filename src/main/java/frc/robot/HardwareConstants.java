@@ -105,9 +105,8 @@ public class HardwareConstants {
   }
 
   public static class TuningConstants {
-    public static final AngularVelocity FlywheelTuningVelocity =
-        RPM.of(2500); // Hub (70): 1700 Tower (120): 2400 Auto (150): 2500
-    public static final double HoodTuningPos = 0.65; // 0.55 for hub and tower, 0.65 for auto-
+    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(1700);
+    public static final double HoodTuningPos = 0.45;
   }
 
   public static class ControllerConstants {

@@ -64,7 +64,11 @@ public class IntakePivotCommands {
             new WaitCommand(0.25),
             setPivotRotations(intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest),
             new WaitCommand(0.25))
-        .repeatedly();
+        .repeatedly()
+        .finallyDo(
+            () ->
+                intakePivot.setPivotPosition(
+                    HardwareConstants.TestPositions.intakeDegreesDownTest));
   }
 
   /** Zero the pivot encoder at the current position. */
