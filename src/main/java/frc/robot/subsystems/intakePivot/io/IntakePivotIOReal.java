@@ -98,7 +98,7 @@ public class IntakePivotIOReal implements IntakePivotIO {
 
   private void configurePivotMotor() {
     var config = new TalonFXConfiguration();
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     config.MotorOutput.Inverted =
         IntakePivotConstants.SoftwareConstants.MOTOR_INVERTED
