@@ -125,14 +125,6 @@ public class Robot extends LoggedRobot {
     } else {
       HardwareConstants.TuningConstants.TUNING_MODE = HardwareConstants.TuningConstants.isTuning;
     }
-
-    // These calls are redundant — @AutoLogOutput annotations already log these values every loop,
-    // and subsystems/commands call them when they actually need the result. Each one triggers a
-    // cascade of zone/pose/velocity calculations that wastes loop time.
-    // RobotState.getInstance().getDistanceToAllianceHub();
-    // RobotState.getInstance().getRobotZone(RobotState.getInstance().getEstimatedPose());
-    // RobotState.getInstance().zoneSafeToShoot();
-    // RobotState.getInstance().isHoodSafeVelo(RobotState.getInstance().getFuturePose());
   }
 
   /** This function is called once when the robot is disabled. */

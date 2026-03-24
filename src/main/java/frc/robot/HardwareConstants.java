@@ -1,5 +1,6 @@
 package frc.robot;
 
+import static edu.wpi.first.math.util.Units.inchesToMeters;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
@@ -143,7 +144,7 @@ public class HardwareConstants {
 
   public static class TuningConstants {
     public static boolean TUNING_MODE;
-    public static boolean isTuning = true;
+    public static boolean isTuning = false;
 
     public static final AngularVelocity FlywheelTuningVelocity = RPM.of(1700);
     public static final double HoodTuningPos = 0.45;
@@ -160,15 +161,28 @@ public class HardwareConstants {
 
     public enum Zone {
       ALLIANCE_ZONE,
-      NEAR_ALLIANCE_TRENCH,
-      ALLIANCE_TRENCH,
+      APPROACHING_ALLIANCE_TRENCH,
+      ALLIANCE_TRENCH_NEAR,
+      ALLIANCE_HUB,
+      ALLIANCE_TRENCH_FAR,
       NEUTRAL,
-      OPPOSING_TRENCH,
-      NEAR_OPPOSING_TRENCH,
+      OPPOSING_TRENCH_NEAR,
+      OPPOSING_HUB,
+      OPPOSING_TRENCH_FAR,
+      APPROACHING_OPPOSING_TRENCH,
       OPPOSING_ZONE
+    }
+
+    public enum IntakeZone {
+      INTAKE_DANGER,
+      INTAKE_SAFE
     }
 
     public static final double zoneOffset = 0.3;
     public static final double timeInterval = 0.25;
+  }
+
+  public static class hubDangerZone {
+    public static final double intakeOffset = inchesToMeters(25.5);
   }
 }
