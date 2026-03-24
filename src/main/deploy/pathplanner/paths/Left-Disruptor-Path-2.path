@@ -146,7 +146,20 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "DeployIntake",
+      "waypointRelativePos": 0.1328125,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "RunIntake",
+      "waypointRelativePos": 0.612745098039216,
+      "endWaypointRelativePos": 2.521292892156863,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 4.0,
     "maxAcceleration": 3.2,
@@ -163,7 +176,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -45.70522478914327
+    "rotation": -137.28398046185893
   },
   "useDefaultConstraints": true
 }
