@@ -58,7 +58,7 @@ public class Flywheel extends SubsystemBase {
   }
 
   public void setFlywheelIdle() {
-    io.setFlywheelVelocity(HardwareConstants.TestVelocities.flywheelIdleVelocity);
+    io.setFlywheelVelocity(HardwareConstants.CompConstants.Velocities.flywheelIdleVelocity);
   }
 
   public void setSpeedForHub() {

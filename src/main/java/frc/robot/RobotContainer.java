@@ -123,8 +123,6 @@ public class RobotContainer {
       new CommandXboxController(HardwareConstants.ControllerConstants.XboxControllerPort);
   private final CommandJoystick thrustmaster =
       new CommandJoystick(HardwareConstants.ControllerConstants.JoystickControllerPort);
-  private final CommandJoystick buttonPanel =
-      new CommandJoystick(HardwareConstants.ControllerConstants.ButtonPanelPort);
 
   public RobotContainer() {
     switch (Constants.currentMode) {
@@ -258,22 +256,22 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "DeployIntake",
         IntakePivotCommands.setPivotRotations(
-            intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest));
+            intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
 
     // Auto retract intake command
     NamedCommands.registerCommand(
         "RetractIntake",
         IntakePivotCommands.setPivotRotations(
-            intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest));
+            intakePivot, HardwareConstants.CompConstants.Positions.pivotUpPos));
 
     // Auto run intake command
     NamedCommands.registerCommand(
         "RunIntake",
         intakeRollerCommands
-            .setRollerVoltage(intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage)
+            .setRollerVoltage(intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)
             .alongWith(
                 TransportCommands.setTransportVoltage(
-                    transport, HardwareConstants.TestVoltages.TransportTestVoltage)));
+                    transport, HardwareConstants.CompConstants.Voltages.transportVoltage)));
 
     // Auto shoot command
     NamedCommands.registerCommand(
@@ -319,7 +317,7 @@ public class RobotContainer {
             Commands.runOnce(
                 () ->
                     intakePivot.setPivotPosition(
-                        HardwareConstants.TestPositions.intakeDegreesDownTest)));
+                        HardwareConstants.CompConstants.Positions.pivotDownPos)));
 
     // Event marker for intake retract command (no subsystem requirement to avoid auto interruption)
     new EventTrigger("RetractIntake")
@@ -327,7 +325,7 @@ public class RobotContainer {
             Commands.runOnce(
                 () ->
                     intakePivot.setPivotPosition(
-                        HardwareConstants.TestPositions.intakeDegreesUpTest)));
+                        HardwareConstants.CompConstants.Positions.pivotUpPos)));
 
     // Event marker for running intake rollers + transport while in a zoned area
     // Uses whileTrue because this is a zoned event marker (has start AND end positions in the path)
@@ -337,9 +335,9 @@ public class RobotContainer {
             Commands.startEnd(
                 () -> {
                   intakeRoller.setRollerVoltage(
-                      HardwareConstants.TestVoltages.intakeRollerTestVoltage);
+                      HardwareConstants.CompConstants.Voltages.intakeRollerVoltage);
                   transport.setTransportVoltage(
-                      HardwareConstants.TestVoltages.TransportTestVoltage);
+                      HardwareConstants.CompConstants.Voltages.transportVoltage);
                 },
                 () -> {
                   intakeRoller.setRollerVoltage(Volts.of(0));
@@ -348,7 +346,7 @@ public class RobotContainer {
 
     // Event marker for setting the hood position to down
     new EventTrigger("HoodDown")
-        .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
+        .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
   }
 
   private void configureButtonBindings() {
@@ -401,59 +399,54 @@ public class RobotContainer {
     flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // Hood (set down)
     hood.setDefaultCommand(
-        HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
-    // Intake rollers
-    // intakeRoller.setDefaultCommand(
-    //     intakeRollerCommands.setRollerVoltage(
-    //         intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage));
-    // Prestage
+        HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
+    // Prestage, by voltage
     prestage.setDefaultCommand(PrestageCommands.setPrestageVoltage(prestage, Volts.of(-1)));
+    // Feeder, by voltage
     feeder.setDefaultCommand(FeederCommands.setFeederVoltage(feeder, Volts.of(-1)));
 
-    // Distance-based shooting
-    thrustmaster
-        .button(1)
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                    drive,
-                    () -> -thrustmaster.getY(),
-                    () -> -thrustmaster.getX(),
-                    () -> flywheel.getShootAngleForZone())
-                .alongWith(
-                    new WaitCommand(0.15)
-                        .andThen(
-                            ShootSequences.zonePassOrShoot(
-                                flywheel,
-                                prestage,
-                                hood,
-                                feeder,
-                                transport,
-                                intakeRoller,
-                                intakePivot))))
-        .onFalse(
-            ShootSequences.shootEndBehavior(
-                flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
-
-    // Shoot for map tuning
-    // thrustmaster
-    //     .button(1)
-    //     .whileTrue(
-    //         DriveCommands.joystickDriveAtAngle(
-    //                 drive,
-    //                 () -> -thrustmaster.getX(),
-    //                 () -> -thrustmaster.getY(),
-    //                 () -> RobotState.getInstance().getAngleToAllianceHub())
-    //             .alongWith(
-    //                 new WaitCommand(0.5)
-    //                     .andThen(
-    //                         ShootSequences.mapTuningShoot(
-    //                             flywheel,
-    //                             prestage,
-    //                             hood,
-    //                             intakePivot,
-    //                             feeder,
-    //                             transport,
-    //                             intakeRoller))));
+    if (!HardwareConstants.TuningConstants.TUNING_MODE) {
+      // Distance-based shooting
+      thrustmaster
+          .button(1)
+          .whileTrue(
+              DriveCommands.joystickDriveAtAngle(
+                      drive,
+                      () -> -thrustmaster.getY(),
+                      () -> -thrustmaster.getX(),
+                      () -> flywheel.getShootAngleForZone())
+                  .alongWith(
+                              ShootSequences.zonePassOrShoot(
+                                  flywheel,
+                                  prestage,
+                                  hood,
+                                  feeder,
+                                  transport,
+                                  intakeRoller,
+                                  intakePivot)))
+          .onFalse(
+              ShootSequences.shootEndBehavior(
+                  flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
+    } else {
+      // Shoot for map tuning
+      thrustmaster
+          .button(1)
+          .whileTrue(
+              DriveCommands.joystickDriveAtAngle(
+                      drive,
+                      () -> -thrustmaster.getX(),
+                      () -> -thrustmaster.getY(),
+                      () -> RobotState.getInstance().getAngleToAllianceHub())
+                  .alongWith(
+                              ShootSequences.mapTuningShoot(
+                                  flywheel,
+                                  prestage,
+                                  hood,
+                                  intakePivot,
+                                  feeder,
+                                  transport,
+                                  intakeRoller)));
+    }
 
     // Align for sweep
     thrustmaster
@@ -467,21 +460,21 @@ public class RobotContainer {
         .button(3)
         .whileTrue(
             IntakePivotCommands.setPivotRotations(
-                intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest));
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotUpPos));
 
     // Intake down
     thrustmaster
         .button(4)
         .whileTrue(
             IntakePivotCommands.setPivotRotations(
-                intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest));
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
 
     // Run intake roller
     thrustmaster
         .button(5)
         .whileTrue(
             intakeRollerCommands.setRollerVoltage(
-                intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage)
+                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)
             // .alongWith(
             //     TransportCommands.setTransportVoltage(
             //         transport, HardwareConstants.TestVoltages.TransportTestVoltage))
@@ -540,9 +533,7 @@ public class RobotContainer {
             ShootSequences.shootEndBehavior(
                 flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
 
-    // Align for trench
-
-    // Align for trench
+    // Align for bump
     thrustmaster
         .button(12)
         .whileTrue(
@@ -552,7 +543,7 @@ public class RobotContainer {
     // Drop hood
     // controller
     //     .y()
-    //     .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test));
+    //     .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
 
     // Bump hood pos up
     controller.leftBumper().onTrue(HoodCommands.incrementHoodPos(hood));
@@ -561,7 +552,7 @@ public class RobotContainer {
         .y()
         .whileTrue(
             intakeRollerCommands.setRollerVelocity(
-                intakeRoller, HardwareConstants.TestVelocities.rollerVelocity));
+                intakeRoller, HardwareConstants.TestConstants.TestVelocities.rollerVelocity));
   }
 
   private void configureSimBindings() {
@@ -608,14 +599,14 @@ public class RobotContainer {
         .leftBumper()
         .whileTrue(
             IntakePivotCommands.setPivotRotations(
-                intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest));
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
 
     // Right bumper: intake up
     controller
         .rightBumper()
         .whileTrue(
             IntakePivotCommands.setPivotRotations(
-                intakePivot, HardwareConstants.TestPositions.intakeDegreesUpTest));
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotUpPos));
 
     // ==================== INTAKE ROLLER + TRANSPORT TEST (SIM) ====================
     // X button: run intake roller + transport together (simulates intaking a ball)
@@ -624,10 +615,10 @@ public class RobotContainer {
         .whileTrue(
             intakeRollerCommands
                 .setRollerVoltage(
-                    intakeRoller, HardwareConstants.TestVoltages.intakeRollerTestVoltage)
+                    intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)
                 .alongWith(
                     TransportCommands.setTransportVoltage(
-                        transport, HardwareConstants.TestVoltages.TransportTestVoltage)));
+                        transport, HardwareConstants.CompConstants.Voltages.transportVoltage)));
 
     // ==================== PRESTAGE + FEEDER TEST (SIM) ====================
     // Y button: run prestage and feeder at velocity setpoints
@@ -635,10 +626,10 @@ public class RobotContainer {
         .y()
         .whileTrue(
             PrestageCommands.setPrestageVelocity(
-                    prestage, HardwareConstants.TestVelocities.prestageVelocity)
+                    prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity)
                 .alongWith(
                     FeederCommands.setFeederVelocity(
-                        feeder, HardwareConstants.TestVelocities.feederVelocity)))
+                        feeder, HardwareConstants.CompConstants.Velocities.feederVelocity)))
         .onFalse(
             PrestageCommands.stop(prestage)
                 .alongWith(FeederCommands.setFeederVelocity(feeder, RotationsPerSecond.of(0))));

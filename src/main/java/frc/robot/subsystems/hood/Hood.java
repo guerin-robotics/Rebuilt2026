@@ -58,7 +58,7 @@ public class Hood extends SubsystemBase {
     if (RobotState.getInstance().isHoodSafeVelo(RobotState.getInstance().getEstimatedPose())) {
       io.setHoodPos(position);
     } else {
-      io.setHoodPos(HardwareConstants.TestPositions.hoodPos1Test);
+      io.setHoodPos(HardwareConstants.CompConstants.Positions.hoodDownPos);
     }
   }
 

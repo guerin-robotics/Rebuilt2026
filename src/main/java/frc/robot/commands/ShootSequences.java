@@ -33,18 +33,18 @@ public class ShootSequences {
             FlywheelCommands.setFlywheelVelocity(
                 flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity),
             PrestageCommands.setPrestageVelocity(
-                prestage, HardwareConstants.TestVelocities.prestageVelocity),
+                prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
             HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos),
             IntakePivotCommands.jostlePivotByPos(intakePivot)),
         Commands.sequence(
-            new WaitCommand(0.5),
+            new WaitCommand(HardwareConstants.CompConstants.flywheelSpinupSeconds),
             Commands.parallel(
                 FeederCommands.setFeederVelocity(
-                    feeder, HardwareConstants.TestVelocities.feederVelocity),
+                    feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
                 TransportCommands.setTransportVoltage(
-                    transport, HardwareConstants.TestVoltages.TransportTestVoltage),
+                    transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
                 intakeRollerCommands.setRollerVoltage(
-                    intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage))));
+                    intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))));
   }
 
   public static Command shootForTower(
@@ -59,16 +59,16 @@ public class ShootSequences {
             FlywheelCommands.setFlywheelVelocity(
                 flywheel, HardwareConstants.TowerConstants.FlywheelTowerVelocity),
             PrestageCommands.setPrestageVelocity(
-                prestage, HardwareConstants.TestVelocities.prestageVelocity),
+                prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
             HoodCommands.setHoodPos(hood, HardwareConstants.TowerConstants.hoodTowerPos)),
         Commands.sequence(
             new WaitCommand(0.15),
             FeederCommands.setFeederVelocity(
-                feeder, HardwareConstants.TestVelocities.feederVelocity),
+                feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
             TransportCommands.setTransportVoltage(
-                transport, HardwareConstants.TestVoltages.TransportTestVoltage),
+                transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
             intakeRollerCommands.setRollerVoltage(
-                intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage)));
+                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage)));
   }
 
   public static Command shootForTowerNoDelay(
@@ -82,13 +82,13 @@ public class ShootSequences {
         FlywheelCommands.setFlywheelVelocity(
             flywheel, HardwareConstants.TowerConstants.FlywheelTowerVelocity),
         PrestageCommands.setPrestageVelocity(
-            prestage, HardwareConstants.TestVelocities.prestageVelocity),
+            prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
         HoodCommands.setHoodPos(hood, HardwareConstants.TowerConstants.hoodTowerPos),
-        FeederCommands.setFeederVelocity(feeder, HardwareConstants.TestVelocities.feederVelocity),
+        FeederCommands.setFeederVelocity(feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
         TransportCommands.setTransportVoltage(
-            transport, HardwareConstants.TestVoltages.TransportTestVoltage),
+            transport, (HardwareConstants.CompConstants.Voltages.transportVoltage)),
         intakeRollerCommands.setRollerVoltage(
-            intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage));
+            intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage));
   }
 
   public static Command shootToHub(
@@ -103,17 +103,18 @@ public class ShootSequences {
             Commands.parallel(
                 FlywheelCommands.setVelocityForHub(flywheel),
                 PrestageCommands.setPrestageVelocity(
-                    prestage, HardwareConstants.TestVelocities.prestageVelocity),
+                    prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
                 HoodCommands.setHoodPosForHub(hood),
                 IntakePivotCommands.jostlePivotByPos(intakePivot)),
             Commands.sequence(
-                new WaitCommand(0.15),
+                new WaitCommand(HardwareConstants.CompConstants.flywheelSpinupSeconds),
+                Commands.parallel(
                 FeederCommands.setFeederVelocity(
-                    feeder, HardwareConstants.TestVelocities.feederVelocity),
+                    feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
                 TransportCommands.setTransportVoltage(
-                    transport, HardwareConstants.TestVoltages.TransportTestVoltage),
+                    transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
                 intakeRollerCommands.setRollerVoltage(
-                    intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage)))
+                    intakeRoller, (HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)))))
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
   }
 
@@ -129,24 +130,24 @@ public class ShootSequences {
             Commands.parallel(
                 FlywheelCommands.setVelocityForHub(flywheel),
                 PrestageCommands.setPrestageVelocity(
-                    prestage, HardwareConstants.TestVelocities.prestageVelocity),
+                    prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
                 HoodCommands.setHoodPosForHub(hood),
                 IntakePivotCommands.jostlePivotByPos(intakePivot)),
             Commands.sequence(
                 new WaitCommand(0.15),
                 FeederCommands.setFeederVelocity(
-                    feeder, HardwareConstants.TestVelocities.feederVelocity),
+                    feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
                 TransportCommands.setTransportVoltage(
-                    transport, HardwareConstants.TestVoltages.TransportTestVoltage),
+                    transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
                 intakeRollerCommands.setRollerVoltage(
-                    intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage)))
+                    intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)))
         .finallyDo(
             () -> {
               FlywheelCommands.flywheelIdle(flywheel);
               PrestageCommands.setPrestageVelocity(prestage, RotationsPerSecond.of(0));
               FeederCommands.setFeederVelocity(feeder, RotationsPerSecond.of(0));
               TransportCommands.setTransportVoltage(transport, Volts.of(0));
-              HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test);
+              HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos);
             });
   }
 
@@ -162,16 +163,16 @@ public class ShootSequences {
             Commands.parallel(
                 FlywheelCommands.setPassVelocity(flywheel),
                 PrestageCommands.setPrestageVelocity(
-                    prestage, HardwareConstants.TestVelocities.prestageVelocity),
+                    prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
                 HoodCommands.setHoodPos(hood, HardwareConstants.PassConstants.hoodPassPos)),
             Commands.sequence(
-                new WaitCommand(0.5),
+                new WaitCommand(HardwareConstants.CompConstants.flywheelSpinupSeconds),
                 FeederCommands.setFeederVelocity(
-                    feeder, HardwareConstants.TestVelocities.feederVelocity),
+                    feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
                 TransportCommands.setTransportVoltage(
-                    transport, HardwareConstants.TestVoltages.TransportTestVoltage),
+                    transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
                 intakeRollerCommands.setRollerVoltage(
-                    intakeRoller, HardwareConstants.TestVoltages.intakeRollerAgitateVoltage),
+                    intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage),
                 IntakePivotCommands.jostlePivotByPos(intakePivot)))
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
   }
@@ -209,10 +210,10 @@ public class ShootSequences {
             TransportCommands.stop(transport),
             intakeRollerCommands.stopIntakeRoller(intakeRoller),
             IntakePivotCommands.setPivotRotations(
-                intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest)),
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos)),
         new WaitCommand(0.25),
         FlywheelCommands.setFlywheelVelocity(
-            flywheel, HardwareConstants.TestVelocities.FlywheelVelocity));
+            flywheel, HardwareConstants.CompConstants.Velocities.flywheelIdleVelocity));
   }
 
   public static Command FirstSet(Flywheel flywheel, Prestage prestage, Hood hood) {
@@ -220,22 +221,22 @@ public class ShootSequences {
             FlywheelCommands.setFlywheelVelocity(
                 flywheel, HardwareConstants.TowerConstants.FlywheelTowerVelocity),
             PrestageCommands.setPrestageVelocity(
-                prestage, HardwareConstants.TestVelocities.prestageVelocity),
+                prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
             HoodCommands.setHoodPos(hood, HardwareConstants.TowerConstants.hoodTowerPos))
         .finallyDo(
             () -> {
               flywheel.setFlywheelVelocity(RotationsPerSecond.of(0));
               prestage.setPrestageVelocity(RotationsPerSecond.of(0));
-              hood.setHoodPos(HardwareConstants.TestPositions.hoodPos1Test);
+              hood.setHoodPos(HardwareConstants.CompConstants.Positions.hoodDownPos);
             });
   }
 
   public static Command SecondSet(Feeder feeder, Transport transport) {
     return Commands.parallel(
             FeederCommands.setFeederVelocity(
-                feeder, HardwareConstants.TestVelocities.feederVelocity),
+                feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
             TransportCommands.setTransportVoltage(
-                transport, HardwareConstants.TestVoltages.TransportTestVoltage))
+                transport, HardwareConstants.CompConstants.Voltages.transportVoltage))
         .finallyDo(
             () -> {
               feeder.setFeederVelocity(RotationsPerSecond.of(0));
@@ -253,7 +254,7 @@ public class ShootSequences {
     return Commands.parallel(
         FlywheelCommands.stop(flywheel),
         PrestageCommands.stop(prestage),
-        HoodCommands.setHoodPos(hood, HardwareConstants.TestPositions.hoodPos1Test),
+        HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos),
         FeederCommands.stop(feeder),
         TransportCommands.stop(transport),
         intakeRollerCommands.stopIntakeRoller(intakeRoller));

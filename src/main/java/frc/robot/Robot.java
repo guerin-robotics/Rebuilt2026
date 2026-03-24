@@ -7,11 +7,16 @@
 
 package frc.robot;
 
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.AllianceFlipUtil;
+import frc.robot.util.HubShiftUtil;
+
 import org.littletonrobotics.junction.AutoLogOutputManager;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -86,6 +91,9 @@ public class Robot extends LoggedRobot {
 
     // Publish the robot pose Field2d to the dashboard so we can see where the robot is
     SmartDashboard.putData("Robot Pose Field Map", fieldMap);
+
+    // Publish time left in shift to the dashboard
+    SmartDashboard.putNumber("Time Left in Shift", HubShiftUtil.getShiftedShiftInfo().remainingTime());
   }
 
   /** This function is called periodically during all modes. */
@@ -112,6 +120,13 @@ public class Robot extends LoggedRobot {
 
     // Return to non-RT thread priority (do not modify the first argument)
     // Threads.setCurrentThreadPriority(false, 10);
+
+    // Set tuning mode to false if connected to FMS
+    if (DriverStation.isFMSAttached()) {
+      HardwareConstants.TuningConstants.TUNING_MODE = false;
+    } else {
+      HardwareConstants.TuningConstants.TUNING_MODE = HardwareConstants.TuningConstants.isTuning;
+    }
 
     // These calls are redundant — @AutoLogOutput annotations already log these values every loop,
     // and subsystems/commands call them when they actually need the result. Each one triggers a

@@ -60,15 +60,15 @@ public class IntakePivotCommands {
 
   public static Command jostlePivotByPos(IntakePivot intakePivot) {
     return Commands.sequence(
-            setPivotRotations(intakePivot, HardwareConstants.TestPositions.intakeJostleTest),
+            setPivotRotations(intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos),
             new WaitCommand(0.25),
-            setPivotRotations(intakePivot, HardwareConstants.TestPositions.intakeDegreesDownTest),
+            setPivotRotations(intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
             new WaitCommand(0.25))
         .repeatedly()
         .finallyDo(
             () ->
                 intakePivot.setPivotPosition(
-                    HardwareConstants.TestPositions.intakeDegreesDownTest));
+                    HardwareConstants.CompConstants.Positions.pivotDownPos));
   }
 
   /** Zero the pivot encoder at the current position. */

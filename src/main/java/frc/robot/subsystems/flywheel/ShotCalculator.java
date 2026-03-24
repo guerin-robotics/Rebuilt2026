@@ -1,5 +1,6 @@
 package frc.robot.subsystems.flywheel;
 
+import static edu.wpi.first.math.util.Units.inchesToMeters;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RevolutionsPerSecond;
@@ -179,5 +180,29 @@ public class ShotCalculator {
 
     Logger.recordOutput("Flywheel/ShotCalculator/InShootingRange", inRange);
     return inRange;
+  }
+
+  // Get minimum time of flight (m / ((rot/min) * (min/sec) * (m/rot)) = sec)
+  public double getMinTimeOfFlight() {
+    Distance minDistance = Meters.of(inchesToMeters(70));
+    double minTimeOfFlight = (
+      minDistance.magnitude() // m
+       / (getFlywheelSpeedForDistance(minDistance).magnitude() // rot/min 
+          * (1/60) // min/sec
+          * FlywheelConstants.Mechanical.flywheelMetersPerRotation) // m/rot
+          );
+    return minTimeOfFlight;
+  }
+
+  // Get maximum time of flight (m / ((rot/min) * (min/sec) * (m/rot)) = sec)
+  public double getMaxTimeOfFlight() {
+    Distance maxDistance = Meters.of(inchesToMeters(205));
+    double maxTimeOfFlight = (
+      maxDistance.magnitude() // m
+        / (getFlywheelSpeedForDistance(maxDistance).magnitude() // rot/min
+        * (1/60) // min/sec
+        * FlywheelConstants.Mechanical.flywheelMetersPerRotation) // m/rot
+      );
+    return maxTimeOfFlight;
   }
 }
