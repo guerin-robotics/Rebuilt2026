@@ -268,7 +268,8 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "RunIntake",
         intakeRollerCommands
-            .setRollerVoltage(intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)
+            .setRollerVoltage(
+                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)
             .alongWith(
                 TransportCommands.setTransportVoltage(
                     transport, HardwareConstants.CompConstants.Voltages.transportVoltage)));
@@ -346,7 +347,8 @@ public class RobotContainer {
 
     // Event marker for setting the hood position to down
     new EventTrigger("HoodDown")
-        .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
+        .onTrue(
+            HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
   }
 
   private void configureButtonBindings() {
@@ -395,11 +397,14 @@ public class RobotContainer {
     // REVISED SUBSYSTEM CONTROLS
 
     // Default commands
-    // Flywheel (10 rps)
     flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
-    // Hood (set down)
-    hood.setDefaultCommand(
-        HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
+    if (!HardwareConstants.TuningConstants.TUNING_MODE) {
+      // Flywheel (5 rps)
+      flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
+      // Hood (down)
+      hood.setDefaultCommand(
+          HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
+    }
     // Prestage, by voltage
     prestage.setDefaultCommand(PrestageCommands.setPrestageVoltage(prestage, Volts.of(-1)));
     // Feeder, by voltage
@@ -416,14 +421,8 @@ public class RobotContainer {
                       () -> -thrustmaster.getX(),
                       () -> flywheel.getShootAngleForZone())
                   .alongWith(
-                              ShootSequences.zonePassOrShoot(
-                                  flywheel,
-                                  prestage,
-                                  hood,
-                                  feeder,
-                                  transport,
-                                  intakeRoller,
-                                  intakePivot)))
+                      ShootSequences.zonePassOrShoot(
+                          flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot)))
           .onFalse(
               ShootSequences.shootEndBehavior(
                   flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
@@ -438,14 +437,8 @@ public class RobotContainer {
                       () -> -thrustmaster.getY(),
                       () -> RobotState.getInstance().getAngleToAllianceHub())
                   .alongWith(
-                              ShootSequences.mapTuningShoot(
-                                  flywheel,
-                                  prestage,
-                                  hood,
-                                  intakePivot,
-                                  feeder,
-                                  transport,
-                                  intakeRoller)));
+                      ShootSequences.mapTuningShoot(
+                          flywheel, prestage, hood, intakePivot, feeder, transport, intakeRoller)));
     }
 
     // Align for sweep
@@ -543,7 +536,8 @@ public class RobotContainer {
     // Drop hood
     // controller
     //     .y()
-    //     .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
+    //     .onTrue(HoodCommands.setHoodPos(hood,
+    // HardwareConstants.CompConstants.Positions.hoodDownPos));
 
     // Bump hood pos up
     controller.leftBumper().onTrue(HoodCommands.incrementHoodPos(hood));

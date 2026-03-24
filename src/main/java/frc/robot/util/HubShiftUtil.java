@@ -10,10 +10,10 @@ package frc.robot.util;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.subsystems.flywheel.ShotCalculator;
 import java.util.Optional;
 import java.util.function.Supplier;
 import lombok.Setter;
-import frc.robot.subsystems.flywheel.ShotCalculator;
 
 public class HubShiftUtil {
   public enum ShiftEnum {

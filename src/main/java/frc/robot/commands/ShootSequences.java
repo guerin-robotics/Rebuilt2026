@@ -44,7 +44,8 @@ public class ShootSequences {
                 TransportCommands.setTransportVoltage(
                     transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
                 intakeRollerCommands.setRollerVoltage(
-                    intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))));
+                    intakeRoller,
+                    HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))));
   }
 
   public static Command shootForTower(
@@ -68,7 +69,8 @@ public class ShootSequences {
             TransportCommands.setTransportVoltage(
                 transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
             intakeRollerCommands.setRollerVoltage(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage)));
+                intakeRoller,
+                HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage)));
   }
 
   public static Command shootForTowerNoDelay(
@@ -84,7 +86,8 @@ public class ShootSequences {
         PrestageCommands.setPrestageVelocity(
             prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
         HoodCommands.setHoodPos(hood, HardwareConstants.TowerConstants.hoodTowerPos),
-        FeederCommands.setFeederVelocity(feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
+        FeederCommands.setFeederVelocity(
+            feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
         TransportCommands.setTransportVoltage(
             transport, (HardwareConstants.CompConstants.Voltages.transportVoltage)),
         intakeRollerCommands.setRollerVoltage(
@@ -109,12 +112,13 @@ public class ShootSequences {
             Commands.sequence(
                 new WaitCommand(HardwareConstants.CompConstants.flywheelSpinupSeconds),
                 Commands.parallel(
-                FeederCommands.setFeederVelocity(
-                    feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
-                TransportCommands.setTransportVoltage(
-                    transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
-                intakeRollerCommands.setRollerVoltage(
-                    intakeRoller, (HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)))))
+                    FeederCommands.setFeederVelocity(
+                        feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
+                    TransportCommands.setTransportVoltage(
+                        transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
+                    intakeRollerCommands.setRollerVoltage(
+                        intakeRoller,
+                        (HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)))))
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
   }
 

@@ -7,8 +7,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.AllianceFlipUtil;
 import frc.robot.util.HubShiftUtil;
-
 import org.littletonrobotics.junction.AutoLogOutputManager;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -93,7 +90,8 @@ public class Robot extends LoggedRobot {
     SmartDashboard.putData("Robot Pose Field Map", fieldMap);
 
     // Publish time left in shift to the dashboard
-    SmartDashboard.putNumber("Time Left in Shift", HubShiftUtil.getShiftedShiftInfo().remainingTime());
+    SmartDashboard.putNumber(
+        "Time Left in Shift", HubShiftUtil.getShiftedShiftInfo().remainingTime());
   }
 
   /** This function is called periodically during all modes. */
