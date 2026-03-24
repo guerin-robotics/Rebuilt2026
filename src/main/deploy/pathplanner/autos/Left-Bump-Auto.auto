@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left-Bump-Path"
+            "pathName": "Left-Bump-Path-1"
           }
         },
         {
@@ -23,16 +23,47 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 4.5
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "StopAll"
+                  "waitTime": 4.0
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopAll"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left-Bump-Path-2"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 4.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopAll"
           }
         }
       ]
