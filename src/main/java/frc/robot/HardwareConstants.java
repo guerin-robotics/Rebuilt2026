@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import frc.lib.AllianceFlipUtil;
 
 public class HardwareConstants {
   public static final int NUMBER_OF_CAMERAS = 4;
@@ -184,7 +185,7 @@ public class HardwareConstants {
       INTAKE_SAFE
     }
 
-    public static final double zoneOffset = 0.3;
+    public static final double zoneOffset = AllianceFlipUtil.applyX(2);
     public static final double timeInterval = 0.05;
   }
 

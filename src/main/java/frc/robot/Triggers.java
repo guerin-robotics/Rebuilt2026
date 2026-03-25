@@ -1,7 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.lib.FieldConstants;
 import frc.robot.HardwareConstants.Zones.Zone;
 import org.littletonrobotics.junction.Logger;
@@ -79,17 +78,19 @@ public class Triggers {
     HardwareConstants.Zones.Zone currentZone =
         RobotState.getInstance().getRobotZone(RobotState.getInstance().getEstimatedPose());
     double currentY = RobotState.getInstance().getEstimatedPose().getY();
-    ChassisSpeeds velocity = RobotState.getInstance().getFieldRelativeVelocity();
-    if (currentZone == HardwareConstants.Zones.Zone.ALLIANCE_ZONE
-        && (currentY > FieldConstants.LinesHorizontal.leftBumpEnd
-            || currentY < FieldConstants.LinesHorizontal.rightBumpEnd)
-        && velocity.vxMetersPerSecond > 0.0) {
-      return true;
-    } else if (currentZone == HardwareConstants.Zones.Zone.NEUTRAL
-        && (currentY > FieldConstants.LinesHorizontal.leftBumpEnd
-            || currentY < FieldConstants.LinesHorizontal.rightBumpEnd)
-        && velocity.vxMetersPerSecond < 0.0) {
-      return true;
+    boolean yOk =
+        (currentY > FieldConstants.LinesHorizontal.leftBumpStart
+            || currentY < FieldConstants.LinesHorizontal.rightBumpEnd);
+    if (yOk) {
+      switch (currentZone) {
+        case ALLIANCE_ZONE_TRENCH_BORDER,
+            ALLIANCE_NEUTRAL_TRENCH_BORDER,
+            OPPOSING_ZONE_TRENCH_BORDER,
+            OPPOSING_NEUTRAL_TRENCH_BORDER:
+          return true;
+        default:
+          return false;
+      }
     } else {
       return false;
     }
@@ -110,31 +111,33 @@ public class Triggers {
     HardwareConstants.Zones.Zone currentZone =
         RobotState.getInstance().getRobotZone(RobotState.getInstance().getEstimatedPose());
     double currentY = RobotState.getInstance().getEstimatedPose().getY();
-    ChassisSpeeds velocity = RobotState.getInstance().getFieldRelativeVelocity();
-    if (currentZone == HardwareConstants.Zones.Zone.ALLIANCE_ZONE
-        && currentY < FieldConstants.LinesHorizontal.leftBumpEnd
-        && currentY > FieldConstants.LinesHorizontal.rightBumpEnd
-        && velocity.vxMetersPerSecond > 0.0) {
-      return true;
-    } else if (currentZone == HardwareConstants.Zones.Zone.NEUTRAL
-        && currentY < FieldConstants.LinesHorizontal.leftBumpEnd
-        && currentY > FieldConstants.LinesHorizontal.rightBumpEnd
-        && velocity.vxMetersPerSecond < 0.0) {
-      return true;
+    boolean yOk =
+        (currentY < FieldConstants.LinesHorizontal.leftBumpStart
+            && currentY > FieldConstants.LinesHorizontal.rightBumpEnd);
+    if (yOk) {
+      switch (currentZone) {
+        case ALLIANCE_ZONE_TRENCH_BORDER,
+            ALLIANCE_NEUTRAL_TRENCH_BORDER,
+            OPPOSING_ZONE_TRENCH_BORDER,
+            OPPOSING_NEUTRAL_TRENCH_BORDER:
+          return true;
+        default:
+          return false;
+      }
     } else {
       return false;
     }
   }
 
   public boolean isRobotInTower() {
-    HardwareConstants.Zones.Zone currentZone =
-        RobotState.getInstance().getRobotZone(RobotState.getInstance().getEstimatedPose());
     double currentX = RobotState.getInstance().getEstimatedPose().getX();
     double currentY = RobotState.getInstance().getEstimatedPose().getY();
-    if (currentZone == Zone.ALLIANCE_ZONE
-        && currentX < FieldConstants.Tower.frontFaceX
-        && currentY > FieldConstants.Tower.rightUpright.getY()
-        && currentY < FieldConstants.Tower.leftUpright.getY()) {
+    if ((currentX < FieldConstants.Tower.leftUpright.getX()
+            && currentY > FieldConstants.Tower.rightUpright.getY()
+            && currentY < FieldConstants.Tower.leftUpright.getY())
+        || (currentX > FieldConstants.Tower.oppLeftUpright.getX()
+            && currentY > FieldConstants.Tower.oppRightUpright.getY()
+            && currentY < FieldConstants.Tower.oppLeftUpright.getY())) {
       return true;
     } else {
       return false;
@@ -142,16 +145,19 @@ public class Triggers {
   }
 
   public boolean isRobotApproachingTower() {
-    HardwareConstants.Zones.Zone currentZone =
-        RobotState.getInstance().getRobotZone(RobotState.getInstance().getEstimatedPose());
     double currentX = RobotState.getInstance().getEstimatedPose().getX();
     double currentY = RobotState.getInstance().getEstimatedPose().getY();
-    if (currentZone == Zone.ALLIANCE_ZONE
-        && currentX < FieldConstants.Tower.frontFaceX
-        && currentY
-            > (FieldConstants.Tower.rightUpright.getY() - HardwareConstants.Zones.zoneOffset)
-        && currentY
-            > (FieldConstants.Tower.leftUpright.getY() - HardwareConstants.Zones.zoneOffset)) {
+    if ((currentX < (FieldConstants.Tower.leftUpright.getX())
+            && currentY
+                > (FieldConstants.Tower.rightUpright.getY() - HardwareConstants.Zones.zoneOffset)
+            && currentY
+                < (FieldConstants.Tower.leftUpright.getY() + HardwareConstants.Zones.zoneOffset))
+        || (currentX > (FieldConstants.Tower.oppLeftUpright.getX())
+            && currentY
+                > (FieldConstants.Tower.oppRightUpright.getY() - HardwareConstants.Zones.zoneOffset)
+            && currentY
+                < (FieldConstants.Tower.oppLeftUpright.getY()
+                    + HardwareConstants.Zones.zoneOffset))) {
       return true;
     } else {
       return false;

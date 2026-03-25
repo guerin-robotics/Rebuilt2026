@@ -150,13 +150,13 @@ public class DriveCommands {
         joystickDrive(drive, xSupplier, ySupplier, omegaSupplier),
         joystickDriveLimited(drive, xSupplier, ySupplier, omegaSupplier),
         () -> {
-          boolean shouldDrive = (Triggers.getInstance().isIntakeSafe() || override.getAsBoolean());
+          boolean driveNormal = (Triggers.getInstance().isIntakeSafe() || override.getAsBoolean());
           Logger.recordOutput(
               "RobotState/isIntakeSafe",
               Triggers.getInstance().isIntakeSafe() ? "intakeSafe" : "intakeUnsafe");
           Logger.recordOutput(
               "RobotState/isOverrideActive", override.getAsBoolean() ? "override" : "noOverride");
-          return shouldDrive;
+          return driveNormal;
         });
   }
 

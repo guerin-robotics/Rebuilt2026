@@ -405,7 +405,7 @@ public class RobotContainer {
                 () -> MathUtil.clamp(controller.getLeftX() + getThrustX(), -1.0, 1.0),
                 () -> Rotation2d.kZero));
     // X pattern
-    controller.a().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro
     controller
@@ -611,11 +611,38 @@ public class RobotContainer {
         .onFalse(SpitSequences.spitAfterShoot(flywheel, prestage, feeder, transport, intakeRoller));
 
     // B button maps correctly
+    // Trigger-based alignment - trench
     controller
         .b()
+        .and(
+            () ->
+                (Triggers.getInstance().isRobotInTrench()
+                    || Triggers.getInstance().isRobotApproachingTrench()))
         .whileTrue(
-            IntakePivotCommands.setPivotRotations(
-                intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
+            DriveCommands.joystickDriveAlignForTrench(
+                drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
+
+    // Trigger-based alignment - bump
+    controller
+        .b()
+        .and(
+            () ->
+                (Triggers.getInstance().isRobotOnBump()
+                    || Triggers.getInstance().isRobotApproachingBump()))
+        .whileTrue(
+            DriveCommands.joystickDriveAlignForBump(
+                drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
+
+    // Trigger-based alignment - tower
+    controller
+        .b()
+        .and(
+            () ->
+                (Triggers.getInstance().isRobotInTower()
+                    || Triggers.getInstance().isRobotApproachingTower()))
+        .whileTrue(
+            DriveCommands.joystickDriveAlignForTower(
+                drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
 
     // Left bumper: intake down
     controller
