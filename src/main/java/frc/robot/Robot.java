@@ -88,10 +88,6 @@ public class Robot extends LoggedRobot {
 
     // Publish the robot pose Field2d to the dashboard so we can see where the robot is
     SmartDashboard.putData("Robot Pose Field Map", fieldMap);
-
-    // Publish time left in shift to the dashboard
-    SmartDashboard.putNumber(
-        "Time Left in Shift", HubShiftUtil.getShiftedShiftInfo().remainingTime());
   }
 
   /** This function is called periodically during all modes. */
@@ -179,13 +175,17 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
-
     CommandScheduler.getInstance().schedule(robotContainer.getAutoStopCommand());
+    HubShiftUtil.initialize();
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    // Publish time left in shift to the dashboard
+    SmartDashboard.putNumber(
+        "Time Left in Shift", HubShiftUtil.getShiftedShiftInfo().remainingTime());
+  }
 
   /** This function is called once when test mode is enabled. */
   @Override
