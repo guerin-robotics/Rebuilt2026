@@ -105,7 +105,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Left End Pos"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
@@ -173,7 +173,7 @@
     "rotation": -20.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Left-Paths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -137.28398046185893

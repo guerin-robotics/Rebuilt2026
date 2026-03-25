@@ -32,7 +32,7 @@
         {
           "type": "named",
           "data": {
-            "name": "StopAll"
+            "name": "stopAll"
           }
         },
         {
@@ -63,7 +63,7 @@
         {
           "type": "named",
           "data": {
-            "name": "StopAll"
+            "name": "stopAll"
           }
         }
       ]

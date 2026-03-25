@@ -12,7 +12,7 @@
         "y": 0.4351789267442025
       },
       "isLocked": false,
-      "linkedName": "Right Start Pos"
+      "linkedName": "Right-Start-Pos"
     },
     {
       "anchor": {
@@ -37,7 +37,7 @@
       },
       "prevControl": {
         "x": 7.725849331198222,
-        "y": 0.8037420901090556
+        "y": 0.8037420901090554
       },
       "nextControl": {
         "x": 8.673999211185789,
@@ -121,7 +121,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Left End Pos"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
@@ -171,7 +171,7 @@
     "rotation": -20.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Right-Paths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0
