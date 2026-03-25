@@ -126,13 +126,19 @@ public class Robot extends LoggedRobot {
       HardwareConstants.TuningConstants.TUNING_MODE = HardwareConstants.TuningConstants.isTuning;
     }
 
-    Logger.recordOutput("RobotState/isIntakeSafe", RobotState.getInstance().isIntakeSafe());
-    Logger.recordOutput("RobotState/close", RobotState.getInstance().tooCloseToAllianceHub());
+    Logger.recordOutput("RobotState/isIntakeSafe", Triggers.getInstance().isIntakeSafe());
+    Logger.recordOutput("RobotState/closeOpp", RobotState.getInstance().tooCloseToOpposingHub());
     Logger.recordOutput(
-        "RobotState/facing",
+        "RobotState/facingOpp",
+        RobotState.getInstance().facingOpposingHub(RobotState.getInstance().getEstimatedPose()));
+    Logger.recordOutput(
+        "RobotState/approachingOpp", RobotState.getInstance().movingTowardOpposingHub());
+    Logger.recordOutput("RobotState/closeAll", RobotState.getInstance().tooCloseToAllianceHub());
+    Logger.recordOutput(
+        "RobotState/facingAll",
         RobotState.getInstance().facingAllianceHub(RobotState.getInstance().getEstimatedPose()));
     Logger.recordOutput(
-        "RobotState/approaching", RobotState.getInstance().movingTowardAllianceHub());
+        "RobotState/approachingAll", RobotState.getInstance().movingTowardAllianceHub());
   }
 
   /** This function is called once when the robot is disabled. */

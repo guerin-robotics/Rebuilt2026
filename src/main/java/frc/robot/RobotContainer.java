@@ -361,6 +361,40 @@ public class RobotContainer {
             () -> MathUtil.clamp(-controller.getLeftX() - getThrustX(), -1.0, 1.0),
             () -> MathUtil.clamp(-controller.getRightX() - getThrustRot(), -1.0, 1.0),
             controller.y()));
+
+    // Trigger-based alignment - trench
+    thrustmaster
+        .button(2)
+        .and(
+            () ->
+                (Triggers.getInstance().isRobotInTrench()
+                    || Triggers.getInstance().isRobotApproachingTrench()))
+        .whileTrue(
+            DriveCommands.joystickDriveAlignForTrench(
+                drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
+
+    // Trigger-based alignment - bump
+    thrustmaster
+        .button(2)
+        .and(
+            () ->
+                (Triggers.getInstance().isRobotOnBump()
+                    || Triggers.getInstance().isRobotApproachingBump()))
+        .whileTrue(
+            DriveCommands.joystickDriveAlignForBump(
+                drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
+
+    // Trigger-based alignment - tower
+    thrustmaster
+        .button(2)
+        .and(
+            () ->
+                (Triggers.getInstance().isRobotInTower()
+                    || Triggers.getInstance().isRobotApproachingTower()))
+        .whileTrue(
+            DriveCommands.joystickDriveAlignForTower(
+                drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
+
     // Lock to 0° when A button is held (Xbox still controls angle)
     controller
         .a()
@@ -440,13 +474,6 @@ public class RobotContainer {
                       ShootSequences.mapTuningShoot(
                           flywheel, prestage, hood, intakePivot, feeder, transport, intakeRoller)));
     }
-
-    // Align for sweep
-    thrustmaster
-        .button(2)
-        .whileTrue(
-            DriveCommands.joystickDriveAlignForSweepToAllianceZone(
-                drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
 
     // Intake up
     thrustmaster

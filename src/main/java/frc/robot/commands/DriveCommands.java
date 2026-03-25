@@ -27,6 +27,7 @@ import frc.lib.AllianceFlipUtil;
 import frc.lib.ContinuousConditionalCommand;
 import frc.lib.FieldConstants;
 import frc.robot.RobotState;
+import frc.robot.Triggers;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import java.text.DecimalFormat;
@@ -149,11 +150,10 @@ public class DriveCommands {
         joystickDrive(drive, xSupplier, ySupplier, omegaSupplier),
         joystickDriveLimited(drive, xSupplier, ySupplier, omegaSupplier),
         () -> {
-          boolean shouldDrive =
-              (RobotState.getInstance().isIntakeSafe() || override.getAsBoolean());
+          boolean shouldDrive = (Triggers.getInstance().isIntakeSafe() || override.getAsBoolean());
           Logger.recordOutput(
               "RobotState/isIntakeSafe",
-              RobotState.getInstance().isIntakeSafe() ? "intakeSafe" : "intakeUnsafe");
+              Triggers.getInstance().isIntakeSafe() ? "intakeSafe" : "intakeUnsafe");
           Logger.recordOutput(
               "RobotState/isOverrideActive", override.getAsBoolean() ? "override" : "noOverride");
           return shouldDrive;
@@ -239,7 +239,7 @@ public class DriveCommands {
    * @param xSupplier Joystick X axis (left/right translation)
    * @param ySupplier Joystick Y axis (forward/back translation)
    */
-  public static Command joystickDriveSnapToNearestXHeading(
+  public static Command joystickDriveAlignForTrench(
       Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
 
     return joystickDriveAtAngle(
@@ -280,6 +280,23 @@ public class DriveCommands {
             return Rotation2d.fromRadians((5 * Math.PI) / 4.0); // Snap to 225°
           } else {
             return Rotation2d.fromRadians((7 * Math.PI) / 4.0); // Snap to 315°
+          }
+        });
+  }
+
+  public static Command joystickDriveAlignForTower(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+    return joystickDriveAtAngle(
+        drive,
+        xSupplier,
+        ySupplier,
+        () -> {
+          double currentY = RobotState.getInstance().getEstimatedPose().getX();
+
+          if (currentY >= FieldConstants.Tower.leftUpright.getY()) {
+            return Rotation2d.kCCW_90deg;
+          } else {
+            return Rotation2d.kCW_90deg;
           }
         });
   }
