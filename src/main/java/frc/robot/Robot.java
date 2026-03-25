@@ -121,16 +121,6 @@ public class Robot extends LoggedRobot {
     } else {
       HardwareConstants.TuningConstants.TUNING_MODE = HardwareConstants.TuningConstants.isTuning;
     }
-
-    Logger.recordOutput("RobotState/isRobotInTrench", Triggers.getInstance().isRobotInTrench());
-    Logger.recordOutput(
-        "RobotState/isRobotApproachingTrench", Triggers.getInstance().isRobotApproachingTrench());
-    Logger.recordOutput("RobotState/isRobotOnBump", Triggers.getInstance().isRobotOnBump());
-    Logger.recordOutput(
-        "RobotState/isRobotApproachingBump", Triggers.getInstance().isRobotApproachingBump());
-    Logger.recordOutput("RobotState/isRobotUnderTower", Triggers.getInstance().isRobotInTower());
-    Logger.recordOutput(
-        "RobotState/isRobotApproachingTower", Triggers.getInstance().isRobotApproachingTower());
   }
 
   /** This function is called once when the robot is disabled. */

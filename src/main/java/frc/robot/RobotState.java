@@ -576,11 +576,13 @@ public class RobotState {
 
   public boolean movingTowardAllianceHub() {
     HardwareConstants.Zones.Zone currentZone = getRobotZone(getEstimatedPose());
-    if (currentZone == HardwareConstants.Zones.Zone.ALLIANCE_ZONE
+    if ((currentZone == HardwareConstants.Zones.Zone.ALLIANCE_ZONE
+            || currentZone == HardwareConstants.Zones.Zone.ALLIANCE_ZONE_TRENCH_BORDER)
         && AllianceFlipUtil.applyX(getFieldRelativeVelocity().vxMetersPerSecond)
             >= AllianceFlipUtil.applyX(0)) {
       return true;
-    } else if (currentZone == HardwareConstants.Zones.Zone.NEUTRAL
+    } else if ((currentZone == HardwareConstants.Zones.Zone.NEUTRAL
+            || currentZone == HardwareConstants.Zones.Zone.ALLIANCE_NEUTRAL_TRENCH_BORDER)
         && (getFieldRelativeVelocity().vxMetersPerSecond) <= AllianceFlipUtil.applyX(0)) {
       return true;
     } else if (currentZone == HardwareConstants.Zones.Zone.ALLIANCE_BUMP_NEAR
@@ -597,11 +599,13 @@ public class RobotState {
 
   public boolean movingTowardOpposingHub() {
     HardwareConstants.Zones.Zone currentZone = getRobotZone(getEstimatedPose());
-    if (currentZone == HardwareConstants.Zones.Zone.OPPOSING_ZONE
+    if ((currentZone == HardwareConstants.Zones.Zone.OPPOSING_ZONE
+            || currentZone == HardwareConstants.Zones.Zone.OPPOSING_ZONE_TRENCH_BORDER)
         && AllianceFlipUtil.applyX(getFieldRelativeVelocity().vxMetersPerSecond)
             <= AllianceFlipUtil.applyX(0)) {
       return true;
-    } else if (currentZone == HardwareConstants.Zones.Zone.NEUTRAL
+    } else if ((currentZone == HardwareConstants.Zones.Zone.NEUTRAL
+            || currentZone == HardwareConstants.Zones.Zone.OPPOSING_NEUTRAL_TRENCH_BORDER)
         && AllianceFlipUtil.applyX(getFieldRelativeVelocity().vxMetersPerSecond)
             >= AllianceFlipUtil.applyX(0)) {
       return true;
