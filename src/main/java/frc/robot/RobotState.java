@@ -555,23 +555,12 @@ public class RobotState {
     return !unsafe;
   }
 
-  public boolean tooCloseToAllianceHub(Pose2d pose) {
-    double poseX = AllianceFlipUtil.applyX(pose.getX());
-    double poseY = AllianceFlipUtil.applyY(pose.getY());
-    if (((FieldConstants.Hub.nearLeftCorner.getX() - HardwareConstants.hubDangerZone.intakeOffset)
-            < poseX)
-        && ((FieldConstants.Hub.farLeftCorner.getX() + HardwareConstants.hubDangerZone.intakeOffset)
-            > poseX)
-        && ((FieldConstants.Hub.nearRightCorner.getY()
-                - HardwareConstants.hubDangerZone.intakeOffset)
-            < poseY)
-        && ((FieldConstants.Hub.nearLeftCorner.getY()
-                + HardwareConstants.hubDangerZone.intakeOffset)
-            > poseY)) {
-      return true;
-    } else {
-      return false;
-    }
+  public boolean tooCloseToAllianceHub() {
+    return (getDistanceToAllianceHub().magnitude() < HardwareConstants.hubDangerZone.intakeOffset);
+  }
+
+  public boolean tooCloseToOpposingHub() {
+    return (getDistanceToOpposingHub().magnitude() < HardwareConstants.hubDangerZone.intakeOffset);
   }
 
   public boolean facingAllianceHub(Pose2d pose) {
@@ -589,27 +578,6 @@ public class RobotState {
     } else if (currentZone == HardwareConstants.Zones.Zone.ALLIANCE_TRENCH_FAR && (heading < 0)) {
       return true;
     } else if (currentZone == HardwareConstants.Zones.Zone.ALLIANCE_TRENCH_NEAR && (heading > 0)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  public boolean tooCloseToOpposingHub(Pose2d pose) {
-    double poseX = AllianceFlipUtil.applyX(pose.getX());
-    double poseY = AllianceFlipUtil.applyY(pose.getY());
-    if (((FieldConstants.Hub.oppNearLeftCorner.getX()
-                - HardwareConstants.hubDangerZone.intakeOffset)
-            < poseX)
-        && ((FieldConstants.Hub.oppFarLeftCorner.getX()
-                + HardwareConstants.hubDangerZone.intakeOffset)
-            > poseX)
-        && ((FieldConstants.Hub.oppNearRightCorner.getY()
-                - HardwareConstants.hubDangerZone.intakeOffset)
-            < poseY)
-        && ((FieldConstants.Hub.oppFarLeftCorner.getY()
-                + HardwareConstants.hubDangerZone.intakeOffset)
-            > poseY)) {
       return true;
     } else {
       return false;
@@ -637,10 +605,51 @@ public class RobotState {
     }
   }
 
-  // Change the pose input from estimated to future to make the checker responsive to velocity
+  public boolean movingTowardAllianceHub() {
+    HardwareConstants.Zones.Zone currentZone = getRobotZone(getEstimatedPose());
+    if (currentZone == HardwareConstants.Zones.Zone.ALLIANCE_ZONE
+        && getFieldRelativeVelocity().vxMetersPerSecond <= 0) {
+      return true;
+    } else if (currentZone == HardwareConstants.Zones.Zone.NEUTRAL
+        && getFieldRelativeVelocity().vxMetersPerSecond >= 0) {
+      return true;
+    } else if (currentZone == HardwareConstants.Zones.Zone.ALLIANCE_TRENCH_NEAR
+        && getFieldRelativeVelocity().vyMetersPerSecond <= 0) {
+      return true;
+    } else if (currentZone == HardwareConstants.Zones.Zone.ALLIANCE_TRENCH_FAR
+        && getFieldRelativeVelocity().vyMetersPerSecond >= 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public boolean movingTowardOpposingHub() {
+    HardwareConstants.Zones.Zone currentZone = getRobotZone(getEstimatedPose());
+    if (currentZone == HardwareConstants.Zones.Zone.OPPOSING_ZONE
+        && getFieldRelativeVelocity().vxMetersPerSecond >= 0) {
+      return true;
+    } else if (currentZone == HardwareConstants.Zones.Zone.NEUTRAL
+        && getFieldRelativeVelocity().vxMetersPerSecond <= 0) {
+      return true;
+    } else if (currentZone == HardwareConstants.Zones.Zone.OPPOSING_TRENCH_NEAR
+        && getFieldRelativeVelocity().vyMetersPerSecond <= 0) {
+      return true;
+    } else if (currentZone == HardwareConstants.Zones.Zone.OPPOSING_TRENCH_FAR
+        && getFieldRelativeVelocity().vyMetersPerSecond >= 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   public boolean isIntakeSafe() {
-    if ((tooCloseToAllianceHub(getEstimatedPose()) && facingAllianceHub(getEstimatedPose()))
-        || (tooCloseToOpposingHub(getEstimatedPose()) && facingOpposingHub(getEstimatedPose()))) {
+    if ((tooCloseToAllianceHub()
+            && facingAllianceHub(getEstimatedPose())
+            && movingTowardAllianceHub())
+        || (tooCloseToOpposingHub()
+            && facingOpposingHub(getEstimatedPose())
+            && movingTowardOpposingHub())) {
       return false;
     } else {
       return true;
