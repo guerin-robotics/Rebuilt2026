@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left-Epsilon-Path-1"
+            "pathName": "Left-Comp-Path-1"
           }
         },
         {
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left-Epsilon-Path-2"
+            "pathName": "Left-Depot-Path-1"
           }
         },
         {
