@@ -585,7 +585,7 @@ public class RobotContainer {
             () -> MathUtil.clamp(-controller.getLeftY(), -1.0, 1.0),
             () -> MathUtil.clamp(-controller.getLeftX(), -1.0, 1.0),
             () -> MathUtil.clamp(-controller.getRightTriggerAxis(), -1.0, 1.0),
-            controller.y()));
+            controller.rightTrigger()));
 
     // ==================== FLYWHEEL TEST (SIM) ====================
     // Set flywheel idle as default command so it's always spinning slowly

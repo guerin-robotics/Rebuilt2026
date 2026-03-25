@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.ContinuousConditionalCommand;
 import frc.lib.FieldConstants;
+import frc.robot.HardwareConstants;
 import frc.robot.RobotState;
 import frc.robot.Triggers;
 import frc.robot.subsystems.drive.Drive;
@@ -291,12 +292,17 @@ public class DriveCommands {
         xSupplier,
         ySupplier,
         () -> {
-          double currentY = RobotState.getInstance().getEstimatedPose().getX();
+          double currentY =
+              AllianceFlipUtil.applyY(RobotState.getInstance().getEstimatedPose().getY());
+          HardwareConstants.Zones.Zone currentZone =
+              RobotState.getInstance().getRobotZone(RobotState.getInstance().getEstimatedPose());
 
-          if (currentY >= FieldConstants.Tower.leftUpright.getY()) {
-            return Rotation2d.kCCW_90deg;
+          if (currentY > FieldConstants.LinesHorizontal.center) {
+            Logger.recordOutput("RobotState/towerAlign", "farSide");
+            return AllianceFlipUtil.apply(Rotation2d.kCW_90deg);
           } else {
-            return Rotation2d.kCW_90deg;
+            Logger.recordOutput("RobotState/towerAlign", "nearSide");
+            return AllianceFlipUtil.apply(Rotation2d.kCCW_90deg);
           }
         });
   }
