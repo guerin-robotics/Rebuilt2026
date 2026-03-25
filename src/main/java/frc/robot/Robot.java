@@ -126,19 +126,15 @@ public class Robot extends LoggedRobot {
       HardwareConstants.TuningConstants.TUNING_MODE = HardwareConstants.TuningConstants.isTuning;
     }
 
-    Logger.recordOutput("RobotState/isIntakeSafe", Triggers.getInstance().isIntakeSafe());
-    Logger.recordOutput("RobotState/closeOpp", RobotState.getInstance().tooCloseToOpposingHub());
+    Logger.recordOutput("RobotState/isRobotInTrench", Triggers.getInstance().isRobotInTrench());
     Logger.recordOutput(
-        "RobotState/facingOpp",
-        RobotState.getInstance().facingOpposingHub(RobotState.getInstance().getEstimatedPose()));
+        "RobotState/isRobotApproachingTrench", Triggers.getInstance().isRobotApproachingTrench());
+    Logger.recordOutput("RobotState/isRobotOnBump", Triggers.getInstance().isRobotOnBump());
     Logger.recordOutput(
-        "RobotState/approachingOpp", RobotState.getInstance().movingTowardOpposingHub());
-    Logger.recordOutput("RobotState/closeAll", RobotState.getInstance().tooCloseToAllianceHub());
+        "RobotState/isRobotApproachingBump", Triggers.getInstance().isRobotApproachingBump());
+    Logger.recordOutput("RobotState/isRobotUnderTower", Triggers.getInstance().isRobotInTower());
     Logger.recordOutput(
-        "RobotState/facingAll",
-        RobotState.getInstance().facingAllianceHub(RobotState.getInstance().getEstimatedPose()));
-    Logger.recordOutput(
-        "RobotState/approachingAll", RobotState.getInstance().movingTowardAllianceHub());
+        "RobotState/isRobotApproachingTower", Triggers.getInstance().isRobotApproachingTower());
   }
 
   /** This function is called once when the robot is disabled. */

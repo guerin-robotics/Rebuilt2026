@@ -462,7 +462,7 @@ public class RobotState {
           "RobotState/RobotZone", HardwareConstants.Zones.Zone.ALLIANCE_ZONE_TRENCH_BORDER);
       return HardwareConstants.Zones.Zone.ALLIANCE_ZONE_TRENCH_BORDER;
     } else if (poseX < FieldConstants.LinesVertical.neutralZoneNear) {
-      if (poseY < FieldConstants.LinesHorizontal.rightTrenchOpenEnd) {
+      if (poseY < FieldConstants.LinesHorizontal.rightTrenchOpenStart) {
         Logger.recordOutput(
             "RobotState/RobotZone", HardwareConstants.Zones.Zone.ALLIANCE_TRENCH_NEAR);
         return HardwareConstants.Zones.Zone.ALLIANCE_TRENCH_NEAR;
