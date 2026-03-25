@@ -1,5 +1,6 @@
 package frc.robot;
 
+import static edu.wpi.first.math.util.Units.inchesToMeters;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
@@ -160,15 +161,34 @@ public class HardwareConstants {
 
     public enum Zone {
       ALLIANCE_ZONE,
-      NEAR_ALLIANCE_TRENCH,
-      ALLIANCE_TRENCH,
+      ALLIANCE_ZONE_TRENCH_BORDER,
+      ALLIANCE_TRENCH_NEAR,
+      ALLIANCE_BUMP_NEAR,
+      ALLIANCE_HUB,
+      ALLIANCE_BUMP_FAR,
+      ALLIANCE_TRENCH_FAR,
+      ALLIANCE_NEUTRAL_TRENCH_BORDER,
       NEUTRAL,
-      OPPOSING_TRENCH,
-      NEAR_OPPOSING_TRENCH,
+      OPPOSING_NEUTRAL_TRENCH_BORDER,
+      OPPOSING_TRENCH_NEAR,
+      OPPOSING_BUMP_NEAR,
+      OPPOSING_HUB,
+      OPPOSING_BUMP_FAR,
+      OPPOSING_TRENCH_FAR,
+      OPPOSING_ZONE_TRENCH_BORDER,
       OPPOSING_ZONE
     }
 
+    public enum IntakeZone {
+      INTAKE_DANGER,
+      INTAKE_SAFE
+    }
+
     public static final double zoneOffset = 0.3;
-    public static final double timeInterval = 0.25;
+    public static final double timeInterval = 0.05;
+  }
+
+  public static class hubDangerZone {
+    public static final double intakeOffset = inchesToMeters(60);
   }
 }

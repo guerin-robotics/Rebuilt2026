@@ -48,7 +48,7 @@ public class intakeRollerIOReal implements intakeRollerIO {
 
     intakeRollerFollower.setControl(
         new Follower(
-            HardwareConstants.CanIds.INTAKE_ROLLER_LEADER_ID, MotorAlignmentValue.Aligned));
+            HardwareConstants.CanIds.INTAKE_ROLLER_LEADER_ID, MotorAlignmentValue.Opposed));
 
     configureintakeRollerMotor();
 

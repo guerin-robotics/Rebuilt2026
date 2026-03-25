@@ -26,8 +26,8 @@ public class VisionConstants {
   // Camera names, must match names configured on coprocessor
   public static String camera0Name = "SwerveRight";
   public static String camera1Name = "SwerveLeft";
-  public static String camera2Name = "ShooterRight";
-  public static String camera3Name = "ShooterLeft";
+  public static String camera2Name = "FlywheelRight";
+  public static String camera3Name = "FlywheelLeft";
 
   // Right Cam
   // 10.75 x
@@ -48,16 +48,30 @@ public class VisionConstants {
   // Shooter right
   public static final Transform3d robotToCamera2 =
       new Transform3d(
-          new Translation3d(Inches.of(3.945), Inches.of(-1.417), Inches.of(19.233388)),
-          new Rotation3d(Radians.zero(), Degrees.of(-10), Degrees.of(-40)));
+          new Translation3d(Inches.of(1.536), Inches.of(-10.653), Inches.of(20.993)),
+          new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(0)));
+
+  // Old shooter right:
+  // x: 3.945
+  // y: -1.417
+  // z: 19.233388
+  // roll: 0
+  // pitch: -10
+  // yaw: -40
 
   // Shooter left
   public static final Transform3d robotToCamera3 =
       new Transform3d(
-          new Translation3d(Inches.of(3.945), Inches.of(1.417), Inches.of(19.233388)),
-          new Rotation3d(Radians.zero(), Degrees.of(-10), Degrees.of(40)));
+          new Translation3d(Inches.of(1.536), Inches.of(10.653), Inches.of(20.993)),
+          new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(0)));
 
-  // new Rotation3d(Radians.zero(), Radians.of(-0.314159), Radians.of((2 * Math.PI) / 3)));
+  // Old shooter left:
+  // x: 3.945
+  // y: 1.417
+  // z: 19.233388
+  // roll: 0
+  // pitch: -10
+  // yaw: 40
 
   // ---- Filtering thresholds ----
 
@@ -82,8 +96,8 @@ public class VisionConstants {
 
   // ---- Standard deviation baselines ----
   // For 1 meter distance and 1 tag. Automatically scaled by distance² / tagCount.
-  public static double linearStdDevBaseline = 0.02; // Meters
-  public static double angularStdDevBaseline = 0.06; // Radians
+  public static double linearStdDevBaseline = 0.01; // Meters
+  public static double angularStdDevBaseline = 0.03; // Radians
 
   // windham uses 0.01 for linear baseline and 0.01 for angular baseline.
   // we could consider using these in a practice match.
@@ -93,10 +107,10 @@ public class VisionConstants {
   // (Adjust to trust some cameras more than others)
   public static double[] cameraStdDevFactors =
       new double[] {
-        2.0, // Camera 0
-        2.0, // Camera 1
-        2.0, // Camera 2
-        2.0 // Camera 3
+        1.0, // Camera 0
+        1.0, // Camera 1
+        1.0, // Camera 2
+        1.0 // Camera 3
       };
 
   // Multipliers to apply for MegaTag 2 observations

@@ -268,7 +268,8 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "RunIntake",
         intakeRollerCommands
-            .setRollerVoltage(intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)
+            .setRollerVoltage(
+                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)
             .alongWith(
                 TransportCommands.setTransportVoltage(
                     transport, HardwareConstants.CompConstants.Voltages.transportVoltage)));
@@ -346,18 +347,54 @@ public class RobotContainer {
 
     // Event marker for setting the hood position to down
     new EventTrigger("HoodDown")
-        .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
+        .onTrue(
+            HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
   }
 
   private void configureButtonBindings() {
     // ==================== DRIVE CONTROLS (DO NOT MODIFY) ====================
     // Default command: Xbox + Thrustmaster combined
     drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
+        DriveCommands.driveLucasProof(
             drive,
             () -> MathUtil.clamp(-controller.getLeftY() - getThrustY(), -1.0, 1.0),
             () -> MathUtil.clamp(-controller.getLeftX() - getThrustX(), -1.0, 1.0),
-            () -> MathUtil.clamp(-controller.getRightX() - getThrustRot(), -1.0, 1.0)));
+            () -> MathUtil.clamp(-controller.getRightX() - getThrustRot(), -1.0, 1.0),
+            controller.y()));
+
+    // Trigger-based alignment - trench
+    thrustmaster
+        .button(2)
+        .and(
+            () ->
+                (Triggers.getInstance().isRobotInTrench()
+                    || Triggers.getInstance().isRobotApproachingTrench()))
+        .whileTrue(
+            DriveCommands.joystickDriveAlignForTrench(
+                drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
+
+    // Trigger-based alignment - bump
+    thrustmaster
+        .button(2)
+        .and(
+            () ->
+                (Triggers.getInstance().isRobotOnBump()
+                    || Triggers.getInstance().isRobotApproachingBump()))
+        .whileTrue(
+            DriveCommands.joystickDriveAlignForBump(
+                drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
+
+    // Trigger-based alignment - tower
+    thrustmaster
+        .button(2)
+        .and(
+            () ->
+                (Triggers.getInstance().isRobotInTower()
+                    || Triggers.getInstance().isRobotApproachingTower()))
+        .whileTrue(
+            DriveCommands.joystickDriveAlignForTower(
+                drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
+
     // Lock to 0° when A button is held (Xbox still controls angle)
     controller
         .a()
@@ -368,7 +405,7 @@ public class RobotContainer {
                 () -> MathUtil.clamp(controller.getLeftX() + getThrustX(), -1.0, 1.0),
                 () -> Rotation2d.kZero));
     // X pattern
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    controller.a().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro
     controller
@@ -395,15 +432,17 @@ public class RobotContainer {
     // REVISED SUBSYSTEM CONTROLS
 
     // Default commands
-    // Flywheel (10 rps)
-    flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
-    // Hood (set down)
-    hood.setDefaultCommand(
-        HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
-    // Prestage, by voltage
-    prestage.setDefaultCommand(PrestageCommands.setPrestageVoltage(prestage, Volts.of(-1)));
-    // Feeder, by voltage
-    feeder.setDefaultCommand(FeederCommands.setFeederVoltage(feeder, Volts.of(-1)));
+    if (!HardwareConstants.TuningConstants.TUNING_MODE) {
+      // Flywheel (5 rps)
+      flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
+      // Hood (down)
+      hood.setDefaultCommand(
+          HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
+      // Prestage, by voltage
+      prestage.setDefaultCommand(PrestageCommands.setPrestageVoltage(prestage, Volts.of(-1)));
+      // Feeder, by voltage
+      feeder.setDefaultCommand(FeederCommands.setFeederVoltage(feeder, Volts.of(-1)));
+    }
 
     if (!HardwareConstants.TuningConstants.TUNING_MODE) {
       // Distance-based shooting
@@ -416,14 +455,8 @@ public class RobotContainer {
                       () -> -thrustmaster.getX(),
                       () -> flywheel.getShootAngleForZone())
                   .alongWith(
-                              ShootSequences.zonePassOrShoot(
-                                  flywheel,
-                                  prestage,
-                                  hood,
-                                  feeder,
-                                  transport,
-                                  intakeRoller,
-                                  intakePivot)))
+                      ShootSequences.zonePassOrShoot(
+                          flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot)))
           .onFalse(
               ShootSequences.shootEndBehavior(
                   flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
@@ -438,22 +471,9 @@ public class RobotContainer {
                       () -> -thrustmaster.getY(),
                       () -> RobotState.getInstance().getAngleToAllianceHub())
                   .alongWith(
-                              ShootSequences.mapTuningShoot(
-                                  flywheel,
-                                  prestage,
-                                  hood,
-                                  intakePivot,
-                                  feeder,
-                                  transport,
-                                  intakeRoller)));
+                      ShootSequences.mapTuningShoot(
+                          flywheel, prestage, hood, intakePivot, feeder, transport, intakeRoller)));
     }
-
-    // Align for sweep
-    thrustmaster
-        .button(2)
-        .whileTrue(
-            DriveCommands.joystickDriveAlignForSweepToAllianceZone(
-                drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
 
     // Intake up
     thrustmaster
@@ -481,7 +501,8 @@ public class RobotContainer {
             );
 
     // Intake jostle
-    thrustmaster.button(6).whileTrue(IntakePivotCommands.jostlePivotByPos(intakePivot));
+    // thrustmaster.button(6).whileTrue(IntakePivotCommands.jostlePivotByPos(intakePivot));
+    thrustmaster.button(6).onTrue(IntakePivotCommands.setPivotRotations(intakePivot, 0.0));
 
     // Spit sequence
     thrustmaster.button(7).whileTrue(SpitSequences.clearShooter(flywheel, prestage, feeder));
@@ -543,26 +564,28 @@ public class RobotContainer {
     // Drop hood
     // controller
     //     .y()
-    //     .onTrue(HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
+    //     .onTrue(HoodCommands.setHoodPos(hood,
+    // HardwareConstants.CompConstants.Positions.hoodDownPos));
 
     // Bump hood pos up
     controller.leftBumper().onTrue(HoodCommands.incrementHoodPos(hood));
 
-    controller
-        .y()
-        .whileTrue(
-            intakeRollerCommands.setRollerVelocity(
-                intakeRoller, HardwareConstants.TestConstants.TestVelocities.rollerVelocity));
+    // controller
+    //     .y()
+    //     .whileTrue(
+    //         intakeRollerCommands.setRollerVelocity(
+    //             intakeRoller, HardwareConstants.TestConstants.TestVelocities.rollerVelocity));
   }
 
   private void configureSimBindings() {
     // ==================== DRIVE (SIM) ====================
     drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
+        DriveCommands.driveLucasProof(
             drive,
             () -> MathUtil.clamp(-controller.getLeftY(), -1.0, 1.0),
             () -> MathUtil.clamp(-controller.getLeftX(), -1.0, 1.0),
-            () -> MathUtil.clamp(-controller.getRightTriggerAxis(), -1.0, 1.0)));
+            () -> MathUtil.clamp(-controller.getRightTriggerAxis(), -1.0, 1.0),
+            controller.y()));
 
     // ==================== FLYWHEEL TEST (SIM) ====================
     // Set flywheel idle as default command so it's always spinning slowly
@@ -591,8 +614,8 @@ public class RobotContainer {
     controller
         .b()
         .whileTrue(
-            DriveCommands.joystickDriveAlignForSweepToAllianceZone(
-                drive, () -> controller.getLeftX(), () -> controller.getLeftY()));
+            IntakePivotCommands.setPivotRotations(
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
 
     // Left bumper: intake down
     controller

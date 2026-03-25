@@ -7,8 +7,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.AllianceFlipUtil;
 import frc.robot.util.HubShiftUtil;
-
 import org.littletonrobotics.junction.AutoLogOutputManager;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -93,7 +90,8 @@ public class Robot extends LoggedRobot {
     SmartDashboard.putData("Robot Pose Field Map", fieldMap);
 
     // Publish time left in shift to the dashboard
-    SmartDashboard.putNumber("Time Left in Shift", HubShiftUtil.getShiftedShiftInfo().remainingTime());
+    SmartDashboard.putNumber(
+        "Time Left in Shift", HubShiftUtil.getShiftedShiftInfo().remainingTime());
   }
 
   /** This function is called periodically during all modes. */
@@ -128,13 +126,19 @@ public class Robot extends LoggedRobot {
       HardwareConstants.TuningConstants.TUNING_MODE = HardwareConstants.TuningConstants.isTuning;
     }
 
-    // These calls are redundant — @AutoLogOutput annotations already log these values every loop,
-    // and subsystems/commands call them when they actually need the result. Each one triggers a
-    // cascade of zone/pose/velocity calculations that wastes loop time.
-    // RobotState.getInstance().getDistanceToAllianceHub();
-    // RobotState.getInstance().getRobotZone(RobotState.getInstance().getEstimatedPose());
-    // RobotState.getInstance().zoneSafeToShoot();
-    // RobotState.getInstance().isHoodSafeVelo(RobotState.getInstance().getFuturePose());
+    Logger.recordOutput("RobotState/isIntakeSafe", Triggers.getInstance().isIntakeSafe());
+    Logger.recordOutput("RobotState/closeOpp", RobotState.getInstance().tooCloseToOpposingHub());
+    Logger.recordOutput(
+        "RobotState/facingOpp",
+        RobotState.getInstance().facingOpposingHub(RobotState.getInstance().getEstimatedPose()));
+    Logger.recordOutput(
+        "RobotState/approachingOpp", RobotState.getInstance().movingTowardOpposingHub());
+    Logger.recordOutput("RobotState/closeAll", RobotState.getInstance().tooCloseToAllianceHub());
+    Logger.recordOutput(
+        "RobotState/facingAll",
+        RobotState.getInstance().facingAllianceHub(RobotState.getInstance().getEstimatedPose()));
+    Logger.recordOutput(
+        "RobotState/approachingAll", RobotState.getInstance().movingTowardAllianceHub());
   }
 
   /** This function is called once when the robot is disabled. */

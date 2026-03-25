@@ -60,7 +60,8 @@ public class IntakePivotCommands {
 
   public static Command jostlePivotByPos(IntakePivot intakePivot) {
     return Commands.sequence(
-            setPivotRotations(intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos),
+            setPivotRotations(
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos),
             new WaitCommand(0.25),
             setPivotRotations(intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
             new WaitCommand(0.25))

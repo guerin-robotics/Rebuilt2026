@@ -96,6 +96,7 @@ public class FlywheelConstants {
 
     public static final double flywheelRatio = 1 / 1.47;
     public static final double flywheelMetersPerRotation = inchesToMeters(Math.PI * 4);
+    public static final double flywheelRotationsPerMeter = 1 / flywheelMetersPerRotation;
   }
 
   /**

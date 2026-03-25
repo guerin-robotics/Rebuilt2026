@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.FieldConstants;
 import frc.robot.HardwareConstants;
 import frc.robot.RobotState;
+import frc.robot.Triggers;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.ShooterIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
@@ -125,8 +126,7 @@ public class Flywheel extends SubsystemBase {
 
   // Returns angle to hub if shooting, returns angle to passing target if passing
   public Rotation2d getShootAngleForZone() {
-    if (RobotState.getInstance().getRobotZone(RobotState.getInstance().getFuturePose())
-        == HardwareConstants.Zones.Zone.ALLIANCE_ZONE) {
+    if (Triggers.getInstance().isShootSafe()) {
       Logger.recordOutput("RobotState/zoneSafeToShoot", true);
       return RobotState.getInstance().getAngleToAllianceHub();
     } else {
