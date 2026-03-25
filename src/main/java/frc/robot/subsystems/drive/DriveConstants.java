@@ -14,4 +14,6 @@ public class DriveConstants {
         new Translation2d(leftOffset, frontOffset),
         new Translation2d(leftOffset, frontOffset)
       };
+
+  public static double limitedVelo = 0.1;
 }

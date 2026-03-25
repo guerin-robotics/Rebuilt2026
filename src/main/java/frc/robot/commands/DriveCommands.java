@@ -22,9 +22,13 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.AllianceFlipUtil;
+import frc.lib.ContinuousConditionalCommand;
 import frc.lib.FieldConstants;
+import frc.robot.RobotState;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveConstants;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -97,6 +101,63 @@ public class DriveCommands {
                       : drive.getRotation()));
         },
         drive);
+  }
+
+  public static Command joystickDriveLimited(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      DoubleSupplier omegaSupplier) {
+    return Commands.run(
+        () -> {
+          // Get linear velocity
+          Translation2d linearVelocity =
+              getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+
+          // Apply rotation deadband
+          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+
+          // Square rotation value for more precise control
+          omega = Math.copySign(omega * omega, omega);
+
+          // Convert to field relative speeds & send command
+          ChassisSpeeds speeds =
+              new ChassisSpeeds(
+                  linearVelocity.getX() * DriveConstants.limitedVelo,
+                  linearVelocity.getY() * DriveConstants.limitedVelo,
+                  omega * drive.getMaxAngularSpeedRadPerSec());
+          boolean isFlipped =
+              DriverStation.getAlliance().isPresent()
+                  && DriverStation.getAlliance().get() == Alliance.Red;
+          drive.runVelocity(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  speeds,
+                  isFlipped
+                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                      : drive.getRotation()));
+        },
+        drive);
+  }
+
+  public static Command driveLucasProof(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      DoubleSupplier omegaSupplier,
+      Trigger override) {
+    return new ContinuousConditionalCommand(
+        joystickDrive(drive, xSupplier, ySupplier, omegaSupplier),
+        joystickDriveLimited(drive, xSupplier, ySupplier, omegaSupplier),
+        () -> {
+          boolean shouldDrive =
+              (RobotState.getInstance().isIntakeSafe() || override.getAsBoolean());
+          Logger.recordOutput(
+              "RobotState/isIntakeSafe",
+              RobotState.getInstance().isIntakeSafe() ? "intakeSafe" : "intakeUnsafe");
+          Logger.recordOutput(
+              "RobotState/isOverrideActive", override.getAsBoolean() ? "override" : "noOverride");
+          return shouldDrive;
+        });
   }
 
   /**

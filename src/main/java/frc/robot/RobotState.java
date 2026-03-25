@@ -638,9 +638,9 @@ public class RobotState {
   }
 
   // Change the pose input from estimated to future to make the checker responsive to velocity
-  public boolean isIntakeSafe(Pose2d pose) {
-    if ((tooCloseToAllianceHub(pose) && facingAllianceHub(pose)) 
-      || (tooCloseToOpposingHub(pose) && facingOpposingHub(pose))) {
+  public boolean isIntakeSafe() {
+    if ((tooCloseToAllianceHub(getEstimatedPose()) && facingAllianceHub(getEstimatedPose()))
+        || (tooCloseToOpposingHub(getEstimatedPose()) && facingOpposingHub(getEstimatedPose()))) {
       return false;
     } else {
       return true;

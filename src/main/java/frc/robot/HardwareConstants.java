@@ -144,7 +144,7 @@ public class HardwareConstants {
 
   public static class TuningConstants {
     public static boolean TUNING_MODE;
-    public static boolean isTuning = false;
+    public static boolean isTuning = true;
 
     public static final AngularVelocity FlywheelTuningVelocity = RPM.of(1700);
     public static final double HoodTuningPos = 0.45;
@@ -183,6 +183,6 @@ public class HardwareConstants {
   }
 
   public static class hubDangerZone {
-    public static final double intakeOffset = inchesToMeters(25.5);
+    public static final double intakeOffset = inchesToMeters(60);
   }
 }
