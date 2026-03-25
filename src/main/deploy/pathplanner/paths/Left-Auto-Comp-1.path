@@ -12,7 +12,7 @@
         "y": 7.351088194860262
       },
       "isLocked": false,
-      "linkedName": "Left Start Pos"
+      "linkedName": "Left-Start-Pos"
     },
     {
       "anchor": {
@@ -128,16 +128,16 @@
     },
     {
       "anchor": {
-        "x": 3.077,
-        "y": 4.533
+        "x": 3.2199757505266846,
+        "y": 5.674070894048454
       },
       "prevControl": {
-        "x": 2.895608647366489,
-        "y": 5.416669885642591
+        "x": 3.0385843978931737,
+        "y": 6.557740779691045
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Left Waypoint 1"
+      "linkedName": "Left-End-Pos"
     }
   ],
   "rotationTargets": [
@@ -198,10 +198,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -20.0
+    "rotation": -51.89291163129033
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Left-Paths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -90.0

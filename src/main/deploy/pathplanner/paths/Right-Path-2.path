@@ -12,7 +12,7 @@
         "y": 2.1565094512987906
       },
       "isLocked": false,
-      "linkedName": "Right End Pos"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -169,7 +169,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Right End Pos"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
@@ -232,7 +232,7 @@
     "rotation": 48.96365216731063
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Right-Paths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 48.96365216731063

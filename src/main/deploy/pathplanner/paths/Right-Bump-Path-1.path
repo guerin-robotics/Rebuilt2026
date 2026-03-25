@@ -89,7 +89,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Right Bump End Pos"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
@@ -170,7 +170,7 @@
     "rotation": 48.96365216731063
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Right-Paths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0
