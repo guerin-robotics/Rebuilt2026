@@ -82,6 +82,8 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.io.VisionIO;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVisionSim;
+import frc.robot.util.HubShiftUtil;
+
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -448,6 +450,7 @@ public class RobotContainer {
       // Distance-based shooting
       thrustmaster
           .button(1)
+          .and(() -> HubShiftUtil.getShiftedShiftInfo().active())
           .whileTrue(
               DriveCommands.joystickDriveAtAngle(
                       drive,
