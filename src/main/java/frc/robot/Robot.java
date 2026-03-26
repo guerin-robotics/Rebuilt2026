@@ -176,6 +176,7 @@ public class Robot extends LoggedRobot {
     SmartDashboard.putNumber(
         "Time Left in Shift",
         Math.round(HubShiftUtil.getShiftedShiftInfo().remainingTime() * 10.0) / 10.0);
+    SmartDashboard.putBoolean("Is Hub Active", HubShiftUtil.isActiveFirst());
   }
 
   /** This function is called once when test mode is enabled. */
