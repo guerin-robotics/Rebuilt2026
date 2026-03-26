@@ -174,7 +174,8 @@ public class Robot extends LoggedRobot {
   public void teleopPeriodic() {
     // Publish time left in shift to the dashboard
     SmartDashboard.putNumber(
-        "Time Left in Shift", HubShiftUtil.getShiftedShiftInfo().remainingTime());
+        "Time Left in Shift",
+        Math.round(HubShiftUtil.getShiftedShiftInfo().remainingTime() * 10.0) / 10.0);
   }
 
   /** This function is called once when test mode is enabled. */
