@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.FieldConstants;
 import frc.robot.commands.DriveCommands;
@@ -502,7 +503,7 @@ public class RobotContainer {
 
     // Intake jostle
     // thrustmaster.button(6).whileTrue(IntakePivotCommands.jostlePivotByPos(intakePivot));
-    thrustmaster.button(6).onTrue(IntakePivotCommands.setPivotRotations(intakePivot, 0.0));
+    thrustmaster.button(6).onTrue(IntakePivotCommands.compressPivot(intakePivot));
 
     // Spit sequence
     thrustmaster.button(7).whileTrue(SpitSequences.clearShooter(flywheel, prestage, feeder));

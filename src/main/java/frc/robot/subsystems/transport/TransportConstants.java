@@ -10,10 +10,10 @@ public class TransportConstants {
 
   /** Current limits for the TRANSPORT motors. */
   public static class CurrentLimits {
-    public static final int TRANSPORT_MAIN_SUPPLY_AMP = 40;
-    public static final int TRANSPORT_MAIN_SUPPLY_TRIGGER_AMP = 35;
+    public static final int TRANSPORT_MAIN_SUPPLY_AMP = 60;
+    public static final int TRANSPORT_MAIN_SUPPLY_TRIGGER_AMP = 55;
     public static final Time TRANSPORT_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
-    public static final int TRANSPORT_MAIN_STATOR_AMP = 100;
+    public static final int TRANSPORT_MAIN_STATOR_AMP = 200;
   }
 
   public static class SoftwareConstants {
@@ -21,7 +21,7 @@ public class TransportConstants {
   }
 
   public static class Mechanical {
-    public static final double transportRatio = 1 / 0.44;
+    public static final double transportRatio = 33 / 11;
   }
 
   // Real robot PID gains for torque-current velocity control

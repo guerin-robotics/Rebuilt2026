@@ -43,7 +43,7 @@ public class HardwareConstants {
   public static class CompConstants {
     // Subsystems that run at a constant voltage: transport, roller
     public static class Voltages {
-      public static final Voltage transportVoltage = Volts.of(-12.0);
+      public static final Voltage transportVoltage = Volts.of(-9.0);
       public static final Voltage intakeRollerVoltage = Volts.of(12.0);
       public static final Voltage intakeRollerAgitateVoltage = Volts.of(3);
     }
@@ -55,7 +55,7 @@ public class HardwareConstants {
 
     // Subsystems that run at a constant velocity: prestage, feeder
     public static class Velocities {
-      public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(100.0);
+      public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(200.0);
       public static final AngularVelocity feederVelocity = RotationsPerSecond.of(180.0);
       public static final AngularVelocity flywheelIdleVelocity = RotationsPerSecond.of(5);
     }
@@ -69,8 +69,8 @@ public class HardwareConstants {
     // Subsystems that run on position control: hood, pivot
     public static class Positions {
       public static final double hoodDownPos = 0.1;
-      public static final double pivotUpPos = 0.45;
-      public static final double pivotDownPos = 0.075;
+      public static final double pivotUpPos = 0.365;
+      public static final double pivotDownPos = 0.0;
       public static final double pivotJostleUpPos = 0.25;
     }
 
@@ -84,7 +84,7 @@ public class HardwareConstants {
       public static final Voltage FeederTestVoltage = Volts.of(3.0);
       public static final Voltage PrestageTestVoltage = Volts.of(5.0);
       public static final Voltage TransportTestVoltage = Volts.of(-12.0);
-      public static final Voltage intakePivotTestVoltageUp = Volts.of(10.0);
+      public static final Voltage intakePivotTestVoltageUp = Volts.of(2.0);
       public static final Voltage intakePivotTestVoltageDown = Volts.of(-8.0);
       public static final Voltage intakeRollerTestVoltage = Volts.of(12.0);
       public static final Voltage intakeRollerAgitateVoltage = Volts.of(3);
@@ -145,7 +145,7 @@ public class HardwareConstants {
 
   public static class TuningConstants {
     public static boolean TUNING_MODE;
-    public static boolean isTuning = true;
+    public static boolean isTuning = false;
 
     public static final AngularVelocity FlywheelTuningVelocity = RPM.of(1700);
     public static final double HoodTuningPos = 0.45;

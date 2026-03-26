@@ -41,11 +41,11 @@ public class IntakePivotConstants {
    * TUNED
    */
   public static class PID {
-    public static final double KG = 17.5; // 6
+    public static final double KG = 8; // 14
     public static final double KV = 0.0;
-    public static final double KP = 500.0; // 80.0
+    public static final double KP = 100.0; // 500.0; // 80.0 // 250.0
     public static final double KI = 0.0;
-    public static final double KD = 30.0; // 1.0
+    public static final double KD = 5.0; // 30.0; // 1.0
   }
 
   /** Mechanical properties of the pivot. */
@@ -55,7 +55,7 @@ public class IntakePivotConstants {
     /** Current threshold (stator amps) used in the jostle routine. */
     public static final double pivotJostleCurrentLimit = 70;
     /** CANcoder magnet offset in rotations. */
-    public static final double magnetOffset = 0.24;
+    public static final double magnetOffset = -0.074;
     /** CANcoder absolute sensor discontinuity point. */
     public static final double magnetSensorDiscontinuityPoint = 0.625;
 
