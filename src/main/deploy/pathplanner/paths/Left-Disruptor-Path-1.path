@@ -12,7 +12,7 @@
         "y": 7.50631208245429
       },
       "isLocked": false,
-      "linkedName": "Left Start Pos"
+      "linkedName": "Left-Start-Pos"
     },
     {
       "anchor": {
@@ -66,7 +66,7 @@
     "rotation": -137.28398046185893
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Left-Paths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -90.0

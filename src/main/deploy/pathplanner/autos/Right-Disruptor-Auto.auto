@@ -7,38 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left-Comp-Path-1"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 4.0
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "stopAll"
+            "pathName": "Right-Disruptor-Path-1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Left-Comp-Path-2"
+            "pathName": "Right-Disruptor-Path-2"
           }
         },
         {
@@ -54,7 +29,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 4.0
+                  "waitTime": 6.0
                 }
               }
             ]

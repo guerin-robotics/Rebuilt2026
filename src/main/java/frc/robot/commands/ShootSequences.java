@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.HardwareConstants;
-import frc.robot.RobotState;
+import frc.robot.Triggers;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.hood.Hood;
@@ -193,7 +193,7 @@ public class ShootSequences {
         shootToHub(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
         pass(flywheel, prestage, hood, feeder, transport, intakePivot, intakeRoller),
         () -> {
-          boolean safe = RobotState.getInstance().zoneSafeToShoot();
+          boolean safe = Triggers.getInstance().isShootSafe();
           Logger.recordOutput("Flywheel/shootOrPass", safe ? "shooting" : "passing");
           return safe;
         });

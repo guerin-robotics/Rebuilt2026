@@ -12,7 +12,7 @@
         "y": 0.44568862078059013
       },
       "isLocked": false,
-      "linkedName": "Right Start Pos"
+      "linkedName": "Right-Start-Pos"
     },
     {
       "anchor": {
@@ -41,7 +41,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Right-Disruptor-End-1"
     }
   ],
   "rotationTargets": [
@@ -66,7 +66,7 @@
     "rotation": 134.52967630450306
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Right-Paths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0

@@ -12,7 +12,7 @@
         "y": 6.59028242466803
       },
       "isLocked": false,
-      "linkedName": "Left Bump End Pos"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -89,7 +89,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Left Bump End Pos"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
@@ -161,7 +161,7 @@
     "rotation": -52.04588256584332
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Left-Paths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -52.04588256584332

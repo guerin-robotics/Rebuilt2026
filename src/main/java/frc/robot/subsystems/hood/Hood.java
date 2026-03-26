@@ -3,6 +3,7 @@ package frc.robot.subsystems.hood;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.HardwareConstants;
 import frc.robot.RobotState;
+import frc.robot.Triggers;
 import frc.robot.subsystems.hood.io.HoodIO;
 import frc.robot.subsystems.hood.io.HoodIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
@@ -24,14 +25,14 @@ public class Hood extends SubsystemBase {
   }
 
   public void setHoodPos(double position) {
-    if (RobotState.getInstance().isHoodSafeVelo(RobotState.getInstance().getEstimatedPose())) {
+    if (Triggers.getInstance().ishoodsafe(RobotState.getInstance().getEstimatedPose())) {
       io.setHoodPos(position);
     }
   }
 
   public void incrementHoodPos() {
     double position = inputs.servoPos;
-    // if (RobotState.getInstance().isHoodSafeVelo(RobotState.getInstance().getEstimatedPose())) {
+    // if (RobotState.getInstance().ishoodsafe(RobotState.getInstance().getEstimatedPose())) {
     io.setHoodPos(position + 0.05);
     // }
   }
@@ -45,7 +46,7 @@ public class Hood extends SubsystemBase {
    *   <li>{@code HoodPosCalculator.getHoodPosForHub()} → {@code getAllianceHubTarget()} → {@code
    *       AllianceFlipUtil} (cached) → {@code getDistanceToPoint()} → {@code Pose2d.getTranslation
    *       .getDistance()} → interpolation table lookup
-   *   <li>{@code RobotState.isHoodSafeVelo()} → {@code getRobotZone()} + velocity check (now caches
+   *   <li>{@code RobotState.ishoodsafe()} → {@code getRobotZone()} + velocity check (now caches
    *       zone result internally)
    * </ol>
    *
@@ -55,7 +56,7 @@ public class Hood extends SubsystemBase {
    */
   public void setHoodPosForHub() {
     double position = HoodPosCalculator.getInstance().getHoodPosForHub();
-    if (RobotState.getInstance().isHoodSafeVelo(RobotState.getInstance().getEstimatedPose())) {
+    if (Triggers.getInstance().ishoodsafe(RobotState.getInstance().getEstimatedPose())) {
       io.setHoodPos(position);
     } else {
       io.setHoodPos(HardwareConstants.CompConstants.Positions.hoodDownPos);

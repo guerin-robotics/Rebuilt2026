@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import frc.lib.AllianceFlipUtil;
 
 public class HardwareConstants {
   public static final int NUMBER_OF_CAMERAS = 4;
@@ -161,15 +162,21 @@ public class HardwareConstants {
 
     public enum Zone {
       ALLIANCE_ZONE,
-      APPROACHING_ALLIANCE_TRENCH,
+      ALLIANCE_ZONE_TRENCH_BORDER,
       ALLIANCE_TRENCH_NEAR,
+      ALLIANCE_BUMP_NEAR,
       ALLIANCE_HUB,
+      ALLIANCE_BUMP_FAR,
       ALLIANCE_TRENCH_FAR,
+      ALLIANCE_NEUTRAL_TRENCH_BORDER,
       NEUTRAL,
+      OPPOSING_NEUTRAL_TRENCH_BORDER,
       OPPOSING_TRENCH_NEAR,
+      OPPOSING_BUMP_NEAR,
       OPPOSING_HUB,
+      OPPOSING_BUMP_FAR,
       OPPOSING_TRENCH_FAR,
-      APPROACHING_OPPOSING_TRENCH,
+      OPPOSING_ZONE_TRENCH_BORDER,
       OPPOSING_ZONE
     }
 
@@ -178,8 +185,8 @@ public class HardwareConstants {
       INTAKE_SAFE
     }
 
-    public static final double zoneOffset = 0.3;
-    public static final double timeInterval = 0.25;
+    public static final double zoneOffset = AllianceFlipUtil.applyX(2);
+    public static final double timeInterval = 0.05;
   }
 
   public static class hubDangerZone {

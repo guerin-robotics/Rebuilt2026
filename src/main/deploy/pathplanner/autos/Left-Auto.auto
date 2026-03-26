@@ -25,33 +25,14 @@
                 "data": {
                   "waitTime": 4.5
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "StopAll"
-                }
               }
             ]
           }
         },
         {
-          "type": "race",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 4.5
-                }
-              }
-            ]
+            "name": "stopAll"
           }
         }
       ]
