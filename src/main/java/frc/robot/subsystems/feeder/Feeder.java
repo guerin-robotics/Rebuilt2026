@@ -23,10 +23,6 @@ public class Feeder extends SubsystemBase {
     Logger.processInputs("Feeder", inputs);
   }
 
-  public void setFeederPosition(double position) {
-    io.setFeederPosition(position);
-  }
-
   public void setFeederVoltage(Voltage volts) {
     io.setFeederVoltage(volts);
   }
