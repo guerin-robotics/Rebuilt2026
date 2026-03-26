@@ -458,7 +458,7 @@ public class RobotContainer {
       feeder.setDefaultCommand(FeederCommands.setFeederVoltage(feeder, Volts.of(-1)));
     }
 
-    // Alliance win toggle - nonfunctional
+    // Alliance win toggle
     controller.a().onTrue(ShootSequences.flipAlliance());
 
     // if (!HardwareConstants.TuningConstants.TUNING_MODE) {

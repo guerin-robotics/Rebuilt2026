@@ -297,9 +297,8 @@ public class ShootSequences {
   }
 
   public static Command flipAlliance() {
-    if (HubShiftUtil.getAllianceWinOverride().isEmpty()) {
-      // () -> Optional.empty() should be something else but I'm not sure what
-      return Commands.runOnce(() -> HubShiftUtil.setAllianceWinOverride(() -> Optional.empty()));
+    if (HubShiftUtil.getAllianceWinOverride().isEmpty() || !HubShiftUtil.getAllianceWinOverride().get()) {
+      return Commands.runOnce(() -> HubShiftUtil.setAllianceWinOverride(() -> Optional.of(true)));
     } else {
       return Commands.runOnce(() -> HubShiftUtil.setAllianceWinOverride(() -> Optional.empty()));
     }
