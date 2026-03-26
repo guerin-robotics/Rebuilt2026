@@ -18,6 +18,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.units.measure.Angle;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.intakeRoller.intakeRollerConstants;
 import frc.robot.subsystems.intakeRoller.intakeRollerConstants.rollerMagicConstants;
@@ -41,6 +42,7 @@ public class intakeRollerIOReal implements intakeRollerIO {
   private final StatusSignal<Temperature> deviceTemp;
   private final StatusSignal<Double> closedLoopReference;
   private final StatusSignal<Double> closedLoopError;
+  private final StatusSignal<Angle> pos;
 
   public intakeRollerIOReal() {
     intakeRollerLeader = new TalonFX(HardwareConstants.CanIds.INTAKE_ROLLER_LEADER_ID, CAN_BUS);
@@ -60,6 +62,7 @@ public class intakeRollerIOReal implements intakeRollerIO {
     deviceTemp = intakeRollerLeader.getDeviceTemp();
     closedLoopReference = intakeRollerLeader.getClosedLoopReference();
     closedLoopError = intakeRollerLeader.getClosedLoopError();
+    pos = intakeRollerLeader.getPosition();
 
     // 50Hz for signals we need every loop (velocity, voltage, current, closed-loop reference)
     BaseStatusSignal.setUpdateFrequencyForAll(
@@ -116,7 +119,8 @@ public class intakeRollerIOReal implements intakeRollerIO {
         motorVoltage,
         deviceTemp,
         closedLoopReference,
-        closedLoopError);
+        closedLoopError,
+        pos);
 
     // Read from cache — no additional CAN traffic
     inputs.intakeRollerVelocity = velocity.getValue();
@@ -127,6 +131,7 @@ public class intakeRollerIOReal implements intakeRollerIO {
     inputs.rollerClosedLoopReference =
         RotationsPerSecond.of(closedLoopReference.getValueAsDouble());
     inputs.rollerClosedLoopError = RotationsPerSecond.of(closedLoopError.getValueAsDouble());
+    inputs.rollerPos = pos.getValue();
   }
 
   @Override

@@ -19,7 +19,7 @@ import org.littletonrobotics.junction.Logger;
 public class IntakePivot extends SubsystemBase {
 
   private final IntakePivotIO io;
-  private final IntakePivotIOInputsAutoLogged inputs;
+  public final IntakePivotIOInputsAutoLogged inputs;
   private final IntakePivotVisualizer visualizer;
 
   /** The last goal position set by the user, in rotations. Used for visualization. */

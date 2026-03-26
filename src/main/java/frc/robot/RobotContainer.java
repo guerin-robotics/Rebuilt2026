@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.FieldConstants;
 import frc.robot.commands.DriveCommands;
@@ -503,7 +502,7 @@ public class RobotContainer {
 
     // Intake jostle
     // thrustmaster.button(6).whileTrue(IntakePivotCommands.jostlePivotByPos(intakePivot));
-    thrustmaster.button(6).onTrue(IntakePivotCommands.compressPivot(intakePivot));
+    thrustmaster.button(6).onTrue(IntakePivotCommands.compressPivot(intakePivot, 0.2, 2));
 
     // Spit sequence
     thrustmaster.button(7).whileTrue(SpitSequences.clearShooter(flywheel, prestage, feeder));
@@ -612,38 +611,40 @@ public class RobotContainer {
         .onFalse(SpitSequences.spitAfterShoot(flywheel, prestage, feeder, transport, intakeRoller));
 
     // B button maps correctly
-    // Trigger-based alignment - trench
-    controller
-        .b()
-        .and(
-            () ->
-                (Triggers.getInstance().isRobotInTrench()
-                    || Triggers.getInstance().isRobotApproachingTrench()))
-        .whileTrue(
-            DriveCommands.joystickDriveAlignForTrench(
-                drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
+    // Pivot compress
+    controller.b().onTrue(IntakePivotCommands.compressPivot(intakePivot, (0.2), 2));
+    // // Trigger-based alignment - trench
+    // controller
+    //     .b()
+    //     .and(
+    //         () ->
+    //             (Triggers.getInstance().isRobotInTrench()
+    //                 || Triggers.getInstance().isRobotApproachingTrench()))
+    //     .whileTrue(
+    //         DriveCommands.joystickDriveAlignForTrench(
+    //             drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
 
-    // Trigger-based alignment - bump
-    controller
-        .b()
-        .and(
-            () ->
-                (Triggers.getInstance().isRobotOnBump()
-                    || Triggers.getInstance().isRobotApproachingBump()))
-        .whileTrue(
-            DriveCommands.joystickDriveAlignForBump(
-                drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
+    // // Trigger-based alignment - bump
+    // controller
+    //     .b()
+    //     .and(
+    //         () ->
+    //             (Triggers.getInstance().isRobotOnBump()
+    //                 || Triggers.getInstance().isRobotApproachingBump()))
+    //     .whileTrue(
+    //         DriveCommands.joystickDriveAlignForBump(
+    //             drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
 
-    // Trigger-based alignment - tower
-    controller
-        .b()
-        .and(
-            () ->
-                (Triggers.getInstance().isRobotInTower()
-                    || Triggers.getInstance().isRobotApproachingTower()))
-        .whileTrue(
-            DriveCommands.joystickDriveAlignForTower(
-                drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
+    // // Trigger-based alignment - tower
+    // controller
+    //     .b()
+    //     .and(
+    //         () ->
+    //             (Triggers.getInstance().isRobotInTower()
+    //                 || Triggers.getInstance().isRobotApproachingTower()))
+    //     .whileTrue(
+    //         DriveCommands.joystickDriveAlignForTower(
+    //             drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
 
     // Left bumper: intake down
     controller

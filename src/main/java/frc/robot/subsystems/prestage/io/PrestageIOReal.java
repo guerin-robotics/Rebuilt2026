@@ -16,6 +16,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.units.measure.Angle;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.prestage.PrestageConstants;
 
@@ -38,6 +39,7 @@ public class PrestageIOReal implements PrestageIO {
   private final StatusSignal<Temperature> leftDeviceTemp;
   private final StatusSignal<Double> leftClosedLoopReference;
   private final StatusSignal<Double> leftClosedLoopError;
+  private final StatusSignal<Angle> leftPos;
 
   // Cached status signals for RIGHT motor
   private final StatusSignal<AngularVelocity> rightVelocity;
@@ -47,6 +49,7 @@ public class PrestageIOReal implements PrestageIO {
   private final StatusSignal<Temperature> rightDeviceTemp;
   private final StatusSignal<Double> rightClosedLoopReference;
   private final StatusSignal<Double> rightClosedLoopError;
+  private final StatusSignal<Angle> rightPos;
 
   public PrestageIOReal() {
     prestageLeft = new TalonFX(HardwareConstants.CanIds.PRESTAGE_LEADER_ID, CAN_BUS);
@@ -61,6 +64,7 @@ public class PrestageIOReal implements PrestageIO {
     leftDeviceTemp = prestageLeft.getDeviceTemp();
     leftClosedLoopReference = prestageLeft.getClosedLoopReference();
     leftClosedLoopError = prestageLeft.getClosedLoopError();
+    leftPos = prestageLeft.getPosition();
 
     // Cache signal references once in the constructor — RIGHT motor
     rightVelocity = prestageRight.getVelocity();
@@ -70,6 +74,7 @@ public class PrestageIOReal implements PrestageIO {
     rightDeviceTemp = prestageRight.getDeviceTemp();
     rightClosedLoopReference = prestageRight.getClosedLoopReference();
     rightClosedLoopError = prestageRight.getClosedLoopError();
+    rightPos = prestageRight.getPosition();
 
     // 50Hz for signals we need every loop (velocity, voltage, current, closed-loop reference)
     BaseStatusSignal.setUpdateFrequencyForAll(
@@ -157,13 +162,15 @@ public class PrestageIOReal implements PrestageIO {
         leftDeviceTemp,
         leftClosedLoopReference,
         leftClosedLoopError,
+        leftPos,
         rightVelocity,
         rightStatorCurrent,
         rightSupplyCurrent,
         rightMotorVoltage,
         rightDeviceTemp,
         rightClosedLoopReference,
-        rightClosedLoopError);
+        rightClosedLoopError,
+        rightPos);
 
     // Left motor — read from cache
     inputs.prestageLeftVelocity = leftVelocity.getValue();
@@ -175,6 +182,7 @@ public class PrestageIOReal implements PrestageIO {
         RotationsPerSecond.of(leftClosedLoopReference.getValueAsDouble());
     inputs.prestageLeftClosedLoopError =
         RotationsPerSecond.of(leftClosedLoopError.getValueAsDouble());
+    inputs.prestageLeftPos = leftPos.getValue();
 
     // Right motor — read from cache (BUG FIX: was previously reading left motor signals)
     inputs.prestageRightVelocity = rightVelocity.getValue();
@@ -186,6 +194,7 @@ public class PrestageIOReal implements PrestageIO {
         RotationsPerSecond.of(rightClosedLoopReference.getValueAsDouble());
     inputs.prestageRightClosedLoopError =
         RotationsPerSecond.of(rightClosedLoopError.getValueAsDouble());
+    inputs.prestageRightPos = rightPos.getValue();
   }
 
   @Override

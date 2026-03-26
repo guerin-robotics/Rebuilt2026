@@ -16,6 +16,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.units.measure.Angle;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.transport.TransportConstants;
 
@@ -37,6 +38,7 @@ public class TransportIOReal implements TransportIO {
   private final StatusSignal<Temperature> deviceTemp;
   private final StatusSignal<Double> closedLoopReference;
   private final StatusSignal<Double> closedLoopError;
+  private final StatusSignal<Angle> pos;
 
   public TransportIOReal() {
     transportMotor = new TalonFX(HardwareConstants.CanIds.TRANSPORT_MOTOR_ID, CAN_BUS);
@@ -50,6 +52,7 @@ public class TransportIOReal implements TransportIO {
     deviceTemp = transportMotor.getDeviceTemp();
     closedLoopReference = transportMotor.getClosedLoopReference();
     closedLoopError = transportMotor.getClosedLoopError();
+    pos = transportMotor.getPosition();
 
     // 50Hz for signals we need every loop (velocity, voltage, current)
     BaseStatusSignal.setUpdateFrequencyForAll(
@@ -106,7 +109,8 @@ public class TransportIOReal implements TransportIO {
         motorVoltage,
         deviceTemp,
         closedLoopReference,
-        closedLoopError);
+        closedLoopError,
+        pos);
 
     // Read from cache — no additional CAN traffic
     inputs.TransportMotorVelocity = velocity.getValue();
@@ -117,6 +121,7 @@ public class TransportIOReal implements TransportIO {
     inputs.transportClosedLoopReference =
         RotationsPerSecond.of(closedLoopReference.getValueAsDouble());
     inputs.transportClosedLoopError = RotationsPerSecond.of(closedLoopError.getValueAsDouble());
+    inputs.transportPos = pos.getValue();
   }
 
   @Override

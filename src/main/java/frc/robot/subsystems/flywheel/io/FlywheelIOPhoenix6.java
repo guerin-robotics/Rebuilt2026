@@ -19,6 +19,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.units.measure.Angle;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.flywheel.FlywheelConstants;
 import org.littletonrobotics.junction.Logger;
@@ -61,6 +62,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
   private final StatusSignal<Temperature> leaderTemp;
   private final StatusSignal<Double> closedLoopReference;
   private final StatusSignal<Double> closedLoopError;
+  private final StatusSignal<Angle> leaderPos;
 
   // Cached status signals for FOLLOWER 1
   private final StatusSignal<AngularVelocity> follower1Velocity;
@@ -103,6 +105,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     leaderTemp = leader.getDeviceTemp();
     closedLoopReference = leader.getClosedLoopReference();
     closedLoopError = leader.getClosedLoopError();
+    leaderPos = leader.getPosition();
 
     // Cache signal references once — FOLLOWER 1
     follower1Velocity = follower1.getVelocity();
@@ -130,6 +133,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
         leaderMotorVoltage,
         leaderSupplyCurrent,
         leaderStatorCurrent,
+        leaderPos,
         closedLoopReference,
         follower1Velocity,
         follower1MotorVoltage,
@@ -202,6 +206,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
         leaderSupplyCurrent,
         leaderStatorCurrent,
         leaderTemp,
+        leaderPos,
         closedLoopReference,
         closedLoopError,
         follower1Velocity,
@@ -224,6 +229,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     inputs.leaderSupplyCurrentAmps = leaderSupplyCurrent.getValue();
     inputs.leaderStatorCurrentAmps = leaderStatorCurrent.getValue();
     inputs.leaderTemp = leaderTemp.getValue();
+    inputs.leaderAngle = leaderPos.getValue();
 
     // Follower 1 motor — read from cache
     inputs.follower1Velocity = follower1Velocity.getValue();

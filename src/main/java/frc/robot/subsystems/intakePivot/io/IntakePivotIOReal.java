@@ -86,7 +86,8 @@ public class IntakePivotIOReal implements IntakePivotIO {
         statorCurrent,
         supplyCurrent,
         encoderPosition,
-        closedLoopReference);
+        closedLoopReference
+        );
 
     // 10Hz for diagnostic-only signals (temperature, closed-loop error)
     BaseStatusSignal.setUpdateFrequencyForAll(10.0, deviceTemp, closedLoopError);

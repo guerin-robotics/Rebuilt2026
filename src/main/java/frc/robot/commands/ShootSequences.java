@@ -118,7 +118,7 @@ public class ShootSequences {
                     intakeRollerCommands.setRollerVoltage(
                         intakeRoller,
                         (HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)),
-                    IntakePivotCommands.compressPivot(intakePivot))))
+                    IntakePivotCommands.compressPivot(intakePivot, 0.2, 2))))
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
   }
 

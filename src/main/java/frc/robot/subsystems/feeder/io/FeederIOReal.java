@@ -16,6 +16,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.units.measure.Angle;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.feeder.FeederConstants;
 
@@ -37,6 +38,7 @@ public class FeederIOReal implements FeederIO {
   private final StatusSignal<Temperature> deviceTemp;
   private final StatusSignal<Double> closedLoopReference;
   private final StatusSignal<Double> closedLoopError;
+  private final StatusSignal<Angle> pos;
 
   public FeederIOReal() {
     feederMotor = new TalonFX(HardwareConstants.CanIds.FEEDER_MOTOR_ID, CAN_BUS);
@@ -50,6 +52,7 @@ public class FeederIOReal implements FeederIO {
     deviceTemp = feederMotor.getDeviceTemp();
     closedLoopReference = feederMotor.getClosedLoopReference();
     closedLoopError = feederMotor.getClosedLoopError();
+    pos = feederMotor.getPosition();
 
     // 50Hz for signals we need every loop (velocity, voltage, current, closed-loop reference)
     BaseStatusSignal.setUpdateFrequencyForAll(
@@ -104,7 +107,8 @@ public class FeederIOReal implements FeederIO {
         motorVoltage,
         deviceTemp,
         closedLoopReference,
-        closedLoopError);
+        closedLoopError,
+        pos);
 
     // Read from cache — no additional CAN traffic
     inputs.feederMotorVelocity = velocity.getValue();
@@ -115,6 +119,7 @@ public class FeederIOReal implements FeederIO {
     inputs.feederClosedLoopReference =
         RotationsPerSecond.of(closedLoopReference.getValueAsDouble());
     inputs.feederClosedLoopError = RotationsPerSecond.of(closedLoopError.getValueAsDouble());
+    inputs.feederPos = pos.getValue();
   }
 
   @Override

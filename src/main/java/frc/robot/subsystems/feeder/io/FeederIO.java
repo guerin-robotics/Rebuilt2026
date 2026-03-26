@@ -4,6 +4,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.units.measure.Angle;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface FeederIO {
@@ -17,6 +18,7 @@ public interface FeederIO {
     public Temperature feederMotorTemperature;
     public AngularVelocity feederClosedLoopReference;
     public AngularVelocity feederClosedLoopError;
+    public Angle feederPos;
   }
 
   public default void updateInputs(FeederIOInputs inputs) {}
