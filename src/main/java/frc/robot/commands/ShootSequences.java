@@ -107,10 +107,7 @@ public class ShootSequences {
                 FlywheelCommands.setVelocityForHub(flywheel),
                 PrestageCommands.setPrestageVelocity(
                     prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
-                HoodCommands.setHoodPosForHub(hood)
-                // ,
-                // IntakePivotCommands.jostlePivotByPos(intakePivot)
-                ),
+                HoodCommands.setHoodPosForHub(hood)),
             Commands.sequence(
                 new WaitCommand(HardwareConstants.CompConstants.flywheelSpinupSeconds),
                 Commands.parallel(
@@ -120,7 +117,8 @@ public class ShootSequences {
                         transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
                     intakeRollerCommands.setRollerVoltage(
                         intakeRoller,
-                        (HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)))))
+                        (HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)),
+                    IntakePivotCommands.compressPivot(intakePivot))))
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
   }
 
@@ -178,10 +176,8 @@ public class ShootSequences {
                 TransportCommands.setTransportVoltage(
                     transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
                 intakeRollerCommands.setRollerVoltage(
-                    intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)
-                //     ,
-                // IntakePivotCommands.jostlePivotByPos(intakePivot)
-                ))
+                    intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage),
+                IntakePivotCommands.jostlePivotByPos(intakePivot)))
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
   }
 

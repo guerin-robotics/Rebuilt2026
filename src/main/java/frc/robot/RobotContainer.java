@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.FieldConstants;
 import frc.robot.commands.DriveCommands;
@@ -360,7 +361,7 @@ public class RobotContainer {
             () -> MathUtil.clamp(-controller.getLeftY() - getThrustY(), -1.0, 1.0),
             () -> MathUtil.clamp(-controller.getLeftX() - getThrustX(), -1.0, 1.0),
             () -> MathUtil.clamp(-controller.getRightX() - getThrustRot(), -1.0, 1.0),
-            controller.y()));
+            new Trigger(() -> true))); // controller.y()));
     // Lock to 0° when A button is held (Xbox still controls angle)
     controller
         .a()
@@ -475,7 +476,7 @@ public class RobotContainer {
 
     // Intake jostle
     // thrustmaster.button(6).whileTrue(IntakePivotCommands.jostlePivotByPos(intakePivot));
-    thrustmaster.button(6).onTrue(IntakePivotCommands.setPivotRotations(intakePivot, 0.0));
+    thrustmaster.button(6).onTrue(IntakePivotCommands.compressPivot(intakePivot));
 
     // Spit sequence
     thrustmaster.button(7).whileTrue(SpitSequences.clearShooter(flywheel, prestage, feeder));
