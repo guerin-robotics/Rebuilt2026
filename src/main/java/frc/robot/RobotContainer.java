@@ -585,10 +585,10 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.driveLucasProof(
             drive,
-            () -> MathUtil.clamp(-controller.getLeftY(), -1.0, 1.0),
-            () -> MathUtil.clamp(-controller.getLeftX(), -1.0, 1.0),
-            () -> MathUtil.clamp(-controller.getRightTriggerAxis(), -1.0, 1.0),
-            controller.rightTrigger()));
+            () -> MathUtil.clamp(-getThrustY(), -1.0, 1.0),
+            () -> MathUtil.clamp(-getThrustX(), -1.0, 1.0),
+            () -> MathUtil.clamp(-getThrustRot(), -1.0, 1.0),
+            controller.y()));
 
     // ==================== FLYWHEEL TEST (SIM) ====================
     // Set flywheel idle as default command so it's always spinning slowly
@@ -614,40 +614,40 @@ public class RobotContainer {
         .onFalse(SpitSequences.spitAfterShoot(flywheel, prestage, feeder, transport, intakeRoller));
 
     // B button maps correctly
-    // Pivot compress
-    controller.b().onTrue(IntakePivotCommands.compressPivot(intakePivot, (0.2), 2));
-    // // Trigger-based alignment - trench
-    // controller
-    //     .b()
-    //     .and(
-    //         () ->
-    //             (Triggers.getInstance().isRobotInTrench()
-    //                 || Triggers.getInstance().isRobotApproachingTrench()))
-    //     .whileTrue(
-    //         DriveCommands.joystickDriveAlignForTrench(
-    //             drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
+    // // Pivot compress
+    // controller.b().onTrue(IntakePivotCommands.compressPivot(intakePivot, (0.2), 2));
+    // Trigger-based alignment - trench
+    thrustmaster
+        .button(2)
+        .and(
+            () ->
+                (Triggers.getInstance().isRobotInTrench()
+                    || Triggers.getInstance().isRobotApproachingTrench()))
+        .whileTrue(
+            DriveCommands.joystickDriveAlignForTrench(
+                drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
 
-    // // Trigger-based alignment - bump
-    // controller
-    //     .b()
-    //     .and(
-    //         () ->
-    //             (Triggers.getInstance().isRobotOnBump()
-    //                 || Triggers.getInstance().isRobotApproachingBump()))
-    //     .whileTrue(
-    //         DriveCommands.joystickDriveAlignForBump(
-    //             drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
+    // Trigger-based alignment - bump
+    thrustmaster
+        .button(2)
+        .and(
+            () ->
+                (Triggers.getInstance().isRobotOnBump()
+                    || Triggers.getInstance().isRobotApproachingBump()))
+        .whileTrue(
+            DriveCommands.joystickDriveAlignForBump(
+                drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
 
-    // // Trigger-based alignment - tower
-    // controller
-    //     .b()
-    //     .and(
-    //         () ->
-    //             (Triggers.getInstance().isRobotInTower()
-    //                 || Triggers.getInstance().isRobotApproachingTower()))
-    //     .whileTrue(
-    //         DriveCommands.joystickDriveAlignForTower(
-    //             drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
+    // Trigger-based alignment - tower
+    thrustmaster
+        .button(2)
+        .and(
+            () ->
+                (Triggers.getInstance().isRobotInTower()
+                    || Triggers.getInstance().isRobotApproachingTower()))
+        .whileTrue(
+            DriveCommands.joystickDriveAlignForTower(
+                drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
 
     // Left bumper: intake down
     controller
