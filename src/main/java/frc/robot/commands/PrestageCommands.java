@@ -29,9 +29,6 @@ public class PrestageCommands {
   }
 
   public static Command setOneVelo(Prestage prestage, AngularVelocity velo) {
-    return Commands.startEnd(
-        () -> prestage.setOneVelo(velo),
-        () -> prestage.setOneVelo(RotationsPerSecond.of(0)),
-        prestage);
+    return Commands.runOnce(() -> prestage.setOneVelo(velo), prestage);
   }
 }

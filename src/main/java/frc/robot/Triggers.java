@@ -20,9 +20,11 @@ public class Triggers {
   }
 
   public boolean isShootSafe() {
-    HardwareConstants.Zones.Zone futureZone =
+    HardwareConstants.Zones.Zone currentZone =
         RobotState.getInstance().getRobotZone(RobotState.getInstance().getEstimatedPose());
-    boolean safe = (futureZone == HardwareConstants.Zones.Zone.ALLIANCE_ZONE);
+    boolean safe =
+        (currentZone == HardwareConstants.Zones.Zone.ALLIANCE_ZONE
+            || currentZone == Zone.ALLIANCE_ZONE_TRENCH_BORDER);
     Logger.recordOutput("RobotState/zoneSafeToShoot", safe);
     return safe;
   }

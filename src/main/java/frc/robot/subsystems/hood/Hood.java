@@ -63,6 +63,11 @@ public class Hood extends SubsystemBase {
     }
   }
 
+  public void setHoodPosForShoot() {
+    double position = HoodPosCalculator.getInstance().getHoodPosForHub();
+    io.setHoodPos(position);
+  }
+
   public void stopHood() {
     io.stopHood();
   }

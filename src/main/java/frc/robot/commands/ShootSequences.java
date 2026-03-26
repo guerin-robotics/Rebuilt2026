@@ -107,7 +107,7 @@ public class ShootSequences {
                 FlywheelCommands.setVelocityForHub(flywheel),
                 PrestageCommands.setPrestageVelocity(
                     prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
-                HoodCommands.setHoodPosForHub(hood)),
+                HoodCommands.setHoodPosForShoot(hood)),
             Commands.sequence(
                 new WaitCommand(HardwareConstants.CompConstants.flywheelSpinupSeconds),
                 Commands.parallel(
@@ -117,8 +117,11 @@ public class ShootSequences {
                         transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
                     intakeRollerCommands.setRollerVoltage(
                         intakeRoller,
-                        (HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)),
-                    IntakePivotCommands.compressPivot(intakePivot, 0.2, 2))))
+                        (HardwareConstants.CompConstants.Voltages.intakeRollerVoltage))))
+            //             ,
+            // Commands.sequence(
+            //     new WaitCommand(1), IntakePivotCommands.compressPivot(intakePivot, 0.2, 2))
+            )
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
   }
 

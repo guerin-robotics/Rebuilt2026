@@ -247,15 +247,25 @@ public class DriveCommands {
         xSupplier,
         ySupplier,
         () -> {
-          // Get the robot's current heading in radians (-PI to PI)
-          double currentRadians = drive.getRotation().getRadians();
+          // // Get the robot's current heading in radians (-PI to PI)
+          // double currentRadians = drive.getRotation().getRadians();
+          // // If the absolute heading is <= 90° (PI/2), the robot is closer to 0° (facing red
+          // wall)
+          // // Otherwise, it's closer to 180° (facing blue wall)
+          // if (Math.abs(currentRadians) <= Math.PI / 2.0) {
+          //   return Rotation2d.kZero; // Snap to 0°
+          // } else {
+          //   return Rotation2d.kPi; // Snap to 180°
+          // }
 
-          // If the absolute heading is <= 90° (PI/2), the robot is closer to 0° (facing red wall)
-          // Otherwise, it's closer to 180° (facing blue wall)
-          if (Math.abs(currentRadians) <= Math.PI / 2.0) {
-            return Rotation2d.kZero; // Snap to 0°
+          double currentY = RobotState.getInstance().getEstimatedPose().getY();
+
+          // If the robot's y-position is less than the center line, it should snap to -90;
+          // otherwise, to 90
+          if (currentY < FieldConstants.LinesHorizontal.center) {
+            return Rotation2d.kCCW_90deg; // Snap to -90°
           } else {
-            return Rotation2d.kPi; // Snap to 180°
+            return Rotation2d.kCW_90deg; // Snap to 90°
           }
         });
   }

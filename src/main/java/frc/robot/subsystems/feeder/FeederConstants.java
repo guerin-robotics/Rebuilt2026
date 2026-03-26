@@ -21,14 +21,14 @@ public class FeederConstants {
   }
 
   public static class Mechanical {
-    public static final double feederRatio = 0.417;
+    public static final double feederRatio = 1 / 0.417;
   }
 
   // Real robot PID gains for torque-current velocity control
   public static class PID {
-    public static final double KS = 5.0;
+    public static final double KS = 6.0; // 5.0
     public static final double KV = 0.0;
-    public static final double KP = 3.0;
+    public static final double KP = 4.0; // 3.0
     public static final double KI = 0.0;
     public static final double KD = 0.0;
   }
@@ -51,9 +51,9 @@ public class FeederConstants {
     // Sim-specific torque-current PID gains.
     // The TalonFX firmware still runs TorqueCurrentFOC in sim and produces
     // a motor voltage output that we feed into DCMotorSim.
-    public static final double KS = 3.0;
+    public static final double KS = 3.0; // 3.0
     public static final double KV = 0.0;
-    public static final double KP = 2.0;
+    public static final double KP = 0.0; // 2.0
     public static final double KI = 0.0;
     public static final double KD = 0.0;
   }

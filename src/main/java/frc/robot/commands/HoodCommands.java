@@ -14,6 +14,10 @@ public class HoodCommands {
     return Commands.run(() -> hood.setHoodPosForHub(), hood);
   }
 
+  public static Command setHoodPosForShoot(Hood hood) {
+    return Commands.run(() -> hood.setHoodPosForShoot(), hood);
+  }
+
   public static Command incrementHoodPos(Hood hood) {
     return Commands.runOnce(() -> hood.incrementHoodPos(), hood);
   }

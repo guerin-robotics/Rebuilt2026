@@ -82,8 +82,6 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.io.VisionIO;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVisionSim;
-import frc.robot.util.HubShiftUtil;
-
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -356,13 +354,20 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // ==================== DRIVE CONTROLS (DO NOT MODIFY) ====================
     // Default command: Xbox + Thrustmaster combined
+    // drive.setDefaultCommand(
+    //     DriveCommands.driveLucasProof(
+    //         drive,
+    //         () -> MathUtil.clamp(-controller.getLeftY() - getThrustY(), -1.0, 1.0),
+    //         () -> MathUtil.clamp(-controller.getLeftX() - getThrustX(), -1.0, 1.0),
+    //         () -> MathUtil.clamp(-controller.getRightX() - getThrustRot(), -1.0, 1.0),
+    //         controller.y()));
+
     drive.setDefaultCommand(
-        DriveCommands.driveLucasProof(
+        DriveCommands.joystickDrive(
             drive,
-            () -> MathUtil.clamp(-controller.getLeftY() - getThrustY(), -1.0, 1.0),
-            () -> MathUtil.clamp(-controller.getLeftX() - getThrustX(), -1.0, 1.0),
-            () -> MathUtil.clamp(-controller.getRightX() - getThrustRot(), -1.0, 1.0),
-            controller.y()));
+            () -> MathUtil.clamp(-getThrustY(), -1.0, 1.0),
+            () -> MathUtil.clamp(-getThrustX(), -1.0, 1.0),
+            () -> MathUtil.clamp(-getThrustRot(), -1.0, 1.0)));
 
     // Trigger-based alignment - trench
     thrustmaster
@@ -373,7 +378,7 @@ public class RobotContainer {
                     || Triggers.getInstance().isRobotApproachingTrench()))
         .whileTrue(
             DriveCommands.joystickDriveAlignForTrench(
-                drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
+                drive, () -> -thrustmaster.getY(), () -> -thrustmaster.getX()));
 
     // Trigger-based alignment - bump
     thrustmaster
@@ -384,18 +389,18 @@ public class RobotContainer {
                     || Triggers.getInstance().isRobotApproachingBump()))
         .whileTrue(
             DriveCommands.joystickDriveAlignForBump(
-                drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
+                drive, () -> -thrustmaster.getY(), () -> -thrustmaster.getX()));
 
-    // Trigger-based alignment - tower
-    thrustmaster
-        .button(2)
-        .and(
-            () ->
-                (Triggers.getInstance().isRobotInTower()
-                    || Triggers.getInstance().isRobotApproachingTower()))
-        .whileTrue(
-            DriveCommands.joystickDriveAlignForTower(
-                drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
+    // // Trigger-based alignment - tower
+    // thrustmaster
+    //     .button(2)
+    //     .and(
+    //         () ->
+    //             (Triggers.getInstance().isRobotInTower()
+    //                 || Triggers.getInstance().isRobotApproachingTower()))
+    //     .whileTrue(
+    //         DriveCommands.joystickDriveAlignForTower(
+    //             drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
 
     // Lock to 0° when A button is held (Xbox still controls angle)
     controller
@@ -446,37 +451,38 @@ public class RobotContainer {
       feeder.setDefaultCommand(FeederCommands.setFeederVoltage(feeder, Volts.of(-1)));
     }
 
-    if (!HardwareConstants.TuningConstants.TUNING_MODE) {
-      // Distance-based shooting
-      thrustmaster
-          .button(1)
-          .and(() -> HubShiftUtil.getShiftedShiftInfo().active())
-          .whileTrue(
-              DriveCommands.joystickDriveAtAngle(
-                      drive,
-                      () -> -thrustmaster.getY(),
-                      () -> -thrustmaster.getX(),
-                      () -> flywheel.getShootAngleForZone())
-                  .alongWith(
-                      ShootSequences.zonePassOrShoot(
-                          flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot)))
-          .onFalse(
-              ShootSequences.shootEndBehavior(
-                  flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
-    } else {
-      // Shoot for map tuning
-      thrustmaster
-          .button(1)
-          .whileTrue(
-              DriveCommands.joystickDriveAtAngle(
-                      drive,
-                      () -> -thrustmaster.getX(),
-                      () -> -thrustmaster.getY(),
-                      () -> RobotState.getInstance().getAngleToAllianceHub())
-                  .alongWith(
-                      ShootSequences.mapTuningShoot(
-                          flywheel, prestage, hood, intakePivot, feeder, transport, intakeRoller)));
-    }
+    // if (!HardwareConstants.TuningConstants.TUNING_MODE) {
+    //   // Distance-based shooting
+    thrustmaster
+        .button(1)
+        // .and(() -> HubShiftUtil.getShiftedShiftInfo().active())
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                    drive,
+                    () -> -thrustmaster.getY(),
+                    () -> -thrustmaster.getX(),
+                    () -> flywheel.getShootAngleForZone())
+                .alongWith(
+                    ShootSequences.zonePassOrShoot(
+                        flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot)))
+        .onFalse(
+            ShootSequences.shootEndBehavior(
+                flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
+    // } else {
+    //   // Shoot for map tuning
+    //   thrustmaster
+    //       .button(1)
+    //       .whileTrue(
+    //           DriveCommands.joystickDriveAtAngle(
+    //                   drive,
+    //                   () -> -thrustmaster.getX(),
+    //                   () -> -thrustmaster.getY(),
+    //                   () -> RobotState.getInstance().getAngleToAllianceHub())
+    //               .alongWith(
+    //                   ShootSequences.mapTuningShoot(
+    //                       flywheel, prestage, hood, intakePivot, feeder, transport,
+    // intakeRoller)));
+    // }
 
     // Intake up
     thrustmaster
@@ -506,6 +512,11 @@ public class RobotContainer {
     // Intake jostle
     // thrustmaster.button(6).whileTrue(IntakePivotCommands.jostlePivotByPos(intakePivot));
     thrustmaster.button(6).onTrue(IntakePivotCommands.compressPivot(intakePivot, 0.2, 2));
+    // thrustmaster
+    //     .button(6)
+    //     .whileTrue(
+    //         FeederCommands.setFeederVelocity(
+    //             feeder, HardwareConstants.CompConstants.Velocities.feederVelocity));
 
     // Spit sequence
     thrustmaster.button(7).whileTrue(SpitSequences.clearShooter(flywheel, prestage, feeder));

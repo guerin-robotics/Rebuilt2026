@@ -55,8 +55,8 @@ public class HardwareConstants {
 
     // Subsystems that run at a constant velocity: prestage, feeder
     public static class Velocities {
-      public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(200.0);
-      public static final AngularVelocity feederVelocity = RotationsPerSecond.of(180.0);
+      public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(40.0);
+      public static final AngularVelocity feederVelocity = RotationsPerSecond.of(40.0);
       public static final AngularVelocity flywheelIdleVelocity = RotationsPerSecond.of(5);
     }
 
@@ -185,7 +185,7 @@ public class HardwareConstants {
       INTAKE_SAFE
     }
 
-    public static final double zoneOffset = AllianceFlipUtil.applyX(2);
+    public static final double zoneOffset = AllianceFlipUtil.applyX(0.75);
     public static final double timeInterval = 0.05;
   }
 
