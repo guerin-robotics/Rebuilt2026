@@ -165,4 +165,29 @@ public class Triggers {
       return false;
     }
   }
+
+  public boolean isRobotAtWall() {
+    double currentX = RobotState.getInstance().getEstimatedPose().getX();
+    double currentY = RobotState.getInstance().getEstimatedPose().getY();
+    if (((currentX > (FieldConstants.fieldLength - HardwareConstants.Zones.zoneOffset))
+            && (currentY
+                    < (FieldConstants.Tower.oppRightUpright.getY()
+                        - HardwareConstants.Zones.zoneOffset)
+                || currentY
+                    > (FieldConstants.Tower.oppLeftUpright.getY()
+                        - HardwareConstants.Zones.zoneOffset)))
+        || ((currentX < HardwareConstants.Zones.zoneOffset)
+            && (currentY
+                    < (FieldConstants.Tower.oppRightUpright.getY()
+                        - HardwareConstants.Zones.zoneOffset)
+                || currentY
+                    > (FieldConstants.Tower.oppLeftUpright.getY()
+                        - HardwareConstants.Zones.zoneOffset)))
+        || (currentY > (FieldConstants.fieldWidth - HardwareConstants.Zones.zoneOffset))
+        || (currentY < HardwareConstants.Zones.zoneOffset)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

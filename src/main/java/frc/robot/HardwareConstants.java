@@ -74,7 +74,10 @@ public class HardwareConstants {
       public static final double pivotJostleUpPos = 0.25;
     }
 
-    public static final double flywheelSpinupSeconds = 0.3;
+    public static class Waits {
+      public static final double flywheelSpinupSeconds = 0.3;
+      public static final double waitToCompressSeconds = 1;
+    }
   }
 
   public static class TestConstants {
@@ -185,7 +188,7 @@ public class HardwareConstants {
       INTAKE_SAFE
     }
 
-    public static final double zoneOffset = AllianceFlipUtil.applyX(0.75);
+    public static final double zoneOffset = AllianceFlipUtil.applyX(0.5);
     public static final double timeInterval = 0.05;
   }
 

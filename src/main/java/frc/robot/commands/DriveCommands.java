@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.ContinuousConditionalCommand;
 import frc.lib.FieldConstants;
+import frc.robot.HardwareConstants;
 import frc.robot.RobotState;
 import frc.robot.Triggers;
 import frc.robot.subsystems.drive.Drive;
@@ -310,6 +311,24 @@ public class DriveCommands {
           } else {
             Logger.recordOutput("RobotState/towerAlign", "nearSide");
             return AllianceFlipUtil.apply(Rotation2d.kCCW_90deg);
+          }
+        });
+  }
+
+  public static Command joystickDriveAlignForWall(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+    return joystickDriveAtAngle(
+        drive,
+        xSupplier,
+        ySupplier,
+        () -> {
+          double currentY = RobotState.getInstance().getEstimatedPose().getY();
+          if (currentY > FieldConstants.fieldWidth + HardwareConstants.Zones.zoneOffset) {
+            return Rotation2d.kCCW_Pi_2;
+          } else if (currentY < HardwareConstants.Zones.zoneOffset) {
+            return Rotation2d.kCW_Pi_2;
+          } else {
+            return Rotation2d.kPi;
           }
         });
   }

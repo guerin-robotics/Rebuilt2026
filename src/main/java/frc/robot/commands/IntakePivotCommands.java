@@ -73,9 +73,15 @@ public class IntakePivotCommands {
                     HardwareConstants.CompConstants.Positions.pivotDownPos));
   }
 
-  public static Command compressPivot(IntakePivot intakePivot, double rotations, double seconds) {
-    AngularVelocity pivotVelo = RotationsPerSecond.of(rotations / seconds);
-    return Commands.deadline(new WaitCommand(seconds), setPivotVelocity(intakePivot, pivotVelo));
+  // public static Command compressPivot(IntakePivot intakePivot, double rotations, double seconds)
+  // {
+  //   AngularVelocity pivotVelo = RotationsPerSecond.of(rotations / seconds);
+  //   return Commands.deadline(new WaitCommand(seconds), setPivotVelocity(intakePivot, pivotVelo));
+  // }
+
+  public static Command compressPivot(IntakePivot intakePivot) {
+    return Commands.deadline(
+        new WaitCommand(2), IntakePivotCommands.setPivotVoltage(intakePivot, Volts.of(1.5)));
   }
 
   /** Zero the pivot encoder at the current position. */

@@ -20,7 +20,6 @@ import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -376,6 +375,7 @@ public class RobotContainer {
             () ->
                 (Triggers.getInstance().isRobotInTrench()
                     || Triggers.getInstance().isRobotApproachingTrench()))
+        .and(() -> controller.y().getAsBoolean() == false)
         .whileTrue(
             DriveCommands.joystickDriveAlignForTrench(
                 drive, () -> -thrustmaster.getY(), () -> -thrustmaster.getX()));
@@ -387,6 +387,7 @@ public class RobotContainer {
             () ->
                 (Triggers.getInstance().isRobotOnBump()
                     || Triggers.getInstance().isRobotApproachingBump()))
+        .and(() -> controller.y().getAsBoolean() == false)
         .whileTrue(
             DriveCommands.joystickDriveAlignForBump(
                 drive, () -> -thrustmaster.getY(), () -> -thrustmaster.getX()));
@@ -400,30 +401,36 @@ public class RobotContainer {
     //                 || Triggers.getInstance().isRobotApproachingTower()))
     //     .whileTrue(
     //         DriveCommands.joystickDriveAlignForTower(
-    //             drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
+    //             drive, () -> -thrustmaster.getY(), () -> -thrustmaster.getX()));
+
+    // // Trigger-based alignment - wall
+    // thrustmaster.button(2).and(() -> Triggers.getInstance().isRobotAtWall())
+    //     .whileTrue(DriveCommands.joystickDriveAlignForWall(
+    //         drive, () -> -thrustmaster.getY(), () -> -thrustmaster.getX()));
 
     // Lock to 0° when A button is held (Xbox still controls angle)
-    controller
-        .a()
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> MathUtil.clamp(controller.getLeftY() + getThrustY(), -1.0, 1.0),
-                () -> MathUtil.clamp(controller.getLeftX() + getThrustX(), -1.0, 1.0),
-                () -> Rotation2d.kZero));
+    // controller
+    //     .a()
+    //     .whileTrue(
+    //         DriveCommands.joystickDriveAtAngle(
+    //             drive,
+    //             () -> MathUtil.clamp(controller.getLeftY() + getThrustY(), -1.0, 1.0),
+    //             () -> MathUtil.clamp(controller.getLeftX() + getThrustX(), -1.0, 1.0),
+    //             () -> Rotation2d.kZero));
+
     // X pattern
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro
-    controller
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
-                    drive)
-                .ignoringDisable(true));
+    // controller
+    //     .b()
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () ->
+    //                     drive.setPose(
+    //                         new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+    //                 drive)
+    //             .ignoringDisable(true));
 
     controller
         .rightBumper()
@@ -451,11 +458,13 @@ public class RobotContainer {
       feeder.setDefaultCommand(FeederCommands.setFeederVoltage(feeder, Volts.of(-1)));
     }
 
+    // Alliance win toggle - nonfunctional
+    controller.a().onTrue(ShootSequences.flipAlliance());
+
     // if (!HardwareConstants.TuningConstants.TUNING_MODE) {
     //   // Distance-based shooting
     thrustmaster
         .button(1)
-        // .and(() -> HubShiftUtil.getShiftedShiftInfo().active())
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                     drive,
@@ -463,8 +472,15 @@ public class RobotContainer {
                     () -> -thrustmaster.getX(),
                     () -> flywheel.getShootAngleForZone())
                 .alongWith(
-                    ShootSequences.zonePassOrShoot(
-                        flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot)))
+                    ShootSequences.zoneAndTimePassOrShoot(
+                        flywheel,
+                        prestage,
+                        hood,
+                        feeder,
+                        transport,
+                        intakeRoller,
+                        intakePivot,
+                        controller.b())))
         .onFalse(
             ShootSequences.shootEndBehavior(
                 flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
@@ -511,7 +527,7 @@ public class RobotContainer {
 
     // Intake jostle
     // thrustmaster.button(6).whileTrue(IntakePivotCommands.jostlePivotByPos(intakePivot));
-    thrustmaster.button(6).onTrue(IntakePivotCommands.compressPivot(intakePivot, 0.2, 2));
+    thrustmaster.button(6).onTrue(IntakePivotCommands.compressPivot(intakePivot));
     // thrustmaster
     //     .button(6)
     //     .whileTrue(
@@ -596,9 +612,9 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.driveLucasProof(
             drive,
-            () -> MathUtil.clamp(-getThrustY(), -1.0, 1.0),
-            () -> MathUtil.clamp(-getThrustX(), -1.0, 1.0),
-            () -> MathUtil.clamp(-getThrustRot(), -1.0, 1.0),
+            () -> MathUtil.clamp(-controller.getLeftY() - getThrustY(), -1.0, 1.0),
+            () -> MathUtil.clamp(-controller.getLeftX() - getThrustX(), -1.0, 1.0),
+            () -> MathUtil.clamp(-controller.getRightTriggerAxis() - getThrustRot(), -1.0, 1.0),
             controller.y()));
 
     // ==================== FLYWHEEL TEST (SIM) ====================

@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.HardwareConstants;
 import frc.robot.Triggers;
 import frc.robot.subsystems.feeder.Feeder;
@@ -16,6 +17,8 @@ import frc.robot.subsystems.intakePivot.IntakePivot;
 import frc.robot.subsystems.intakeRoller.intakeRoller;
 import frc.robot.subsystems.prestage.Prestage;
 import frc.robot.subsystems.transport.Transport;
+import frc.robot.util.HubShiftUtil;
+import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 
 public class ShootSequences {
@@ -37,7 +40,7 @@ public class ShootSequences {
             HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos),
             IntakePivotCommands.jostlePivotByPos(intakePivot)),
         Commands.sequence(
-            new WaitCommand(HardwareConstants.CompConstants.flywheelSpinupSeconds),
+            new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
             Commands.parallel(
                 FeederCommands.setFeederVelocity(
                     feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
@@ -109,7 +112,7 @@ public class ShootSequences {
                     prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
                 HoodCommands.setHoodPosForShoot(hood)),
             Commands.sequence(
-                new WaitCommand(HardwareConstants.CompConstants.flywheelSpinupSeconds),
+                new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
                 Commands.parallel(
                     FeederCommands.setFeederVelocity(
                         feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
@@ -117,11 +120,10 @@ public class ShootSequences {
                         transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
                     intakeRollerCommands.setRollerVoltage(
                         intakeRoller,
-                        (HardwareConstants.CompConstants.Voltages.intakeRollerVoltage))))
-            //             ,
-            // Commands.sequence(
-            //     new WaitCommand(1), IntakePivotCommands.compressPivot(intakePivot, 0.2, 2))
-            )
+                        (HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)))),
+            Commands.sequence(
+                new WaitCommand(HardwareConstants.CompConstants.Waits.waitToCompressSeconds),
+                IntakePivotCommands.compressPivot(intakePivot)))
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
   }
 
@@ -173,7 +175,7 @@ public class ShootSequences {
                     prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
                 HoodCommands.setHoodPos(hood, HardwareConstants.PassConstants.hoodPassPos)),
             Commands.sequence(
-                new WaitCommand(HardwareConstants.CompConstants.flywheelSpinupSeconds),
+                new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
                 FeederCommands.setFeederVelocity(
                     feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
                 TransportCommands.setTransportVoltage(
@@ -182,6 +184,33 @@ public class ShootSequences {
                     intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage),
                 IntakePivotCommands.jostlePivotByPos(intakePivot)))
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+  }
+
+  public static Command zoneAndTimePassOrShoot(
+      Flywheel flywheel,
+      Prestage prestage,
+      Hood hood,
+      Feeder feeder,
+      Transport transport,
+      intakeRoller intakeRoller,
+      IntakePivot intakePivot,
+      Trigger override) {
+    return Commands.either(
+        shootToHub(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
+        pass(flywheel, prestage, hood, feeder, transport, intakePivot, intakeRoller),
+        () -> {
+          boolean safe = Triggers.getInstance().isShootSafe();
+          Logger.recordOutput("Flywheel/shootOrPass", safe ? "shooting" : "passing");
+          boolean timeCorrect = HubShiftUtil.getShiftedShiftInfo().active();
+          Logger.recordOutput("Flywheel/timeCorrect", timeCorrect);
+          boolean overriden = override.getAsBoolean();
+          Logger.recordOutput("Flywheel/overriden", overriden);
+          if (!overriden) {
+            return safe && timeCorrect;
+          } else {
+            return safe;
+          }
+        });
   }
 
   public static Command zonePassOrShoot(
@@ -265,5 +294,14 @@ public class ShootSequences {
         FeederCommands.stop(feeder),
         TransportCommands.stop(transport),
         intakeRollerCommands.stopIntakeRoller(intakeRoller));
+  }
+
+  public static Command flipAlliance() {
+    if (HubShiftUtil.getAllianceWinOverride().isEmpty()) {
+      // () -> Optional.empty() should be something else but I'm not sure what
+      return Commands.runOnce(() -> HubShiftUtil.setAllianceWinOverride(() -> Optional.empty()));
+    } else {
+      return Commands.runOnce(() -> HubShiftUtil.setAllianceWinOverride(() -> Optional.empty()));
+    }
   }
 }

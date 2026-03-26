@@ -43,7 +43,7 @@ public class IntakePivotConstants {
   public static class PID {
     public static final double KG = 8; // 14
     public static final double KV = 0.0;
-    public static final double KP = 100.0; // 500.0; // 80.0 // 250.0
+    public static final double KP = 110.0; // 100.0
     public static final double KI = 0.0;
     public static final double KD = 5.0; // 30.0; // 1.0
   }
@@ -66,7 +66,7 @@ public class IntakePivotConstants {
   /** MotionMagic profile constraints. */
   public static class PivotMagicConstants {
     /** MotionMagic acceleration in rotations/s². */
-    public static final double pivotAccel = 5.0;
+    public static final double pivotAccel = 3.0; // 5.0
     /** MotionMagic cruise velocity in rotations/s. */
     public static final double pivotVelo = 1;
   }
