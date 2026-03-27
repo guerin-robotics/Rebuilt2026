@@ -14,6 +14,7 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.FieldConstants;
 import frc.robot.HardwareConstants;
 import frc.robot.RobotState;
@@ -125,8 +126,31 @@ public class Flywheel extends SubsystemBase {
   }
 
   // Returns angle to hub if shooting, returns angle to passing target if passing
+  // Includes time logic, both zone and time logic overrideable
+  // Returns current rotation if in alliance zone but hub inactive
+  public Rotation2d getShootAngleForZoneAndTime(Trigger override) {
+    if (!override.getAsBoolean()) {
+      if (Triggers.getInstance().isShootClear()) {
+        Logger.recordOutput("RobotState/zoneSafeToShoot", true);
+        return RobotState.getInstance().getAngleToAllianceHub();
+      } else {
+        if (Triggers.getInstance().isShootSafeZone()) {
+          return RobotState.getInstance().getEstimatedPose().getRotation();
+        } else {
+          Logger.recordOutput("RobotState/zoneSafeToShoot", false);
+          return RobotState.getInstance()
+              .getAngleToTarget(new Translation2d(getPassTarget().getX(), getPassTarget().getY()));
+        }
+      }
+    } else {
+      Logger.recordOutput("RobotState/shootAngleOverriden", true);
+      return RobotState.getInstance().getAngleToAllianceHub();
+    }
+  }
+
+  // No time logic
   public Rotation2d getShootAngleForZone() {
-    if (Triggers.getInstance().isShootSafe()) {
+    if (Triggers.getInstance().isShootSafeZone()) {
       Logger.recordOutput("RobotState/zoneSafeToShoot", true);
       return RobotState.getInstance().getAngleToAllianceHub();
     } else {

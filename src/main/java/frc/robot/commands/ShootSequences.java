@@ -18,7 +18,6 @@ import frc.robot.subsystems.intakePivot.IntakePivot;
 import frc.robot.subsystems.intakeRoller.intakeRoller;
 import frc.robot.subsystems.prestage.Prestage;
 import frc.robot.subsystems.transport.Transport;
-import frc.robot.util.HubShiftUtil;
 import org.littletonrobotics.junction.Logger;
 
 public class ShootSequences {
@@ -105,6 +104,7 @@ public class ShootSequences {
       Transport transport,
       intakeRoller intakeRoller,
       IntakePivot intakePivot) {
+    Logger.recordOutput("RobotState/shooting", true);
     return Commands.parallel(
             Commands.parallel(
                 FlywheelCommands.setVelocityForHub(flywheel),
@@ -168,6 +168,7 @@ public class ShootSequences {
       Transport transport,
       IntakePivot intakePivot,
       intakeRoller intakeRoller) {
+    Logger.recordOutput("RobotState/shooting", false);
     return Commands.parallel(
             Commands.parallel(
                 FlywheelCommands.setPassVelocity(flywheel),
@@ -188,6 +189,10 @@ public class ShootSequences {
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
   }
 
+  // Returns shoot if zone and time correct (in alliance zone and hub active)
+  // Returns pass if both are false
+  // Returns idle if zone is true but time is false
+  // Both zone and time logic overrideable
   public static Command zoneAndTimePassOrShoot(
       Flywheel flywheel,
       Prestage prestage,
@@ -197,24 +202,35 @@ public class ShootSequences {
       intakeRoller intakeRoller,
       IntakePivot intakePivot,
       Trigger override) {
-    return new ContinuousConditionalCommand(
-        shootToHub(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
-        pass(flywheel, prestage, hood, feeder, transport, intakePivot, intakeRoller),
-        () -> {
-          boolean zoneCorrect = Triggers.getInstance().isShootSafe();
-          Logger.recordOutput("RobotState/zoneCorrect", zoneCorrect);
-          boolean timeCorrect = HubShiftUtil.getShiftedShiftInfo().active();
-          Logger.recordOutput("RobotState/timeCorrect", timeCorrect);
-          boolean overriden = override.getAsBoolean();
-          Logger.recordOutput("RobotState/overriden", overriden);
-          boolean allClear = (zoneCorrect && timeCorrect);
-          Logger.recordOutput("RobotState/allClear", allClear);
-          //   if (!overriden) {
-          return allClear;
-          //   } else {
-          //     return zoneCorrect;
-          //   }
-        });
+    if (!override.getAsBoolean()) {
+      if (Triggers.getInstance().isShootSafeTime()) {
+        return new ContinuousConditionalCommand(
+            shootToHub(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
+            pass(flywheel, prestage, hood, feeder, transport, intakePivot, intakeRoller),
+            () -> {
+              boolean zoneSafe = Triggers.getInstance().isShootSafeZone();
+              return zoneSafe;
+            });
+      } else {
+        return FlywheelCommands.flywheelIdle(flywheel);
+      }
+    } else {
+      return shootToHub(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot);
+    }
+    // return new ContinuousConditionalCommand(
+    //     shootToHub(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
+    //     pass(flywheel, prestage, hood, feeder, transport, intakePivot, intakeRoller),
+    //     () -> {
+    //       boolean overriden = override.getAsBoolean();
+    //       Logger.recordOutput("RobotState/overriden", overriden);
+    //       boolean allClear = Triggers.getInstance().isShootClear();
+    //       Logger.recordOutput("RobotState/clearToShoot", allClear);
+    //       if (!overriden) {
+    //         return allClear;
+    //       } else {
+    //         return true;
+    //       }
+    //     });
   }
 
   public static Command zonePassOrShoot(
@@ -229,7 +245,7 @@ public class ShootSequences {
         shootToHub(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
         pass(flywheel, prestage, hood, feeder, transport, intakePivot, intakeRoller),
         () -> {
-          boolean safe = Triggers.getInstance().isShootSafe();
+          boolean safe = Triggers.getInstance().isShootSafeZone();
           Logger.recordOutput("Flywheel/shootOrPass", safe ? "shooting" : "passing");
           return safe;
         });

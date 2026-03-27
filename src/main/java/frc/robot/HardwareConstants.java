@@ -137,8 +137,8 @@ public class HardwareConstants {
   }
 
   public static class TowerConstants {
-    public static final AngularVelocity FlywheelTowerVelocity = RPM.of(2300);
-    public static final double hoodTowerPos = 0.5;
+    public static final AngularVelocity FlywheelTowerVelocity = RPM.of(2100);
+    public static final double hoodTowerPos = 0.55;
   }
 
   public static class PassConstants {

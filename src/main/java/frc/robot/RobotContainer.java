@@ -628,7 +628,7 @@ public class RobotContainer {
                     drive,
                     () -> -thrustmaster.getY(),
                     () -> -thrustmaster.getX(),
-                    () -> flywheel.getShootAngleForZone())
+                    () -> flywheel.getShootAngleForZoneAndTime(controller.y()))
                 .alongWith(
                     ShootSequences.zoneAndTimePassOrShoot(
                         flywheel,

@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.lib.FieldConstants;
 import frc.robot.HardwareConstants.Zones.Zone;
+import frc.robot.util.HubShiftUtil;
 import org.littletonrobotics.junction.Logger;
 
 public class Triggers {
@@ -19,7 +20,7 @@ public class Triggers {
     return instance;
   }
 
-  public boolean isShootSafe() {
+  public boolean isShootSafeZone() {
     HardwareConstants.Zones.Zone currentZone =
         RobotState.getInstance().getRobotZone(RobotState.getInstance().getEstimatedPose());
     boolean safe =
@@ -27,6 +28,18 @@ public class Triggers {
             || currentZone == Zone.ALLIANCE_ZONE_TRENCH_BORDER);
     Logger.recordOutput("RobotState/zoneSafeToShoot", safe);
     return safe;
+  }
+
+  public boolean isShootSafeTime() {
+    boolean safe = (HubShiftUtil.getShiftedShiftInfo().active());
+    Logger.recordOutput("RobotState/timeSafeToShoot", safe);
+    return safe;
+  }
+
+  public boolean isShootClear() {
+    boolean clear = (isShootSafeTime() && isShootSafeZone());
+    Logger.recordOutput("RobotState/clearToShoot", clear);
+    return clear;
   }
 
   public boolean isIntakeSafe() {
