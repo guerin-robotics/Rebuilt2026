@@ -83,7 +83,6 @@ import frc.robot.subsystems.vision.io.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVisionSim;
 import frc.robot.util.HubShiftUtil;
 import java.util.List;
-import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -124,8 +123,6 @@ public class RobotContainer {
       new CommandXboxController(HardwareConstants.ControllerConstants.XboxControllerPort);
   private final CommandJoystick thrustmaster =
       new CommandJoystick(HardwareConstants.ControllerConstants.JoystickControllerPort);
-
-  private boolean hubShiftUtil = false;
 
   public RobotContainer() {
     switch (Constants.currentMode) {
@@ -460,14 +457,7 @@ public class RobotContainer {
     // }
 
     // Alliance win toggle
-    HubShiftUtil.setAllianceWinOverride(
-        () -> {
-          if (controller.a().getAsBoolean()) {
-            return Optional.of(true);
-          } else {
-            return Optional.of(false);
-          }
-        });
+    controller.a().onTrue(HubShiftUtil.flipWinner());
 
     // if (!HardwareConstants.TuningConstants.TUNING_MODE) {
     //   // Distance-based shooting
@@ -480,8 +470,15 @@ public class RobotContainer {
                     () -> -thrustmaster.getX(),
                     () -> flywheel.getShootAngleForZone())
                 .alongWith(
-                    ShootSequences.zonePassOrShoot(
-                        flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot)))
+                    ShootSequences.zoneAndTimePassOrShoot(
+                        flywheel,
+                        prestage,
+                        hood,
+                        feeder,
+                        transport,
+                        intakeRoller,
+                        intakePivot,
+                        controller.b())))
         .onFalse(
             ShootSequences.shootEndBehavior(
                 flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
@@ -621,9 +618,11 @@ public class RobotContainer {
     // Set flywheel idle as default command so it's always spinning slowly
     flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
 
+    // controller.b().onTrue(HubShiftUtil.flipWinner());
+
     // B button: full shoot sequence (drive-at-angle + shoot to hub)
-    thrustmaster
-        .button(1)
+    controller
+        .b()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                     drive,
@@ -639,7 +638,7 @@ public class RobotContainer {
                         transport,
                         intakeRoller,
                         intakePivot,
-                        controller.b())))
+                        controller.y())))
         .onFalse(
             ShootSequences.shootEndBehavior(
                 flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));

@@ -81,9 +81,12 @@ public class IntakePivotCommands {
 
   public static Command compressPivot(IntakePivot intakePivot) {
     return Commands.deadline(
-        new WaitCommand(2), IntakePivotCommands.setPivotVoltage(intakePivot, Volts.of(1.5))).repeatedly().finallyDo(
-          () -> intakePivot.setPivotPosition(HardwareConstants.CompConstants.Positions.pivotDownPos)
-        );
+            new WaitCommand(2), IntakePivotCommands.setPivotVoltage(intakePivot, Volts.of(1.5)))
+        .repeatedly()
+        .finallyDo(
+            () ->
+                intakePivot.setPivotPosition(
+                    HardwareConstants.CompConstants.Positions.pivotDownPos));
   }
 
   /** Zero the pivot encoder at the current position. */

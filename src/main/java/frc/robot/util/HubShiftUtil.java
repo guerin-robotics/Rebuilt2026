@@ -10,6 +10,8 @@ package frc.robot.util;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import java.util.Optional;
 import java.util.function.Supplier;
 import lombok.Setter;
@@ -25,6 +27,8 @@ public class HubShiftUtil {
     AUTO,
     DISABLED;
   }
+
+  public static boolean flipped = false;
 
   public record ShiftInfo(
       ShiftEnum currentShift, double elapsedTime, double remainingTime, boolean active) {}
@@ -204,5 +208,19 @@ public class HubShiftUtil {
     };
     return getShiftInfo(shiftSchedule, shiftedShiftStartTimes, shiftedShiftEndTimes);
     // }
+  }
+
+  public static void changeFlipped() {
+    if (flipped) {
+      flipped = false;
+      HubShiftUtil.setAllianceWinOverride(() -> Optional.of(HubShiftUtil.flipped));
+    } else {
+      flipped = true;
+      HubShiftUtil.setAllianceWinOverride(() -> Optional.of(HubShiftUtil.flipped));
+    }
+  }
+
+  public static Command flipWinner() {
+    return new InstantCommand(() -> changeFlipped());
   }
 }
