@@ -122,52 +122,12 @@
       "rotationDegrees": 147.0656752508406
     }
   ],
-  "constraintZones": [
-    {
-      "name": "Intake-Zone",
-      "minWaypointRelativePos": 2.8044926745635905,
-      "maxWaypointRelativePos": 4.290056109725686,
-      "constraints": {
-        "maxVelocity": 2.0,
-        "maxAcceleration": 3.2,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 1020.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    },
-    {
-      "name": "Bump-Zone-1",
-      "minWaypointRelativePos": 5.25,
-      "maxWaypointRelativePos": 5.75,
-      "constraints": {
-        "maxVelocity": 1.5,
-        "maxAcceleration": 3.2,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 1020.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    },
-    {
-      "name": "Bump-Zone-2",
-      "minWaypointRelativePos": 5.15543173316708,
-      "maxWaypointRelativePos": 5.406113622194513,
-      "constraints": {
-        "maxVelocity": 1.0,
-        "maxAcceleration": 3.2,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 1020.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    }
-  ],
+  "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "DeployIntake",
-      "waypointRelativePos": 0.763793640897756,
+      "waypointRelativePos": 1.061233634663342,
       "endWaypointRelativePos": null,
       "command": null
     },
@@ -179,7 +139,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.0,
+    "maxVelocity": 1.0,
     "maxAcceleration": 3.2,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 1020.0,
@@ -191,10 +151,10 @@
     "rotation": -51.89291163129033
   },
   "reversed": false,
-  "folder": "Comp-Paths",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": -90.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

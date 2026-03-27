@@ -58,6 +58,12 @@ public class HubShiftUtil {
     return allianceWinOverride.get();
   }
 
+  public static Boolean isActiveFirst() {
+    var alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+
+    return alliance == getFirstActiveAlliance();
+  }
+
   public static Alliance getFirstActiveAlliance() {
     var alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
 
