@@ -33,7 +33,7 @@ public class IntakePivotConstants {
     /** Upper software limit in rotations of the mechanism. */
     public static final double softwareUpperRotationLimit = 0.5;
     /** Lower software limit in rotations of the mechanism. */
-    public static final double softwareLowerRotationLimit = 0.05;
+    public static final double softwareLowerRotationLimit = 0.00;
   }
 
   /**
@@ -43,7 +43,7 @@ public class IntakePivotConstants {
   public static class PID {
     public static final double KG = 8; // 14
     public static final double KV = 0.0;
-    public static final double KP = 110.0; // 100.0
+    public static final double KP = 750.0; // 100.0
     public static final double KI = 0.0;
     public static final double KD = 5.0; // 30.0; // 1.0
   }
@@ -66,7 +66,7 @@ public class IntakePivotConstants {
   /** MotionMagic profile constraints. */
   public static class PivotMagicConstants {
     /** MotionMagic acceleration in rotations/s². */
-    public static final double pivotAccel = 3.0; // 5.0
+    public static final double pivotAccel = 2.0; // 5.0
     /** MotionMagic cruise velocity in rotations/s. */
     public static final double pivotVelo = 1;
   }

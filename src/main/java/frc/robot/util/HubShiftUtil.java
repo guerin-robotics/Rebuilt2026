@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import java.util.Optional;
 import java.util.function.Supplier;
 import lombok.Setter;
+import org.littletonrobotics.junction.Logger;
 
 public class HubShiftUtil {
   public enum ShiftEnum {
@@ -29,6 +30,8 @@ public class HubShiftUtil {
   }
 
   public static boolean flipped = false;
+
+  public static boolean disabled = false;
 
   public record ShiftInfo(
       ShiftEnum currentShift, double elapsedTime, double remainingTime, boolean active) {}
@@ -228,5 +231,14 @@ public class HubShiftUtil {
 
   public static Command flipWinner() {
     return new InstantCommand(() -> changeFlipped());
+  }
+
+  public static void toggleDisable() {
+    disabled = !disabled;
+    Logger.recordOutput("RobotState/disabled", disabled);
+  }
+
+  public static Command disableHubShiftUtil() {
+    return new InstantCommand(() -> toggleDisable());
   }
 }

@@ -373,7 +373,7 @@ public class RobotContainer {
             () ->
                 (Triggers.getInstance().isRobotInTrench()
                     || Triggers.getInstance().isRobotApproachingTrench()))
-        .and(() -> controller.y().getAsBoolean() == false)
+        .and(() -> controller.b().getAsBoolean() == false)
         .whileTrue(
             DriveCommands.joystickDriveAlignForTrench(
                 drive, () -> -thrustmaster.getY(), () -> -thrustmaster.getX()));
@@ -385,7 +385,7 @@ public class RobotContainer {
             () ->
                 (Triggers.getInstance().isRobotOnBump()
                     || Triggers.getInstance().isRobotApproachingBump()))
-        .and(() -> controller.y().getAsBoolean() == false)
+        .and(() -> controller.b().getAsBoolean() == false)
         .whileTrue(
             DriveCommands.joystickDriveAlignForBump(
                 drive, () -> -thrustmaster.getY(), () -> -thrustmaster.getX()));
@@ -458,6 +458,8 @@ public class RobotContainer {
 
     // Alliance win toggle
     controller.a().onTrue(HubShiftUtil.flipWinner());
+    // Hub shift util disable toggle
+    controller.y().onTrue(HubShiftUtil.disableHubShiftUtil());
 
     // if (!HardwareConstants.TuningConstants.TUNING_MODE) {
     //   // Distance-based shooting
@@ -468,16 +470,10 @@ public class RobotContainer {
                     drive,
                     () -> -thrustmaster.getY(),
                     () -> -thrustmaster.getX(),
-                    () -> flywheel.getShootAngleForZone())
+                    () -> flywheel.getShootAngleForZoneAndTime())
                 .alongWith(
-                    ShootSequences.zonePassOrShoot(
-                        flywheel,
-                        prestage,
-                        hood,
-                        feeder,
-                        transport,
-                        intakeRoller,
-                        intakePivot)))
+                    ShootSequences.shootOrPassTest(
+                        flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot)))
         .onFalse(
             ShootSequences.shootEndBehavior(
                 flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
@@ -617,7 +613,8 @@ public class RobotContainer {
     // Set flywheel idle as default command so it's always spinning slowly
     flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
 
-    // controller.b().onTrue(HubShiftUtil.flipWinner());
+    controller.a().onTrue(HubShiftUtil.flipWinner());
+    controller.y().onTrue(HubShiftUtil.disableHubShiftUtil());
 
     // B button: full shoot sequence (drive-at-angle + shoot to hub)
     controller
@@ -627,17 +624,10 @@ public class RobotContainer {
                     drive,
                     () -> -thrustmaster.getY(),
                     () -> -thrustmaster.getX(),
-                    () -> flywheel.getShootAngleForZoneAndTime(controller.y()))
+                    () -> flywheel.getShootAngleForZoneAndTime())
                 .alongWith(
-                    ShootSequences.zoneAndTimePassOrShoot(
-                        flywheel,
-                        prestage,
-                        hood,
-                        feeder,
-                        transport,
-                        intakeRoller,
-                        intakePivot,
-                        controller.y())))
+                    ShootSequences.shootOrPassTest(
+                        flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot)))
         .onFalse(
             ShootSequences.shootEndBehavior(
                 flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
@@ -652,7 +642,7 @@ public class RobotContainer {
             () ->
                 (Triggers.getInstance().isRobotInTrench()
                     || Triggers.getInstance().isRobotApproachingTrench()))
-        // .and(() -> controller.y().getAsBoolean() == false)
+        .and(() -> controller.b().getAsBoolean() == false)
         .whileTrue(
             DriveCommands.joystickDriveAlignForTrench(
                 drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
@@ -664,21 +654,21 @@ public class RobotContainer {
             () ->
                 (Triggers.getInstance().isRobotOnBump()
                     || Triggers.getInstance().isRobotApproachingBump()))
-        // .and(() -> controller.y().getAsBoolean() == false)
+        .and(() -> controller.b().getAsBoolean() == false)
         .whileTrue(
             DriveCommands.joystickDriveAlignForBump(
                 drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
 
-    // Trigger-based alignment - tower
-    thrustmaster
-        .button(2)
-        .and(
-            () ->
-                (Triggers.getInstance().isRobotInTower()
-                    || Triggers.getInstance().isRobotApproachingTower()))
-        .whileTrue(
-            DriveCommands.joystickDriveAlignForTower(
-                drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
+    // // Trigger-based alignment - tower
+    // thrustmaster
+    //     .button(2)
+    //     .and(
+    //         () ->
+    //             (Triggers.getInstance().isRobotInTower()
+    //                 || Triggers.getInstance().isRobotApproachingTower()))
+    //     .whileTrue(
+    //         DriveCommands.joystickDriveAlignForTower(
+    //             drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
 
     // Left bumper: intake down
     controller

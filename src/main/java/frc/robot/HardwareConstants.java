@@ -68,8 +68,8 @@ public class HardwareConstants {
 
     // Subsystems that run on position control: hood, pivot
     public static class Positions {
-      public static final double hoodDownPos = 0.1;
-      public static final double pivotUpPos = 0.365;
+      public static final double hoodDownPos = 0.0;
+      public static final double pivotUpPos = 0.33;
       public static final double pivotDownPos = 0.0;
       public static final double pivotJostleUpPos = 0.25;
     }

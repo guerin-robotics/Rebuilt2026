@@ -81,9 +81,11 @@ public class IntakePivotCommands {
 
   public static Command compressPivot(IntakePivot intakePivot) {
     return Commands.sequence(
-      Commands.deadline(
-            new WaitCommand(2), IntakePivotCommands.setPivotVoltage(intakePivot, Volts.of(1.5))),
-      IntakePivotCommands.setPivotRotations(intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos))
+            Commands.deadline(
+                new WaitCommand(2),
+                IntakePivotCommands.setPivotVoltage(intakePivot, Volts.of(1.5))),
+            IntakePivotCommands.setPivotRotations(
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos))
         .repeatedly()
         .finallyDo(
             () ->

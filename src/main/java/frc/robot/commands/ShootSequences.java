@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.ContinuousConditionalCommand;
 import frc.robot.HardwareConstants;
 import frc.robot.Triggers;
@@ -18,6 +17,7 @@ import frc.robot.subsystems.intakePivot.IntakePivot;
 import frc.robot.subsystems.intakeRoller.intakeRoller;
 import frc.robot.subsystems.prestage.Prestage;
 import frc.robot.subsystems.transport.Transport;
+import frc.robot.util.HubShiftUtil;
 import org.littletonrobotics.junction.Logger;
 
 public class ShootSequences {
@@ -189,6 +189,42 @@ public class ShootSequences {
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
   }
 
+  public static Command passOrIdle(
+      Flywheel flywheel,
+      Prestage prestage,
+      Hood hood,
+      Feeder feeder,
+      Transport transport,
+      intakeRoller intakeRoller,
+      IntakePivot intakePivot) {
+    return new ContinuousConditionalCommand(
+        pass(flywheel, prestage, hood, feeder, transport, intakePivot, intakeRoller),
+        FlywheelCommands.flywheelIdle(flywheel),
+        () -> {
+          boolean zoneSafe = Triggers.getInstance().isShootSafeZone();
+          return !zoneSafe;
+        });
+  }
+
+  public static Command shootOrPassTest(
+      Flywheel flywheel,
+      Prestage prestage,
+      Hood hood,
+      Feeder feeder,
+      Transport transport,
+      intakeRoller intakeRoller,
+      IntakePivot intakePivot) {
+    return new ContinuousConditionalCommand(
+        passOrIdle(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
+        zonePassOrShoot(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
+        () -> {
+          boolean zoneSafe = Triggers.getInstance().isShootSafeZone();
+          boolean timeSafe = Triggers.getInstance().isShootSafeTime();
+          boolean disabled = HubShiftUtil.disabled;
+          return (!zoneSafe && !disabled) || (!disabled && !timeSafe);
+        });
+  }
+
   // Returns shoot if zone and time correct (in alliance zone and hub active)
   // Returns pass if both are false
   // Returns idle if zone is true but time is false
@@ -200,9 +236,8 @@ public class ShootSequences {
       Feeder feeder,
       Transport transport,
       intakeRoller intakeRoller,
-      IntakePivot intakePivot,
-      Trigger override) {
-    if (!override.getAsBoolean()) {
+      IntakePivot intakePivot) {
+    if (!HubShiftUtil.disabled) {
       if (Triggers.getInstance().isShootSafeTime()) {
         return new ContinuousConditionalCommand(
             shootToHub(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
