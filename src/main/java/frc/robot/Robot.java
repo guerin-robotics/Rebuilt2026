@@ -173,9 +173,14 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopPeriodic() {
     // Publish time left in shift to the dashboard
-    SmartDashboard.putNumber(
-        "Time Left in Shift",
-        Math.round(HubShiftUtil.getShiftedShiftInfo().remainingTime() * 10.0) / 10.0);
+    // SmartDashboard.putNumber(
+    //     "Time Left in Shift",
+    //     Math.round(HubShiftUtil.getShiftedShiftInfo().remainingTime() * 10.0) / 10.0);
+
+    Logger.recordOutput("RobotState/HubShift", HubShiftUtil.getShiftedShiftInfo().active());
+    Logger.recordOutput("RobotState/firstActiveAlliancer", HubShiftUtil.getFirstActiveAlliance());
+    Logger.recordOutput(
+        "RobotState/timeRemainingInShift", HubShiftUtil.getShiftedShiftInfo().remainingTime());
   }
 
   /** This function is called once when test mode is enabled. */

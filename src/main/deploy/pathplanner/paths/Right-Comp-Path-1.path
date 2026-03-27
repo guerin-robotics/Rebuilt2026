@@ -153,11 +153,24 @@
       }
     },
     {
-      "name": "Bump-Zone",
+      "name": "Bump-Zone-1",
       "minWaypointRelativePos": 5.469363700124688,
       "maxWaypointRelativePos": 6.295813201371572,
       "constraints": {
         "maxVelocity": 1.5,
+        "maxAcceleration": 3.2,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 1020.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Bump-Zone-2",
+      "minWaypointRelativePos": 5.190504103165268,
+      "maxWaypointRelativePos": 5.994724501758522,
+      "constraints": {
+        "maxVelocity": 1.0,
         "maxAcceleration": 3.2,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 1020.0,
@@ -170,7 +183,7 @@
   "eventMarkers": [
     {
       "name": "DeployIntake",
-      "waypointRelativePos": 0.8394053927680796,
+      "waypointRelativePos": 0.5621336459554486,
       "endWaypointRelativePos": null,
       "command": null
     },

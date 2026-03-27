@@ -181,8 +181,11 @@ public class ShootSequences {
                 TransportCommands.setTransportVoltage(
                     transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
                 intakeRollerCommands.setRollerVoltage(
-                    intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage),
-                IntakePivotCommands.jostlePivotByPos(intakePivot)))
+                    intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)),
+            Commands.sequence(
+                new WaitCommand(HardwareConstants.CompConstants.Waits.waitToCompressSeconds),
+                IntakePivotCommands.compressPivot(intakePivot)
+            ))
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
   }
 
@@ -297,7 +300,8 @@ public class ShootSequences {
   }
 
   public static Command flipAlliance() {
-    if (HubShiftUtil.getAllianceWinOverride().isEmpty() || !HubShiftUtil.getAllianceWinOverride().get()) {
+    if (HubShiftUtil.getAllianceWinOverride().isEmpty()
+        || !HubShiftUtil.getAllianceWinOverride().get()) {
       return Commands.runOnce(() -> HubShiftUtil.setAllianceWinOverride(() -> Optional.of(true)));
     } else {
       return Commands.runOnce(() -> HubShiftUtil.setAllianceWinOverride(() -> Optional.empty()));

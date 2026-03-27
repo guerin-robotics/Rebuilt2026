@@ -81,7 +81,9 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.io.VisionIO;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVisionSim;
+import frc.robot.util.HubShiftUtil;
 import java.util.List;
+import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -122,6 +124,8 @@ public class RobotContainer {
       new CommandXboxController(HardwareConstants.ControllerConstants.XboxControllerPort);
   private final CommandJoystick thrustmaster =
       new CommandJoystick(HardwareConstants.ControllerConstants.JoystickControllerPort);
+
+  private boolean hubShiftUtil = false;
 
   public RobotContainer() {
     switch (Constants.currentMode) {
@@ -336,12 +340,9 @@ public class RobotContainer {
                 () -> {
                   intakeRoller.setRollerVoltage(
                       HardwareConstants.CompConstants.Voltages.intakeRollerVoltage);
-                  transport.setTransportVoltage(
-                      HardwareConstants.CompConstants.Voltages.transportVoltage);
                 },
                 () -> {
                   intakeRoller.setRollerVoltage(Volts.of(0));
-                  transport.setTransportVoltage(Volts.of(0));
                 }));
 
     // Event marker for setting the hood position to down
@@ -446,20 +447,27 @@ public class RobotContainer {
     // REVISED SUBSYSTEM CONTROLS
 
     // Default commands
-    if (!HardwareConstants.TuningConstants.TUNING_MODE) {
-      // Flywheel (5 rps)
-      flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
-      // Hood (down)
-      hood.setDefaultCommand(
-          HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
-      // Prestage, by voltage
-      prestage.setDefaultCommand(PrestageCommands.setPrestageVoltage(prestage, Volts.of(-1)));
-      // Feeder, by voltage
-      feeder.setDefaultCommand(FeederCommands.setFeederVoltage(feeder, Volts.of(-1)));
-    }
+    // if (!HardwareConstants.TuningConstants.TUNING_MODE) {
+    // Flywheel (5 rps)
+    flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
+    // Hood (down)
+    hood.setDefaultCommand(
+        HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
+    // Prestage, by voltage
+    prestage.setDefaultCommand(PrestageCommands.setPrestageVoltage(prestage, Volts.of(-1)));
+    // Feeder, by voltage
+    feeder.setDefaultCommand(FeederCommands.setFeederVoltage(feeder, Volts.of(-1)));
+    // }
 
     // Alliance win toggle
-    controller.a().onTrue(ShootSequences.flipAlliance());
+    HubShiftUtil.setAllianceWinOverride(
+        () -> {
+          if (controller.a().getAsBoolean()) {
+            return Optional.of(true);
+          } else {
+            return Optional.of(false);
+          }
+        });
 
     // if (!HardwareConstants.TuningConstants.TUNING_MODE) {
     //   // Distance-based shooting
@@ -472,15 +480,8 @@ public class RobotContainer {
                     () -> -thrustmaster.getX(),
                     () -> flywheel.getShootAngleForZone())
                 .alongWith(
-                    ShootSequences.zoneAndTimePassOrShoot(
-                        flywheel,
-                        prestage,
-                        hood,
-                        feeder,
-                        transport,
-                        intakeRoller,
-                        intakePivot,
-                        controller.b())))
+                    ShootSequences.zonePassOrShoot(
+                        flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot)))
         .onFalse(
             ShootSequences.shootEndBehavior(
                 flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
@@ -585,11 +586,11 @@ public class RobotContainer {
                 flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
 
     // Align for bump
-    thrustmaster
-        .button(12)
-        .whileTrue(
-            DriveCommands.joystickDriveAlignForBump(
-                drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
+    // thrustmaster
+    //     .button(12)
+    //     .whileTrue(
+    //         DriveCommands.joystickDriveAlignForBump(
+    //             drive, () -> -thrustmaster.getX(), () -> -thrustmaster.getY()));
 
     // Drop hood
     // controller
@@ -610,35 +611,38 @@ public class RobotContainer {
   private void configureSimBindings() {
     // ==================== DRIVE (SIM) ====================
     drive.setDefaultCommand(
-        DriveCommands.driveLucasProof(
+        DriveCommands.joystickDrive(
             drive,
             () -> MathUtil.clamp(-controller.getLeftY() - getThrustY(), -1.0, 1.0),
             () -> MathUtil.clamp(-controller.getLeftX() - getThrustX(), -1.0, 1.0),
-            () -> MathUtil.clamp(-controller.getRightTriggerAxis() - getThrustRot(), -1.0, 1.0),
-            controller.y()));
+            () -> MathUtil.clamp(-controller.getRightTriggerAxis() - getThrustRot(), -1.0, 1.0)));
 
     // ==================== FLYWHEEL TEST (SIM) ====================
     // Set flywheel idle as default command so it's always spinning slowly
     flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
 
-    // A button: full shoot sequence (drive-at-angle + shoot to hub)
-    controller
-        .a()
+    // B button: full shoot sequence (drive-at-angle + shoot to hub)
+    thrustmaster
+        .button(1)
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
-                    drive, () -> 0.0, () -> 0.0, () -> flywheel.getShootAngleForZone())
+                    drive,
+                    () -> -thrustmaster.getY(),
+                    () -> -thrustmaster.getX(),
+                    () -> flywheel.getShootAngleForZone())
                 .alongWith(
-                    new WaitCommand(0.5)
-                        .andThen(
-                            ShootSequences.shootToHub(
-                                flywheel,
-                                prestage,
-                                hood,
-                                feeder,
-                                transport,
-                                intakeRoller,
-                                intakePivot))))
-        .onFalse(SpitSequences.spitAfterShoot(flywheel, prestage, feeder, transport, intakeRoller));
+                    ShootSequences.zoneAndTimePassOrShoot(
+                        flywheel,
+                        prestage,
+                        hood,
+                        feeder,
+                        transport,
+                        intakeRoller,
+                        intakePivot,
+                        controller.b())))
+        .onFalse(
+            ShootSequences.shootEndBehavior(
+                flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
 
     // B button maps correctly
     // // Pivot compress
@@ -650,6 +654,7 @@ public class RobotContainer {
             () ->
                 (Triggers.getInstance().isRobotInTrench()
                     || Triggers.getInstance().isRobotApproachingTrench()))
+        // .and(() -> controller.y().getAsBoolean() == false)
         .whileTrue(
             DriveCommands.joystickDriveAlignForTrench(
                 drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
@@ -661,6 +666,7 @@ public class RobotContainer {
             () ->
                 (Triggers.getInstance().isRobotOnBump()
                     || Triggers.getInstance().isRobotApproachingBump()))
+        // .and(() -> controller.y().getAsBoolean() == false)
         .whileTrue(
             DriveCommands.joystickDriveAlignForBump(
                 drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
