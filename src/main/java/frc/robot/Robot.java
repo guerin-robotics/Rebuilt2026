@@ -176,6 +176,7 @@ public class Robot extends LoggedRobot {
     // SmartDashboard.putNumber(
     //     "Time Left in Shift",
     //     Math.round(HubShiftUtil.getShiftedShiftInfo().remainingTime() * 10.0) / 10.0);
+    SmartDashboard.putBoolean("Is Hub Active First", HubShiftUtil.isActiveFirst());
 
     Logger.recordOutput("RobotState/HubShift", HubShiftUtil.getShiftedShiftInfo().active());
     Logger.recordOutput("RobotState/firstActiveAlliancer", HubShiftUtil.getFirstActiveAlliance());
