@@ -153,6 +153,7 @@ public class Robot extends LoggedRobot {
     // Update the auto preview field with the robot's current pose during auto
     // so we can see the robot following the path in real time
     robotContainer.autoPreviewField.setRobotPose(RobotState.getInstance().getEstimatedPose());
+    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
   }
 
   /** This function is called once when teleop is enabled. */
@@ -173,10 +174,15 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopPeriodic() {
     // Publish time left in shift to the dashboard
-    // SmartDashboard.putNumber(
-    //     "Time Left in Shift",
-    //     Math.round(HubShiftUtil.getShiftedShiftInfo().remainingTime() * 10.0) / 10.0);
-    SmartDashboard.putBoolean("Is Hub Active First", HubShiftUtil.isActiveFirst());
+    SmartDashboard.putNumber(
+        "Time Left in Shift",
+        Math.round(HubShiftUtil.getShiftedShiftInfo().remainingTime() * 10.0) / 10.0);
+    // Displays whether the alliance was won by our team or opposing team
+    SmartDashboard.putBoolean("Win Auto?", !HubShiftUtil.isActiveFirst());
+    // Displays whether our alliance's hub is active or not
+    SmartDashboard.putBoolean("Is Hub Active", HubShiftUtil.getShiftedShiftInfo().active());
+    // Displays the match time
+    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
 
     Logger.recordOutput("RobotState/HubShift", HubShiftUtil.getShiftedShiftInfo().active());
     Logger.recordOutput("RobotState/firstActiveAlliancer", HubShiftUtil.getFirstActiveAlliance());
