@@ -470,15 +470,14 @@ public class RobotContainer {
                     () -> -thrustmaster.getX(),
                     () -> flywheel.getShootAngleForZone())
                 .alongWith(
-                    ShootSequences.zoneAndTimePassOrShoot(
+                    ShootSequences.zonePassOrShoot(
                         flywheel,
                         prestage,
                         hood,
                         feeder,
                         transport,
                         intakeRoller,
-                        intakePivot,
-                        controller.b())))
+                        intakePivot)))
         .onFalse(
             ShootSequences.shootEndBehavior(
                 flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
