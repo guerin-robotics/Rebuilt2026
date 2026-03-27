@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.ContinuousConditionalCommand;
 import frc.robot.HardwareConstants;
 import frc.robot.Triggers;
 import frc.robot.subsystems.feeder.Feeder;
@@ -18,7 +19,6 @@ import frc.robot.subsystems.intakeRoller.intakeRoller;
 import frc.robot.subsystems.prestage.Prestage;
 import frc.robot.subsystems.transport.Transport;
 import frc.robot.util.HubShiftUtil;
-import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 
 public class ShootSequences {
@@ -181,8 +181,10 @@ public class ShootSequences {
                 TransportCommands.setTransportVoltage(
                     transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
                 intakeRollerCommands.setRollerVoltage(
-                    intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage),
-                IntakePivotCommands.jostlePivotByPos(intakePivot)))
+                    intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)),
+            Commands.sequence(
+                new WaitCommand(HardwareConstants.CompConstants.Waits.waitToCompressSeconds),
+                IntakePivotCommands.compressPivot(intakePivot)))
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
   }
 
@@ -195,21 +197,23 @@ public class ShootSequences {
       intakeRoller intakeRoller,
       IntakePivot intakePivot,
       Trigger override) {
-    return Commands.either(
+    return new ContinuousConditionalCommand(
         shootToHub(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
         pass(flywheel, prestage, hood, feeder, transport, intakePivot, intakeRoller),
         () -> {
-          boolean safe = Triggers.getInstance().isShootSafe();
-          Logger.recordOutput("Flywheel/shootOrPass", safe ? "shooting" : "passing");
+          boolean zoneCorrect = Triggers.getInstance().isShootSafe();
+          Logger.recordOutput("RobotState/zoneCorrect", zoneCorrect);
           boolean timeCorrect = HubShiftUtil.getShiftedShiftInfo().active();
-          Logger.recordOutput("Flywheel/timeCorrect", timeCorrect);
+          Logger.recordOutput("RobotState/timeCorrect", timeCorrect);
           boolean overriden = override.getAsBoolean();
-          Logger.recordOutput("Flywheel/overriden", overriden);
-          if (!overriden) {
-            return safe && timeCorrect;
-          } else {
-            return safe;
-          }
+          Logger.recordOutput("RobotState/overriden", overriden);
+          boolean allClear = (zoneCorrect && timeCorrect);
+          Logger.recordOutput("RobotState/allClear", allClear);
+          //   if (!overriden) {
+          return allClear;
+          //   } else {
+          //     return zoneCorrect;
+          //   }
         });
   }
 
@@ -294,13 +298,5 @@ public class ShootSequences {
         FeederCommands.stop(feeder),
         TransportCommands.stop(transport),
         intakeRollerCommands.stopIntakeRoller(intakeRoller));
-  }
-
-  public static Command flipAlliance() {
-    if (HubShiftUtil.getAllianceWinOverride().isEmpty() || !HubShiftUtil.getAllianceWinOverride().get()) {
-      return Commands.runOnce(() -> HubShiftUtil.setAllianceWinOverride(() -> Optional.of(true)));
-    } else {
-      return Commands.runOnce(() -> HubShiftUtil.setAllianceWinOverride(() -> Optional.empty()));
-    }
   }
 }

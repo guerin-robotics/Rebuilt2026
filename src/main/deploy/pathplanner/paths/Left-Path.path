@@ -149,7 +149,7 @@
   "eventMarkers": [
     {
       "name": "DeployIntake",
-      "waypointRelativePos": 0.48954417293233066,
+      "waypointRelativePos": 0.42555685814771466,
       "endWaypointRelativePos": null,
       "command": null
     },

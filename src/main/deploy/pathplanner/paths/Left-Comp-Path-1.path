@@ -151,8 +151,8 @@
     },
     {
       "name": "Bump-Zone-2",
-      "minWaypointRelativePos": 5.15543173316708,
-      "maxWaypointRelativePos": 5.406113622194513,
+      "minWaypointRelativePos": 5.138335287221574,
+      "maxWaypointRelativePos": 5.46189917936695,
       "constraints": {
         "maxVelocity": 1.0,
         "maxAcceleration": 3.2,
@@ -167,7 +167,7 @@
   "eventMarkers": [
     {
       "name": "DeployIntake",
-      "waypointRelativePos": 0.763793640897756,
+      "waypointRelativePos": 0.8194607268464353,
       "endWaypointRelativePos": null,
       "command": null
     },
