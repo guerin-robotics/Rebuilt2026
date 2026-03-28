@@ -61,11 +61,10 @@ public class IntakePivotCommands {
   public static Command jostlePivotByPos(IntakePivot intakePivot) {
     return Commands.sequence(
             setPivotRotations(
-                intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos)
-            // new WaitCommand(0.25),
-            // setPivotRotations(intakePivot,
-            // HardwareConstants.CompConstants.Positions.pivotDownPos),
-            ) // new WaitCommand(0.25))
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos),
+            new WaitCommand(0.25),
+            setPivotRotations(intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
+            new WaitCommand(0.25))
         .repeatedly()
         .finallyDo(
             () ->
@@ -82,8 +81,9 @@ public class IntakePivotCommands {
   public static Command compressPivot(IntakePivot intakePivot) {
     return Commands.sequence(
             Commands.deadline(
-                new WaitCommand(2),
-                IntakePivotCommands.setPivotVoltage(intakePivot, Volts.of(1.5))),
+                new WaitCommand(0.75),
+                IntakePivotCommands.setPivotVoltage(intakePivot, Volts.of(1.7))),
+            new WaitCommand(0.5),
             IntakePivotCommands.setPivotRotations(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos))
         .repeatedly()

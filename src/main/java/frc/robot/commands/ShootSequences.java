@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.lib.ContinuousConditionalCommand;
@@ -106,25 +105,23 @@ public class ShootSequences {
       IntakePivot intakePivot) {
     Logger.recordOutput("RobotState/shooting", true);
     return Commands.parallel(
+        Commands.parallel(
+            FlywheelCommands.setVelocityForHub(flywheel),
+            PrestageCommands.setPrestageVelocity(
+                prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
+            HoodCommands.setHoodPosForShoot(hood)),
+        Commands.sequence(
+            new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
             Commands.parallel(
-                FlywheelCommands.setVelocityForHub(flywheel),
-                PrestageCommands.setPrestageVelocity(
-                    prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
-                HoodCommands.setHoodPosForShoot(hood)),
-            Commands.sequence(
-                new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
-                Commands.parallel(
-                    FeederCommands.setFeederVelocity(
-                        feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
-                    TransportCommands.setTransportVoltage(
-                        transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
-                    intakeRollerCommands.setRollerVoltage(
-                        intakeRoller,
-                        (HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)))),
-            Commands.sequence(
-                new WaitCommand(HardwareConstants.CompConstants.Waits.waitToCompressSeconds),
-                IntakePivotCommands.compressPivot(intakePivot)))
-        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+                FeederCommands.setFeederVelocity(
+                    feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
+                TransportCommands.setTransportVoltage(
+                    transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
+                intakeRollerCommands.setRollerVoltage(
+                    intakeRoller, (HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)))),
+        Commands.sequence(new WaitCommand(1.5), IntakePivotCommands.compressPivot(intakePivot)))
+    // .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+    ;
   }
 
   public static Command autoShootToHub(
@@ -170,23 +167,23 @@ public class ShootSequences {
       intakeRoller intakeRoller) {
     Logger.recordOutput("RobotState/shooting", false);
     return Commands.parallel(
+        Commands.parallel(
+            FlywheelCommands.setPassVelocity(flywheel),
+            PrestageCommands.setPrestageVelocity(
+                prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
+            HoodCommands.setHoodPos(hood, HardwareConstants.PassConstants.hoodPassPos)),
+        Commands.sequence(
+            new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
             Commands.parallel(
-                FlywheelCommands.setPassVelocity(flywheel),
-                PrestageCommands.setPrestageVelocity(
-                    prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
-                HoodCommands.setHoodPos(hood, HardwareConstants.PassConstants.hoodPassPos)),
-            Commands.sequence(
-                new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
                 FeederCommands.setFeederVelocity(
                     feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
                 TransportCommands.setTransportVoltage(
                     transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
                 intakeRollerCommands.setRollerVoltage(
-                    intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)),
-            Commands.sequence(
-                new WaitCommand(HardwareConstants.CompConstants.Waits.waitToCompressSeconds),
-                IntakePivotCommands.compressPivot(intakePivot)))
-        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+                    intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage))),
+        Commands.sequence(new WaitCommand(1.5), IntakePivotCommands.compressPivot(intakePivot)))
+    // .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+    ;
   }
 
   public static Command passOrIdle(

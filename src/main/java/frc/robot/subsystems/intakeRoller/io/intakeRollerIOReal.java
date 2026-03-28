@@ -43,6 +43,14 @@ public class intakeRollerIOReal implements intakeRollerIO {
   private final StatusSignal<Double> closedLoopReference;
   private final StatusSignal<Double> closedLoopError;
   private final StatusSignal<Angle> pos;
+  private final StatusSignal<AngularVelocity> Followervelocity;
+  private final StatusSignal<Current> FollowerstatorCurrent;
+  private final StatusSignal<Current> FollowersupplyCurrent;
+  private final StatusSignal<Voltage> FollowermotorVoltage;
+  private final StatusSignal<Temperature> FollowerdeviceTemp;
+  private final StatusSignal<Double> FollowerclosedLoopReference;
+  private final StatusSignal<Double> FollowerclosedLoopError;
+  private final StatusSignal<Angle> Followerpos;
 
   public intakeRollerIOReal() {
     intakeRollerLeader = new TalonFX(HardwareConstants.CanIds.INTAKE_ROLLER_LEADER_ID, CAN_BUS);
@@ -63,6 +71,14 @@ public class intakeRollerIOReal implements intakeRollerIO {
     closedLoopReference = intakeRollerLeader.getClosedLoopReference();
     closedLoopError = intakeRollerLeader.getClosedLoopError();
     pos = intakeRollerLeader.getPosition();
+    Followervelocity = intakeRollerFollower.getVelocity();
+    FollowerstatorCurrent = intakeRollerFollower.getStatorCurrent();
+    FollowersupplyCurrent = intakeRollerFollower.getSupplyCurrent();
+    FollowermotorVoltage = intakeRollerFollower.getMotorVoltage();
+    FollowerdeviceTemp = intakeRollerFollower.getDeviceTemp();
+    FollowerclosedLoopReference = intakeRollerFollower.getClosedLoopReference();
+    FollowerclosedLoopError = intakeRollerFollower.getClosedLoopError();
+    Followerpos = intakeRollerFollower.getPosition();
 
     // 50Hz for signals we need every loop (velocity, voltage, current, closed-loop reference)
     BaseStatusSignal.setUpdateFrequencyForAll(
@@ -120,7 +136,15 @@ public class intakeRollerIOReal implements intakeRollerIO {
         deviceTemp,
         closedLoopReference,
         closedLoopError,
-        pos);
+        pos,
+        Followervelocity,
+        FollowerstatorCurrent,
+        FollowersupplyCurrent,
+        FollowermotorVoltage,
+        FollowerdeviceTemp,
+        FollowerclosedLoopReference,
+        FollowerclosedLoopError,
+        Followerpos);
 
     // Read from cache — no additional CAN traffic
     inputs.intakeRollerVelocity = velocity.getValue();
@@ -132,6 +156,16 @@ public class intakeRollerIOReal implements intakeRollerIO {
         RotationsPerSecond.of(closedLoopReference.getValueAsDouble());
     inputs.rollerClosedLoopError = RotationsPerSecond.of(closedLoopError.getValueAsDouble());
     inputs.rollerPos = pos.getValue();
+    inputs.intakeRollerVelocity = Followervelocity.getValue();
+    inputs.intakeRollerFollowerStatorCurrent = FollowerstatorCurrent.getValue();
+    inputs.intakeRollerFollowerSupplyCurrent = FollowersupplyCurrent.getValue();
+    inputs.intakeRollerFollowerVoltage = FollowermotorVoltage.getValue();
+    inputs.intakeRollerFollowerTemperature = FollowerdeviceTemp.getValue();
+    inputs.rollerFollowerClosedLoopReference =
+        RotationsPerSecond.of(FollowerclosedLoopReference.getValueAsDouble());
+    inputs.rollerFollowerClosedLoopError =
+        RotationsPerSecond.of(FollowerclosedLoopError.getValueAsDouble());
+    inputs.rollerFollowerPos = Followerpos.getValue();
   }
 
   @Override

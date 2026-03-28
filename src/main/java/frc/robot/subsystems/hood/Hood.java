@@ -11,6 +11,7 @@ import org.littletonrobotics.junction.Logger;
 public class Hood extends SubsystemBase {
 
   private final HoodIO io;
+
   private final HoodIOInputsAutoLogged inputs;
 
   public Hood(HoodIO io) {
@@ -25,9 +26,9 @@ public class Hood extends SubsystemBase {
   }
 
   public void setHoodPos(double position) {
-    if (Triggers.getInstance().ishoodsafe(RobotState.getInstance().getEstimatedPose())) {
-      io.setHoodPos(position);
-    }
+    // if (Triggers.getInstance().ishoodsafe(RobotState.getInstance().getEstimatedPose())) {
+    io.setHoodPos(position);
+    // }
   }
 
   public void incrementHoodPos() {

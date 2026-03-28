@@ -295,8 +295,12 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "stopAll",
         ShootSequences.stopAll(flywheel, prestage, hood, feeder, transport, intakeRoller));
-  }
 
+    // Puts the hood down.
+    NamedCommands.registerCommand(
+        "HoodDownNamed",
+        HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
+  }
   // EventTriggers
   //
   // IMPORTANT: Event trigger commands must NOT declare subsystem requirements that overlap
@@ -520,7 +524,7 @@ public class RobotContainer {
 
     // Intake jostle
     // thrustmaster.button(6).whileTrue(IntakePivotCommands.jostlePivotByPos(intakePivot));
-    thrustmaster.button(6).onTrue(IntakePivotCommands.compressPivot(intakePivot));
+    thrustmaster.button(6).whileTrue(IntakePivotCommands.compressPivot(intakePivot));
     // thrustmaster
     //     .button(6)
     //     .whileTrue(
