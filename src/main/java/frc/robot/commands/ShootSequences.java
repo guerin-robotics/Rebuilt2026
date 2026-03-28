@@ -118,7 +118,8 @@ public class ShootSequences {
                 TransportCommands.setTransportVoltage(
                     transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
                 intakeRollerCommands.setRollerVoltage(
-                    intakeRoller, (HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)))),
+                    intakeRoller,
+                    (HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage)))),
         Commands.sequence(new WaitCommand(1.5), IntakePivotCommands.compressPivot(intakePivot)))
     // .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
     ;
@@ -173,14 +174,15 @@ public class ShootSequences {
                 prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
             HoodCommands.setHoodPos(hood, HardwareConstants.PassConstants.hoodPassPos)),
         Commands.sequence(
-            new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
+            new WaitCommand(HardwareConstants.CompConstants.Waits.passSpinUpSeconds),
             Commands.parallel(
                 FeederCommands.setFeederVelocity(
                     feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
                 TransportCommands.setTransportVoltage(
                     transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
                 intakeRollerCommands.setRollerVoltage(
-                    intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage))),
+                    intakeRoller,
+                    HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))),
         Commands.sequence(new WaitCommand(1.5), IntakePivotCommands.compressPivot(intakePivot)))
     // .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
     ;
