@@ -373,10 +373,10 @@ public class RobotContainer {
     // Trigger-based alignment - trench
     thrustmaster
         .button(2)
-        .and(
-            () ->
-                (Triggers.getInstance().isRobotInTrench()
-                    || Triggers.getInstance().isRobotApproachingTrench()))
+        // .and(
+        //     () ->
+        //         (Triggers.getInstance().isRobotInTrench()
+        //             || Triggers.getInstance().isRobotApproachingTrench()))
         .and(() -> controller.b().getAsBoolean() == false)
         .whileTrue(
             DriveCommands.joystickDriveAlignForTrench(
@@ -384,11 +384,11 @@ public class RobotContainer {
 
     // Trigger-based alignment - bump
     thrustmaster
-        .button(2)
-        .and(
-            () ->
-                (Triggers.getInstance().isRobotOnBump()
-                    || Triggers.getInstance().isRobotApproachingBump()))
+        .button(8)
+        // .and(
+        //     () ->
+        //         (Triggers.getInstance().isRobotOnBump()
+        //             || Triggers.getInstance().isRobotApproachingBump()))
         .and(() -> controller.b().getAsBoolean() == false)
         .whileTrue(
             DriveCommands.joystickDriveAlignForBump(
