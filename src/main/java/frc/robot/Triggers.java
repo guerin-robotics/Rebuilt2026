@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.FieldConstants;
 import frc.robot.HardwareConstants.Zones.Zone;
 import frc.robot.util.HubShiftUtil;
@@ -11,6 +12,7 @@ public class Triggers {
   /* These are all booleans that we'll use later to determine when commands should be called - mostly for safe
   driving. They use pose, velocity, and zone estimation from RobotState. */
 
+  // Single-instance
   private static Triggers instance;
 
   public static Triggers getInstance() {
@@ -18,6 +20,14 @@ public class Triggers {
       instance = new Triggers();
     }
     return instance;
+  }
+
+  public boolean alignmentOverride(CommandXboxController controller) {
+    return controller.b().getAsBoolean();
+  }
+
+  public boolean driveLucasProofOverride(CommandXboxController controller) {
+    return controller.x().getAsBoolean();
   }
 
   public boolean isShootSafeZone() {
@@ -36,12 +46,16 @@ public class Triggers {
     return safe;
   }
 
+  // Composite checker for time and zone
   public boolean isShootClear() {
     boolean clear = (isShootSafeTime() && isShootSafeZone());
     Logger.recordOutput("RobotState/clearToShoot", clear);
     return clear;
   }
 
+  // Needs review and practice
+  // Position, heading, and velocity checker that returns false if intake is in danger of crashing
+  // into hub
   public boolean isIntakeSafe() {
     if ((RobotState.getInstance().tooCloseToAllianceHub()
             && RobotState.getInstance()
@@ -57,8 +71,9 @@ public class Triggers {
     }
   }
 
+  // Needs review
   // Returns false if robot's estimated pose is in a trench zone or is moving towards it
-  public boolean ishoodsafe(Pose2d pose) {
+  public boolean isHoodSafe(Pose2d pose) {
     HardwareConstants.Zones.Zone currentZone = RobotState.getInstance().getRobotZone(pose);
     double vxMetersPerSecond =
         RobotState.getInstance().getFieldRelativeVelocity().vxMetersPerSecond;
@@ -74,10 +89,12 @@ public class Triggers {
                 && vxMetersPerSecond < 0)
             || (currentZone == Zone.OPPOSING_NEUTRAL_TRENCH_BORDER && vxMetersPerSecond > 0);
 
-    Logger.recordOutput("RobotState/ishoodsafe", !unsafe);
+    Logger.recordOutput("RobotState/isHoodSafe", !unsafe);
     return !unsafe;
   }
 
+  // All zone checkers require review - not practical for high-velocity zone changes
+  // In trench - position-based
   public boolean isRobotInTrench() {
     HardwareConstants.Zones.Zone currentZone =
         RobotState.getInstance().getRobotZone(RobotState.getInstance().getEstimatedPose());
@@ -89,6 +106,7 @@ public class Triggers {
     }
   }
 
+  // Close to trench - currently position-based, consider adding velocity-based
   public boolean isRobotApproachingTrench() {
     HardwareConstants.Zones.Zone currentZone =
         RobotState.getInstance().getRobotZone(RobotState.getInstance().getEstimatedPose());
@@ -111,6 +129,7 @@ public class Triggers {
     }
   }
 
+  // On bump - position checker
   public boolean isRobotOnBump() {
     HardwareConstants.Zones.Zone currentZone =
         RobotState.getInstance().getRobotZone(RobotState.getInstance().getEstimatedPose());
@@ -122,6 +141,7 @@ public class Triggers {
     }
   }
 
+  // Near bump - currently position-based, consider adding velocity-based
   public boolean isRobotApproachingBump() {
     HardwareConstants.Zones.Zone currentZone =
         RobotState.getInstance().getRobotZone(RobotState.getInstance().getEstimatedPose());
@@ -144,6 +164,7 @@ public class Triggers {
     }
   }
 
+  // In tower - position-based
   public boolean isRobotInTower() {
     double currentX = RobotState.getInstance().getEstimatedPose().getX();
     double currentY = RobotState.getInstance().getEstimatedPose().getY();
@@ -159,6 +180,7 @@ public class Triggers {
     }
   }
 
+  // Near tower - currently position-based, consider adding velocity-based
   public boolean isRobotApproachingTower() {
     double currentX = RobotState.getInstance().getEstimatedPose().getX();
     double currentY = RobotState.getInstance().getEstimatedPose().getY();
@@ -179,6 +201,8 @@ public class Triggers {
     }
   }
 
+  // At or approaching wall - position checker, split into at and approaching, consider adding
+  // velocity-based
   public boolean isRobotAtWall() {
     double currentX = RobotState.getInstance().getEstimatedPose().getX();
     double currentY = RobotState.getInstance().getEstimatedPose().getY();

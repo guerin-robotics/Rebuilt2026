@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.AllianceFlipUtil;
+import frc.robot.util.Elastic;
 import frc.robot.util.HubShiftUtil;
 import org.littletonrobotics.junction.AutoLogOutputManager;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -116,8 +117,12 @@ public class Robot extends LoggedRobot {
     // Threads.setCurrentThreadPriority(false, 10);
 
     // Set tuning mode to false if connected to FMS
-    if (DriverStation.isFMSAttached()) {
-      HardwareConstants.TuningConstants.TUNING_MODE = false;
+    if (HardwareConstants.TuningConstants.atComp) {
+      if (DriverStation.isFMSAttached()) {
+        HardwareConstants.TuningConstants.TUNING_MODE = false;
+      } else {
+        HardwareConstants.TuningConstants.TUNING_MODE = HardwareConstants.TuningConstants.isTuning;
+      }
     } else {
       HardwareConstants.TuningConstants.TUNING_MODE = HardwareConstants.TuningConstants.isTuning;
     }
@@ -168,6 +173,9 @@ public class Robot extends LoggedRobot {
     }
     CommandScheduler.getInstance().schedule(robotContainer.getAutoStopCommand());
     HubShiftUtil.initialize();
+
+    // Automated tab switching
+    Elastic.selectTab("Teleoperated");
   }
 
   /** This function is called periodically during operator control. */

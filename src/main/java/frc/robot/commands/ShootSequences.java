@@ -1,14 +1,12 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.Volts;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.lib.ContinuousConditionalCommand;
 import frc.robot.HardwareConstants;
 import frc.robot.Triggers;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.hood.Hood;
@@ -74,28 +72,8 @@ public class ShootSequences {
                 HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage)));
   }
 
-  public static Command shootForTowerNoDelay(
-      Flywheel flywheel,
-      Prestage prestage,
-      Hood hood,
-      Feeder feeder,
-      Transport transport,
-      intakeRoller intakeRoller) {
-    return Commands.parallel(
-        FlywheelCommands.setFlywheelVelocity(
-            flywheel, HardwareConstants.TowerConstants.FlywheelTowerVelocity),
-        PrestageCommands.setPrestageVelocity(
-            prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
-        HoodCommands.setHoodPos(hood, HardwareConstants.TowerConstants.hoodTowerPos),
-        FeederCommands.setFeederVelocity(
-            feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
-        TransportCommands.setTransportVoltage(
-            transport, (HardwareConstants.CompConstants.Voltages.transportVoltage)),
-        intakeRollerCommands.setRollerVoltage(
-            intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage));
-  }
-
   public static Command shootToHub(
+      Drive drive,
       Flywheel flywheel,
       Prestage prestage,
       Hood hood,
@@ -120,42 +98,10 @@ public class ShootSequences {
                 intakeRollerCommands.setRollerVoltage(
                     intakeRoller,
                     (HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage)))),
-        Commands.sequence(new WaitCommand(1.5), IntakePivotCommands.compressPivot(intakePivot)))
+        Commands.sequence(new WaitCommand(1.5), IntakePivotCommands.compressPivot(intakePivot)),
+        Commands.sequence(new WaitCommand(2), Commands.runOnce(drive::stopWithX, drive)))
     // .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
     ;
-  }
-
-  public static Command autoShootToHub(
-      Flywheel flywheel,
-      Prestage prestage,
-      Hood hood,
-      Feeder feeder,
-      Transport transport,
-      intakeRoller intakeRoller,
-      IntakePivot intakePivot) {
-    return Commands.parallel(
-            Commands.parallel(
-                FlywheelCommands.setVelocityForHub(flywheel),
-                PrestageCommands.setPrestageVelocity(
-                    prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
-                HoodCommands.setHoodPosForHub(hood),
-                IntakePivotCommands.jostlePivotByPos(intakePivot)),
-            Commands.sequence(
-                new WaitCommand(0.15),
-                FeederCommands.setFeederVelocity(
-                    feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
-                TransportCommands.setTransportVoltage(
-                    transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
-                intakeRollerCommands.setRollerVoltage(
-                    intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)))
-        .finallyDo(
-            () -> {
-              FlywheelCommands.flywheelIdle(flywheel);
-              PrestageCommands.setPrestageVelocity(prestage, RotationsPerSecond.of(0));
-              FeederCommands.setFeederVelocity(feeder, RotationsPerSecond.of(0));
-              TransportCommands.setTransportVoltage(transport, Volts.of(0));
-              HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos);
-            });
   }
 
   public static Command pass(
@@ -183,9 +129,7 @@ public class ShootSequences {
                 intakeRollerCommands.setRollerVoltage(
                     intakeRoller,
                     HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))),
-        Commands.sequence(new WaitCommand(1.5), IntakePivotCommands.compressPivot(intakePivot)))
-    // .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
-    ;
+        Commands.sequence(new WaitCommand(1.5), IntakePivotCommands.compressPivot(intakePivot)));
   }
 
   public static Command passOrIdle(
@@ -205,7 +149,27 @@ public class ShootSequences {
         });
   }
 
-  public static Command shootOrPassTest(
+  public static Command zonePassOrShoot(
+      Drive drive,
+      Flywheel flywheel,
+      Prestage prestage,
+      Hood hood,
+      Feeder feeder,
+      Transport transport,
+      intakeRoller intakeRoller,
+      IntakePivot intakePivot) {
+    return Commands.either(
+        shootToHub(drive, flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
+        pass(flywheel, prestage, hood, feeder, transport, intakePivot, intakeRoller),
+        () -> {
+          boolean safe = Triggers.getInstance().isShootSafeZone();
+          Logger.recordOutput("Flywheel/shootOrPass", safe ? "shooting" : "passing");
+          return safe;
+        });
+  }
+
+  public static Command zoneAndTimePassOrShoot(
+      Drive drive,
       Flywheel flywheel,
       Prestage prestage,
       Hood hood,
@@ -215,73 +179,13 @@ public class ShootSequences {
       IntakePivot intakePivot) {
     return new ContinuousConditionalCommand(
         passOrIdle(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
-        zonePassOrShoot(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
+        zonePassOrShoot(
+            drive, flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
         () -> {
           boolean zoneSafe = Triggers.getInstance().isShootSafeZone();
           boolean timeSafe = Triggers.getInstance().isShootSafeTime();
           boolean disabled = HubShiftUtil.disabled;
           return (!zoneSafe && !disabled) || (!disabled && !timeSafe);
-        });
-  }
-
-  // Returns shoot if zone and time correct (in alliance zone and hub active)
-  // Returns pass if both are false
-  // Returns idle if zone is true but time is false
-  // Both zone and time logic overrideable
-  public static Command zoneAndTimePassOrShoot(
-      Flywheel flywheel,
-      Prestage prestage,
-      Hood hood,
-      Feeder feeder,
-      Transport transport,
-      intakeRoller intakeRoller,
-      IntakePivot intakePivot) {
-    if (!HubShiftUtil.disabled) {
-      if (Triggers.getInstance().isShootSafeTime()) {
-        return new ContinuousConditionalCommand(
-            shootToHub(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
-            pass(flywheel, prestage, hood, feeder, transport, intakePivot, intakeRoller),
-            () -> {
-              boolean zoneSafe = Triggers.getInstance().isShootSafeZone();
-              return zoneSafe;
-            });
-      } else {
-        return FlywheelCommands.flywheelIdle(flywheel);
-      }
-    } else {
-      return shootToHub(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot);
-    }
-    // return new ContinuousConditionalCommand(
-    //     shootToHub(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
-    //     pass(flywheel, prestage, hood, feeder, transport, intakePivot, intakeRoller),
-    //     () -> {
-    //       boolean overriden = override.getAsBoolean();
-    //       Logger.recordOutput("RobotState/overriden", overriden);
-    //       boolean allClear = Triggers.getInstance().isShootClear();
-    //       Logger.recordOutput("RobotState/clearToShoot", allClear);
-    //       if (!overriden) {
-    //         return allClear;
-    //       } else {
-    //         return true;
-    //       }
-    //     });
-  }
-
-  public static Command zonePassOrShoot(
-      Flywheel flywheel,
-      Prestage prestage,
-      Hood hood,
-      Feeder feeder,
-      Transport transport,
-      intakeRoller intakeRoller,
-      IntakePivot intakePivot) {
-    return Commands.either(
-        shootToHub(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
-        pass(flywheel, prestage, hood, feeder, transport, intakePivot, intakeRoller),
-        () -> {
-          boolean safe = Triggers.getInstance().isShootSafeZone();
-          Logger.recordOutput("Flywheel/shootOrPass", safe ? "shooting" : "passing");
-          return safe;
         });
   }
 
@@ -304,34 +208,6 @@ public class ShootSequences {
         new WaitCommand(0.25),
         FlywheelCommands.setFlywheelVelocity(
             flywheel, HardwareConstants.CompConstants.Velocities.flywheelIdleVelocity));
-  }
-
-  public static Command FirstSet(Flywheel flywheel, Prestage prestage, Hood hood) {
-    return Commands.parallel(
-            FlywheelCommands.setFlywheelVelocity(
-                flywheel, HardwareConstants.TowerConstants.FlywheelTowerVelocity),
-            PrestageCommands.setPrestageVelocity(
-                prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
-            HoodCommands.setHoodPos(hood, HardwareConstants.TowerConstants.hoodTowerPos))
-        .finallyDo(
-            () -> {
-              flywheel.setFlywheelVelocity(RotationsPerSecond.of(0));
-              prestage.setPrestageVelocity(RotationsPerSecond.of(0));
-              hood.setHoodPos(HardwareConstants.CompConstants.Positions.hoodDownPos);
-            });
-  }
-
-  public static Command SecondSet(Feeder feeder, Transport transport) {
-    return Commands.parallel(
-            FeederCommands.setFeederVelocity(
-                feeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
-            TransportCommands.setTransportVoltage(
-                transport, HardwareConstants.CompConstants.Voltages.transportVoltage))
-        .finallyDo(
-            () -> {
-              feeder.setFeederVelocity(RotationsPerSecond.of(0));
-              transport.setTransportVoltage(Volts.of(0));
-            });
   }
 
   public static Command stopAll(

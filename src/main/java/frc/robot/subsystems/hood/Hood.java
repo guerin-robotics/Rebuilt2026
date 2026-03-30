@@ -26,14 +26,14 @@ public class Hood extends SubsystemBase {
   }
 
   public void setHoodPos(double position) {
-    // if (Triggers.getInstance().ishoodsafe(RobotState.getInstance().getEstimatedPose())) {
+    // if (Triggers.getInstance().isHoodSafe(RobotState.getInstance().getEstimatedPose())) {
     io.setHoodPos(position);
     // }
   }
 
   public void incrementHoodPos() {
     double position = inputs.servoPos;
-    // if (RobotState.getInstance().ishoodsafe(RobotState.getInstance().getEstimatedPose())) {
+    // if (RobotState.getInstance().isHoodSafe(RobotState.getInstance().getEstimatedPose())) {
     io.setHoodPos(position + 0.05);
     // }
   }
@@ -47,7 +47,7 @@ public class Hood extends SubsystemBase {
    *   <li>{@code HoodPosCalculator.getHoodPosForHub()} → {@code getAllianceHubTarget()} → {@code
    *       AllianceFlipUtil} (cached) → {@code getDistanceToPoint()} → {@code Pose2d.getTranslation
    *       .getDistance()} → interpolation table lookup
-   *   <li>{@code RobotState.ishoodsafe()} → {@code getRobotZone()} + velocity check (now caches
+   *   <li>{@code RobotState.isHoodSafe()} → {@code getRobotZone()} + velocity check (now caches
    *       zone result internally)
    * </ol>
    *
@@ -57,7 +57,7 @@ public class Hood extends SubsystemBase {
    */
   public void setHoodPosForHub() {
     double position = HoodPosCalculator.getInstance().getHoodPosForHub();
-    if (Triggers.getInstance().ishoodsafe(RobotState.getInstance().getEstimatedPose())) {
+    if (Triggers.getInstance().isHoodSafe(RobotState.getInstance().getEstimatedPose())) {
       io.setHoodPos(position);
     } else {
       io.setHoodPos(HardwareConstants.CompConstants.Positions.hoodDownPos);

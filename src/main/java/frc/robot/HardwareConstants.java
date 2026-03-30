@@ -38,6 +38,7 @@ public class HardwareConstants {
     // Hood
     public static int HOOD_SERVO_CHANNEL = 0;
     public static int HOOD_LEFT_SERVO_CHANNEL = 1;
+    public static int HOOD_MOTOR = 43;
   }
 
   public static class CompConstants {
@@ -150,6 +151,7 @@ public class HardwareConstants {
   public static class TuningConstants {
     public static boolean TUNING_MODE;
     public static boolean isTuning = false;
+    public static boolean atComp = false;
 
     public static final AngularVelocity FlywheelTuningVelocity = RPM.of(1700);
     public static final double HoodTuningPos = 0.45;
