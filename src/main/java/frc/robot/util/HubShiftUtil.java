@@ -53,6 +53,7 @@ public class HubShiftUtil {
   private static final double endingActiveFudge =
       shiftEndFuelCountExtension + -1 * (maxTimeOfFlight + maxFuelCountDelay);
 
+  private static boolean firstActiveAlliance = false;
   public static final double autoEndTime = 20.0;
   public static final double teleopDuration = 140.0;
   private static final boolean[] activeSchedule = {true, true, false, true, false, true};
