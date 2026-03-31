@@ -51,14 +51,33 @@ public class FlywheelCommands {
         .withName("FlywheelVoltage_" + voltage.in(Volts) + "V");
   }
 
+  /**
+   * Runs the shooter at a given velocity.
+   *
+   * @param flywheel
+   * @param velocity
+   * @return Command to run shooter at velocity, stops on end
+   */
   public static Command setFlywheelVelocity(Flywheel flywheel, AngularVelocity velocity) {
     return Commands.runOnce(() -> flywheel.setFlywheelVelocity(velocity), flywheel);
   }
 
+  /**
+   * Runs the shooter at a low RPM
+   *
+   * @param flywheel
+   * @return Command to run shooter at low velocity
+   */
   public static Command flywheelIdle(Flywheel flywheel) {
     return Commands.run(() -> flywheel.setFlywheelIdle(), flywheel);
   }
 
+  /**
+   * Sets flywheel velocity based on position relative to specified passing target.
+   *
+   * @param flywheel
+   * @return Command that sets flywheel velocity, stops on end
+   */
   public static Command setPassVelocity(Flywheel flywheel) {
     return setVelocityForTarget(flywheel, flywheel.getPassTarget());
   }

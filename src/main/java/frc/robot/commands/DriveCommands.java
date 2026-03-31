@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.ContinuousConditionalCommand;
@@ -151,10 +152,11 @@ public class DriveCommands {
         joystickDrive(drive, xSupplier, ySupplier, omegaSupplier),
         joystickDriveLimited(drive, xSupplier, ySupplier, omegaSupplier),
         () -> {
-          boolean driveNormal = (Triggers.getInstance().isIntakeSafe() || override.getAsBoolean());
+          boolean driveNormal =
+              (Triggers.getInstance().isIntakeSafe().getAsBoolean() || override.getAsBoolean());
           Logger.recordOutput(
               "RobotState/isIntakeSafe",
-              Triggers.getInstance().isIntakeSafe() ? "intakeSafe" : "intakeUnsafe");
+              Triggers.getInstance().isIntakeSafe().getAsBoolean() ? "intakeSafe" : "intakeUnsafe");
           Logger.recordOutput(
               "RobotState/isOverrideActive", override.getAsBoolean() ? "override" : "noOverride");
           return driveNormal;
@@ -390,6 +392,17 @@ public class DriveCommands {
           }
           return AllianceFlipUtil.apply(targetRotation);
         });
+  }
+  
+  public static Command stopWithX(Drive drive) {
+    return Commands.runOnce(() -> stopWithX(drive), drive);
+  }
+
+  public static Command stopWithXAfterWait(Drive drive) {
+    return Commands.sequence(
+      new WaitCommand(2),
+      Commands.runOnce(() -> stopWithX(drive), drive)
+    );
   }
 
   /**

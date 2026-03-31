@@ -7,6 +7,8 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.HardwareConstants;
 import frc.robot.subsystems.intakeRoller.intakeRoller;
 
 public class intakeRollerCommands {
@@ -25,5 +27,11 @@ public class intakeRollerCommands {
   public static Command stopIntakeRoller(intakeRoller intakeRoller) {
     return Commands.runOnce(
         () -> intakeRoller.setRollerVelocity(RotationsPerSecond.of(0)), intakeRoller);
+  }
+
+  public static Command setVoltageAfterWait(intakeRoller intakeRoller, Voltage voltage) {
+    return Commands.sequence(
+        new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
+        setRollerVoltage(intakeRoller, voltage));
   }
 }

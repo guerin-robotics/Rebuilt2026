@@ -1,7 +1,7 @@
 package frc.robot.subsystems.hood.io;
 
-import edu.wpi.first.wpilibj.PWM;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.wpilibj.PWM;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.hood.HoodConstants;
 

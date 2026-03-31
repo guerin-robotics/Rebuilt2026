@@ -47,6 +47,7 @@ public class HardwareConstants {
       public static final Voltage transportVoltage = Volts.of(-7.0);
       public static final Voltage intakeRollerVoltage = Volts.of(12.0);
       public static final Voltage intakeRollerAgitateVoltage = Volts.of(3);
+      public static Voltage prestageIdleVoltage = Volts.of(-1);
     }
 
     public static class SpitVoltages {

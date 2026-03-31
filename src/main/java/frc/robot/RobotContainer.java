@@ -228,7 +228,7 @@ public class RobotContainer {
     //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     if (Robot.isReal()) {
-      configureButtonBindings();
+      configureStateBindings();
     } else if (Robot.isSimulation()) {
       configureSimBindings();
     }
@@ -353,7 +353,224 @@ public class RobotContainer {
             HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
   }
 
-  private void configureButtonBindings() {
+  private void configureStateBindings() {
+
+    // DEFAULT COMMANDS
+    // Drivetrain - joystick drive
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive,
+            () -> MathUtil.clamp(-getThrustY(), -1.0, 1.0),
+            () -> MathUtil.clamp(-getThrustX(), -1.0, 1.0),
+            () -> MathUtil.clamp(-getThrustRot(), -1.0, 1.0)));
+    // Flywheel - idle
+    flywheel.setDefaultCommand(
+        FlywheelCommands.flywheelIdle(flywheel)
+    );
+    // Prestage - idle
+    prestage.setDefaultCommand(PrestageCommands.prestageIdle(prestage));
+    // Hood - down
+    hood.setDefaultCommand(HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
+
+    // OVERRIDES
+    // Flip alliance winner
+    Triggers.getInstance().allianceWinFlipper().onTrue(HubShiftUtil.flipWinner());
+    // Disable hub shift logic
+    Triggers.getInstance().allianceWinDisabler().onTrue(HubShiftUtil.disableHubShiftUtil());
+
+    // DRIVETRAIN
+    // Align for shoot when shoot button is pressed and we're in our alliance zone and hub is
+    // active, or if tower shoot button is pressed
+    Triggers.getInstance().shootButton()
+        .and(Triggers.getInstance().isShootClear())
+        .or(Triggers.getInstance().shootFromTowerButton())
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                drive,
+                () -> -thrustmaster.getY(),
+                () -> -thrustmaster.getX(),
+                () -> flywheel.getShootAngleForZoneAndTime()));
+    
+    // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass button is pressed
+    Triggers.getInstance().shootButton()
+        .and(Triggers.getInstance().shootButton()).negate()
+        .or(Triggers.getInstance().passButton())
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                    drive,
+                    () -> -thrustmaster.getX(),
+                    () -> -thrustmaster.getY(),
+                    () ->
+                        RobotState.getInstance()
+                            .getAngleToTarget(
+                                new Translation2d(
+                                    flywheel.getPassTarget().getX(),
+                                    flywheel.getPassTarget().getY())))
+        );
+
+    // X wheels after wait when shoot button is pressed and we're in our alliance zone, or shoot from tower button
+    Triggers.getInstance().shootButton()
+        .and(Triggers.getInstance().isShootClear())
+        .or(Triggers.getInstance().shootFromTowerButton())
+        .whileTrue(DriveCommands.stopWithXAfterWait(drive));
+
+    // X wheels when x button is pressed
+    Triggers.getInstance().xWheels()
+        .whileTrue(DriveCommands.stopWithX(drive));
+
+    // Align for trench when trench button pressed - zone logic temporarily disabled
+    Triggers.getInstance().trenchAlignButton()
+        // .and(Triggers.getInstance().isRobotInTrench())
+        // .or(Triggers.getInstance().isRobotApproachingTrench())
+        .whileTrue(DriveCommands.joystickDriveAlignForTrench(
+            drive,
+            () -> -thrustmaster.getY(),
+            () -> -thrustmaster.getX()));
+
+    // Align for bump when bump button pressed - zone logic temporarily disabled
+    Triggers.getInstance().bumpAlignButton()
+        // .and(Triggers.getInstance().isRobotOnBump())
+        // .or(Triggers.getInstance().isRobotApproachingBump())
+        .whileTrue(DriveCommands.joystickDriveAlignForBump(
+            drive,
+            () -> -thrustmaster.getY(),
+            () -> -thrustmaster.getX()
+        ));
+
+    // FLYWHEEL
+    // Set shooting velocity if shoot button pressed, we're in our alliance zone, hub is active, and
+    // tuning false
+    Triggers.getInstance()
+        .shootButton()
+        .and(Triggers.getInstance().isShootClear())
+        .whileTrue(FlywheelCommands.setVelocityForHub(flywheel));
+
+    // Set passing velocity if shoot button is pressed but we're not in our alliance zone and tuning
+    // false,
+    // or if pass button is pressed
+    Triggers.getInstance()
+        .shootButton()
+        .and(Triggers.getInstance().isShootSafeZone()).negate()
+        .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
+        .or(Triggers.getInstance().passButton())
+        .whileTrue(FlywheelCommands.setPassVelocity(flywheel));
+
+    // Hard-coded tower shot
+    Triggers.getInstance()
+        .shootFromTowerButton()
+        .whileTrue(
+            FlywheelCommands.setFlywheelVelocity(
+                flywheel, HardwareConstants.TowerConstants.FlywheelTowerVelocity));
+
+    // Distance map shot (if tuning true)
+    Triggers.getInstance()
+        .shootButton()
+        .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
+        .whileTrue(
+            FlywheelCommands.setFlywheelVelocity(
+                flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity));
+
+    // PRESTAGE
+    // Set to velocity when any shooting sequence is started (shoot to hub, pass, shoot from tower)
+    Triggers.getInstance()
+        .shootButton()
+        .or(Triggers.getInstance().passButton())
+        .or(Triggers.getInstance().shootFromTowerButton())
+        .whileTrue(
+            PrestageCommands.setPrestageVelocity(
+                prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity));
+
+    // FEEDER
+    // Set to velocity (after a wait) when any shooting sequence is started (shoot to hub, pass,
+    // shoot from tower)
+    Triggers.getInstance()
+        .shootButton()
+        .or(Triggers.getInstance().passButton())
+        .or(Triggers.getInstance().shootFromTowerButton())
+        .whileTrue(
+            FeederCommands.setVelocityAfterWait(
+                feeder, HardwareConstants.CompConstants.Velocities.feederVelocity));
+
+    // TRANSPORT
+    // Set to voltage (after a wait) when any shooting sequence is started (shoot to hub, pass,
+    // shoot from tower)
+    Triggers.getInstance()
+        .shootButton()
+        .or(Triggers.getInstance().passButton())
+        .or(Triggers.getInstance().shootFromTowerButton())
+        .whileTrue(
+            TransportCommands.setVoltageAfterWait(
+                transport, HardwareConstants.CompConstants.Voltages.transportVoltage));
+
+    // INTAKE ROLLER
+    // Set to intaking voltage when intake button is pressed
+    Triggers.getInstance()
+        .intakeRollerButton()
+        .whileTrue(
+            intakeRollerCommands.setRollerVoltage(
+                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage));
+
+    // Set to agitate voltage (after a wait) when any shooting sequence is started (shoot to hub,
+    // pass, shoot from tower)
+    Triggers.getInstance()
+        .shootButton()
+        .or(Triggers.getInstance().passButton())
+        .or(Triggers.getInstance().shootFromTowerButton())
+        .whileTrue(
+            intakeRollerCommands.setVoltageAfterWait(
+                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage));
+
+    // INTAKE PIVOT
+    // Retract on retract button
+    Triggers.getInstance()
+        .intakeInButton()
+        .whileTrue(
+            IntakePivotCommands.setPivotRotations(
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotUpPos));
+
+    // Deploy on deploy button
+    Triggers.getInstance()
+        .intakeOutButton()
+        .whileTrue(
+            IntakePivotCommands.setPivotRotations(
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
+
+    // Compress on shoot button and when deploy button is not pressed (allowing driver to override
+    // and force deploy w/o canceling shoot sequence), or on compress button
+    Triggers.getInstance()
+        .shootButton()
+        .and(Triggers.getInstance().intakeOutButton()).negate()
+        .or(Triggers.getInstance().intakeCompressButton())
+        .whileTrue(IntakePivotCommands.compressPivot(intakePivot));
+
+    // HOOD
+    // Set pos for hub if shoot to hub button or shoot to tower button is pressed, and we're in our
+    // alliance zone and the hub is active, and tuning mode is false
+    Triggers.getInstance()
+        .isShootClear()
+        .and(
+            () ->
+                (Triggers.getInstance().shootButton().getAsBoolean()
+                    || Triggers.getInstance().shootFromTowerButton().getAsBoolean()))
+        .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
+        .whileTrue(HoodCommands.setHoodPosForHub(hood));
+
+    // Set pos for passing if shoot to hub button is pressed but we're not in our alliance zone, or
+    // if pass button is presssed
+    Triggers.getInstance()
+        .shootButton()
+        .and(Triggers.getInstance().isShootSafeZone()).negate()
+        .or(Triggers.getInstance().passButton())
+        .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.PassConstants.hoodPassPos));
+
+    // Distance map shot if shoot button is pressed and tuning mode is true
+    Triggers.getInstance()
+        .shootButton()
+        .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
+        .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos));
+  }
+
+  private void configurePreStateBindings() {
 
     // ==================== DRIVE CONTROLS (DO NOT MODIFY) ====================
     // Default command: thrustmaster
@@ -364,26 +581,24 @@ public class RobotContainer {
             () -> MathUtil.clamp(-getThrustX(), -1.0, 1.0),
             () -> MathUtil.clamp(-getThrustRot(), -1.0, 1.0)));
 
-    // Trigger-based alignment - trench - overrideable - currently applied anywhere on field
+    // Trigger-based alignment - trench - currently applied anywhere on field
     thrustmaster
         .button(2)
         // .and(
         //     () ->
         //         (Triggers.getInstance().isRobotInTrench()
         //             || Triggers.getInstance().isRobotApproachingTrench()))
-        .and(() -> !Triggers.getInstance().alignmentOverride(controller))
         .whileTrue(
             DriveCommands.joystickDriveAlignForTrench(
                 drive, () -> -thrustmaster.getY(), () -> -thrustmaster.getX()));
 
-    // Trigger-based alignment - bump - overrideable - currently applied anywhere on field
+    // Trigger-based alignment - bump - currently applied anywhere on field
     thrustmaster
         .button(8)
         // .and(
         //     () ->
         //         (Triggers.getInstance().isRobotOnBump()
         //             || Triggers.getInstance().isRobotApproachingBump()))
-        .and(() -> !Triggers.getInstance().alignmentOverride(controller))
         .whileTrue(
             DriveCommands.joystickDriveAlignForBump(
                 drive, () -> -thrustmaster.getY(), () -> -thrustmaster.getX()));
@@ -420,39 +635,44 @@ public class RobotContainer {
                 () -> MathUtil.clamp(-getThrustX(), -1.0, 1.0),
                 () -> RobotState.getInstance().getAngleToAllianceHub()));
 
-    // ==================== SUBSYSTEM CONTROLS ====================
-
-    // REVISED SUBSYSTEM CONTROLS
+    // COMP-TESTED SUBSYSTEM CONTROLS
 
     // Default commands
     if (!HardwareConstants.TuningConstants.TUNING_MODE) {
-        // Flywheel (5 rps)
-        flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
-        // Hood (down)
-        hood.setDefaultCommand(
-            HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
-        // Prestage, by voltage
-        prestage.setDefaultCommand(PrestageCommands.setPrestageVoltage(prestage, Volts.of(-1)));
-        // Feeder, by voltage
-        feeder.setDefaultCommand(FeederCommands.setFeederVoltage(feeder, Volts.of(-1)));
+      // Flywheel (5 rps)
+      flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
+      // Hood (down)
+      hood.setDefaultCommand(
+          HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
+      // Prestage, by voltage
+      prestage.setDefaultCommand(PrestageCommands.setPrestageVoltage(prestage, Volts.of(-1)));
+      // Feeder, by voltage
+      feeder.setDefaultCommand(FeederCommands.setFeederVoltage(feeder, Volts.of(-1)));
     }
 
     if (!HardwareConstants.TuningConstants.TUNING_MODE) {
       // Distance-based shooting
-    thrustmaster
-        .button(1)
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                    drive,
-                    () -> -thrustmaster.getY(),
-                    () -> -thrustmaster.getX(),
-                    () -> flywheel.getShootAngleForZoneAndTime())
-                .alongWith(
-                    ShootSequences.zoneAndTimePassOrShoot(
-                        drive, flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot)))
-        .onFalse(
-            ShootSequences.shootEndBehavior(
-                flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
+      thrustmaster
+          .button(1)
+          .whileTrue(
+              DriveCommands.joystickDriveAtAngle(
+                      drive,
+                      () -> -thrustmaster.getY(),
+                      () -> -thrustmaster.getX(),
+                      () -> flywheel.getShootAngleForZoneAndTime())
+                  .alongWith(
+                      ShootSequences.zoneAndTimePassOrShoot(
+                          drive,
+                          flywheel,
+                          prestage,
+                          hood,
+                          feeder,
+                          transport,
+                          intakeRoller,
+                          intakePivot)))
+          .onFalse(
+              ShootSequences.shootEndBehavior(
+                  flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
     } else {
       // Map tuning controls
       // Shoot for map tuning
@@ -468,14 +688,14 @@ public class RobotContainer {
                       ShootSequences.mapTuningShoot(
                           flywheel, prestage, hood, intakePivot, feeder, transport, intakeRoller)));
 
-    // Drop hood
-    controller
-        .rightBumper()
-        .onTrue(HoodCommands.setHoodPos(hood,
-    HardwareConstants.CompConstants.Positions.hoodDownPos));
+      // Drop hood
+      controller
+          .rightBumper()
+          .onTrue(
+              HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
 
-    // Bump hood pos up
-    controller.leftBumper().onTrue(HoodCommands.incrementHoodPos(hood));
+      // Bump hood pos up
+      controller.leftBumper().onTrue(HoodCommands.incrementHoodPos(hood));
     }
 
     // Intake up
@@ -588,7 +808,14 @@ public class RobotContainer {
                     () -> flywheel.getShootAngleForZoneAndTime())
                 .alongWith(
                     ShootSequences.zoneAndTimePassOrShoot(
-                        drive, flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot)))
+                        drive,
+                        flywheel,
+                        prestage,
+                        hood,
+                        feeder,
+                        transport,
+                        intakeRoller,
+                        intakePivot)))
         .onFalse(
             ShootSequences.shootEndBehavior(
                 flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot));
@@ -601,8 +828,8 @@ public class RobotContainer {
         .button(2)
         .and(
             () ->
-                (Triggers.getInstance().isRobotInTrench()
-                    || Triggers.getInstance().isRobotApproachingTrench()))
+                (Triggers.getInstance().isRobotInTrench().getAsBoolean()
+                    || Triggers.getInstance().isRobotApproachingTrench().getAsBoolean()))
         .and(() -> controller.b().getAsBoolean() == false)
         .whileTrue(
             DriveCommands.joystickDriveAlignForTrench(
@@ -613,8 +840,8 @@ public class RobotContainer {
         .button(2)
         .and(
             () ->
-                (Triggers.getInstance().isRobotOnBump()
-                    || Triggers.getInstance().isRobotApproachingBump()))
+                (Triggers.getInstance().isRobotOnBump().getAsBoolean()
+                    || Triggers.getInstance().isRobotApproachingBump().getAsBoolean()))
         .and(() -> controller.b().getAsBoolean() == false)
         .whileTrue(
             DriveCommands.joystickDriveAlignForBump(

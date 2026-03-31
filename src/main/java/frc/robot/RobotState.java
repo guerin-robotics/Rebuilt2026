@@ -17,7 +17,6 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.Distance;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.FieldConstants;
-import frc.robot.HardwareConstants.Zones.Zone;
 import frc.robot.subsystems.drive.DriveConstants;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -525,100 +524,6 @@ public class RobotState {
     } else {
       Logger.recordOutput("RobotState/RobotZone", HardwareConstants.Zones.Zone.OPPOSING_ZONE);
       return HardwareConstants.Zones.Zone.OPPOSING_ZONE;
-    }
-  }
-
-  public boolean tooCloseToAllianceHub() {
-    return (getDistanceToAllianceHub().magnitude() < HardwareConstants.hubDangerZone.intakeOffset);
-  }
-
-  public boolean tooCloseToOpposingHub() {
-    return (getDistanceToOpposingHub().magnitude() < HardwareConstants.hubDangerZone.intakeOffset);
-  }
-
-  public boolean facingAllianceHub(Pose2d pose) {
-    double heading = AllianceFlipUtil.apply(pose.getRotation()).getDegrees();
-    HardwareConstants.Zones.Zone currentZone = RobotState.getInstance().getRobotZone(pose);
-    if ((currentZone == Zone.ALLIANCE_ZONE || currentZone == Zone.ALLIANCE_ZONE_TRENCH_BORDER)
-        && (Math.abs(heading) < 90)) {
-      return true;
-    } else if ((currentZone == Zone.NEUTRAL || currentZone == Zone.ALLIANCE_NEUTRAL_TRENCH_BORDER)
-        && (Math.abs(heading) >= 90)) {
-      return true;
-    } else if (currentZone == Zone.ALLIANCE_BUMP_FAR && (heading < 0)) {
-      return true;
-    } else if (currentZone == Zone.ALLIANCE_BUMP_NEAR && (heading > 0)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  public boolean facingOpposingHub(Pose2d pose) {
-    double heading = AllianceFlipUtil.apply(pose.getRotation()).getDegrees();
-    HardwareConstants.Zones.Zone currentZone = RobotState.getInstance().getRobotZone(pose);
-    if ((currentZone == HardwareConstants.Zones.Zone.NEUTRAL
-            || currentZone == HardwareConstants.Zones.Zone.OPPOSING_NEUTRAL_TRENCH_BORDER)
-        && (Math.abs(heading) < 90)) {
-      return true;
-    } else if ((currentZone == HardwareConstants.Zones.Zone.OPPOSING_ZONE
-            || currentZone == Zone.OPPOSING_ZONE_TRENCH_BORDER)
-        && (Math.abs(heading) >= 90)) {
-      return true;
-    } else if (currentZone == HardwareConstants.Zones.Zone.OPPOSING_BUMP_FAR && (heading < 0)) {
-      return true;
-    } else if (currentZone == HardwareConstants.Zones.Zone.OPPOSING_BUMP_NEAR && (heading > 0)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  public boolean movingTowardAllianceHub() {
-    HardwareConstants.Zones.Zone currentZone = getRobotZone(getEstimatedPose());
-    if ((currentZone == HardwareConstants.Zones.Zone.ALLIANCE_ZONE
-            || currentZone == HardwareConstants.Zones.Zone.ALLIANCE_ZONE_TRENCH_BORDER)
-        && AllianceFlipUtil.applyX(getFieldRelativeVelocity().vxMetersPerSecond)
-            >= AllianceFlipUtil.applyX(0)) {
-      return true;
-    } else if ((currentZone == HardwareConstants.Zones.Zone.NEUTRAL
-            || currentZone == HardwareConstants.Zones.Zone.ALLIANCE_NEUTRAL_TRENCH_BORDER)
-        && (getFieldRelativeVelocity().vxMetersPerSecond) <= AllianceFlipUtil.applyX(0)) {
-      return true;
-    } else if (currentZone == HardwareConstants.Zones.Zone.ALLIANCE_BUMP_NEAR
-        && AllianceFlipUtil.applyY(getFieldRelativeVelocity().vyMetersPerSecond)
-            >= AllianceFlipUtil.applyY(0)) {
-      return true;
-    } else if (currentZone == HardwareConstants.Zones.Zone.ALLIANCE_BUMP_FAR
-        && (getFieldRelativeVelocity().vyMetersPerSecond) <= AllianceFlipUtil.applyY(0)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  public boolean movingTowardOpposingHub() {
-    HardwareConstants.Zones.Zone currentZone = getRobotZone(getEstimatedPose());
-    if ((currentZone == HardwareConstants.Zones.Zone.OPPOSING_ZONE
-            || currentZone == HardwareConstants.Zones.Zone.OPPOSING_ZONE_TRENCH_BORDER)
-        && AllianceFlipUtil.applyX(getFieldRelativeVelocity().vxMetersPerSecond)
-            <= AllianceFlipUtil.applyX(0)) {
-      return true;
-    } else if ((currentZone == HardwareConstants.Zones.Zone.NEUTRAL
-            || currentZone == HardwareConstants.Zones.Zone.OPPOSING_NEUTRAL_TRENCH_BORDER)
-        && AllianceFlipUtil.applyX(getFieldRelativeVelocity().vxMetersPerSecond)
-            >= AllianceFlipUtil.applyX(0)) {
-      return true;
-    } else if (currentZone == HardwareConstants.Zones.Zone.OPPOSING_BUMP_NEAR
-        && AllianceFlipUtil.applyY(getFieldRelativeVelocity().vyMetersPerSecond)
-            >= AllianceFlipUtil.applyY(0)) {
-      return true;
-    } else if (currentZone == HardwareConstants.Zones.Zone.OPPOSING_BUMP_FAR
-        && AllianceFlipUtil.applyY(getFieldRelativeVelocity().vyMetersPerSecond)
-            <= AllianceFlipUtil.applyY(0)) {
-      return true;
-    } else {
-      return false;
     }
   }
 }

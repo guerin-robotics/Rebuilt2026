@@ -1,9 +1,6 @@
 package frc.robot.subsystems.hood;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.HardwareConstants;
-import frc.robot.RobotState;
-import frc.robot.Triggers;
 import frc.robot.subsystems.hood.io.HoodIO;
 import frc.robot.subsystems.hood.io.HoodIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
@@ -56,15 +53,6 @@ public class Hood extends SubsystemBase {
    * distance changes every loop so the lookup is necessary.
    */
   public void setHoodPosForHub() {
-    double position = HoodPosCalculator.getInstance().getHoodPosForHub();
-    if (Triggers.getInstance().isHoodSafe(RobotState.getInstance().getEstimatedPose())) {
-      io.setHoodPos(position);
-    } else {
-      io.setHoodPos(HardwareConstants.CompConstants.Positions.hoodDownPos);
-    }
-  }
-
-  public void setHoodPosForShoot() {
     double position = HoodPosCalculator.getInstance().getHoodPosForHub();
     io.setHoodPos(position);
   }

@@ -87,7 +87,7 @@ public class ShootSequences {
             FlywheelCommands.setVelocityForHub(flywheel),
             PrestageCommands.setPrestageVelocity(
                 prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
-            HoodCommands.setHoodPosForShoot(hood)),
+            HoodCommands.setHoodPosForHub(hood)),
         Commands.sequence(
             new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
             Commands.parallel(
@@ -144,7 +144,7 @@ public class ShootSequences {
         pass(flywheel, prestage, hood, feeder, transport, intakePivot, intakeRoller),
         FlywheelCommands.flywheelIdle(flywheel),
         () -> {
-          boolean zoneSafe = Triggers.getInstance().isShootSafeZone();
+          boolean zoneSafe = Triggers.getInstance().isShootSafeZone().getAsBoolean();
           return !zoneSafe;
         });
   }
@@ -162,7 +162,7 @@ public class ShootSequences {
         shootToHub(drive, flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
         pass(flywheel, prestage, hood, feeder, transport, intakePivot, intakeRoller),
         () -> {
-          boolean safe = Triggers.getInstance().isShootSafeZone();
+          boolean safe = Triggers.getInstance().isShootSafeZone().getAsBoolean();
           Logger.recordOutput("Flywheel/shootOrPass", safe ? "shooting" : "passing");
           return safe;
         });
@@ -182,10 +182,10 @@ public class ShootSequences {
         zonePassOrShoot(
             drive, flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
         () -> {
-          boolean zoneSafe = Triggers.getInstance().isShootSafeZone();
-          boolean timeSafe = Triggers.getInstance().isShootSafeTime();
+          boolean zoneSafe = Triggers.getInstance().isShootSafeZone().getAsBoolean();
+          boolean timeSafe = Triggers.getInstance().isShootSafeTime().getAsBoolean();
           boolean disabled = HubShiftUtil.disabled;
-          return (!zoneSafe && !disabled) || (!disabled && !timeSafe);
+          return (!zoneSafe && !disabled) || (!timeSafe && !disabled);
         });
   }
 
