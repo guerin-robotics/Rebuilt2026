@@ -402,9 +402,9 @@ public class RobotContainer {
 
     // X wheels after wait when shoot button is pressed and we're in our alliance zone, or shoot
     // from tower button
-    (Triggers.getInstance().shootButton().and(Triggers.getInstance().isShootClear()))
-        .or(Triggers.getInstance().shootFromTowerButton())
-        .whileTrue(DriveCommands.stopWithXAfterWait(drive));
+    // (Triggers.getInstance().shootButton().and(Triggers.getInstance().isShootClear()))
+    //     .or(Triggers.getInstance().shootFromTowerButton())
+    //     .whileTrue(DriveCommands.stopWithXAfterWait(drive));
 
     // X wheels when x button is pressed
     Triggers.getInstance().xWheels().whileTrue(DriveCommands.stopWithX(drive));

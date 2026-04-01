@@ -1,8 +1,10 @@
 package frc.robot.subsystems.hood;
 
 import static edu.wpi.first.math.util.Units.inchesToMeters;
+import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.units.measure.Time;
 
 public class HoodConstants {
 
@@ -11,6 +13,30 @@ public class HoodConstants {
     public static double hoodMinPos = 0.0;
 
     public static double leftServoOffset = -0.02;
+    
+    public static double hoodRatio = 1;
+  }
+
+  public static class SoftwareConstants {
+    public static boolean MOTOR_INVERTED = true;
+  }
+  
+  public static class CurrentLimits {
+    public static final double HOOD__MAIN_SUPPLY_AMP = 40;
+    public static final double HOOD_MAIN_SUPPLY_TRIGGER_AMP = 35;
+    public static final Time HOOD_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
+    public static final double HOOD_MAIN_STATOR_AMP = 70;
+  }
+
+  public static class PID {
+    public static final double KG = 0;
+    public static final double KP = 0;
+    public static final double KD = 0;
+  }
+
+  public static class HoodMagicConstants {
+    public static double hoodAccel = 10.0;
+    public static double hoodVelo = 5;
   }
 
   public class HoodMap {
