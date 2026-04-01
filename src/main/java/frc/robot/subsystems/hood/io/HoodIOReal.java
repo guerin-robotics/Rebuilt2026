@@ -10,7 +10,6 @@ import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -56,13 +55,7 @@ public class HoodIOReal implements HoodIO {
     // 50Hz for signals we need every loop (velocity, voltage, current, position, closed-loop
     // reference)
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0,
-        velocity,
-        motorVoltage,
-        statorCurrent,
-        supplyCurrent,
-        devicePos,
-        closedLoopReference);
+        50.0, velocity, motorVoltage, statorCurrent, supplyCurrent, devicePos, closedLoopReference);
 
     // 10Hz for diagnostic-only signals (temperature, closed-loop error)
     BaseStatusSignal.setUpdateFrequencyForAll(10.0, deviceTemp, closedLoopError);
@@ -95,8 +88,7 @@ public class HoodIOReal implements HoodIO {
     var limits = new CurrentLimitsConfigs();
     limits.SupplyCurrentLimit = HoodConstants.CurrentLimits.HOOD__MAIN_SUPPLY_AMP;
     limits.SupplyCurrentLimitEnable = false;
-    limits.SupplyCurrentLowerLimit =
-        HoodConstants.CurrentLimits.HOOD_MAIN_SUPPLY_TRIGGER_AMP;
+    limits.SupplyCurrentLowerLimit = HoodConstants.CurrentLimits.HOOD_MAIN_SUPPLY_TRIGGER_AMP;
     limits.SupplyCurrentLowerTime =
         HoodConstants.CurrentLimits.HOOD_MAIN_SUPPLY_TRIGGER_TIME_SEC.in(Seconds);
     limits.StatorCurrentLimit = HoodConstants.CurrentLimits.HOOD_MAIN_STATOR_AMP;

@@ -13,14 +13,14 @@ public class HoodConstants {
     public static double hoodMinPos = 0.0;
 
     public static double leftServoOffset = -0.02;
-    
+
     public static double hoodRatio = 1;
   }
 
   public static class SoftwareConstants {
     public static boolean MOTOR_INVERTED = true;
   }
-  
+
   public static class CurrentLimits {
     public static final double HOOD__MAIN_SUPPLY_AMP = 40;
     public static final double HOOD_MAIN_SUPPLY_TRIGGER_AMP = 35;

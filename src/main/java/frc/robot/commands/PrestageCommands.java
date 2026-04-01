@@ -36,7 +36,7 @@ public class PrestageCommands {
   public static Command prestageIdle(Prestage prestage) {
     return Commands.run(
         () ->
-            prestage.setPrestageVoltage(
-                HardwareConstants.CompConstants.Voltages.prestageIdleVoltage));
+            prestage.setPrestageVelocity(
+                HardwareConstants.CompConstants.Velocities.prestageIdleVelocity));
   }
 }

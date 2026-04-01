@@ -1,5 +1,7 @@
 package frc.robot.subsystems.hood.io;
 
+import static edu.wpi.first.units.Units.RPM;
+
 /**
  * Simulated implementation of {@link HoodIO}.
  *
@@ -11,8 +13,10 @@ public class HoodIOSim implements HoodIO {
 
   @Override
   public void updateInputs(HoodIOInputs inputs) {
-    inputs.servoPos = simPosition;
-    inputs.servoSpeed = 0.0;
+    // inputs.servoPos = simPosition;
+    // inputs.servoSpeed = 0.0;
+    inputs.hoodPosition = simPosition;
+    inputs.hoodVelocity = RPM.of(0.0);
   }
 
   @Override

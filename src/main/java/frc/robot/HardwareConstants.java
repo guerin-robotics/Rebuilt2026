@@ -47,7 +47,7 @@ public class HardwareConstants {
       public static final Voltage transportVoltage = Volts.of(-7.0);
       public static final Voltage intakeRollerVoltage = Volts.of(12.0);
       public static final Voltage intakeRollerAgitateVoltage = Volts.of(3);
-      public static Voltage prestageIdleVoltage = Volts.of(-1);
+      public static final Voltage prestageIdleVoltage = Volts.of(-1);
     }
 
     public static class SpitVoltages {
@@ -59,7 +59,10 @@ public class HardwareConstants {
     public static class Velocities {
       public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(40.0);
       public static final AngularVelocity feederVelocity = RotationsPerSecond.of(40.0);
+      public static final AngularVelocity prestageIdleVelocity = RotationsPerSecond.of(5);
       public static final AngularVelocity flywheelIdleVelocity = RotationsPerSecond.of(5);
+      public static final AngularVelocity prestageIdleVelocityHigh = RotationsPerSecond.of(20);
+      public static final AngularVelocity flywheelIdleVelocityHigh = RotationsPerSecond.of(20);
     }
 
     public static class SpitVelocities {
@@ -167,24 +170,47 @@ public class HardwareConstants {
 
   public static class Zones {
 
-    public enum Zone {
+    public enum broadZone {
       ALLIANCE_ZONE,
-      ALLIANCE_ZONE_TRENCH_BORDER,
+      ALLIANCE_TRENCH,
+      NEUTRAL,
+      OPPOSING_TRENCH,
+      OPPOSING_ZONE
+    }
+
+    public enum specificZone {
+      ALLIANCE_TOWER,
       ALLIANCE_TRENCH_NEAR,
       ALLIANCE_BUMP_NEAR,
       ALLIANCE_HUB,
       ALLIANCE_BUMP_FAR,
       ALLIANCE_TRENCH_FAR,
-      ALLIANCE_NEUTRAL_TRENCH_BORDER,
-      NEUTRAL,
-      OPPOSING_NEUTRAL_TRENCH_BORDER,
       OPPOSING_TRENCH_NEAR,
       OPPOSING_BUMP_NEAR,
       OPPOSING_HUB,
       OPPOSING_BUMP_FAR,
       OPPOSING_TRENCH_FAR,
-      OPPOSING_ZONE_TRENCH_BORDER,
-      OPPOSING_ZONE
+      OPPOSING_TOWER
+    }
+
+    public enum approachingZoneX {
+      APPROACHING_ALLIANCE_TOWER,
+      APPROACHING_ALLIANCE_TRENCH,
+      APPROACHING_OPPOSING_TRENCH,
+      APPROACHING_OPPOSING_TOWER
+    }
+
+    public enum approachingZoneY {
+      APPROACHING_ALLIANCE_TOWER,
+      APPROACHING_OPPOSING_TOWER,
+      APPROACHING_WALL
+    }
+
+    public enum approachingZoneComposite {
+      APPROACHING_ALLIANCE_TOWER,
+      APPROACHING_ALLIANCE_TRENCH,
+      APPROACHING_OPPOSING_TRENCH,
+      APPROACHING_OPPOSING_TOWER
     }
 
     public enum IntakeZone {
@@ -194,6 +220,9 @@ public class HardwareConstants {
 
     public static final double zoneOffset = AllianceFlipUtil.applyX(0.5);
     public static final double timeInterval = 0.05;
+
+    public static final double approachingXOffset = AllianceFlipUtil.applyX(0.5);
+    public static final double approachingYOffset = AllianceFlipUtil.applyY(0.5);
   }
 
   public static class hubDangerZone {

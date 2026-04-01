@@ -447,83 +447,142 @@ public class RobotState {
 
   // ZONE CALCULATIONS
 
-  // Returns zone based on pose calculated in the future
-  public HardwareConstants.Zones.Zone getRobotZone(Pose2d pose) {
+  // Returns a "broad" zone - alliance zone, alliance trench, neutral, opposing trench, opposing
+  // zone
+  public HardwareConstants.Zones.broadZone getBroadZone(Pose2d pose) {
+    double poseX = AllianceFlipUtil.applyX(pose.getX());
+    if (poseX < FieldConstants.LinesVertical.allianceZone) {
+      return HardwareConstants.Zones.broadZone.ALLIANCE_ZONE;
+    } else if (poseX < FieldConstants.LinesVertical.neutralZoneNear) {
+      return HardwareConstants.Zones.broadZone.ALLIANCE_TRENCH;
+    } else if (poseX < FieldConstants.LinesVertical.neutralZoneFar) {
+      return HardwareConstants.Zones.broadZone.NEUTRAL;
+    } else if (poseX < FieldConstants.LinesVertical.oppAllianceZone) {
+      return HardwareConstants.Zones.broadZone.OPPOSING_TRENCH;
+    } else {
+      return HardwareConstants.Zones.broadZone.OPPOSING_ZONE;
+    }
+  }
+
+  // Returns a "specific" zone - alliance/opposing tower/trench/bump near/far
+  // Returns null if in neutral zone
+  public HardwareConstants.Zones.specificZone getSpecificZone(Pose2d pose) {
     double poseX = AllianceFlipUtil.applyX(pose.getX());
     double poseY = AllianceFlipUtil.applyY(pose.getY());
-    if (poseX
-        < FieldConstants.LinesVertical.allianceZone
-            - Meters.of(HardwareConstants.Zones.zoneOffset).magnitude()) {
-      Logger.recordOutput("RobotState/RobotZone", HardwareConstants.Zones.Zone.ALLIANCE_ZONE);
-      return HardwareConstants.Zones.Zone.ALLIANCE_ZONE;
-    } else if (poseX < FieldConstants.LinesVertical.allianceZone) {
-      Logger.recordOutput(
-          "RobotState/RobotZone", HardwareConstants.Zones.Zone.ALLIANCE_ZONE_TRENCH_BORDER);
-      return HardwareConstants.Zones.Zone.ALLIANCE_ZONE_TRENCH_BORDER;
-    } else if (poseX < FieldConstants.LinesVertical.neutralZoneNear) {
-      if (poseY < FieldConstants.LinesHorizontal.rightTrenchOpenStart) {
-        Logger.recordOutput(
-            "RobotState/RobotZone", HardwareConstants.Zones.Zone.ALLIANCE_TRENCH_NEAR);
-        return HardwareConstants.Zones.Zone.ALLIANCE_TRENCH_NEAR;
-      } else if (poseY < FieldConstants.Hub.farRightCorner.getY()) {
-        Logger.recordOutput(
-            "RobotState/RobotZone", HardwareConstants.Zones.Zone.ALLIANCE_BUMP_NEAR);
-        return HardwareConstants.Zones.Zone.ALLIANCE_BUMP_NEAR;
-      } else if (poseY < FieldConstants.Hub.farLeftCorner.getY()) {
-        Logger.recordOutput("RobotState/RobotZone", HardwareConstants.Zones.Zone.ALLIANCE_HUB);
-        return HardwareConstants.Zones.Zone.ALLIANCE_HUB;
-      } else if (poseY < FieldConstants.LinesHorizontal.leftTrenchOpenEnd) {
-        Logger.recordOutput("RobotState/RobotZone", HardwareConstants.Zones.Zone.ALLIANCE_BUMP_FAR);
-        return HardwareConstants.Zones.Zone.ALLIANCE_BUMP_FAR;
+    if ((getBroadZone(pose) == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE)
+        && (poseX < FieldConstants.Tower.frontFaceX)
+        && (poseY < FieldConstants.Tower.leftUpright.getY())
+        && poseY > FieldConstants.Tower.rightUpright.getY()) {
+      return (HardwareConstants.Zones.specificZone.ALLIANCE_TOWER);
+    } else if (getBroadZone(pose) == HardwareConstants.Zones.broadZone.ALLIANCE_TRENCH) {
+      if (poseY < FieldConstants.RightTrench.openingTopLeft.getY()) {
+        return HardwareConstants.Zones.specificZone.ALLIANCE_TRENCH_NEAR;
+      } else if (poseY < FieldConstants.RightBump.nearLeftCorner.getY()) {
+        return HardwareConstants.Zones.specificZone.ALLIANCE_BUMP_NEAR;
+      } else if (poseY < FieldConstants.LeftTrench.openingTopRight.getY()) {
+        return HardwareConstants.Zones.specificZone.ALLIANCE_HUB;
+      } else if (poseY < FieldConstants.LeftTrench.openingTopLeft.getY()) {
+        return HardwareConstants.Zones.specificZone.ALLIANCE_BUMP_FAR;
       } else {
-        Logger.recordOutput(
-            "RobotState/RobotZone", HardwareConstants.Zones.Zone.ALLIANCE_TRENCH_FAR);
-        return HardwareConstants.Zones.Zone.ALLIANCE_TRENCH_FAR;
+        return HardwareConstants.Zones.specificZone.ALLIANCE_TRENCH_FAR;
       }
-    } else if (poseX
-        < FieldConstants.LinesVertical.neutralZoneNear
-            + Meters.of(HardwareConstants.Zones.zoneOffset).magnitude()) {
-      Logger.recordOutput(
-          "RobotState/RobotZone", HardwareConstants.Zones.Zone.ALLIANCE_NEUTRAL_TRENCH_BORDER);
-      return HardwareConstants.Zones.Zone.ALLIANCE_NEUTRAL_TRENCH_BORDER;
-    } else if (poseX
-        < FieldConstants.LinesVertical.neutralZoneFar
-            - Meters.of(HardwareConstants.Zones.zoneOffset).magnitude()) {
-      Logger.recordOutput("RobotState/RobotZone", HardwareConstants.Zones.Zone.NEUTRAL);
-      return HardwareConstants.Zones.Zone.NEUTRAL;
-    } else if (poseX < FieldConstants.LinesVertical.neutralZoneFar) {
-      Logger.recordOutput(
-          "RobotState/RobotZone", HardwareConstants.Zones.Zone.OPPOSING_NEUTRAL_TRENCH_BORDER);
-      return HardwareConstants.Zones.Zone.OPPOSING_NEUTRAL_TRENCH_BORDER;
-    } else if (poseX < FieldConstants.LinesVertical.oppAllianceZone) {
-      if (poseY < FieldConstants.LinesHorizontal.rightTrenchOpenStart) {
-        Logger.recordOutput(
-            "RobotState/RobotZone", HardwareConstants.Zones.Zone.OPPOSING_TRENCH_NEAR);
-        return HardwareConstants.Zones.Zone.OPPOSING_TRENCH_NEAR;
-      } else if (poseY < FieldConstants.Hub.farRightCorner.getY()) {
-        Logger.recordOutput(
-            "RobotState/RobotZone", HardwareConstants.Zones.Zone.OPPOSING_BUMP_NEAR);
-        return HardwareConstants.Zones.Zone.OPPOSING_BUMP_NEAR;
-      } else if (poseY < FieldConstants.Hub.farLeftCorner.getY()) {
-        Logger.recordOutput("RobotState/RobotZone", HardwareConstants.Zones.Zone.OPPOSING_HUB);
-        return HardwareConstants.Zones.Zone.OPPOSING_HUB;
-      } else if (poseY < FieldConstants.LinesHorizontal.leftTrenchOpenEnd) {
-        Logger.recordOutput("RobotState/RobotZone", HardwareConstants.Zones.Zone.OPPOSING_BUMP_FAR);
-        return HardwareConstants.Zones.Zone.OPPOSING_BUMP_FAR;
+    } else if (getBroadZone(pose) == HardwareConstants.Zones.broadZone.OPPOSING_TRENCH) {
+      if (poseY < FieldConstants.RightTrench.openingTopLeft.getY()) {
+        return HardwareConstants.Zones.specificZone.OPPOSING_TRENCH_NEAR;
+      } else if (poseY < FieldConstants.RightBump.nearLeftCorner.getY()) {
+        return HardwareConstants.Zones.specificZone.OPPOSING_BUMP_NEAR;
+      } else if (poseY < FieldConstants.LeftTrench.openingTopRight.getY()) {
+        return HardwareConstants.Zones.specificZone.OPPOSING_HUB;
+      } else if (poseY < FieldConstants.LeftTrench.openingTopLeft.getY()) {
+        return HardwareConstants.Zones.specificZone.OPPOSING_BUMP_FAR;
       } else {
-        Logger.recordOutput(
-            "RobotState/RobotZone", HardwareConstants.Zones.Zone.OPPOSING_TRENCH_FAR);
-        return HardwareConstants.Zones.Zone.OPPOSING_TRENCH_FAR;
+        return HardwareConstants.Zones.specificZone.OPPOSING_TRENCH_FAR;
       }
-    } else if (poseX
-        < FieldConstants.LinesVertical.oppAllianceZone
-            + Meters.of(HardwareConstants.Zones.zoneOffset).magnitude()) {
-      Logger.recordOutput(
-          "RobotState/RobotZone", HardwareConstants.Zones.Zone.OPPOSING_ZONE_TRENCH_BORDER);
-      return HardwareConstants.Zones.Zone.OPPOSING_ZONE_TRENCH_BORDER;
+    } else if ((getBroadZone(pose) == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE)
+        && (poseX < FieldConstants.Tower.oppLeftUpright.getX())
+        && (poseY < FieldConstants.Tower.oppLeftUpright.getY())
+        && (poseY > FieldConstants.Tower.oppRightUpright.getY())) {
+      return HardwareConstants.Zones.specificZone.OPPOSING_TOWER;
     } else {
-      Logger.recordOutput("RobotState/RobotZone", HardwareConstants.Zones.Zone.OPPOSING_ZONE);
-      return HardwareConstants.Zones.Zone.OPPOSING_ZONE;
+      return null;
+    }
+  }
+
+  public HardwareConstants.Zones.approachingZoneX getApproachingZoneX(Pose2d pose) {
+    double poseX = AllianceFlipUtil.applyX(pose.getX());
+    if (poseX
+        < (FieldConstants.Tower.leftUpright.getX() + HardwareConstants.Zones.approachingXOffset)) {
+      return HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TOWER;
+    } else if ((poseX
+            > FieldConstants.LinesVertical.allianceZone
+                - HardwareConstants.Zones.approachingXOffset)
+        && (poseX
+            < FieldConstants.LinesVertical.neutralZoneNear
+                + HardwareConstants.Zones.approachingXOffset)) {
+      return HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH;
+    } else if ((poseX
+            > FieldConstants.LinesVertical.neutralZoneFar
+                - HardwareConstants.Zones.approachingXOffset)
+        && (poseX
+            < FieldConstants.LinesVertical.oppAllianceZone
+                + HardwareConstants.Zones.approachingXOffset)) {
+      return HardwareConstants.Zones.approachingZoneX.APPROACHING_OPPOSING_TRENCH;
+    } else if (poseX
+        > FieldConstants.Tower.oppLeftUpright.getX() - HardwareConstants.Zones.approachingXOffset) {
+      return HardwareConstants.Zones.approachingZoneX.APPROACHING_OPPOSING_TOWER;
+    } else {
+      return null;
+    }
+  }
+
+  public HardwareConstants.Zones.approachingZoneY getApproachingZoneY(Pose2d pose) {
+    double poseY = AllianceFlipUtil.applyY(pose.getY());
+    if (getBroadZone(pose) == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE) {
+      if ((poseY
+              > (FieldConstants.Tower.leftUpright.getY()
+                  - HardwareConstants.Zones.approachingYOffset))
+          || (poseY
+              < (FieldConstants.Tower.rightUpright.getY()
+                  + HardwareConstants.Zones.approachingYOffset))) {
+        return HardwareConstants.Zones.approachingZoneY.APPROACHING_ALLIANCE_TOWER;
+      } else {
+        return null;
+      }
+    } else if (getBroadZone(pose) == HardwareConstants.Zones.broadZone.OPPOSING_ZONE) {
+      if ((poseY
+              > (FieldConstants.Tower.oppLeftUpright.getY()
+                  - HardwareConstants.Zones.approachingYOffset))
+          || (poseY
+              < (FieldConstants.Tower.oppRightUpright.getY()
+                  + HardwareConstants.Zones.approachingYOffset))) {
+        return HardwareConstants.Zones.approachingZoneY.APPROACHING_OPPOSING_TOWER;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  public HardwareConstants.Zones.approachingZoneComposite getApproachingZone(Pose2d pose) {
+    if (getApproachingZoneX(pose)
+        == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH) {
+      return HardwareConstants.Zones.approachingZoneComposite.APPROACHING_ALLIANCE_TRENCH;
+    } else if (getApproachingZoneX(pose)
+        == HardwareConstants.Zones.approachingZoneX.APPROACHING_OPPOSING_TRENCH) {
+      return HardwareConstants.Zones.approachingZoneComposite.APPROACHING_OPPOSING_TRENCH;
+    } else if ((getApproachingZoneX(pose)
+            == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TOWER)
+        && (getApproachingZoneY(pose)
+            == HardwareConstants.Zones.approachingZoneY.APPROACHING_ALLIANCE_TOWER)) {
+      return HardwareConstants.Zones.approachingZoneComposite.APPROACHING_ALLIANCE_TOWER;
+    } else if ((getApproachingZoneX(pose)
+            == HardwareConstants.Zones.approachingZoneX.APPROACHING_OPPOSING_TOWER)
+        && (getApproachingZoneY(pose)
+            == HardwareConstants.Zones.approachingZoneY.APPROACHING_OPPOSING_TOWER)) {
+      return HardwareConstants.Zones.approachingZoneComposite.APPROACHING_OPPOSING_TOWER;
+    } else {
+      return null;
     }
   }
 }

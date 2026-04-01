@@ -126,6 +126,16 @@ public class Robot extends LoggedRobot {
     } else {
       HardwareConstants.TuningConstants.TUNING_MODE = HardwareConstants.TuningConstants.isTuning;
     }
+
+    Logger.recordOutput(
+        "RobotState/broadZone",
+        RobotState.getInstance().getBroadZone(RobotState.getInstance().getEstimatedPose()));
+    Logger.recordOutput(
+        "RobotState/specificZone",
+        RobotState.getInstance().getSpecificZone(RobotState.getInstance().getEstimatedPose()));
+    Logger.recordOutput(
+        "RobotState/approachingZone",
+        RobotState.getInstance().getApproachingZone(RobotState.getInstance().getEstimatedPose()));
   }
 
   /** This function is called once when the robot is disabled. */

@@ -386,7 +386,9 @@ public class RobotContainer {
 
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
     // button is pressed
-    (Triggers.getInstance().shootButton().and(() -> !Triggers.getInstance().isShootSafeZone().getAsBoolean()))
+    (Triggers.getInstance()
+            .shootButton()
+            .and(() -> !Triggers.getInstance().isShootSafeZone().getAsBoolean()))
         .or(Triggers.getInstance().passButton())
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
@@ -453,6 +455,13 @@ public class RobotContainer {
             FlywheelCommands.setFlywheelVelocity(
                 flywheel, HardwareConstants.TowerConstants.FlywheelTowerVelocity));
 
+    // Increase idle speed if hub active
+    Triggers.getInstance()
+        .isShootSafeTimeSure()
+        .whileTrue(
+            FlywheelCommands.setFlywheelVelocity(
+                flywheel, HardwareConstants.CompConstants.Velocities.flywheelIdleVelocityHigh));
+
     // Distance map shot (if tuning true)
     Triggers.getInstance()
         .shootButton()
@@ -470,6 +479,13 @@ public class RobotContainer {
         .whileTrue(
             PrestageCommands.setPrestageVelocity(
                 prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity));
+
+    // Increase idle speed if hub active
+    Triggers.getInstance()
+        .isShootSafeTimeSure()
+        .whileTrue(
+            PrestageCommands.setPrestageVelocity(
+                prestage, HardwareConstants.CompConstants.Velocities.prestageIdleVelocityHigh));
 
     // FEEDER
     // Set to velocity (after a wait) when any shooting sequence is started (shoot to hub, pass,
@@ -532,22 +548,25 @@ public class RobotContainer {
 
     // Compress on shoot button and when deploy button is not pressed (allowing driver to override
     // and force deploy w/o canceling shoot sequence), or on compress button
-    (Triggers.getInstance().shootButton().and(() -> !Triggers.getInstance().intakeOutButton().getAsBoolean()))
+    (Triggers.getInstance()
+            .shootButton()
+            .and(() -> !Triggers.getInstance().intakeOutButton().getAsBoolean()))
         .or(Triggers.getInstance().intakeCompressButton())
         .whileTrue(IntakePivotCommands.compressPivot(intakePivot));
 
     // HOOD
     // Set pos for hub if shoot to hub button or shoot to tower button is pressed, and we're in our
     // alliance zone and the hub is active, and tuning mode is false
-    Triggers.getInstance()
-        .isShootClear()
-        .and(Triggers.getInstance().shootButton().or(Triggers.getInstance().shootFromTowerButton()))
+    (Triggers.getInstance().shootButton().or(Triggers.getInstance().shootFromTowerButton()))
+        .and(Triggers.getInstance().isShootClear())
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .whileTrue(HoodCommands.setHoodPosForHub(hood));
 
     // Set pos for passing if shoot to hub button is pressed but we're not in our alliance zone, or
     // if pass button is presssed
-    (Triggers.getInstance().shootButton().and(() -> !Triggers.getInstance().isShootSafeZone().getAsBoolean()))
+    (Triggers.getInstance()
+            .shootButton()
+            .and(() -> !Triggers.getInstance().isShootSafeZone().getAsBoolean()))
         .or(Triggers.getInstance().passButton())
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.PassConstants.hoodPassPos));
 
@@ -721,7 +740,9 @@ public class RobotContainer {
 
     // Compress on shoot button and when deploy button is not pressed (allowing driver to override
     // and force deploy w/o canceling shoot sequence), or on compress button
-    (Triggers.getInstance().shootButton().and(() -> !Triggers.getInstance().intakeOutButton().getAsBoolean()))
+    (Triggers.getInstance()
+            .shootButton()
+            .and(() -> !Triggers.getInstance().intakeOutButton().getAsBoolean()))
         .or(Triggers.getInstance().intakeCompressButton())
         .whileTrue(IntakePivotCommands.compressPivot(intakePivot));
     // HOOD
@@ -735,7 +756,9 @@ public class RobotContainer {
 
     // Set pos for passing if shoot to hub button is pressed but we're not in our alliance zone, or
     // if pass button is presssed
-    (Triggers.getInstance().shootButton().and(() -> !Triggers.getInstance().isShootSafeZone().getAsBoolean()))
+    (Triggers.getInstance()
+            .shootButton()
+            .and(() -> !Triggers.getInstance().isShootSafeZone().getAsBoolean()))
         .or(Triggers.getInstance().passButton())
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.PassConstants.hoodPassPos));
   }
