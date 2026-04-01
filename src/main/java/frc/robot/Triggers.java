@@ -72,6 +72,10 @@ public class Triggers {
     return controller.x();
   }
 
+  public Trigger simTrenchButton() {
+    return controller.b();
+  }
+
   // Override triggers
   public Trigger allianceWinFlipper() {
     return controller.a();

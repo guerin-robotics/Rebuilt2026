@@ -33,7 +33,10 @@ public class PrestageCommands {
     return Commands.runOnce(() -> prestage.setOneVelo(velo), prestage);
   }
 
-public static Command prestageIdle(Prestage prestage) {
-  return Commands.run(() -> prestage.setPrestageVoltage(HardwareConstants.CompConstants.Voltages.prestageIdleVoltage));
-}
+  public static Command prestageIdle(Prestage prestage) {
+    return Commands.run(
+        () ->
+            prestage.setPrestageVoltage(
+                HardwareConstants.CompConstants.Voltages.prestageIdleVoltage));
+  }
 }

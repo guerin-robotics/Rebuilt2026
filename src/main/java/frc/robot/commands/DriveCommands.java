@@ -393,16 +393,14 @@ public class DriveCommands {
           return AllianceFlipUtil.apply(targetRotation);
         });
   }
-  
+
   public static Command stopWithX(Drive drive) {
-    return Commands.runOnce(() -> stopWithX(drive), drive);
+    Logger.recordOutput("RobotState/Drive", "Stopping with X");
+    return Commands.run(() -> stopWithX(drive), drive);
   }
 
   public static Command stopWithXAfterWait(Drive drive) {
-    return Commands.sequence(
-      new WaitCommand(2),
-      Commands.runOnce(() -> stopWithX(drive), drive)
-    );
+    return Commands.sequence(new WaitCommand(2), Commands.runOnce(() -> stopWithX(drive), drive));
   }
 
   /**

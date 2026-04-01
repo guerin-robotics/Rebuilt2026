@@ -73,7 +73,6 @@ public class ShootSequences {
   }
 
   public static Command shootToHub(
-      Drive drive,
       Flywheel flywheel,
       Prestage prestage,
       Hood hood,
@@ -98,8 +97,7 @@ public class ShootSequences {
                 intakeRollerCommands.setRollerVoltage(
                     intakeRoller,
                     (HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage)))),
-        Commands.sequence(new WaitCommand(1.5), IntakePivotCommands.compressPivot(intakePivot)),
-        Commands.sequence(new WaitCommand(2), Commands.runOnce(drive::stopWithX, drive)))
+        Commands.sequence(new WaitCommand(1.5), IntakePivotCommands.compressPivot(intakePivot)))
     // .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
     ;
   }
@@ -159,7 +157,7 @@ public class ShootSequences {
       intakeRoller intakeRoller,
       IntakePivot intakePivot) {
     return Commands.either(
-        shootToHub(drive, flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
+        shootToHub(flywheel, prestage, hood, feeder, transport, intakeRoller, intakePivot),
         pass(flywheel, prestage, hood, feeder, transport, intakePivot, intakeRoller),
         () -> {
           boolean safe = Triggers.getInstance().isShootSafeZone().getAsBoolean();
