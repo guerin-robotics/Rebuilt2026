@@ -595,7 +595,7 @@ public class RobotContainer {
     // DRIVETRAIN
     // Align for shoot when shoot button is pressed and we're in our alliance zone and hub is
     // active, or if tower shoot button is pressed
-    (Triggers.getInstance().shootButton().and(Triggers.getInstance().isShootClear()))
+    (Triggers.getInstance().simButton().and(Triggers.getInstance().isShootClear()))
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             Commands.sequence(
@@ -611,7 +611,7 @@ public class RobotContainer {
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
     // button is pressed
     (Triggers.getInstance()
-            .shootButton()
+            .simButton()
             .and(() -> !Triggers.getInstance().isShootSafeZone().getAsBoolean()))
         .or(Triggers.getInstance().passButton())
         .whileTrue(
@@ -640,7 +640,7 @@ public class RobotContainer {
 
     // Align for bump when bump button pressed - zone logic temporarily disabled
     Triggers.getInstance()
-        .simTrenchButton()
+        .bumpAlignButton()
         // .and(Triggers.getInstance().isRobotOnBump())
         // .or(Triggers.getInstance().isRobotApproachingBump())
         .whileTrue(
@@ -651,7 +651,7 @@ public class RobotContainer {
     // Set shooting velocity if shoot button pressed, we're in our alliance zone, hub is active, and
     // tuning false
     Triggers.getInstance()
-        .shootButton()
+        .simButton()
         .and(Triggers.getInstance().isShootClear())
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .whileTrue(FlywheelCommands.setVelocityForHub(flywheel));
@@ -660,7 +660,7 @@ public class RobotContainer {
     // false,
     // or if pass button is pressed
     (Triggers.getInstance()
-            .shootButton()
+            .simButton()
             .and(() -> !Triggers.getInstance().isShootSafeZone().getAsBoolean())
             .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
         .or(Triggers.getInstance().passButton())
@@ -676,7 +676,7 @@ public class RobotContainer {
     // PRESTAGE
     // Set to velocity when any shooting sequence is started (shoot to hub, pass, shoot from tower)
     Triggers.getInstance()
-        .shootButton()
+        .simButton()
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
@@ -687,7 +687,7 @@ public class RobotContainer {
     // Set to velocity (after a wait) when any shooting sequence is started (shoot to hub, pass,
     // shoot from tower)
     Triggers.getInstance()
-        .shootButton()
+        .simButton()
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
@@ -698,7 +698,7 @@ public class RobotContainer {
     // Set to voltage (after a wait) when any shooting sequence is started (shoot to hub, pass,
     // shoot from tower)
     Triggers.getInstance()
-        .shootButton()
+        .simButton()
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
@@ -716,7 +716,7 @@ public class RobotContainer {
     // Set to agitate voltage (after a wait) when any shooting sequence is started (shoot to hub,
     // pass, shoot from tower)
     Triggers.getInstance()
-        .shootButton()
+        .simButton()
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
@@ -741,7 +741,7 @@ public class RobotContainer {
     // Compress on shoot button and when deploy button is not pressed (allowing driver to override
     // and force deploy w/o canceling shoot sequence), or on compress button
     (Triggers.getInstance()
-            .shootButton()
+            .simButton()
             .and(() -> !Triggers.getInstance().intakeOutButton().getAsBoolean()))
         .or(Triggers.getInstance().intakeCompressButton())
         .whileTrue(IntakePivotCommands.compressPivot(intakePivot));
@@ -750,14 +750,14 @@ public class RobotContainer {
     // alliance zone and the hub is active, and tuning mode is false
     Triggers.getInstance()
         .isShootClear()
-        .and(Triggers.getInstance().shootButton().or(Triggers.getInstance().shootFromTowerButton()))
+        .and(Triggers.getInstance().simButton().or(Triggers.getInstance().shootFromTowerButton()))
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .whileTrue(HoodCommands.setHoodPosForHub(hood));
 
     // Set pos for passing if shoot to hub button is pressed but we're not in our alliance zone, or
     // if pass button is presssed
     (Triggers.getInstance()
-            .shootButton()
+            .simButton()
             .and(() -> !Triggers.getInstance().isShootSafeZone().getAsBoolean()))
         .or(Triggers.getInstance().passButton())
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.PassConstants.hoodPassPos));

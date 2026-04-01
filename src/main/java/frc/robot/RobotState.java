@@ -537,40 +537,52 @@ public class RobotState {
 
   public HardwareConstants.Zones.approachingZoneY getApproachingZoneY(Pose2d pose) {
     double poseY = AllianceFlipUtil.applyY(pose.getY());
-    if (getBroadZone(pose) == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE) {
-      if ((poseY
-              > (FieldConstants.Tower.leftUpright.getY()
-                  - HardwareConstants.Zones.approachingYOffset))
-          || (poseY
-              < (FieldConstants.Tower.rightUpright.getY()
-                  + HardwareConstants.Zones.approachingYOffset))) {
-        return HardwareConstants.Zones.approachingZoneY.APPROACHING_ALLIANCE_TOWER;
-      } else {
-        return null;
-      }
-    } else if (getBroadZone(pose) == HardwareConstants.Zones.broadZone.OPPOSING_ZONE) {
-      if ((poseY
-              > (FieldConstants.Tower.oppLeftUpright.getY()
-                  - HardwareConstants.Zones.approachingYOffset))
-          || (poseY
-              < (FieldConstants.Tower.oppRightUpright.getY()
-                  + HardwareConstants.Zones.approachingYOffset))) {
-        return HardwareConstants.Zones.approachingZoneY.APPROACHING_OPPOSING_TOWER;
-      } else {
-        return null;
-      }
+    if ((getBroadZone(pose) == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE)
+        && ((poseY
+                > (FieldConstants.Tower.leftUpright.getY()
+                    - HardwareConstants.Zones.approachingYOffset))
+            || (poseY
+                < (FieldConstants.Tower.rightUpright.getY()
+                    + HardwareConstants.Zones.approachingYOffset)))) {
+      return HardwareConstants.Zones.approachingZoneY.APPROACHING_ALLIANCE_TOWER;
+    } else if ((getBroadZone(pose) == HardwareConstants.Zones.broadZone.OPPOSING_ZONE)
+        && ((poseY
+                > (FieldConstants.Tower.oppLeftUpright.getY()
+                    - HardwareConstants.Zones.approachingYOffset))
+            || (poseY
+                < (FieldConstants.Tower.oppRightUpright.getY()
+                    + HardwareConstants.Zones.approachingYOffset)))) {
+      return HardwareConstants.Zones.approachingZoneY.APPROACHING_OPPOSING_TOWER;
+    } else if ((poseY < FieldConstants.RightBump.farLeftCorner.getY())
+        || (poseY > FieldConstants.LeftBump.farRightCorner.getY())) {
+      return HardwareConstants.Zones.approachingZoneY.APPROACHING_BUMP;
+    } else if ((poseY > FieldConstants.RightBump.farLeftCorner.getY())
+        || (poseY < FieldConstants.LeftBump.farRightCorner.getY())) {
+      return HardwareConstants.Zones.approachingZoneY.APPROACHING_TRENCH;
     } else {
       return null;
     }
   }
 
   public HardwareConstants.Zones.approachingZoneComposite getApproachingZone(Pose2d pose) {
-    if (getApproachingZoneX(pose)
-        == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH) {
+    if ((getApproachingZoneX(pose)
+            == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH)
+        && (getApproachingZoneY(pose)
+            == HardwareConstants.Zones.approachingZoneY.APPROACHING_TRENCH)) {
       return HardwareConstants.Zones.approachingZoneComposite.APPROACHING_ALLIANCE_TRENCH;
-    } else if (getApproachingZoneX(pose)
-        == HardwareConstants.Zones.approachingZoneX.APPROACHING_OPPOSING_TRENCH) {
+    } else if ((getApproachingZoneX(pose)
+            == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH)
+        && getApproachingZoneY(pose) == HardwareConstants.Zones.approachingZoneY.APPROACHING_BUMP) {
+      return HardwareConstants.Zones.approachingZoneComposite.APPROACHING_ALLIANCE_BUMP;
+    } else if ((getApproachingZoneX(pose)
+            == HardwareConstants.Zones.approachingZoneX.APPROACHING_OPPOSING_TRENCH)
+        && getApproachingZoneY(pose)
+            == HardwareConstants.Zones.approachingZoneY.APPROACHING_TRENCH) {
       return HardwareConstants.Zones.approachingZoneComposite.APPROACHING_OPPOSING_TRENCH;
+    } else if ((getApproachingZoneX(pose)
+            == HardwareConstants.Zones.approachingZoneX.APPROACHING_OPPOSING_TRENCH)
+        && getApproachingZoneY(pose) == HardwareConstants.Zones.approachingZoneY.APPROACHING_BUMP) {
+      return HardwareConstants.Zones.approachingZoneComposite.APPROACHING_OPPOSING_BUMP;
     } else if ((getApproachingZoneX(pose)
             == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TOWER)
         && (getApproachingZoneY(pose)

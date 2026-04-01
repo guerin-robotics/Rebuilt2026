@@ -8,7 +8,6 @@ import frc.lib.AllianceFlipUtil;
 import frc.lib.FieldConstants;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.LoggedTrigger;
-import org.littletonrobotics.junction.Logger;
 
 public class Triggers {
 
@@ -72,7 +71,7 @@ public class Triggers {
     return controller.x();
   }
 
-  public Trigger simTrenchButton() {
+  public Trigger simButton() {
     return controller.b();
   }
 
@@ -293,19 +292,11 @@ public class Triggers {
           HardwareConstants.Zones.approachingZoneComposite currentZone =
               RobotState.getInstance()
                   .getApproachingZone(RobotState.getInstance().getEstimatedPose());
-          double currentY = RobotState.getInstance().getEstimatedPose().getY();
-          boolean yOk =
-              (currentY > FieldConstants.LinesHorizontal.leftBumpStart
-                  || currentY < FieldConstants.LinesHorizontal.rightBumpEnd);
-          if (yOk) {
-            switch (currentZone) {
-              case APPROACHING_ALLIANCE_TRENCH, APPROACHING_OPPOSING_TRENCH:
-                return true;
-              default:
-                return false;
-            }
-          } else {
-            return false;
+          switch (currentZone) {
+            case APPROACHING_ALLIANCE_TRENCH, APPROACHING_OPPOSING_TRENCH:
+              return true;
+            default:
+              return false;
           }
         });
   }
@@ -334,19 +325,11 @@ public class Triggers {
           HardwareConstants.Zones.approachingZoneComposite currentZone =
               RobotState.getInstance()
                   .getApproachingZone(RobotState.getInstance().getEstimatedPose());
-          double currentY = RobotState.getInstance().getEstimatedPose().getY();
-          boolean yOk =
-              (currentY < FieldConstants.LinesHorizontal.leftBumpStart
-                  && currentY > FieldConstants.LinesHorizontal.rightBumpEnd);
-          if (yOk) {
-            switch (currentZone) {
-              case APPROACHING_ALLIANCE_TRENCH, APPROACHING_OPPOSING_TRENCH:
-                return true;
-              default:
-                return false;
-            }
-          } else {
-            return false;
+          switch (currentZone) {
+            case APPROACHING_ALLIANCE_BUMP, APPROACHING_OPPOSING_BUMP:
+              return true;
+            default:
+              return false;
           }
         });
   }
@@ -356,17 +339,13 @@ public class Triggers {
     return new LoggedTrigger(
         "isRobotInTower",
         () -> {
-          double currentX = RobotState.getInstance().getEstimatedPose().getX();
-          double currentY = RobotState.getInstance().getEstimatedPose().getY();
-          if ((currentX < FieldConstants.Tower.leftUpright.getX()
-                  && currentY > FieldConstants.Tower.rightUpright.getY()
-                  && currentY < FieldConstants.Tower.leftUpright.getY())
-              || (currentX > FieldConstants.Tower.oppLeftUpright.getX()
-                  && currentY > FieldConstants.Tower.oppRightUpright.getY()
-                  && currentY < FieldConstants.Tower.oppLeftUpright.getY())) {
-            return true;
-          } else {
-            return false;
+          HardwareConstants.Zones.specificZone currentZone =
+              RobotState.getInstance().getSpecificZone(RobotState.getInstance().getEstimatedPose());
+          switch (currentZone) {
+            case ALLIANCE_TOWER, OPPOSING_TOWER:
+              return true;
+            default:
+              return false;
           }
         });
   }
@@ -376,25 +355,14 @@ public class Triggers {
     return new LoggedTrigger(
         "isRobotApproachingTower",
         () -> {
-          double currentX = RobotState.getInstance().getEstimatedPose().getX();
-          double currentY = RobotState.getInstance().getEstimatedPose().getY();
-          if ((currentX < (FieldConstants.Tower.leftUpright.getX())
-                  && currentY
-                      > (FieldConstants.Tower.rightUpright.getY()
-                          - HardwareConstants.Zones.zoneOffset)
-                  && currentY
-                      < (FieldConstants.Tower.leftUpright.getY()
-                          + HardwareConstants.Zones.zoneOffset))
-              || (currentX > (FieldConstants.Tower.oppLeftUpright.getX())
-                  && currentY
-                      > (FieldConstants.Tower.oppRightUpright.getY()
-                          - HardwareConstants.Zones.zoneOffset)
-                  && currentY
-                      < (FieldConstants.Tower.oppLeftUpright.getY()
-                          + HardwareConstants.Zones.zoneOffset))) {
-            return true;
-          } else {
-            return false;
+          HardwareConstants.Zones.approachingZoneComposite currentZone =
+              RobotState.getInstance()
+                  .getApproachingZone(RobotState.getInstance().getEstimatedPose());
+          switch (currentZone) {
+            case APPROACHING_ALLIANCE_TOWER, APPROACHING_OPPOSING_TOWER:
+              return true;
+            default:
+              return false;
           }
         });
   }

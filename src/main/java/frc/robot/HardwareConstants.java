@@ -202,6 +202,8 @@ public class HardwareConstants {
 
     public enum approachingZoneY {
       APPROACHING_ALLIANCE_TOWER,
+      APPROACHING_TRENCH,
+      APPROACHING_BUMP,
       APPROACHING_OPPOSING_TOWER,
       APPROACHING_WALL
     }
@@ -209,13 +211,10 @@ public class HardwareConstants {
     public enum approachingZoneComposite {
       APPROACHING_ALLIANCE_TOWER,
       APPROACHING_ALLIANCE_TRENCH,
+      APPROACHING_ALLIANCE_BUMP,
+      APPROACHING_OPPOSING_BUMP,
       APPROACHING_OPPOSING_TRENCH,
       APPROACHING_OPPOSING_TOWER
-    }
-
-    public enum IntakeZone {
-      INTAKE_DANGER,
-      INTAKE_SAFE
     }
 
     public static final double zoneOffset = AllianceFlipUtil.applyX(0.5);
