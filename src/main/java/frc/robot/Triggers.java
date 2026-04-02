@@ -3,7 +3,6 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.FieldConstants;
 import frc.robot.util.HubShiftUtil;
@@ -31,57 +30,57 @@ public class Triggers {
       new CommandJoystick(HardwareConstants.ControllerConstants.JoystickControllerPort);
 
   // Button mapping triggers
-  public Trigger shootButton() {
-    return thrustmaster.button(1);
+  public LoggedTrigger shootButton() {
+    return new LoggedTrigger("Triggers/shootButton", thrustmaster.button(1));
   }
 
-  public Trigger trenchAlignButton() {
-    return thrustmaster.button(2);
+  public LoggedTrigger trenchAlignButton() {
+    return new LoggedTrigger("Triggers/trenchAlignButton", thrustmaster.button(2));
   }
 
-  public Trigger intakeInButton() {
-    return thrustmaster.button(3);
+  public LoggedTrigger intakeInButton() {
+    return new LoggedTrigger("Triggers/intakeInButton", thrustmaster.button(3));
   }
 
-  public Trigger intakeOutButton() {
-    return thrustmaster.button(4);
+  public LoggedTrigger intakeOutButton() {
+    return new LoggedTrigger("Triggers/intakeOutButton", thrustmaster.button(4));
   }
 
-  public Trigger intakeRollerButton() {
-    return thrustmaster.button(5);
+  public LoggedTrigger intakeRollerButton() {
+    return new LoggedTrigger("Triggers/intakeRollerButton", thrustmaster.button(5));
   }
 
-  public Trigger intakeCompressButton() {
-    return thrustmaster.button(6);
+  public LoggedTrigger intakeCompressButton() {
+    return new LoggedTrigger("Triggers/intakeCompressButton", thrustmaster.button(6));
   }
 
-  public Trigger bumpAlignButton() {
-    return thrustmaster.button(8);
+  public LoggedTrigger bumpAlignButton() {
+    return new LoggedTrigger("Triggers/bumpAlignButton", thrustmaster.button(8));
   }
 
-  public Trigger shootFromTowerButton() {
-    return thrustmaster.button(10);
+  public LoggedTrigger shootFromTowerButton() {
+    return new LoggedTrigger("Triggers/shootFromTowerButton", thrustmaster.button(10));
   }
 
-  public Trigger passButton() {
-    return thrustmaster.button(11);
+  public LoggedTrigger passButton() {
+    return new LoggedTrigger("Triggers/passButton", thrustmaster.button(11));
   }
 
-  public Trigger xWheels() {
-    return controller.x();
+  public LoggedTrigger xWheels() {
+    return new LoggedTrigger("Triggers/xWheels", controller.x());
   }
 
-  public Trigger simButton() {
-    return controller.b();
+  public LoggedTrigger simButton() {
+    return new LoggedTrigger("Triggers/simButton", controller.b());
   }
 
   // Override triggers
-  public Trigger allianceWinFlipper() {
-    return controller.a();
+  public LoggedTrigger allianceWinFlipper() {
+    return new LoggedTrigger("Triggers/allianceWinFlipper", controller.a());
   }
 
-  public Trigger allianceWinDisabler() {
-    return controller.y();
+  public LoggedTrigger allianceWinDisabler() {
+    return new LoggedTrigger("Triggers/allianceWinDisabler", controller.y());
   }
 
   // Returns true if robot is able to score fuel from its present position
@@ -96,33 +95,58 @@ public class Triggers {
   }
 
   public LoggedTrigger isShootSafeTimeSure() {
-    boolean safe = HubShiftUtil.getShiftedShiftInfo().active();
-    return new LoggedTrigger("isShootSafeTimeSure", () -> safe);
+    // BUG FIX: Previously `safe` was captured outside the lambda, freezing its value at
+    // construction time. Now evaluated inside the lambda so it updates every loop.
+    return new LoggedTrigger(
+        "isShootSafeTimeSure", () -> HubShiftUtil.getShiftedShiftInfo().active());
   }
 
   // Returns true if robot is able to score fuel at the current match time
   public LoggedTrigger isShootSafeTime() {
-    boolean disabled = HubShiftUtil.disabled;
-    boolean safe = HubShiftUtil.getShiftedShiftInfo().active();
-    return new LoggedTrigger("isShootSafeTime", () -> (safe || disabled));
+    // BUG FIX: Previously `disabled` and `safe` were captured outside the lambda, freezing their
+    // values at construction time. Now evaluated inside the lambda so they update every loop.
+    return new LoggedTrigger(
+        "isShootSafeTime",
+        () -> (HubShiftUtil.getShiftedShiftInfo().active() || HubShiftUtil.disabled));
   }
 
   // Composite checker for time and zone
+  // BUG FIX: Previously called isShootSafeTime() and isShootSafeZone() which each created NEW
+  // LoggedTrigger instances on every call. Now uses a single lambda that evaluates both conditions.
   public LoggedTrigger isShootClear() {
-    return new LoggedTrigger("isShootClear", isShootSafeTime().and(isShootSafeZone()));
+    return new LoggedTrigger(
+        "isShootClear",
+        () -> {
+          boolean timeSafe = HubShiftUtil.getShiftedShiftInfo().active() || HubShiftUtil.disabled;
+          HardwareConstants.Zones.broadZone currentZone =
+              RobotState.getInstance().getBroadZone(RobotState.getInstance().getEstimatedPose());
+          boolean zoneSafe = (currentZone == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE);
+          return timeSafe && zoneSafe;
+        });
   }
 
   // Needs review and practice
-  // Position, heading, and velocity checker that returns false if intake is in danger of crashing
-  // into hub
+  // Position, heading, and velocity checker that returns true if intake is safe (not in danger of
+  // crashing into hub)
+  // BUG FIX: Previously had inverted logic (returned true when UNSAFE) and called
+  // facingAllianceHub(null)/facingOpposingHub(null) which would cause a NullPointerException.
+  // Now uses current estimated pose and negates the unsafe condition to return true when safe.
   public LoggedTrigger isIntakeSafe() {
     return new LoggedTrigger(
         "isIntakeSafe",
-        (tooCloseToAllianceHub().and(facingAllianceHub(null)).and(movingTowardAllianceHub()))
-            .or(
-                tooCloseToOpposingHub()
-                    .and(facingOpposingHub(null))
-                    .and(movingTowardOpposingHub())));
+        () -> {
+          Pose2d currentPose = RobotState.getInstance().getEstimatedPose();
+          boolean dangerFromAlliance =
+              tooCloseToAllianceHub().getAsBoolean()
+                  && facingAllianceHub(currentPose).getAsBoolean()
+                  && movingTowardAllianceHub().getAsBoolean();
+          boolean dangerFromOpposing =
+              tooCloseToOpposingHub().getAsBoolean()
+                  && facingOpposingHub(currentPose).getAsBoolean()
+                  && movingTowardOpposingHub().getAsBoolean();
+          // Return true when safe (NOT in danger)
+          return !(dangerFromAlliance || dangerFromOpposing);
+        });
   }
 
   // Needs review
@@ -169,11 +193,14 @@ public class Triggers {
     return new LoggedTrigger(
         "facingAllianceHub",
         () -> {
-          double heading = AllianceFlipUtil.apply(pose.getRotation()).getDegrees();
+          // Use provided pose, or fall back to current estimated pose if null
+          Pose2d effectivePose =
+              (pose != null) ? pose : RobotState.getInstance().getEstimatedPose();
+          double heading = AllianceFlipUtil.apply(effectivePose.getRotation()).getDegrees();
           HardwareConstants.Zones.specificZone currentSpecificZone =
-              RobotState.getInstance().getSpecificZone(pose);
+              RobotState.getInstance().getSpecificZone(effectivePose);
           HardwareConstants.Zones.broadZone currentBroadZone =
-              RobotState.getInstance().getBroadZone(pose);
+              RobotState.getInstance().getBroadZone(effectivePose);
           if (((currentBroadZone == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE)
                   && (Math.abs(heading) < 90))
               || ((currentBroadZone == HardwareConstants.Zones.broadZone.NEUTRAL)
@@ -193,11 +220,14 @@ public class Triggers {
     return new LoggedTrigger(
         "facingOpposingHub",
         () -> {
-          double heading = AllianceFlipUtil.apply(pose.getRotation()).getDegrees();
+          // Use provided pose, or fall back to current estimated pose if null
+          Pose2d effectivePose =
+              (pose != null) ? pose : RobotState.getInstance().getEstimatedPose();
+          double heading = AllianceFlipUtil.apply(effectivePose.getRotation()).getDegrees();
           HardwareConstants.Zones.specificZone currentSpecificZone =
-              RobotState.getInstance().getSpecificZone(pose);
+              RobotState.getInstance().getSpecificZone(effectivePose);
           HardwareConstants.Zones.broadZone currentBroadZone =
-              RobotState.getInstance().getBroadZone(pose);
+              RobotState.getInstance().getBroadZone(effectivePose);
           if (((currentBroadZone == HardwareConstants.Zones.broadZone.NEUTRAL)
                   && (Math.abs(heading) < 90))
               || ((currentBroadZone == HardwareConstants.Zones.broadZone.OPPOSING_ZONE)

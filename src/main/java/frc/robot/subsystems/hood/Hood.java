@@ -1,5 +1,7 @@
 package frc.robot.subsystems.hood;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.hood.io.HoodIO;
 import frc.robot.subsystems.hood.io.HoodIOInputsAutoLogged;
@@ -59,5 +61,22 @@ public class Hood extends SubsystemBase {
 
   public void stopHood() {
     io.stopHood();
+  }
+
+  // ==================== COMMAND FACTORIES ====================
+
+  /** Sets the hood to a specific position (instant). */
+  public Command setHoodPosCommand(double position) {
+    return Commands.runOnce(() -> setHoodPos(position), this);
+  }
+
+  /** Continuously sets the hood to the calculated position for the alliance hub. */
+  public Command setHoodPosForHubCommand() {
+    return Commands.run(() -> setHoodPosForHub(), this);
+  }
+
+  /** Increments the hood position by a small step (instant). */
+  public Command incrementHoodPosCommand() {
+    return Commands.runOnce(() -> incrementHoodPos(), this);
   }
 }

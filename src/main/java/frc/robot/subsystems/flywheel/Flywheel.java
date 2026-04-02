@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -13,6 +14,8 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.FieldConstants;
 import frc.robot.HardwareConstants;
@@ -194,5 +197,89 @@ public class Flywheel extends SubsystemBase {
         RotationsPerSecond.of(
             fuelVelocity.magnitude() * FlywheelConstants.Mechanical.flywheelRotationsPerMeter);
     io.setFlywheelVelocity(targetVelocity);
+  }
+
+  // ==================== COMMAND FACTORIES ====================
+
+  /**
+   * Runs the flywheel at a specific voltage while the command is active. Stops when the command
+   * ends.
+   *
+   * @param voltage The voltage to apply (e.g., Volts.of(6.0))
+   * @return Command that runs flywheel at voltage, stops on end
+   */
+  public Command setFlywheelVoltageCommand(Voltage voltage) {
+    return Commands.startEnd(
+            () -> setFlywheelVoltage(voltage), () -> setFlywheelVoltage(Volts.of(0)), this)
+        .withName("FlywheelVoltage_" + voltage.in(Volts) + "V");
+  }
+
+  /**
+   * Runs the flywheel at a given velocity (runOnce - sets the setpoint once).
+   *
+   * @param velocity The target angular velocity
+   * @return Command to set flywheel velocity
+   */
+  public Command setFlywheelVelocityCommand(AngularVelocity velocity) {
+    return Commands.runOnce(() -> setFlywheelVelocity(velocity), this);
+  }
+
+  /**
+   * Runs the flywheel at idle speed continuously.
+   *
+   * @return Command to run flywheel at idle velocity
+   */
+  public Command flywheelIdleCommand() {
+    return Commands.run(() -> setFlywheelIdle(), this);
+  }
+
+  /**
+   * Sets flywheel velocity based on position relative to specified passing target.
+   *
+   * @return Command that sets flywheel velocity for passing, stops on end
+   */
+  public Command setPassVelocityCommand() {
+    return setVelocityForTargetCommand(getPassTarget());
+  }
+
+  /**
+   * Sets flywheel velocity based on position relative to hub (calculated from odometry).
+   *
+   * @return Command that continuously sets flywheel velocity for hub distance
+   */
+  public Command setVelocityForHubCommand() {
+    return Commands.run(() -> setSpeedForHub(), this);
+  }
+
+  /**
+   * Sets flywheel velocity based on position relative to target (calculated from odometry).
+   *
+   * @param target The 3D target point
+   * @return Command that sets flywheel velocity, stops on end
+   */
+  public Command setVelocityForTargetCommand(Translation3d target) {
+    return Commands.startEnd(
+        () -> setSpeedForTarget(target), () -> setFlywheelVoltage(Volts.of(0)), this);
+  }
+
+  /**
+   * Sets flywheel velocity based on distance given.
+   *
+   * @param distance The distance to the target
+   * @return Command that sets flywheel velocity, stops on end
+   */
+  public Command setVelocityForDistanceCommand(Distance distance) {
+    return Commands.startEnd(
+        () -> setSpeedForDistance(distance), () -> setFlywheelVoltage(Volts.of(0)), this);
+  }
+
+  /**
+   * Stops the flywheel immediately.
+   *
+   * @return Instant command that stops the flywheel
+   */
+  public Command stopCommand() {
+    return Commands.runOnce(() -> setFlywheelVelocity(RotationsPerSecond.of(0)), this)
+        .withName("FlywheelStop");
   }
 }

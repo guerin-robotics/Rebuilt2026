@@ -94,6 +94,31 @@ public class LoggedTrigger extends Trigger {
   }
 
   /**
+   * Composes two logged triggers with logical OR.
+   *
+   * <p>The resulting trigger uses a combined log name derived from both component triggers, so its
+   * AdvantageKit signal clearly represents the composite condition rather than reusing the base
+   * trigger's log key.
+   *
+   * @param trigger the condition to compose with
+   * @return A trigger which is active when either component trigger is active.
+   */
+  public LoggedTrigger or(LoggedTrigger trigger) {
+    String combinedName = this.name + "_OR_" + trigger.name;
+    return new LoggedTrigger(combinedName, () -> (this.getAsBoolean() || trigger.getAsBoolean()));
+  }
+
+  /**
+   * Composes this trigger with logical NOT (negation).
+   *
+   * @return A trigger which is active when this trigger is inactive.
+   */
+  @Override
+  public LoggedTrigger negate() {
+    return new LoggedTrigger("NOT_" + this.name, () -> !this.getAsBoolean());
+  }
+
+  /**
    * Creates a new debounced trigger from this trigger - it will become active when this trigger has
    * been active for longer than the specified period.
    *

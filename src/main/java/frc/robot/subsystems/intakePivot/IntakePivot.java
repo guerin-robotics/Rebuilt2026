@@ -1,11 +1,16 @@
 package frc.robot.subsystems.intakePivot;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.HardwareConstants;
 import frc.robot.subsystems.intakePivot.io.IntakePivotIO;
 import frc.robot.subsystems.intakePivot.io.IntakePivotIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
@@ -107,5 +112,67 @@ public class IntakePivot extends SubsystemBase {
     } else {
       io.zeroPivotEncoder();
     }
+  }
+
+  // ==================== COMMAND FACTORIES ====================
+
+  /** Run the pivot at a given voltage; stop (0 V) when the command ends. */
+  public Command setPivotVoltageCommand(Voltage voltage) {
+    return Commands.startEnd(
+        () -> setPivotVoltage(voltage), () -> setPivotVoltage(Volts.of(0)), this);
+  }
+
+  /** Run the pivot at a given velocity; stop (0 rps) when the command ends. */
+  public Command setPivotVelocityCommand(AngularVelocity pivotVelo) {
+    return Commands.startEnd(
+        () -> setPivotVelocity(pivotVelo), () -> setPivotVelocity(RotationsPerSecond.of(0)), this);
+  }
+
+  /** Stop the pivot immediately (set voltage to 0). */
+  public Command stopPivotCommand() {
+    return Commands.runOnce(() -> setPivotVoltage(Volts.of(0)), this);
+  }
+
+  /** Move the pivot to a specific position in rotations. */
+  public Command setPivotRotationsCommand(double angleRotations) {
+    return Commands.runOnce(() -> setPivotPosition(angleRotations), this);
+  }
+
+  /** Jostle the pivot by monitoring stator current and pulsing the position. */
+  public Command jostlePivotByCurrentCommand(
+      AngularVelocity upVelocity,
+      AngularVelocity downVelocity,
+      double degreesDown,
+      double seconds) {
+    return Commands.startEnd(
+        () -> intakeJostleByCurrent(upVelocity, downVelocity, degreesDown, seconds),
+        () -> setPivotVoltage(Volts.of(0)),
+        this);
+  }
+
+  /** Repeatedly jostle the pivot by alternating positions. */
+  public Command jostlePivotByPosCommand() {
+    return Commands.sequence(
+            setPivotRotationsCommand(HardwareConstants.CompConstants.Positions.pivotJostleUpPos),
+            new WaitCommand(0.25),
+            setPivotRotationsCommand(HardwareConstants.CompConstants.Positions.pivotDownPos),
+            new WaitCommand(0.25))
+        .repeatedly()
+        .finallyDo(() -> setPivotPosition(HardwareConstants.CompConstants.Positions.pivotDownPos));
+  }
+
+  /** Compress the pivot by voltage pulse + position hold, repeating. */
+  public Command compressPivotCommand() {
+    return Commands.sequence(
+            Commands.deadline(new WaitCommand(0.75), setPivotVoltageCommand(Volts.of(1.7))),
+            new WaitCommand(0.5),
+            setPivotRotationsCommand(HardwareConstants.CompConstants.Positions.pivotDownPos))
+        .repeatedly()
+        .finallyDo(() -> setPivotPosition(HardwareConstants.CompConstants.Positions.pivotDownPos));
+  }
+
+  /** Zero the pivot encoder at the current position. */
+  public Command zeroPivotCommand() {
+    return Commands.runOnce(() -> zeroPivotEncoder());
   }
 }
