@@ -3,12 +3,15 @@ package frc.robot.subsystems.hood;
 import static edu.wpi.first.math.util.Units.inchesToMeters;
 import static edu.wpi.first.units.Units.Seconds;
 
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.units.measure.Time;
 
 public class HoodConstants {
 
   public static class Mechanical {
+    public static final double magnetSensorDiscontinuityPoint = 0.5;
+    public static final double magnetOffset = 0;
     public static double hoodMaxPos = 1.0;
     public static double hoodMinPos = 0.0;
 
@@ -18,7 +21,11 @@ public class HoodConstants {
   }
 
   public static class SoftwareConstants {
+    public static final double softwareLowerRotationLimit = 0;
+    public static final SensorDirectionValue ENCODER_DIRECTION =
+        SensorDirectionValue.CounterClockwise_Positive;
     public static boolean MOTOR_INVERTED = true;
+    public static double softwareUpperRotationLimit = 0.5;
   }
 
   public static class CurrentLimits {

@@ -9,30 +9,54 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.HardwareConstants;
-import frc.robot.subsystems.feeder.Feeder;
+import frc.robot.subsystems.lowerFeeder.LowerFeeder;
+import frc.robot.subsystems.upperFeeder.UpperFeeder;
 
 public class FeederCommands {
 
-  public static Command setFeederVoltage(Feeder feeder, Voltage voltage) {
+  public static Command setLowerFeederVoltage(LowerFeeder lowerFeeder, Voltage voltage) {
     return Commands.startEnd(
-            () -> feeder.setFeederVoltage(voltage), // Apply voltage
-            () -> feeder.setFeederVoltage(Volts.of(0)), // Stop on end
+            () -> lowerFeeder.setLowerFeederVoltage(voltage), // Apply voltage
+            () -> lowerFeeder.setLowerFeederVoltage(Volts.of(0)), // Stop on end
+            lowerFeeder)
+        .withName("FeederVoltage_" + voltage.in(Volts) + "V");
+  }
+
+  public static Command setUpperFeederVoltage(UpperFeeder feeder, Voltage voltage) {
+    return Commands.startEnd(
+            () -> feeder.setUpperFeederVoltage(voltage), // Apply voltage
+            () -> feeder.setUpperFeederVoltage(Volts.of(0)), // Stop on end
             feeder)
         .withName("FeederVoltage_" + voltage.in(Volts) + "V");
   }
 
-  public static Command stop(Feeder feeder) {
-    return Commands.runOnce(() -> feeder.setFeederVelocity(RotationsPerSecond.of(0)), feeder)
+  public static Command stopLower(LowerFeeder feeder) {
+    return Commands.runOnce(() -> feeder.setLowerFeederVelocity(RotationsPerSecond.of(0)), feeder)
         .withName("FeederStop");
   }
 
-  public static Command setFeederVelocity(Feeder feeder, AngularVelocity feederVelo) {
-    return Commands.runOnce(() -> feeder.setFeederVelocity(feederVelo), feeder);
+  public static Command stopUpper(UpperFeeder feeder) {
+    return Commands.runOnce(() -> feeder.setUpperFeederVelocity(RotationsPerSecond.of(0)), feeder)
+        .withName("FeederStop");
   }
 
-  public static Command setVelocityAfterWait(Feeder feeder, AngularVelocity feederVelo) {
+  public static Command setLowerFeederVelocity(LowerFeeder feeder, AngularVelocity feederVelo) {
+    return Commands.runOnce(() -> feeder.setLowerFeederVelocity(feederVelo), feeder);
+  }
+
+  public static Command setUpperFeederVelocity(UpperFeeder feeder, AngularVelocity feederVelo) {
+    return Commands.runOnce(() -> feeder.setUpperFeederVelocity(feederVelo), feeder);
+  }
+
+  public static Command setLowerVelocityAfterWait(LowerFeeder feeder, AngularVelocity feederVelo) {
     return Commands.sequence(
         new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
-        setFeederVelocity(feeder, feederVelo));
+        setLowerFeederVelocity(feeder, feederVelo));
+  }
+
+  public static Command setUpperVelocityAfterWait(UpperFeeder feeder, AngularVelocity feederVelo) {
+    return Commands.sequence(
+        new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
+        setUpperFeederVelocity(feeder, feederVelo));
   }
 }

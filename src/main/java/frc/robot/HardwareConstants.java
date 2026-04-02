@@ -24,7 +24,8 @@ public class HardwareConstants {
     public static int PRESTAGE_FOLLOWER_ID = 36;
 
     // Feeder
-    public static int FEEDER_MOTOR_ID = 37;
+    public static int UPPER_FEEDER_MOTOR_ID = 37;
+    public static int LOWER_FEEDER_MOTOR_ID = 45;
 
     // Transport
     public static int TRANSPORT_MOTOR_ID = 38;
@@ -39,6 +40,7 @@ public class HardwareConstants {
     public static int HOOD_SERVO_CHANNEL = 0;
     public static int HOOD_LEFT_SERVO_CHANNEL = 1;
     public static int HOOD_MOTOR = 43;
+    public static int HOOD_ENCODER = 44;
   }
 
   public static class CompConstants {

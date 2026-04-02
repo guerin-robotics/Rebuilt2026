@@ -7,18 +7,20 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.HardwareConstants;
-import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.intakeRoller.intakeRoller;
+import frc.robot.subsystems.lowerFeeder.LowerFeeder;
 import frc.robot.subsystems.prestage.Prestage;
 import frc.robot.subsystems.transport.Transport;
+import frc.robot.subsystems.upperFeeder.UpperFeeder;
 
 public class SpitSequences {
 
   public static Command spitAll(
       Flywheel flywheel,
       Prestage prestage,
-      Feeder feeder,
+      UpperFeeder upperFeeder,
+      LowerFeeder lowerFeeder,
       Transport transport,
       intakeRoller intakeRoller) {
     return Commands.parallel(
@@ -26,8 +28,10 @@ public class SpitSequences {
                 flywheel, HardwareConstants.CompConstants.SpitVelocities.flywheelSpitVelocity),
             PrestageCommands.setPrestageVelocity(
                 prestage, HardwareConstants.CompConstants.SpitVelocities.prestageSpitVelocity),
-            FeederCommands.setFeederVelocity(
-                feeder, HardwareConstants.CompConstants.SpitVelocities.feederSpitVelocity),
+            FeederCommands.setUpperFeederVelocity(
+                upperFeeder, HardwareConstants.CompConstants.SpitVelocities.feederSpitVelocity),
+            FeederCommands.setLowerFeederVelocity(
+                lowerFeeder, HardwareConstants.CompConstants.SpitVelocities.feederSpitVelocity),
             TransportCommands.setTransportVoltage(
                 transport, HardwareConstants.CompConstants.SpitVoltages.transportSpitVoltage),
             intakeRollerCommands.setRollerVoltage(
@@ -36,48 +40,61 @@ public class SpitSequences {
             () -> {
               flywheel.setFlywheelVelocity(RotationsPerSecond.of(0));
               prestage.setPrestageVelocity(RotationsPerSecond.of(0));
-              feeder.setFeederVelocity(RotationsPerSecond.of(0));
+              lowerFeeder.setLowerFeederVelocity(RotationsPerSecond.of(0));
+              upperFeeder.setUpperFeederVelocity(RotationsPerSecond.of(0));
               transport.setTransportVoltage(Volts.of(0));
               intakeRoller.setRollerVoltage(Volts.of(0));
             });
   }
 
-  public static Command spitHopper(Feeder feeder, Transport transport, intakeRoller intakeRoller) {
+  public static Command spitHopper(
+      UpperFeeder upperFeeder,
+      LowerFeeder lowerFeeder,
+      Transport transport,
+      intakeRoller intakeRoller) {
     return Commands.parallel(
-            FeederCommands.setFeederVelocity(
-                feeder, HardwareConstants.CompConstants.SpitVelocities.feederSpitVelocity),
+            FeederCommands.setUpperFeederVelocity(
+                upperFeeder, HardwareConstants.CompConstants.SpitVelocities.feederSpitVelocity),
+            FeederCommands.setLowerFeederVelocity(
+                lowerFeeder, HardwareConstants.CompConstants.SpitVelocities.feederSpitVelocity),
             TransportCommands.setTransportVoltage(
                 transport, HardwareConstants.CompConstants.SpitVoltages.transportSpitVoltage),
             intakeRollerCommands.setRollerVoltage(
                 intakeRoller, HardwareConstants.CompConstants.SpitVoltages.intakeRollerSpitVoltage))
         .finallyDo(
             () -> {
-              feeder.setFeederVelocity(RotationsPerSecond.of(0));
+              lowerFeeder.setLowerFeederVelocity(RotationsPerSecond.of(0));
+              upperFeeder.setUpperFeederVelocity(RotationsPerSecond.of(0));
               transport.setTransportVoltage(Volts.of(0));
               intakeRoller.setRollerVoltage(Volts.of(0));
             });
   }
 
-  public static Command clearShooter(Flywheel flywheel, Prestage prestage, Feeder feeder) {
+  public static Command clearShooter(
+      Flywheel flywheel, Prestage prestage, UpperFeeder upperFeeder, LowerFeeder lowerFeeder) {
     return Commands.parallel(
             FlywheelCommands.setFlywheelVelocity(
                 flywheel, HardwareConstants.CompConstants.SpitVelocities.flywheelSpitVelocity),
             PrestageCommands.setPrestageVelocity(
                 prestage, HardwareConstants.CompConstants.SpitVelocities.prestageSpitVelocity),
-            FeederCommands.setFeederVelocity(
-                feeder, HardwareConstants.CompConstants.SpitVelocities.feederSpitVelocity))
+            FeederCommands.setUpperFeederVelocity(
+                upperFeeder, HardwareConstants.CompConstants.SpitVelocities.feederSpitVelocity),
+            FeederCommands.setLowerFeederVelocity(
+                lowerFeeder, HardwareConstants.CompConstants.SpitVelocities.feederSpitVelocity))
         .finallyDo(
             () -> {
               flywheel.setFlywheelVelocity(RotationsPerSecond.of(0));
               prestage.setPrestageVelocity(RotationsPerSecond.of(0));
-              feeder.setFeederVelocity(RotationsPerSecond.of(0));
+              upperFeeder.setUpperFeederVelocity(RotationsPerSecond.of(0));
+              lowerFeeder.setLowerFeederVelocity(RotationsPerSecond.of(0));
             });
   }
 
   public static Command spitAfterShoot(
       Flywheel flywheel,
       Prestage prestage,
-      Feeder feeder,
+      UpperFeeder upperFeeder,
+      LowerFeeder lowerFeeder,
       Transport transport,
       intakeRoller intakeRoller) {
     // Use deadline group: WaitCommand(0.5) is the deadline that controls duration.
@@ -98,9 +115,14 @@ public class SpitSequences {
                     prestage),
                 Commands.run(
                     () ->
-                        feeder.setFeederVelocity(
+                        upperFeeder.setUpperFeederVelocity(
                             HardwareConstants.CompConstants.SpitVelocities.feederSpitVelocity),
-                    feeder),
+                    upperFeeder),
+                Commands.run(
+                    () ->
+                        lowerFeeder.setLowerFeederVelocity(
+                            HardwareConstants.CompConstants.SpitVelocities.feederSpitVelocity),
+                    lowerFeeder),
                 Commands.run(
                     () ->
                         transport.setTransportVoltage(
@@ -114,7 +136,8 @@ public class SpitSequences {
         Commands.parallel(
             FlywheelCommands.setFlywheelVelocity(flywheel, RotationsPerSecond.of(0)),
             PrestageCommands.setPrestageVelocity(prestage, RotationsPerSecond.of(0)),
-            FeederCommands.setFeederVelocity(feeder, RotationsPerSecond.of(0)),
+            FeederCommands.setUpperFeederVelocity(upperFeeder, RotationsPerSecond.of(0)),
+            FeederCommands.setLowerFeederVelocity(lowerFeeder, RotationsPerSecond.of(0)),
             TransportCommands.setTransportVoltage(transport, Volts.of(0)),
             intakeRollerCommands.setRollerVoltage(intakeRoller, Volts.of(0))));
   }

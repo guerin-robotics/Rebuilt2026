@@ -1,4 +1,4 @@
-package frc.robot.subsystems.feeder;
+package frc.robot.subsystems.upperFeeder;
 
 import static edu.wpi.first.units.Units.Seconds;
 
@@ -6,14 +6,14 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Time;
 import frc.robot.Constants;
 
-public class FeederConstants {
+public class UpperFeederConstants {
 
   /** Current limits for the feeder motors. */
   public static class CurrentLimits {
-    public static final int FEEDER_MAIN_SUPPLY_AMP = 40;
-    public static final int FEEDER_MAIN_SUPPLY_TRIGGER_AMP = 35;
-    public static final Time FEEDER_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
-    public static final int FEEDER_MAIN_STATOR_AMP = 80;
+    public static final int UPPER_FEEDER_MAIN_SUPPLY_AMP = 40;
+    public static final int UPPER_FEEDER_MAIN_SUPPLY_TRIGGER_AMP = 35;
+    public static final Time UPPER_FEEDER_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
+    public static final int UPPER_FEEDER_MAIN_STATOR_AMP = 80;
   }
 
   public static class SoftwareConstants {
@@ -21,7 +21,7 @@ public class FeederConstants {
   }
 
   public static class Mechanical {
-    public static final double feederRatio = 1 / 0.417;
+    public static final double upperFeederRatio = 1 / 0.417;
   }
 
   // Real robot PID gains for torque-current velocity control
@@ -34,19 +34,19 @@ public class FeederConstants {
   }
 
   public static class feederMagicConstants {
-    public static final double feederAccel = 60.0;
+    public static final double upperFeederAccel = 60.0;
   }
 
   /** Simulation constants for the feeder motor. */
   public static class Sim {
     /** One Kraken X60 FOC motor drives the feeder. */
-    public static final DCMotor FEEDER_MOTOR = DCMotor.getKrakenX60Foc(1);
+    public static final DCMotor UPPER_FEEDER_MOTOR = DCMotor.getKrakenX60Foc(1);
 
     /** Number of motors driving the feeder (used for DCMotorSim). */
     public static final int NUM_MOTORS = 1;
 
     /** Moment of inertia of the feeder mechanism (kg·m²). Approximate value. */
-    public static final double FEEDER_MOI = 0.001;
+    public static final double UPPER_FEEDER_MOI = 0.001;
 
     // Sim-specific torque-current PID gains.
     // The TalonFX firmware still runs TorqueCurrentFOC in sim and produces

@@ -4,10 +4,15 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Angle;
@@ -24,6 +29,7 @@ public class HoodIOReal implements HoodIO {
   // private final PWM hoodLeftServo;
 
   private final TalonFX hoodMotor;
+  private final CANcoder hoodEncoder;
 
   private final MotionMagicTorqueCurrentFOC positionRequest = new MotionMagicTorqueCurrentFOC(0);
 
@@ -42,13 +48,14 @@ public class HoodIOReal implements HoodIO {
     // hoodLeftServo = new PWM(HardwareConstants.CanIds.HOOD_LEFT_SERVO_CHANNEL);
 
     hoodMotor = new TalonFX(HardwareConstants.CanIds.HOOD_MOTOR);
+    hoodEncoder = new CANcoder(HardwareConstants.CanIds.HOOD_ENCODER);
 
     velocity = hoodMotor.getVelocity();
     motorVoltage = hoodMotor.getMotorVoltage();
     statorCurrent = hoodMotor.getStatorCurrent();
     supplyCurrent = hoodMotor.getSupplyCurrent();
     deviceTemp = hoodMotor.getDeviceTemp();
-    devicePos = hoodMotor.getPosition();
+    devicePos = hoodEncoder.getAbsolutePosition();
     closedLoopReference = hoodMotor.getClosedLoopReference();
     closedLoopError = hoodMotor.getClosedLoopError();
 
@@ -93,6 +100,38 @@ public class HoodIOReal implements HoodIO {
         HoodConstants.CurrentLimits.HOOD_MAIN_SUPPLY_TRIGGER_TIME_SEC.in(Seconds);
     limits.StatorCurrentLimit = HoodConstants.CurrentLimits.HOOD_MAIN_STATOR_AMP;
     limits.StatorCurrentLimitEnable = false;
+
+    // CANcoder remote feedback
+    var feedback = new FeedbackConfigs();
+    feedback.withFeedbackRemoteSensorID(HardwareConstants.CanIds.HOOD_ENCODER);
+    feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder);
+
+    // Software limits
+    config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+        HoodConstants.SoftwareConstants.softwareUpperRotationLimit;
+    config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
+        HoodConstants.SoftwareConstants.softwareLowerRotationLimit;
+
+    hoodMotor.getConfigurator().apply(config);
+    hoodMotor.getConfigurator().apply(limits);
+    hoodMotor.getConfigurator().apply(feedback);
+  }
+
+  public void configureEncoder() {
+    var encoderConfig = new CANcoderConfiguration();
+
+    var magnetConfig = new MagnetSensorConfigs();
+
+    magnetConfig.withAbsoluteSensorDiscontinuityPoint(
+        HoodConstants.Mechanical.magnetSensorDiscontinuityPoint);
+    magnetConfig.withMagnetOffset(HoodConstants.Mechanical.magnetOffset);
+    magnetConfig.SensorDirection = HoodConstants.SoftwareConstants.ENCODER_DIRECTION;
+
+    encoderConfig.withMagnetSensor(magnetConfig);
+
+    hoodEncoder.getConfigurator().apply(encoderConfig);
   }
 
   @Override

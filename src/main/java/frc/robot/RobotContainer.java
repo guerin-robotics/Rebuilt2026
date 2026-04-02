@@ -44,10 +44,6 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.feeder.Feeder;
-import frc.robot.subsystems.feeder.io.FeederIO;
-import frc.robot.subsystems.feeder.io.FeederIOReal;
-import frc.robot.subsystems.feeder.io.FeederIOSim;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.FlywheelIOPhoenix6;
@@ -64,6 +60,10 @@ import frc.robot.subsystems.intakeRoller.intakeRoller;
 import frc.robot.subsystems.intakeRoller.io.intakeRollerIO;
 import frc.robot.subsystems.intakeRoller.io.intakeRollerIOReal;
 import frc.robot.subsystems.intakeRoller.io.intakeRollerIOSim;
+import frc.robot.subsystems.lowerFeeder.LowerFeeder;
+import frc.robot.subsystems.lowerFeeder.io.LowerFeederIO;
+import frc.robot.subsystems.lowerFeeder.io.LowerFeederIOReal;
+import frc.robot.subsystems.lowerFeeder.io.LowerFeederIOSim;
 import frc.robot.subsystems.prestage.Prestage;
 import frc.robot.subsystems.prestage.io.PrestageIO;
 import frc.robot.subsystems.prestage.io.PrestageIOReal;
@@ -72,6 +72,10 @@ import frc.robot.subsystems.transport.Transport;
 import frc.robot.subsystems.transport.io.TransportIO;
 import frc.robot.subsystems.transport.io.TransportIOReal;
 import frc.robot.subsystems.transport.io.TransportIOSim;
+import frc.robot.subsystems.upperFeeder.UpperFeeder;
+import frc.robot.subsystems.upperFeeder.io.UpperFeederIO;
+import frc.robot.subsystems.upperFeeder.io.UpperFeederIOReal;
+import frc.robot.subsystems.upperFeeder.io.UpperFeederIOSim;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.io.VisionIO;
@@ -87,7 +91,8 @@ public class RobotContainer {
   private final Drive drive;
   private final Vision vision;
   private final Flywheel flywheel;
-  private final Feeder feeder;
+  private final UpperFeeder upperFeeder;
+  private final LowerFeeder lowerFeeder;
   private final Hood hood;
   private final Prestage prestage;
   private final IntakePivot intakePivot;
@@ -142,7 +147,8 @@ public class RobotContainer {
                 new VisionIOPhotonVision(
                     VisionConstants.camera3Name, VisionConstants.robotToCamera3));
         flywheel = new Flywheel(new FlywheelIOPhoenix6());
-        feeder = new Feeder(new FeederIOReal());
+        upperFeeder = new UpperFeeder(new UpperFeederIOReal());
+        lowerFeeder = new LowerFeeder(new LowerFeederIOReal());
         hood = new Hood(new HoodIOReal());
         prestage = new Prestage(new PrestageIOReal());
         transport = new Transport(new TransportIOReal());
@@ -170,7 +176,8 @@ public class RobotContainer {
                 new VisionIOPhotonVisionSim(
                     VisionConstants.camera3Name, VisionConstants.robotToCamera3, drive::getPose));
         flywheel = new Flywheel(new FlywheelIOSim());
-        feeder = new Feeder(new FeederIOSim());
+        upperFeeder = new UpperFeeder(new UpperFeederIOSim());
+        lowerFeeder = new LowerFeeder(new LowerFeederIOSim());
         prestage = new Prestage(new PrestageIOSim());
         hood = new Hood(new HoodIOSim());
         transport = new Transport(new TransportIOSim());
@@ -188,7 +195,8 @@ public class RobotContainer {
                 new ModuleIO() {});
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         flywheel = new Flywheel(new FlywheelIO() {});
-        feeder = new Feeder(new FeederIO() {});
+        upperFeeder = new UpperFeeder(new UpperFeederIO() {});
+        lowerFeeder = new LowerFeeder(new LowerFeederIO() {});
         prestage = new Prestage(new PrestageIO() {});
         hood = new Hood(new HoodIO() {});
         transport = new Transport(new TransportIO() {});
@@ -282,7 +290,8 @@ public class RobotContainer {
                             flywheel,
                             prestage,
                             hood,
-                            feeder,
+                            upperFeeder,
+                            lowerFeeder,
                             transport,
                             intakeRoller,
                             intakePivot))));
@@ -290,7 +299,8 @@ public class RobotContainer {
     // Stop all subsystems after shooting
     NamedCommands.registerCommand(
         "stopAll",
-        ShootSequences.stopAll(flywheel, prestage, hood, feeder, transport, intakeRoller));
+        ShootSequences.stopAll(
+            flywheel, prestage, hood, upperFeeder, lowerFeeder, transport, intakeRoller));
 
     // Puts the hood down.
     NamedCommands.registerCommand(
@@ -495,9 +505,13 @@ public class RobotContainer {
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
-            FeederCommands.setVelocityAfterWait(
-                feeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
-        .onFalse(FeederCommands.stop(feeder));
+            FeederCommands.setLowerVelocityAfterWait(
+                    lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
+                .alongWith(
+                    FeederCommands.setUpperVelocityAfterWait(
+                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)))
+        .onFalse(
+            FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)));
 
     // TRANSPORT
     // Set to voltage (after a wait) when any shooting sequence is started (shoot to hub, pass,
@@ -691,8 +705,11 @@ public class RobotContainer {
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
-            FeederCommands.setVelocityAfterWait(
-                feeder, HardwareConstants.CompConstants.Velocities.feederVelocity));
+            FeederCommands.setLowerVelocityAfterWait(
+                    lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
+                .alongWith(
+                    FeederCommands.setUpperFeederVelocity(
+                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)));
 
     // TRANSPORT
     // Set to voltage (after a wait) when any shooting sequence is started (shoot to hub, pass,
@@ -881,6 +898,7 @@ public class RobotContainer {
   }
 
   public Command getAutoStopCommand() {
-    return ShootSequences.stopAll(flywheel, prestage, hood, feeder, transport, intakeRoller);
+    return ShootSequences.stopAll(
+        flywheel, prestage, hood, upperFeeder, lowerFeeder, transport, intakeRoller);
   }
 }

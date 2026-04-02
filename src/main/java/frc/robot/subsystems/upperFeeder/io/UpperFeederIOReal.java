@@ -1,4 +1,4 @@
-package frc.robot.subsystems.feeder.io;
+package frc.robot.subsystems.upperFeeder.io;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
@@ -18,13 +18,13 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.HardwareConstants;
-import frc.robot.subsystems.feeder.FeederConstants;
+import frc.robot.subsystems.upperFeeder.UpperFeederConstants;
 
-public class FeederIOReal implements FeederIO {
+public class UpperFeederIOReal implements UpperFeederIO {
 
   private static final CANBus CAN_BUS = new CANBus("rio");
 
-  private final TalonFX feederMotor;
+  private final TalonFX upperFeederMotor;
 
   private final VoltageOut voltageRequest = new VoltageOut(0);
   private final MotionMagicVelocityTorqueCurrentFOC torqueRequest =
@@ -40,19 +40,19 @@ public class FeederIOReal implements FeederIO {
   private final StatusSignal<Double> closedLoopError;
   private final StatusSignal<Angle> pos;
 
-  public FeederIOReal() {
-    feederMotor = new TalonFX(HardwareConstants.CanIds.FEEDER_MOTOR_ID, CAN_BUS);
+  public UpperFeederIOReal() {
+    upperFeederMotor = new TalonFX(HardwareConstants.CanIds.UPPER_FEEDER_MOTOR_ID, CAN_BUS);
     configureFeederMotor();
 
     // Cache signal references once in the constructor
-    velocity = feederMotor.getVelocity();
-    statorCurrent = feederMotor.getStatorCurrent();
-    supplyCurrent = feederMotor.getSupplyCurrent();
-    motorVoltage = feederMotor.getMotorVoltage();
-    deviceTemp = feederMotor.getDeviceTemp();
-    closedLoopReference = feederMotor.getClosedLoopReference();
-    closedLoopError = feederMotor.getClosedLoopError();
-    pos = feederMotor.getPosition();
+    velocity = upperFeederMotor.getVelocity();
+    statorCurrent = upperFeederMotor.getStatorCurrent();
+    supplyCurrent = upperFeederMotor.getSupplyCurrent();
+    motorVoltage = upperFeederMotor.getMotorVoltage();
+    deviceTemp = upperFeederMotor.getDeviceTemp();
+    closedLoopReference = upperFeederMotor.getClosedLoopReference();
+    closedLoopError = upperFeederMotor.getClosedLoopError();
+    pos = upperFeederMotor.getPosition();
 
     // 50Hz for signals we need every loop (velocity, voltage, current, closed-loop reference)
     BaseStatusSignal.setUpdateFrequencyForAll(
@@ -62,7 +62,7 @@ public class FeederIOReal implements FeederIO {
     BaseStatusSignal.setUpdateFrequencyForAll(10.0, deviceTemp, closedLoopError);
 
     // Stop sending signals we didn't register — reduces CAN bus traffic
-    feederMotor.optimizeBusUtilization();
+    upperFeederMotor.optimizeBusUtilization();
   }
 
   private void configureFeederMotor() {
@@ -70,35 +70,37 @@ public class FeederIOReal implements FeederIO {
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     config.MotorOutput.Inverted =
-        FeederConstants.SoftwareConstants.INVERTED
+        UpperFeederConstants.SoftwareConstants.INVERTED
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
-    config.Feedback.SensorToMechanismRatio = FeederConstants.Mechanical.feederRatio;
+    config.Feedback.SensorToMechanismRatio = UpperFeederConstants.Mechanical.upperFeederRatio;
 
     var feederMagic = config.MotionMagic;
-    feederMagic.MotionMagicAcceleration = FeederConstants.feederMagicConstants.feederAccel;
+    feederMagic.MotionMagicAcceleration =
+        UpperFeederConstants.feederMagicConstants.upperFeederAccel;
 
     // Slot0 PID/FF gains for velocity control
-    config.Slot0.kS = FeederConstants.PID.KS;
-    config.Slot0.kV = FeederConstants.PID.KV;
-    config.Slot0.kP = FeederConstants.PID.KP;
+    config.Slot0.kS = UpperFeederConstants.PID.KS;
+    config.Slot0.kV = UpperFeederConstants.PID.KV;
+    config.Slot0.kP = UpperFeederConstants.PID.KP;
 
     // Current limits
     var limits = new CurrentLimitsConfigs();
-    limits.SupplyCurrentLimit = FeederConstants.CurrentLimits.FEEDER_MAIN_SUPPLY_AMP;
+    limits.SupplyCurrentLimit = UpperFeederConstants.CurrentLimits.UPPER_FEEDER_MAIN_SUPPLY_AMP;
     limits.SupplyCurrentLimitEnable = true;
-    limits.SupplyCurrentLowerLimit = FeederConstants.CurrentLimits.FEEDER_MAIN_SUPPLY_TRIGGER_AMP;
+    limits.SupplyCurrentLowerLimit =
+        UpperFeederConstants.CurrentLimits.UPPER_FEEDER_MAIN_SUPPLY_TRIGGER_AMP;
     limits.SupplyCurrentLowerTime =
-        FeederConstants.CurrentLimits.FEEDER_MAIN_SUPPLY_TRIGGER_TIME_SEC.in(Second);
-    limits.StatorCurrentLimit = FeederConstants.CurrentLimits.FEEDER_MAIN_STATOR_AMP;
+        UpperFeederConstants.CurrentLimits.UPPER_FEEDER_MAIN_SUPPLY_TRIGGER_TIME_SEC.in(Second);
+    limits.StatorCurrentLimit = UpperFeederConstants.CurrentLimits.UPPER_FEEDER_MAIN_STATOR_AMP;
     limits.StatorCurrentLimitEnable = true;
 
-    feederMotor.getConfigurator().apply(config);
-    feederMotor.getConfigurator().apply(limits);
+    upperFeederMotor.getConfigurator().apply(config);
+    upperFeederMotor.getConfigurator().apply(limits);
   }
 
   @Override
-  public void updateInputs(FeederIOInputs inputs) {
+  public void updateInputs(UpperFeederIOInputs inputs) {
     // One batched CAN read for all signals — much faster than individual reads
     BaseStatusSignal.refreshAll(
         velocity,
@@ -111,24 +113,24 @@ public class FeederIOReal implements FeederIO {
         pos);
 
     // Read from cache — no additional CAN traffic
-    inputs.feederMotorVelocity = velocity.getValue();
-    inputs.feederStatorAmps = statorCurrent.getValue();
-    inputs.feederSupplyAmps = supplyCurrent.getValue();
-    inputs.feederVoltage = motorVoltage.getValue();
-    inputs.feederMotorTemperature = deviceTemp.getValue();
-    inputs.feederClosedLoopReference =
+    inputs.upperFeederMotorVelocity = velocity.getValue();
+    inputs.upperFeederStatorAmps = statorCurrent.getValue();
+    inputs.upperFeederSupplyAmps = supplyCurrent.getValue();
+    inputs.upperFeederVoltage = motorVoltage.getValue();
+    inputs.upperFeederMotorTemperature = deviceTemp.getValue();
+    inputs.upperFeederClosedLoopReference =
         RotationsPerSecond.of(closedLoopReference.getValueAsDouble());
-    inputs.feederClosedLoopError = RotationsPerSecond.of(closedLoopError.getValueAsDouble());
-    inputs.feederPos = pos.getValue();
+    inputs.upperFeederClosedLoopError = RotationsPerSecond.of(closedLoopError.getValueAsDouble());
+    inputs.upperFeederPos = pos.getValue();
   }
 
   @Override
-  public void setFeederVoltage(Voltage volts) {
-    feederMotor.setControl(voltageRequest.withOutput(volts));
+  public void setUpperFeederVoltage(Voltage volts) {
+    upperFeederMotor.setControl(voltageRequest.withOutput(volts));
   }
 
   @Override
-  public void setFeederVelocity(AngularVelocity feederVelo) {
-    feederMotor.setControl(torqueRequest.withVelocity(feederVelo));
+  public void setUpperFeederVelocity(AngularVelocity feederVelo) {
+    upperFeederMotor.setControl(torqueRequest.withVelocity(feederVelo));
   }
 }

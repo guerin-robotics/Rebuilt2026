@@ -1,4 +1,4 @@
-package frc.robot.subsystems.feeder.io;
+package frc.robot.subsystems.upperFeeder.io;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
@@ -17,16 +17,16 @@ import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import frc.robot.HardwareConstants;
-import frc.robot.subsystems.feeder.FeederConstants;
+import frc.robot.subsystems.upperFeeder.UpperFeederConstants;
 
 /**
- * Simulated implementation of {@link FeederIO} using CTRE's TalonFXSimState.
+ * Simulated implementation of {@link UpperFeederIO} using CTRE's TalonFXSimState.
  *
  * <p>Creates a real TalonFX object so the internal closed-loop controller (PID, Motion Magic) runs
  * in simulation, just like on the real robot. A WPILib {@link DCMotorSim} provides the physics
  * model, and the motor voltage output is fed into the physics sim each loop.
  */
-public class FeederIOSim implements FeederIO {
+public class UpperFeederIOSim implements UpperFeederIO {
 
   // Real TalonFX object — its internal firmware runs in sim
   private final TalonFX feederMotor;
@@ -42,9 +42,9 @@ public class FeederIOSim implements FeederIO {
   private final MotionMagicVelocityTorqueCurrentFOC velocityRequest =
       new MotionMagicVelocityTorqueCurrentFOC(0);
 
-  public FeederIOSim() {
+  public UpperFeederIOSim() {
     // Create the TalonFX motor (uses the same CAN ID as real hardware)
-    feederMotor = new TalonFX(HardwareConstants.CanIds.FEEDER_MOTOR_ID);
+    feederMotor = new TalonFX(HardwareConstants.CanIds.UPPER_FEEDER_MOTOR_ID);
 
     // Apply the motor configuration with sim-specific PID gains
     configureMotor();
@@ -56,10 +56,10 @@ public class FeederIOSim implements FeederIO {
     feederPhysicsSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                FeederConstants.Sim.FEEDER_MOTOR,
-                FeederConstants.Sim.FEEDER_MOI,
-                FeederConstants.Mechanical.feederRatio),
-            FeederConstants.Sim.FEEDER_MOTOR);
+                UpperFeederConstants.Sim.UPPER_FEEDER_MOTOR,
+                UpperFeederConstants.Sim.UPPER_FEEDER_MOI,
+                UpperFeederConstants.Mechanical.upperFeederRatio),
+            UpperFeederConstants.Sim.UPPER_FEEDER_MOTOR);
   }
 
   /** Configures the TalonFX with PID gains and mechanical ratios for simulation. */
@@ -69,26 +69,27 @@ public class FeederIOSim implements FeederIO {
 
     // Match the real robot's invert and gear ratio settings
     config.MotorOutput.Inverted =
-        FeederConstants.SoftwareConstants.INVERTED
+        UpperFeederConstants.SoftwareConstants.INVERTED
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
-    config.Feedback.SensorToMechanismRatio = FeederConstants.Mechanical.feederRatio;
+    config.Feedback.SensorToMechanismRatio = UpperFeederConstants.Mechanical.upperFeederRatio;
 
     // Motion Magic acceleration
-    config.MotionMagic.MotionMagicAcceleration = FeederConstants.feederMagicConstants.feederAccel;
+    config.MotionMagic.MotionMagicAcceleration =
+        UpperFeederConstants.feederMagicConstants.upperFeederAccel;
 
     // Sim-specific PID gains (tuned for the physics model)
-    config.Slot0.kS = FeederConstants.Sim.KS;
-    config.Slot0.kV = FeederConstants.Sim.KV;
-    config.Slot0.kP = FeederConstants.Sim.KP;
-    config.Slot0.kI = FeederConstants.Sim.KI;
-    config.Slot0.kD = FeederConstants.Sim.KD;
+    config.Slot0.kS = UpperFeederConstants.Sim.KS;
+    config.Slot0.kV = UpperFeederConstants.Sim.KV;
+    config.Slot0.kP = UpperFeederConstants.Sim.KP;
+    config.Slot0.kI = UpperFeederConstants.Sim.KI;
+    config.Slot0.kD = UpperFeederConstants.Sim.KD;
 
     feederMotor.getConfigurator().apply(config);
   }
 
   @Override
-  public void updateInputs(FeederIOInputs inputs) {
+  public void updateInputs(UpperFeederIOInputs inputs) {
     // 1. Tell the sim what the battery voltage is
     feederSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
@@ -101,7 +102,7 @@ public class FeederIOSim implements FeederIO {
 
     // 4. Write the resulting position and velocity back to the TalonFX sim state
     //    Note: SimState expects ROTOR values (before gear ratio), so we multiply by gear ratio
-    double gearRatio = FeederConstants.Mechanical.feederRatio;
+    double gearRatio = UpperFeederConstants.Mechanical.upperFeederRatio;
     feederSimState.setRawRotorPosition(feederPhysicsSim.getAngularPosition().times(gearRatio));
     feederSimState.setRotorVelocity(feederPhysicsSim.getAngularVelocity().times(gearRatio));
 
@@ -110,25 +111,25 @@ public class FeederIOSim implements FeederIO {
         BatterySim.calculateDefaultBatteryLoadedVoltage(feederPhysicsSim.getCurrentDrawAmps()));
 
     // 6. Read values from the TalonFX status signals (just like on real hardware)
-    inputs.feederMotorVelocity =
+    inputs.upperFeederMotorVelocity =
         RotationsPerSecond.of(feederMotor.getVelocity().getValueAsDouble());
-    inputs.feederVoltage = feederMotor.getMotorVoltage().getValue();
-    inputs.feederStatorAmps = feederMotor.getStatorCurrent().getValue();
-    inputs.feederSupplyAmps = feederMotor.getSupplyCurrent().getValue();
-    inputs.feederMotorTemperature = feederMotor.getDeviceTemp().getValue();
-    inputs.feederClosedLoopReference =
+    inputs.upperFeederVoltage = feederMotor.getMotorVoltage().getValue();
+    inputs.upperFeederStatorAmps = feederMotor.getStatorCurrent().getValue();
+    inputs.upperFeederSupplyAmps = feederMotor.getSupplyCurrent().getValue();
+    inputs.upperFeederMotorTemperature = feederMotor.getDeviceTemp().getValue();
+    inputs.upperFeederClosedLoopReference =
         RotationsPerSecond.of(feederMotor.getClosedLoopReference().getValueAsDouble());
-    inputs.feederClosedLoopError =
+    inputs.upperFeederClosedLoopError =
         RotationsPerSecond.of(feederMotor.getClosedLoopError().getValueAsDouble());
   }
 
   @Override
-  public void setFeederVoltage(Voltage volts) {
+  public void setUpperFeederVoltage(Voltage volts) {
     feederMotor.setControl(voltageRequest.withOutput(volts));
   }
 
   @Override
-  public void setFeederVelocity(AngularVelocity feederVelo) {
+  public void setUpperFeederVelocity(AngularVelocity feederVelo) {
     feederMotor.setControl(velocityRequest.withVelocity(feederVelo));
   }
 }
