@@ -7,12 +7,17 @@
 
 package frc.robot;
 
+import choreo.auto.AutoFactory;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.AllianceFlipUtil;
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
+import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.util.Elastic;
 import frc.robot.util.HubShiftUtil;
 import org.littletonrobotics.junction.AutoLogOutputManager;
@@ -32,6 +37,14 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
+  private final Drive driveSubsystem =
+      new Drive(
+          new GyroIOPigeon2(),
+          new ModuleIOTalonFX(TunerConstants.FrontLeft),
+          new ModuleIOTalonFX(TunerConstants.FrontRight),
+          new ModuleIOTalonFX(TunerConstants.BackLeft),
+          new ModuleIOTalonFX(TunerConstants.BackRight));
+  private final AutoFactory autoFactory;
 
   // Field2d widget to display the robot's current pose on the dashboard.
   // This is updated every loop so the drive team can always see where the robot thinks it is.
@@ -52,6 +65,15 @@ public class Robot extends LoggedRobot {
           default -> "Unknown";
         });
 
+    // Set up autoFactory for Choreo
+
+    autoFactory =
+        new AutoFactory(
+            driveSubsystem::getPose,
+            driveSubsystem::resetPose,
+            driveSubsystem::followTrajectory,
+            true,
+            driveSubsystem);
     // Set up data receivers & replay source
     switch (Constants.currentMode) {
       case REAL:
