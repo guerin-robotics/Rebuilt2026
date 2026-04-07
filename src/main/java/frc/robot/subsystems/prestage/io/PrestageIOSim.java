@@ -32,6 +32,10 @@ public class PrestageIOSim implements PrestageIO {
   private final TalonFXSimState leftSimState;
   private final DCMotorSim leftPhysicsSim;
 
+  private final TalonFX prestageRight;
+  private final TalonFXSimState rightSimState;
+  private final DCMotorSim rightPhysicsSim;
+
   // Control requests (reused to avoid allocations)
   private final VoltageOut voltageRequest = new VoltageOut(0);
   private final MotionMagicVelocityTorqueCurrentFOC velocityRequest =
@@ -39,13 +43,23 @@ public class PrestageIOSim implements PrestageIO {
 
   public PrestageIOSim() {
     prestageLeft = new TalonFX(HardwareConstants.CanIds.PRESTAGE_LEADER_ID);
+    prestageRight = new TalonFX(HardwareConstants.CanIds.PRESTAGE_FOLLOWER_ID);
 
     configureMotors();
 
     leftSimState = prestageLeft.getSimState();
+    rightSimState = prestageRight.getSimState();
 
     // Create independent physics sims for each motor
     leftPhysicsSim =
+        new DCMotorSim(
+            LinearSystemId.createDCMotorSystem(
+                PrestageConstants.Sim.PRESTAGE_MOTOR,
+                PrestageConstants.Sim.PRESTAGE_MOI,
+                PrestageConstants.Mechanical.prestageRatio),
+            PrestageConstants.Sim.PRESTAGE_MOTOR);
+
+    rightPhysicsSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
                 PrestageConstants.Sim.PRESTAGE_MOTOR,
@@ -75,6 +89,26 @@ public class PrestageIOSim implements PrestageIO {
     leftConfig.Slot0.kD = PrestageConstants.Sim.LEFT_KD;
 
     prestageLeft.getConfigurator().apply(leftConfig);
+
+    // Right motor config (uses separate PID gains, matching real robot behavior)
+    var rightConfig = new TalonFXConfiguration();
+    rightConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    rightConfig.MotorOutput.Inverted =
+        PrestageConstants.SoftwareConstants.INVERTED
+            ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
+            : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+    rightConfig.Feedback.SensorToMechanismRatio = PrestageConstants.Mechanical.prestageRatio;
+    rightConfig.MotionMagic.MotionMagicAcceleration =
+        PrestageConstants.prestageMagicConstants.prestageAccel;
+
+    // Right motor sim PID gains
+    rightConfig.Slot0.kS = PrestageConstants.Sim.RIGHT_KS;
+    rightConfig.Slot0.kV = PrestageConstants.Sim.RIGHT_KV;
+    rightConfig.Slot0.kP = PrestageConstants.Sim.RIGHT_KP;
+    rightConfig.Slot0.kI = PrestageConstants.Sim.RIGHT_KI;
+    rightConfig.Slot0.kD = PrestageConstants.Sim.RIGHT_KD;
+
+    prestageRight.getConfigurator().apply(rightConfig);
   }
 
   @Override
@@ -89,20 +123,40 @@ public class PrestageIOSim implements PrestageIO {
     leftSimState.setRawRotorPosition(leftPhysicsSim.getAngularPosition().times(gearRatio));
     leftSimState.setRotorVelocity(leftPhysicsSim.getAngularVelocity().times(gearRatio));
 
+    // --- Right motor sim update ---
+    rightSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+    double rightMotorVolts = rightSimState.getMotorVoltageMeasure().in(Volts);
+    rightPhysicsSim.setInputVoltage(rightMotorVolts);
+    rightPhysicsSim.update(0.02);
+    rightSimState.setRawRotorPosition(rightPhysicsSim.getAngularPosition().times(gearRatio));
+    rightSimState.setRotorVelocity(rightPhysicsSim.getAngularVelocity().times(gearRatio));
+
     // Simulate battery voltage sag from both motors combined
     RoboRioSim.setVInVoltage(
-        BatterySim.calculateDefaultBatteryLoadedVoltage(leftPhysicsSim.getCurrentDrawAmps()));
+        BatterySim.calculateDefaultBatteryLoadedVoltage(
+            leftPhysicsSim.getCurrentDrawAmps() + rightPhysicsSim.getCurrentDrawAmps()));
 
     // Read left motor values from TalonFX status signals
-    inputs.prestageVelocity = RotationsPerSecond.of(prestageLeft.getVelocity().getValueAsDouble());
-    inputs.prestageVoltage = prestageLeft.getMotorVoltage().getValue();
-    inputs.prestageStatorAmps = prestageLeft.getStatorCurrent().getValue();
-    inputs.prestageSupplyAmps = prestageLeft.getSupplyCurrent().getValue();
-    inputs.prestageTemperature = prestageLeft.getDeviceTemp().getValue();
-    inputs.prestageClosedLoopReference =
-        RotationsPerSecond.of(prestageLeft.getClosedLoopReference().getValueAsDouble());
-    inputs.prestageClosedLoopError =
+    inputs.prestageLeftVelocity =
+        RotationsPerSecond.of(prestageLeft.getVelocity().getValueAsDouble());
+    inputs.prestageLeftVoltage = prestageLeft.getMotorVoltage().getValue();
+    inputs.prestageLeftStatorAmps = prestageLeft.getStatorCurrent().getValue();
+    inputs.prestageLeftSupplyAmps = prestageLeft.getSupplyCurrent().getValue();
+    inputs.prestageLeftTemperature = prestageLeft.getDeviceTemp().getValue();
+    inputs.prestageLeftClosedLoopReference =
         RotationsPerSecond.of(prestageLeft.getClosedLoopError().getValueAsDouble());
+
+    // Read right motor values from TalonFX status signals
+    inputs.prestageRightVelocity =
+        RotationsPerSecond.of(prestageRight.getVelocity().getValueAsDouble());
+    inputs.prestageRightVoltage = prestageRight.getMotorVoltage().getValue();
+    inputs.prestageRightStatorAmps = prestageRight.getStatorCurrent().getValue();
+    inputs.prestageRightSupplyAmps = prestageRight.getSupplyCurrent().getValue();
+    inputs.prestageRightTemperature = prestageRight.getDeviceTemp().getValue();
+    inputs.prestageRightClosedLoopReference =
+        RotationsPerSecond.of(prestageRight.getClosedLoopReference().getValueAsDouble());
+    inputs.prestageRightClosedLoopError =
+        RotationsPerSecond.of(prestageRight.getClosedLoopError().getValueAsDouble());
   }
 
   @Override
