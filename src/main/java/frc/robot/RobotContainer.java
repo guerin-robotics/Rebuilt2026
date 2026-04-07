@@ -104,7 +104,7 @@ public class RobotContainer {
   private final AutoFactory autoFactory;
 
   // Dashboard inputs
-  private LoggedDashboardChooser<Command> autoChooser;
+  private final LoggedDashboardChooser<Command> autoChooser;
   
     // ── Auto Preview & Starting Pose Check ──────────────────────────────────────
     // Field2d widget to show the selected auto's path and the robot's current position.
@@ -216,17 +216,7 @@ public class RobotContainer {
               drive::followTrajectory,
               true,
               drive);
-      // IMPORTANT: Register named commands and event triggers BEFORE building the auto chooser.
-      // AutoBuilder.buildAutoChooser() parses the .auto files and resolves named commands at
-      // build time. If commands aren't registered yet, they resolve to Commands.none().
-      registerNamedCommands();
-      registerEventTriggers();
-  
-      autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-  
-      // Publish the auto preview field to the dashboard so we can see the selected path
-      SmartDashboard.putData("Auto Preview", autoPreviewField);
-  
+              
       // IMPORTANT: Register named commands and event triggers BEFORE building the auto chooser.
       // AutoBuilder.buildAutoChooser() parses the .auto files and resolves named commands at
       // build time. If commands aren't registered yet, they resolve to Commands.none().
