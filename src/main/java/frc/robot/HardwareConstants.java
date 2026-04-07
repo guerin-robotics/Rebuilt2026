@@ -28,10 +28,10 @@ public class HardwareConstants {
 
     // Prestage
     public static int PRESTAGE_LEADER_ID = 37;
-    public static int PRESTAGE_FOLLOWER_ID = 36;
+    public static int PRESTAGE_FOLLOWER_ID = 38;
 
     // Feeder
-    public static int UPPER_FEEDER_MOTOR_ID = 38;
+    public static int UPPER_FEEDER_MOTOR_ID = 36;
     public static int LOWER_FEEDER_MOTOR_ID = 39;
 
     // Transport

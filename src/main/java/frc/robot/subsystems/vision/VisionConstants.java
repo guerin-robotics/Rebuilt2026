@@ -48,30 +48,30 @@ public class VisionConstants {
   // Shooter right
   public static final Transform3d robotToCamera2 =
       new Transform3d(
-          new Translation3d(Inches.of(1.536), Inches.of(-10.653), Inches.of(20.993)),
-          new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(0)));
+          new Translation3d(Inches.of(-13.573), Inches.of(-4.809), Inches.of(9.945)),
+          new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(192.5)));
 
   // Old shooter right:
-  // x: 3.945
-  // y: -1.417
-  // z: 19.233388
+  // x: 1.536
+  // y: -10.653
+  // z: 20.993
   // roll: 0
-  // pitch: -10
-  // yaw: -40
+  // pitch: -15
+  // yaw: 0
 
   // Shooter left
   public static final Transform3d robotToCamera3 =
       new Transform3d(
-          new Translation3d(Inches.of(1.536), Inches.of(10.653), Inches.of(20.993)),
-          new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(0)));
+          new Translation3d(Inches.of(-13.573), Inches.of(4.809), Inches.of(9.945)),
+          new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(-192.5)));
 
   // Old shooter left:
-  // x: 3.945
-  // y: 1.417
-  // z: 19.233388
+  // x: 1.536
+  // y: 10.653
+  // z: 20.993
   // roll: 0
-  // pitch: -10
-  // yaw: 40
+  // pitch: -15
+  // yaw: 0
 
   // ---- Filtering thresholds ----
 
