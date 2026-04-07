@@ -295,8 +295,12 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "stopAll",
         ShootSequences.stopAll(flywheel, prestage, hood, feeder, transport, intakeRoller));
-  }
 
+    // Puts the hood down.
+    NamedCommands.registerCommand(
+        "HoodDownNamed",
+        HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
+  }
   // EventTriggers
   //
   // IMPORTANT: Event trigger commands must NOT declare subsystem requirements that overlap
@@ -369,10 +373,10 @@ public class RobotContainer {
     // Trigger-based alignment - trench
     thrustmaster
         .button(2)
-        .and(
-            () ->
-                (Triggers.getInstance().isRobotInTrench()
-                    || Triggers.getInstance().isRobotApproachingTrench()))
+        // .and(
+        //     () ->
+        //         (Triggers.getInstance().isRobotInTrench()
+        //             || Triggers.getInstance().isRobotApproachingTrench()))
         .and(() -> controller.b().getAsBoolean() == false)
         .whileTrue(
             DriveCommands.joystickDriveAlignForTrench(
@@ -380,11 +384,11 @@ public class RobotContainer {
 
     // Trigger-based alignment - bump
     thrustmaster
-        .button(2)
-        .and(
-            () ->
-                (Triggers.getInstance().isRobotOnBump()
-                    || Triggers.getInstance().isRobotApproachingBump()))
+        .button(8)
+        // .and(
+        //     () ->
+        //         (Triggers.getInstance().isRobotOnBump()
+        //             || Triggers.getInstance().isRobotApproachingBump()))
         .and(() -> controller.b().getAsBoolean() == false)
         .whileTrue(
             DriveCommands.joystickDriveAlignForBump(
@@ -520,7 +524,7 @@ public class RobotContainer {
 
     // Intake jostle
     // thrustmaster.button(6).whileTrue(IntakePivotCommands.jostlePivotByPos(intakePivot));
-    thrustmaster.button(6).onTrue(IntakePivotCommands.compressPivot(intakePivot));
+    thrustmaster.button(6).whileTrue(IntakePivotCommands.compressPivot(intakePivot));
     // thrustmaster
     //     .button(6)
     //     .whileTrue(

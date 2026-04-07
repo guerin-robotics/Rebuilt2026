@@ -10,7 +10,7 @@ public class HoodConstants {
     public static double hoodMaxPos = 1.0;
     public static double hoodMinPos = 0.0;
 
-    public static double leftServoOffset = 0.18;
+    public static double leftServoOffset = -0.02;
   }
 
   public class HoodMap {

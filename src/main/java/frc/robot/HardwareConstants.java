@@ -43,7 +43,7 @@ public class HardwareConstants {
   public static class CompConstants {
     // Subsystems that run at a constant voltage: transport, roller
     public static class Voltages {
-      public static final Voltage transportVoltage = Volts.of(-9.0);
+      public static final Voltage transportVoltage = Volts.of(-7.0);
       public static final Voltage intakeRollerVoltage = Volts.of(12.0);
       public static final Voltage intakeRollerAgitateVoltage = Volts.of(3);
     }
@@ -76,6 +76,7 @@ public class HardwareConstants {
 
     public static class Waits {
       public static final double flywheelSpinupSeconds = 0.3;
+      public static final double passSpinUpSeconds = 0.75;
       public static final double waitToCompressSeconds = 1;
     }
   }
