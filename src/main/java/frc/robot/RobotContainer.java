@@ -16,6 +16,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
+
+import choreo.auto.AutoFactory;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -99,119 +101,139 @@ public class RobotContainer {
   private final intakeRoller intakeRoller;
   private final Transport transport;
 
+  private final AutoFactory autoFactory;
+
   // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser;
-
-  // ── Auto Preview & Starting Pose Check ──────────────────────────────────────
-  // Field2d widget to show the selected auto's path and the robot's current position.
-  // Used during disabled/pre-match to verify the robot is placed correctly.
-  public final Field2d autoPreviewField = new Field2d();
-
-  // Stores the starting pose of the currently selected auto.
-  // Updated when the auto chooser selection changes.
-  private Pose2d autoStartPose = new Pose2d();
-
-  // ── Starting Pose Tolerances ────────────────────────────────────────────────
-  // How close (in inches) the robot needs to be to the auto's starting position
-  // for us to consider it "close enough" to start the match.
-  private static final Distance STARTING_POSE_DRIVE_TOLERANCE = Inches.of(6.0);
-
-  // How close (in degrees) the robot's heading needs to be to the auto's starting heading.
-  private static final double STARTING_POSE_ROT_TOLERANCE_DEGREES = 5.0;
-
-  // Controllers
-  private final CommandXboxController controller =
-      new CommandXboxController(HardwareConstants.ControllerConstants.XboxControllerPort);
-  private final CommandJoystick thrustmaster =
-      new CommandJoystick(HardwareConstants.ControllerConstants.JoystickControllerPort);
-
-  public RobotContainer() {
-    switch (Constants.currentMode) {
-      case REAL:
-        drive =
-            new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                new ModuleIOTalonFX(TunerConstants.FrontRight),
-                new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight));
-        vision =
-            new Vision(
-                drive::addVisionMeasurement,
-                new VisionIOPhotonVision(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0),
-                new VisionIOPhotonVision(
-                    VisionConstants.camera1Name, VisionConstants.robotToCamera1),
-                new VisionIOPhotonVision(
-                    VisionConstants.camera2Name, VisionConstants.robotToCamera2),
-                new VisionIOPhotonVision(
-                    VisionConstants.camera3Name, VisionConstants.robotToCamera3));
-        flywheel = new Flywheel(new FlywheelIOPhoenix6());
-        upperFeeder = new UpperFeeder(new UpperFeederIOReal());
-        lowerFeeder = new LowerFeeder(new LowerFeederIOReal());
-        hood = new Hood(new HoodIOReal());
-        prestage = new Prestage(new PrestageIOReal());
-        transport = new Transport(new TransportIOReal());
-        intakePivot = new IntakePivot(new IntakePivotIOReal());
-        intakeRoller = new intakeRoller(new intakeRollerIOReal());
-        break;
-
-      case SIM:
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(TunerConstants.FrontLeft),
-                new ModuleIOSim(TunerConstants.FrontRight),
-                new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight));
-        vision =
-            new Vision(
-                drive::addVisionMeasurement,
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose),
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.camera2Name, VisionConstants.robotToCamera2, drive::getPose),
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.camera3Name, VisionConstants.robotToCamera3, drive::getPose));
-        flywheel = new Flywheel(new FlywheelIOSim());
-        upperFeeder = new UpperFeeder(new UpperFeederIOSim());
-        lowerFeeder = new LowerFeeder(new LowerFeederIOSim());
-        prestage = new Prestage(new PrestageIOSim());
-        hood = new Hood(new HoodIOSim());
-        transport = new Transport(new TransportIOSim());
-        intakePivot = new IntakePivot(new IntakePivotIOSim());
-        intakeRoller = new intakeRoller(new intakeRollerIOSim());
-        break;
-
-      default:
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
-        flywheel = new Flywheel(new FlywheelIO() {});
-        upperFeeder = new UpperFeeder(new UpperFeederIO() {});
-        lowerFeeder = new LowerFeeder(new LowerFeederIO() {});
-        prestage = new Prestage(new PrestageIO() {});
-        hood = new Hood(new HoodIO() {});
-        transport = new Transport(new TransportIO() {});
-        intakePivot = new IntakePivot(new IntakePivotIO() {});
-        intakeRoller = new intakeRoller(new intakeRollerIO() {});
-        break;
-    }
-
-    // IMPORTANT: Register named commands and event triggers BEFORE building the auto chooser.
-    // AutoBuilder.buildAutoChooser() parses the .auto files and resolves named commands at
-    // build time. If commands aren't registered yet, they resolve to Commands.none().
-    registerNamedCommands();
-    registerEventTriggers();
-
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+  private LoggedDashboardChooser<Command> autoChooser;
+  
+    // ── Auto Preview & Starting Pose Check ──────────────────────────────────────
+    // Field2d widget to show the selected auto's path and the robot's current position.
+    // Used during disabled/pre-match to verify the robot is placed correctly.
+    public final Field2d autoPreviewField = new Field2d();
+  
+    // Stores the starting pose of the currently selected auto.
+    // Updated when the auto chooser selection changes.
+    private Pose2d autoStartPose = new Pose2d();
+  
+    // ── Starting Pose Tolerances ────────────────────────────────────────────────
+    // How close (in inches) the robot needs to be to the auto's starting position
+    // for us to consider it "close enough" to start the match.
+    private static final Distance STARTING_POSE_DRIVE_TOLERANCE = Inches.of(6.0);
+  
+    // How close (in degrees) the robot's heading needs to be to the auto's starting heading.
+    private static final double STARTING_POSE_ROT_TOLERANCE_DEGREES = 5.0;
+  
+    // Controllers
+    private final CommandXboxController controller =
+        new CommandXboxController(HardwareConstants.ControllerConstants.XboxControllerPort);
+    private final CommandJoystick thrustmaster =
+        new CommandJoystick(HardwareConstants.ControllerConstants.JoystickControllerPort);
+  
+    public RobotContainer() {
+      switch (Constants.currentMode) {
+        case REAL:
+          drive =
+              new Drive(
+                  new GyroIOPigeon2(),
+                  new ModuleIOTalonFX(TunerConstants.FrontLeft),
+                  new ModuleIOTalonFX(TunerConstants.FrontRight),
+                  new ModuleIOTalonFX(TunerConstants.BackLeft),
+                  new ModuleIOTalonFX(TunerConstants.BackRight));
+          vision =
+              new Vision(
+                  drive::addVisionMeasurement,
+                  new VisionIOPhotonVision(
+                      VisionConstants.camera0Name, VisionConstants.robotToCamera0),
+                  new VisionIOPhotonVision(
+                      VisionConstants.camera1Name, VisionConstants.robotToCamera1),
+                  new VisionIOPhotonVision(
+                      VisionConstants.camera2Name, VisionConstants.robotToCamera2),
+                  new VisionIOPhotonVision(
+                      VisionConstants.camera3Name, VisionConstants.robotToCamera3));
+          flywheel = new Flywheel(new FlywheelIOPhoenix6());
+          upperFeeder = new UpperFeeder(new UpperFeederIOReal());
+          lowerFeeder = new LowerFeeder(new LowerFeederIOReal());
+          hood = new Hood(new HoodIOReal());
+          prestage = new Prestage(new PrestageIOReal());
+          transport = new Transport(new TransportIOReal());
+          intakePivot = new IntakePivot(new IntakePivotIOReal());
+          intakeRoller = new intakeRoller(new intakeRollerIOReal());
+          break;
+  
+        case SIM:
+          drive =
+              new Drive(
+                  new GyroIO() {},
+                  new ModuleIOSim(TunerConstants.FrontLeft),
+                  new ModuleIOSim(TunerConstants.FrontRight),
+                  new ModuleIOSim(TunerConstants.BackLeft),
+                  new ModuleIOSim(TunerConstants.BackRight));
+          vision =
+              new Vision(
+                  drive::addVisionMeasurement,
+                  new VisionIOPhotonVisionSim(
+                      VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
+                  new VisionIOPhotonVisionSim(
+                      VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose),
+                  new VisionIOPhotonVisionSim(
+                      VisionConstants.camera2Name, VisionConstants.robotToCamera2, drive::getPose),
+                  new VisionIOPhotonVisionSim(
+                      VisionConstants.camera3Name, VisionConstants.robotToCamera3, drive::getPose));
+          flywheel = new Flywheel(new FlywheelIOSim());
+          upperFeeder = new UpperFeeder(new UpperFeederIOSim());
+          lowerFeeder = new LowerFeeder(new LowerFeederIOSim());
+          prestage = new Prestage(new PrestageIOSim());
+          hood = new Hood(new HoodIOSim());
+          transport = new Transport(new TransportIOSim());
+          intakePivot = new IntakePivot(new IntakePivotIOSim());
+          intakeRoller = new intakeRoller(new intakeRollerIOSim());
+          break;
+  
+        default:
+          drive =
+              new Drive(
+                  new GyroIO() {},
+                  new ModuleIO() {},
+                  new ModuleIO() {},
+                  new ModuleIO() {},
+                  new ModuleIO() {});
+          vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+          flywheel = new Flywheel(new FlywheelIO() {});
+          upperFeeder = new UpperFeeder(new UpperFeederIO() {});
+          lowerFeeder = new LowerFeeder(new LowerFeederIO() {});
+          prestage = new Prestage(new PrestageIO() {});
+          hood = new Hood(new HoodIO() {});
+          transport = new Transport(new TransportIO() {});
+          intakePivot = new IntakePivot(new IntakePivotIO() {});
+          intakeRoller = new intakeRoller(new intakeRollerIO() {});
+          break;
+      }
+  
+      autoFactory =
+          new AutoFactory(
+              drive::getPose,
+              drive::setPose,
+              drive::followTrajectory,
+              true,
+              drive);
+      // IMPORTANT: Register named commands and event triggers BEFORE building the auto chooser.
+      // AutoBuilder.buildAutoChooser() parses the .auto files and resolves named commands at
+      // build time. If commands aren't registered yet, they resolve to Commands.none().
+      registerNamedCommands();
+      registerEventTriggers();
+  
+      autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+  
+      // Publish the auto preview field to the dashboard so we can see the selected path
+      SmartDashboard.putData("Auto Preview", autoPreviewField);
+  
+      // IMPORTANT: Register named commands and event triggers BEFORE building the auto chooser.
+      // AutoBuilder.buildAutoChooser() parses the .auto files and resolves named commands at
+      // build time. If commands aren't registered yet, they resolve to Commands.none().
+      registerNamedCommands();
+      registerEventTriggers();
+  
+      autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Publish the auto preview field to the dashboard so we can see the selected path
     SmartDashboard.putData("Auto Preview", autoPreviewField);

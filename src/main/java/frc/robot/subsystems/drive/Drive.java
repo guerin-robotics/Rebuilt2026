@@ -160,6 +160,7 @@ public class Drive extends SubsystemBase {
   public void followTrajectory(SwerveSample sample) {
     // Get the current pose of the robot
     Pose2d pose = getPose();
+    Pose2d targetPose = sample.getPose();
 
     // Generate the next speeds for the robot
     ChassisSpeeds speeds =
@@ -170,7 +171,8 @@ public class Drive extends SubsystemBase {
                 + headingController.calculate(pose.getRotation().getRadians(), sample.heading));
 
     // Apply the generated speeds
-    driveFieldRelative(speeds);
+    runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, pose.getRotation()));
+    Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
   }
 
   @Override
