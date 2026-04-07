@@ -11,11 +11,8 @@ import static edu.wpi.first.math.util.Units.metersToInches;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Volts;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
-import com.pathplanner.lib.path.PathPlannerPath;
 
 import choreo.auto.AutoFactory;
 import edu.wpi.first.math.MathUtil;
@@ -29,7 +26,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.lib.AllianceFlipUtil;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeederCommands;
 import frc.robot.commands.FlywheelCommands;
@@ -38,6 +34,9 @@ import frc.robot.commands.IntakePivotCommands;
 import frc.robot.commands.PrestageCommands;
 import frc.robot.commands.ShootSequences;
 import frc.robot.commands.TransportCommands;
+import frc.robot.commands.autos.AutoPaths;
+import frc.robot.commands.autos.utils.AutoContext;
+import frc.robot.commands.autos.utils.AutoOption;
 import frc.robot.commands.intakeRollerCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -102,9 +101,10 @@ public class RobotContainer {
   private final Transport transport;
 
   private final AutoFactory autoFactory;
+  private final AutoContext autoContext;
 
   // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser;
+  private final LoggedDashboardChooser<AutoOption> autoChooser;
   
     // ── Auto Preview & Starting Pose Check ──────────────────────────────────────
     // Field2d widget to show the selected auto's path and the robot's current position.
@@ -216,14 +216,33 @@ public class RobotContainer {
               drive::followTrajectory,
               true,
               drive);
-              
-      // IMPORTANT: Register named commands and event triggers BEFORE building the auto chooser.
-      // AutoBuilder.buildAutoChooser() parses the .auto files and resolves named commands at
-      // build time. If commands aren't registered yet, they resolve to Commands.none().
+
+      // Create the shared auto context with all subsystems the autos need
+      autoContext =
+          AutoContext.create(
+              drive,
+              flywheel,
+              prestage,
+              hood,
+              upperFeeder,
+              lowerFeeder,
+              transport,
+              intakePivot,
+              intakeRoller,
+              autoFactory);
+
+      // Register named commands and event triggers for PathPlanner-based autos.
+      // These are still available if any PathPlanner autos are used alongside Choreo.
       registerNamedCommands();
       registerEventTriggers();
-  
-      autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+
+      // ── Choreo Auto Chooser ───────────────────────────────────────────────────
+      // Each option stores an AutoOption (command supplier + preview poses + start pose).
+      // The command is lazily built when the match starts, not at boot time.
+      autoChooser = new LoggedDashboardChooser<>("Auto Choices");
+      autoChooser.addDefaultOption("None", new AutoOption(Commands::none, List.of(), new Pose2d()));
+      autoChooser.addOption("Score and Pickup", AutoPaths.scoreAndPickup(autoContext));
+      autoChooser.addOption("Two Piece", AutoPaths.twoPiece(autoContext));
 
     // Publish the auto preview field to the dashboard so we can see the selected path
     SmartDashboard.putData("Auto Preview", autoPreviewField);
@@ -793,74 +812,53 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    AutoOption selected = autoChooser.get();
+    if (selected == null) return Commands.none();
+    return selected.command();
   }
 
   // ==================== AUTO PREVIEW & STARTING POSE CHECK ====================
 
-  /** Tracks the last auto name so we only reload paths when the selection changes. */
-  private String lastAutoName = "";
+  /** Tracks the last selected AutoOption so we only redraw when the selection changes. */
+  private AutoOption lastAutoOption = null;
 
   /**
    * Updates the auto path preview on the Field2d when the selected auto changes.
    *
    * <p>Call this periodically (e.g., from {@code disabledPeriodic}). It reads the currently
-   * selected auto command's name, loads all paths from that auto file, and draws them on the "Auto
-   * Preview" Field2d widget.
+   * selected AutoOption's preview poses and draws them on the "Auto Preview" Field2d widget.
+   * Because the AutoOption already contains the pre-computed poses and starting pose, this method
+   * does not need to load or parse any trajectory files at runtime.
    */
   public void updateAutoPreview() {
-    // Get the currently selected auto command
-    Command selectedAuto = autoChooser.get();
-    if (selectedAuto == null) return;
+    AutoOption selectedOption = autoChooser.get();
+    if (selectedOption == null) return;
 
-    String autoName = selectedAuto.getName();
-
-    // Only reload if the selection changed
-    if (autoName.equals(lastAutoName)) return;
-    lastAutoName = autoName;
-
-    Logger.recordOutput("Auto/SelectedAuto", autoName);
+    // Only redraw if the selection changed
+    if (selectedOption.equals(lastAutoOption)) return;
+    lastAutoOption = selectedOption;
 
     // Clear any previously drawn paths
     autoPreviewField.getObject("path").setPoses();
 
-    try {
-      // Load all paths from the selected auto and draw them on the field
-      List<PathPlannerPath> paths = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
+    List<Pose2d> previewPoses = selectedOption.previewPoses();
+    if (previewPoses == null || previewPoses.isEmpty()) {
+      Logger.recordOutput("Auto/PreviewStatus", "No preview poses for selected auto");
+      autoStartPose = new Pose2d();
+      return;
+    }
 
-      if (paths.isEmpty()) {
-        Logger.recordOutput("Auto/PreviewStatus", "No paths found for: " + autoName);
-        autoStartPose = new Pose2d();
-        return;
-      }
+    // Draw all preview poses on the Field2d
+    autoPreviewField.getObject("path").setPoses(previewPoses);
 
-      // Collect all path poses for visualization
-      List<Pose2d> allPoses = new java.util.ArrayList<>();
-      for (PathPlannerPath path : paths) {
-        // Flip the path for red alliance if needed
-        PathPlannerPath flippedPath = path.flipPath();
-        boolean shouldFlip = AllianceFlipUtil.shouldFlip();
-
-        PathPlannerPath displayPath = shouldFlip ? flippedPath : path;
-        allPoses.addAll(displayPath.getPathPoses());
-      }
-
-      // Draw all path poses on the Field2d
-      autoPreviewField.getObject("path").setPoses(allPoses);
-
-      // Store the starting pose (first point of the first path)
-      autoStartPose = paths.get(0).getStartingHolonomicPose().orElse(new Pose2d());
-      if (AllianceFlipUtil.shouldFlip()) {
-        autoStartPose = AllianceFlipUtil.apply(autoStartPose);
-      }
-
-      Logger.recordOutput("Auto/PreviewStatus", "Loaded " + paths.size() + " paths");
-      Logger.recordOutput("Auto/StartPose", autoStartPose);
-
-    } catch (Exception e) {
-      Logger.recordOutput("Auto/PreviewStatus", "Error loading: " + e.getMessage());
+    // Store the starting pose from the AutoOption
+    autoStartPose = selectedOption.startingPose();
+    if (autoStartPose == null) {
       autoStartPose = new Pose2d();
     }
+
+    Logger.recordOutput("Auto/PreviewStatus", "Loaded " + previewPoses.size() + " preview poses");
+    Logger.recordOutput("Auto/StartPose", autoStartPose);
   }
 
   /**
