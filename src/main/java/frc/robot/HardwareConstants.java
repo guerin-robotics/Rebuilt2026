@@ -24,10 +24,11 @@ public class HardwareConstants {
     // public static int HOOD_SERVO_CHANNEL = 0;
     // public static int HOOD_LEFT_SERVO_CHANNEL = 1;
     public static int HOOD_MOTOR = 35;
-    public static int HOOD_ENCODER = 36;
+    public static int HOOD_ENCODER = 50;
 
     // Prestage
     public static int PRESTAGE_LEADER_ID = 37;
+    public static int PRESTAGE_FOLLOWER_ID = 36;
 
     // Feeder
     public static int UPPER_FEEDER_MOTOR_ID = 38;
@@ -85,6 +86,10 @@ public class HardwareConstants {
       public static final double flywheelSpinupSeconds = 0.3;
       public static final double passSpinUpSeconds = 0.75;
       public static final double waitToCompressSeconds = 1;
+    }
+
+    public static class Thresholds {
+      public static final double flywheelSpinupThreshold = 200;
     }
   }
 
