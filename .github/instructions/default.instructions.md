@@ -258,3 +258,208 @@ end(true) ← interrupted = true
 - Prefer readability over cleverness
 - Break complex logic into small, named methods
 - Use descriptive variable names (`leftMotorVolts` not `lmv`)
+
+---
+
+## Autonomous Routines (Choreo)
+
+This project uses **ChoreoLib** for autonomous path following. Trajectories are created in the
+[Choreo application](https://choreo.autos/) and saved as `.traj` files in `src/main/deploy/choreo/`.
+
+### Documentation Links
+
+- **Choreo application**: https://choreo.autos/
+- **ChoreoLib getting started**: https://choreo.autos/choreolib/getting-started/
+- **AutoFactory API (Java)**: https://choreo.autos/choreolib/auto-factory/
+- **AutoRoutine pattern** (preferred): https://choreo.autos/choreolib/auto-factory/#using-autoroutine
+- **AutoChooser**: https://choreo.autos/choreolib/auto-factory/#autochooser
+- **AutoTrajectory Java API**: https://choreo.autos/api/choreolib/java/choreo/auto/AutoTrajectory.html
+- **Trajectory Java API**: https://choreo.autos/api/choreolib/java/choreo/trajectory/Trajectory.html
+- **AutoFactory Java API**: https://choreo.autos/api/choreolib/java/choreo/auto/AutoFactory.html
+
+### Project Auto Architecture
+
+All autonomous code lives under `src/main/java/frc/robot/commands/autos/`:
+
+```
+commands/autos/
+├── AutoCommands.java          ← Reusable command factories (deployIntake, shootSequence, stopAll)
+├── AutoPaths.java             ← One static method per auto, each returns an AutoOption
+└── utils/
+    ├── AutoContext.java       ← Record bundling all subsystems + AutoFactory
+    └── AutoOption.java        ← Record wrapping command supplier + preview poses + start pose
+```
+
+### How AutoRoutine Works
+
+**Always use `AutoRoutine`, not `trajectoryCmd()` command compositions.** `AutoRoutine` uses
+WPILib `Trigger`s to react to robot state, which avoids scheduling conflicts with default commands
+and makes branching autos much easier to write.
+
+Key classes:
+- **`AutoFactory`** — Created in `RobotContainer`, passed into `AutoContext`. Holds the drive
+  pose supplier, reset function, trajectory follower, and alliance flip flag.
+- **`AutoRoutine`** — Created per auto via `autoFactory.newRoutine("name")`. Has an `active()`
+  trigger that fires when the routine starts.
+- **`AutoTrajectory`** — Loaded via `routine.trajectory("trajName")` or
+  `routine.trajectory("trajName", splitIndex)` for split segments. Provides triggers and
+  a `.cmd()` to follow the path.
+
+### AutoContext Pattern
+
+`AutoContext` is a Java `record` that bundles every subsystem and the `AutoFactory` into one
+object. This keeps auto method signatures short and consistent.
+
+```java
+// In RobotContainer constructor — create once, pass to every auto
+autoContext = AutoContext.create(
+    drive, flywheel, prestage, hood,
+    upperFeeder, lowerFeeder, transport,
+    intakePivot, intakeRoller, autoFactory);
+```
+
+```java
+// Every auto method takes a single AutoContext parameter
+public static AutoOption myAuto(AutoContext ctx) {
+    AutoRoutine routine = ctx.autoFactory().newRoutine("MyAuto");
+    // ... build routine ...
+    return new AutoOption(routine::cmd, previewPoses, startPose);
+}
+```
+
+### AutoOption Pattern
+
+`AutoOption` is a Java `record` stored in the `LoggedDashboardChooser`. It holds:
+- `Supplier<Command> commandSupplier` — lazily builds the auto command when called
+- `List<Pose2d> previewPoses` — all path poses for the Field2d dashboard preview
+- `Pose2d startingPose` — expected robot start pose for pre-match alignment check
+
+```java
+// Chooser stores AutoOption, not Command
+private final LoggedDashboardChooser<AutoOption> autoChooser;
+
+// Register autos
+autoChooser.addDefaultOption("None", new AutoOption(Commands::none, List.of(), new Pose2d()));
+autoChooser.addOption("My Auto", AutoPaths.myAuto(autoContext));
+
+// Get the command when autonomous starts
+public Command getAutonomousCommand() {
+    AutoOption selected = autoChooser.get();
+    if (selected == null) return Commands.none();
+    return selected.command();
+}
+
+// Read poses during disabled for preview (no file I/O needed — already computed)
+public void updateAutoPreview() {
+    AutoOption selected = autoChooser.get();
+    if (selected == null || selected.equals(lastAutoOption)) return;
+    lastAutoOption = selected;
+    autoPreviewField.getObject("path").setPoses(selected.previewPoses());
+    autoStartPose = selected.startingPose();
+}
+```
+
+### Writing a New Auto
+
+1. **Create the trajectory** in the Choreo app. Name it exactly as it will be referenced in code.
+   Add event markers (e.g. `"deployIntake"`, `"shootSequence"`) at the right timestamps.
+   Use the **Split** checkbox on a waypoint to create multiple segments from one file.
+
+2. **Add a static method** in `AutoPaths.java` that returns an `AutoOption`:
+
+```java
+public static AutoOption myNewAuto(AutoContext ctx) {
+    AutoRoutine routine = ctx.autoFactory().newRoutine("MyNewAuto");
+
+    // Load trajectory (use split index overload for multi-segment paths)
+    AutoTrajectory traj = routine.trajectory("MyNewAuto");
+
+    // Always start by resetting odometry then running the first trajectory
+    routine.active().onTrue(
+        Commands.sequence(traj.resetOdometry(), traj.cmd())
+    );
+
+    // React to event markers by name (must match the name set in Choreo)
+    traj.atTime("deployIntake").onTrue(AutoCommands.deployAndRunIntake(ctx));
+
+    // React when the trajectory finishes
+    traj.done().onTrue(
+        AutoCommands.shootSequence(ctx)
+            .withTimeout(3.0)
+            .andThen(AutoCommands.stopAll(ctx))
+    );
+
+    // Extract poses for dashboard preview and starting pose check
+    List<Pose2d> previewPoses = getTrajectoryPoses(traj);
+    Pose2d startPose = getStartingPose(traj);
+
+    return new AutoOption(routine::cmd, previewPoses, startPose);
+}
+```
+
+3. **Register the option** in `RobotContainer`:
+
+```java
+autoChooser.addOption("My New Auto", AutoPaths.myNewAuto(autoContext));
+```
+
+### AutoTrajectory Trigger Reference
+
+| Trigger | When it fires |
+|---|---|
+| `routine.active()` | Once when the routine is scheduled — use this as the entry point |
+| `traj.active()` | While the trajectory is actively running |
+| `traj.done()` | For **one cycle** after the trajectory finishes (use `onTrue`, not `whileTrue`) |
+| `traj.atTime("markerName")` | When the trajectory timer reaches the named event marker |
+| `traj.atTime(double seconds)` | When the trajectory timer reaches a specific elapsed time |
+| `traj.atPose("markerName", toleranceM, toleranceRad)` | When the robot is within tolerance of the marker's pose |
+| `traj.recentlyDone()` | True after the trajectory finishes until the next one starts |
+
+> **Warning:** `done()` is only true for **one scheduler cycle**. Do not use `whileTrue()` with it.
+> Chain with `onTrue()` only.
+
+### Multi-Segment (Split) Trajectories
+
+Use the Choreo app's **Split** checkbox on a waypoint to divide one `.traj` file into indexed
+segments. Load each segment by split index (0-based):
+
+```java
+AutoTrajectory seg1 = routine.trajectory("MyPath", 0); // First segment
+AutoTrajectory seg2 = routine.trajectory("MyPath", 1); // Second segment
+
+// Chain segments: when segment 1 is done, start segment 2
+seg1.done().onTrue(seg2.cmd());
+
+// Or use the shorthand:
+seg1.chain(seg2);
+```
+
+### AutoFactory Setup (RobotContainer)
+
+The `AutoFactory` must be created at the `RobotContainer` scope (not inside Drive):
+
+```java
+autoFactory = new AutoFactory(
+    drive::getPose,         // Supplies current robot pose
+    drive::setPose,         // Resets robot pose to a given Pose2d
+    drive::followTrajectory, // Follows a SwerveSample each loop
+    true,                   // Enable alliance flipping (blue-side paths flip for red)
+    drive                   // Drive subsystem (declared as requirement)
+);
+```
+
+The drive subsystem's `followTrajectory(SwerveSample sample)` method is called every loop cycle
+while a trajectory runs. It uses PID controllers to track the sample's `x`, `y`, and `heading`.
+
+### Important Rules
+
+- **Always call `trajectory.resetOdometry()` before `trajectory.cmd()`** on the first segment.
+  Otherwise the robot's odometry won't match the path start pose.
+- **Alliance flipping is automatic** when `AutoFactory` is constructed with `true`. Write all
+  Choreo paths on the **blue alliance side** only.
+- **Event marker names are case-sensitive** and must exactly match what is set in the Choreo app.
+- **Warm up Choreo on startup** by calling `autoFactory.warmupCmd()` in `AutoContext.create()`.
+  This pre-loads trajectory data so there is no delay when autonomous starts.
+- **`AutoRoutine` triggers are scoped** — they only fire while the routine is active. Standard
+  WPILib triggers are not scoped; use `routine.observe(myTrigger)` or conjoin them with a routine
+  trigger to avoid leaking state into other modes.
