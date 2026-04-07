@@ -368,13 +368,13 @@ public class RobotContainer {
             () -> MathUtil.clamp(-getThrustY(), -1.0, 1.0),
             () -> MathUtil.clamp(-getThrustX(), -1.0, 1.0),
             () -> MathUtil.clamp(-getThrustRot(), -1.0, 1.0)));
-    // Flywheel - idle
-    flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
-    // Prestage - idle
-    prestage.setDefaultCommand(PrestageCommands.prestageIdle(prestage));
-    // Hood - down
-    hood.setDefaultCommand(
-        HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
+    // // Flywheel - idle
+    // flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
+    // // Prestage - idle
+    // prestage.setDefaultCommand(PrestageCommands.prestageIdle(prestage));
+    // // Hood - down
+    // hood.setDefaultCommand(
+    //     HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
 
     // OVERRIDES
     // Flip alliance winner
@@ -392,8 +392,7 @@ public class RobotContainer {
                 drive,
                 () -> -thrustmaster.getY(),
                 () -> -thrustmaster.getX(),
-                () -> RobotState.getInstance().getShootAngleForZoneAndTime())
-            );
+                () -> RobotState.getInstance().getShootAngleForZoneAndTime()));
 
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
     // button is pressed

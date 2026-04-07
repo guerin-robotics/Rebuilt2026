@@ -27,11 +27,11 @@ public class IntakePivotConstants {
 
   /** Software configuration: motor inversion, encoder direction, and soft limits. NEEDS TUNED */
   public static class SoftwareConstants {
-    public static final boolean MOTOR_INVERTED = false;
+    public static final boolean MOTOR_INVERTED = true;
     public static final SensorDirectionValue ENCODER_DIRECTION =
         SensorDirectionValue.Clockwise_Positive;
     /** Upper software limit in rotations of the mechanism. */
-    public static final double softwareUpperRotationLimit = 0.5;
+    public static final double softwareUpperRotationLimit = 0.4;
     /** Lower software limit in rotations of the mechanism. */
     public static final double softwareLowerRotationLimit = 0.00;
   }
@@ -55,7 +55,7 @@ public class IntakePivotConstants {
     /** Current threshold (stator amps) used in the jostle routine. */
     public static final double pivotJostleCurrentLimit = 70;
     /** CANcoder magnet offset in rotations. */
-    public static final double magnetOffset = -0.074;
+    public static final double magnetOffset = -0.6;
     /** CANcoder absolute sensor discontinuity point. */
     public static final double magnetSensorDiscontinuityPoint = 0.625;
 

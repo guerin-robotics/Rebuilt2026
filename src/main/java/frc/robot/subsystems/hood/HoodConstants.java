@@ -11,7 +11,7 @@ public class HoodConstants {
 
   public static class Mechanical {
     public static final double magnetSensorDiscontinuityPoint = 0.5;
-    public static final double magnetOffset = 0;
+    public static final double magnetOffset = 0.3;
     public static double hoodMaxPos = 1.0;
     public static double hoodMinPos = 0.0;
 
@@ -23,9 +23,9 @@ public class HoodConstants {
   public static class SoftwareConstants {
     public static final double softwareLowerRotationLimit = 0;
     public static final SensorDirectionValue ENCODER_DIRECTION =
-        SensorDirectionValue.CounterClockwise_Positive;
-    public static boolean MOTOR_INVERTED = true;
-    public static double softwareUpperRotationLimit = 0.5;
+        SensorDirectionValue.Clockwise_Positive;
+    public static boolean MOTOR_INVERTED = false;
+    public static double softwareUpperRotationLimit = 2.0;
   }
 
   public static class CurrentLimits {
