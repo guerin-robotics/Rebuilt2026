@@ -1,26 +1,21 @@
 package frc.robot.subsystems.flywheel;
 
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.FieldConstants;
 import frc.robot.HardwareConstants;
 import frc.robot.RobotState;
-import frc.robot.Triggers;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.ShooterIOInputsAutoLogged;
-import frc.robot.util.HubShiftUtil;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -78,44 +73,6 @@ public class Flywheel extends SubsystemBase {
     io.setFlywheelVelocity(velocity);
   }
 
-  public Translation3d getPassTarget() {
-    Translation3d passTarget;
-    // if (RobotState.getInstance().getEstimatedPose().getY()
-    //     > (AllianceFlipUtil.applyY(FieldConstants.fieldWidth / 2))) {
-    //   passTarget =
-    //       new Translation3d(
-    //           (AllianceFlipUtil.applyY(FieldConstants.LinesVertical.neutralZoneNear / 2)),
-    //           ((3 * AllianceFlipUtil.applyY(FieldConstants.LinesHorizontal.center)) / 4),
-    //           0);
-    // } else {
-    //   passTarget =
-    //       new Translation3d(
-    //           (AllianceFlipUtil.applyY(FieldConstants.LinesVertical.neutralZoneNear / 2)),
-    //           ((AllianceFlipUtil.applyY(FieldConstants.LinesHorizontal.center)) / 4),
-    //           0);
-    // }
-    if (DriverStation.getAlliance().isEmpty()
-        || DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-      if (RobotState.getInstance().getEstimatedPose().getY() > (FieldConstants.fieldWidth / 2)) {
-        passTarget =
-            new Translation3d(Meters.of(13.373).magnitude(), Meters.of(6.136).magnitude(), 0);
-      } else {
-        passTarget =
-            new Translation3d(Meters.of(12.950).magnitude(), Meters.of(2.293).magnitude(), 0);
-      }
-    } else {
-      if (RobotState.getInstance().getEstimatedPose().getY() < (FieldConstants.fieldWidth / 2)) {
-        passTarget =
-            new Translation3d(Meters.of(2.993).magnitude(), Meters.of(2.114).magnitude(), 0);
-      } else {
-        passTarget =
-            new Translation3d(Meters.of(3.135).magnitude(), Meters.of(6.129).magnitude(), 0);
-      }
-    }
-    Logger.recordOutput("Flywheel/passTarget", passTarget);
-    return passTarget;
-  }
-
   public AngularVelocity getTuningRPM() {
     return RPM.of(tuningRPM.get());
   }
@@ -123,41 +80,6 @@ public class Flywheel extends SubsystemBase {
   public void setTuningRPM() {
     AngularVelocity velocity = getTuningRPM();
     io.setFlywheelVelocity(velocity);
-  }
-
-  // Returns angle to hub if shooting, returns angle to passing target if passing
-  // Includes time logic, both zone and time logic overrideable
-  // Returns current rotation if in alliance zone but hub inactive
-  public Rotation2d getShootAngleForZoneAndTime() {
-    if (!HubShiftUtil.disabled) {
-      if (Triggers.getInstance().isShootClear().getAsBoolean()) {
-        Logger.recordOutput("RobotState/zoneSafeToShoot", true);
-        return RobotState.getInstance().getAngleToAllianceHub();
-      } else {
-        if (Triggers.getInstance().isShootSafeZone().getAsBoolean()) {
-          return RobotState.getInstance().getEstimatedPose().getRotation();
-        } else {
-          Logger.recordOutput("RobotState/zoneSafeToShoot", false);
-          return RobotState.getInstance()
-              .getAngleToTarget(new Translation2d(getPassTarget().getX(), getPassTarget().getY()));
-        }
-      }
-    } else {
-      Logger.recordOutput("RobotState/shootAngleOverriden", true);
-      return RobotState.getInstance().getAngleToAllianceHub();
-    }
-  }
-
-  // No time logic
-  public Rotation2d getShootAngleForZone() {
-    if (Triggers.getInstance().isShootSafeZone().getAsBoolean()) {
-      Logger.recordOutput("RobotState/zoneSafeToShoot", true);
-      return RobotState.getInstance().getAngleToAllianceHub();
-    } else {
-      Logger.recordOutput("RobotState/zoneSafeToShoot", false);
-      return RobotState.getInstance()
-          .getAngleToTarget(new Translation2d(getPassTarget().getX(), getPassTarget().getY()));
-    }
   }
 
   // Definitely getting ahead of ourselves but when we get to shooting on the move...

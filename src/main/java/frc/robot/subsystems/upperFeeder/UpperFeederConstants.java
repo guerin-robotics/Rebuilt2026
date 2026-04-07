@@ -21,7 +21,7 @@ public class UpperFeederConstants {
   }
 
   public static class Mechanical {
-    public static final double upperFeederRatio = 1 / 0.417;
+    public static final double upperFeederRatio = 24 / 11;
   }
 
   // Real robot PID gains for torque-current velocity control

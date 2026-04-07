@@ -29,6 +29,8 @@ public class Triggers {
       new CommandXboxController(HardwareConstants.ControllerConstants.XboxControllerPort);
   private final CommandJoystick thrustmaster =
       new CommandJoystick(HardwareConstants.ControllerConstants.JoystickControllerPort);
+  private final CommandXboxController simController =
+      new CommandXboxController(HardwareConstants.ControllerConstants.SimControllerPort);
 
   // Button mapping triggers
   public Trigger shootButton() {
@@ -71,8 +73,48 @@ public class Triggers {
     return controller.x();
   }
 
-  public Trigger simButton() {
+  public Trigger simShootButton() {
     return controller.b();
+  }
+
+  public Trigger simTrenchAlignButton() {
+    return simController.button(2);
+  }
+
+  public Trigger simIntakeInButton() {
+    return simController.button(3);
+  }
+
+  public Trigger simIntakeOutButton() {
+    return simController.button(4);
+  }
+
+  public Trigger simIntakeRollerButton() {
+    return simController.button(5);
+  }
+
+  public Trigger simIntakeCompressButton() {
+    return simController.button(6);
+  }
+
+  public Trigger simBumpAlignButton() {
+    return simController.button(7);
+  }
+
+  public Trigger simShootFromTowerButton() {
+    return simController.button(8);
+  }
+
+  public Trigger simPassButton() {
+    return simController.button(9);
+  }
+
+  public Trigger simXWheels() {
+    return simController.button(0);
+  }
+
+  public Trigger tuningButton() {
+    return thrustmaster.button(7);
   }
 
   // Override triggers
@@ -95,16 +137,18 @@ public class Triggers {
         });
   }
 
-  public LoggedTrigger isShootSafeTimeSure() {
-    boolean safe = HubShiftUtil.getShiftedShiftInfo().active();
-    return new LoggedTrigger("isShootSafeTimeSure", () -> safe);
-  }
-
-  // Returns true if robot is able to score fuel at the current match time
+  // Returns true if robot is able to score fuel at the current match time, or if timer is disabled
   public LoggedTrigger isShootSafeTime() {
     boolean disabled = HubShiftUtil.disabled;
     boolean safe = HubShiftUtil.getShiftedShiftInfo().active();
     return new LoggedTrigger("isShootSafeTime", () -> (safe || disabled));
+  }
+
+  // Adaptation of above trigger that returns true if time is safe, but not if timer is disabled
+  // (Used for smart idle speeds)
+  public LoggedTrigger isShootSafeTimeSure() {
+    boolean safe = HubShiftUtil.getShiftedShiftInfo().active();
+    return new LoggedTrigger("isShootSafeTimeSure", () -> safe);
   }
 
   // Composite checker for time and zone

@@ -25,78 +25,44 @@ public class PrestageIOReal implements PrestageIO {
   private static final CANBus CAN_BUS = new CANBus("rio");
 
   private final TalonFX prestageLeft;
-  private final TalonFX prestageRight;
 
   private final VoltageOut voltageRequest = new VoltageOut(0);
   private final MotionMagicVelocityTorqueCurrentFOC torqueRequest =
       new MotionMagicVelocityTorqueCurrentFOC(0);
 
   // Cached status signals for LEFT motor
-  private final StatusSignal<AngularVelocity> leftVelocity;
-  private final StatusSignal<Current> leftStatorCurrent;
-  private final StatusSignal<Current> leftSupplyCurrent;
-  private final StatusSignal<Voltage> leftMotorVoltage;
-  private final StatusSignal<Temperature> leftDeviceTemp;
-  private final StatusSignal<Double> leftClosedLoopReference;
-  private final StatusSignal<Double> leftClosedLoopError;
-  private final StatusSignal<Angle> leftPos;
-
-  // Cached status signals for RIGHT motor
-  private final StatusSignal<AngularVelocity> rightVelocity;
-  private final StatusSignal<Current> rightStatorCurrent;
-  private final StatusSignal<Current> rightSupplyCurrent;
-  private final StatusSignal<Voltage> rightMotorVoltage;
-  private final StatusSignal<Temperature> rightDeviceTemp;
-  private final StatusSignal<Double> rightClosedLoopReference;
-  private final StatusSignal<Double> rightClosedLoopError;
-  private final StatusSignal<Angle> rightPos;
+  private final StatusSignal<AngularVelocity> Velocity;
+  private final StatusSignal<Current> StatorCurrent;
+  private final StatusSignal<Current> SupplyCurrent;
+  private final StatusSignal<Voltage> MotorVoltage;
+  private final StatusSignal<Temperature> DeviceTemp;
+  private final StatusSignal<Double> ClosedLoopReference;
+  private final StatusSignal<Double> ClosedLoopError;
+  private final StatusSignal<Angle> Pos;
 
   public PrestageIOReal() {
     prestageLeft = new TalonFX(HardwareConstants.CanIds.PRESTAGE_LEADER_ID, CAN_BUS);
-    prestageRight = new TalonFX(HardwareConstants.CanIds.PRESTAGE_FOLLOWER_ID, CAN_BUS);
     configurePrestageMotor();
 
-    // Cache signal references once in the constructor — LEFT motor
-    leftVelocity = prestageLeft.getVelocity();
-    leftStatorCurrent = prestageLeft.getStatorCurrent();
-    leftSupplyCurrent = prestageLeft.getSupplyCurrent();
-    leftMotorVoltage = prestageLeft.getMotorVoltage();
-    leftDeviceTemp = prestageLeft.getDeviceTemp();
-    leftClosedLoopReference = prestageLeft.getClosedLoopReference();
-    leftClosedLoopError = prestageLeft.getClosedLoopError();
-    leftPos = prestageLeft.getPosition();
-
-    // Cache signal references once in the constructor — RIGHT motor
-    rightVelocity = prestageRight.getVelocity();
-    rightStatorCurrent = prestageRight.getStatorCurrent();
-    rightSupplyCurrent = prestageRight.getSupplyCurrent();
-    rightMotorVoltage = prestageRight.getMotorVoltage();
-    rightDeviceTemp = prestageRight.getDeviceTemp();
-    rightClosedLoopReference = prestageRight.getClosedLoopReference();
-    rightClosedLoopError = prestageRight.getClosedLoopError();
-    rightPos = prestageRight.getPosition();
+    // Cache signal references once in the constructor
+    Velocity = prestageLeft.getVelocity();
+    StatorCurrent = prestageLeft.getStatorCurrent();
+    SupplyCurrent = prestageLeft.getSupplyCurrent();
+    MotorVoltage = prestageLeft.getMotorVoltage();
+    DeviceTemp = prestageLeft.getDeviceTemp();
+    ClosedLoopReference = prestageLeft.getClosedLoopReference();
+    ClosedLoopError = prestageLeft.getClosedLoopError();
+    Pos = prestageLeft.getPosition();
 
     // 50Hz for signals we need every loop (velocity, voltage, current, closed-loop reference)
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0,
-        leftVelocity,
-        leftStatorCurrent,
-        leftSupplyCurrent,
-        leftMotorVoltage,
-        leftClosedLoopReference,
-        rightVelocity,
-        rightStatorCurrent,
-        rightSupplyCurrent,
-        rightMotorVoltage,
-        rightClosedLoopReference);
+        50.0, Velocity, StatorCurrent, SupplyCurrent, MotorVoltage, ClosedLoopReference);
 
     // 10Hz for diagnostic-only signals (temperature, closed-loop error)
-    BaseStatusSignal.setUpdateFrequencyForAll(
-        10.0, leftDeviceTemp, leftClosedLoopError, rightDeviceTemp, rightClosedLoopError);
+    BaseStatusSignal.setUpdateFrequencyForAll(10.0, DeviceTemp, ClosedLoopError);
 
     // Stop sending signals we didn't register — reduces CAN bus traffic
     prestageLeft.optimizeBusUtilization();
-    prestageRight.optimizeBusUtilization();
   }
 
   private void configurePrestageMotor() {
@@ -117,24 +83,6 @@ public class PrestageIOReal implements PrestageIO {
     var prestageMagic = config.MotionMagic;
     prestageMagic.MotionMagicAcceleration = PrestageConstants.prestageMagicConstants.prestageAccel;
 
-    var followerConfig = new TalonFXConfiguration();
-    followerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
-    followerConfig.MotorOutput.Inverted =
-        PrestageConstants.SoftwareConstants.INVERTED
-            ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
-            : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
-    followerConfig.Feedback.SensorToMechanismRatio = PrestageConstants.Mechanical.prestageRatio;
-
-    // Slot0 PID/FF gains for velocity control
-    followerConfig.Slot0.kS = PrestageConstants.PID.followerKS;
-    followerConfig.Slot0.kV = PrestageConstants.PID.followerKV;
-    followerConfig.Slot0.kP = PrestageConstants.PID.followerKP;
-
-    var prestageRightMagic = followerConfig.MotionMagic;
-    prestageRightMagic.MotionMagicAcceleration =
-        PrestageConstants.prestageMagicConstants.prestageAccel;
-
     // Current limits
     var limits = new CurrentLimitsConfigs();
     limits.SupplyCurrentLimit = PrestageConstants.CurrentLimits.PRESTAGE_MAIN_SUPPLY_AMP;
@@ -147,7 +95,6 @@ public class PrestageIOReal implements PrestageIO {
     limits.StatorCurrentLimitEnable = true;
 
     prestageLeft.getConfigurator().apply(config);
-    prestageRight.getConfigurator().apply(followerConfig);
     prestageLeft.getConfigurator().apply(limits);
   }
 
@@ -155,62 +102,34 @@ public class PrestageIOReal implements PrestageIO {
   public void updateInputs(PrestageIOInputs inputs) {
     // One batched CAN read for ALL signals on BOTH motors
     BaseStatusSignal.refreshAll(
-        leftVelocity,
-        leftStatorCurrent,
-        leftSupplyCurrent,
-        leftMotorVoltage,
-        leftDeviceTemp,
-        leftClosedLoopReference,
-        leftClosedLoopError,
-        leftPos,
-        rightVelocity,
-        rightStatorCurrent,
-        rightSupplyCurrent,
-        rightMotorVoltage,
-        rightDeviceTemp,
-        rightClosedLoopReference,
-        rightClosedLoopError,
-        rightPos);
+        Velocity,
+        StatorCurrent,
+        SupplyCurrent,
+        MotorVoltage,
+        DeviceTemp,
+        ClosedLoopReference,
+        ClosedLoopError,
+        Pos);
 
     // Left motor — read from cache
-    inputs.prestageLeftVelocity = leftVelocity.getValue();
-    inputs.prestageLeftStatorAmps = leftStatorCurrent.getValue();
-    inputs.prestageLeftSupplyAmps = leftSupplyCurrent.getValue();
-    inputs.prestageLeftVoltage = leftMotorVoltage.getValue();
-    inputs.prestageLeftTemperature = leftDeviceTemp.getValue();
-    inputs.prestageLeftClosedLoopReference =
-        RotationsPerSecond.of(leftClosedLoopReference.getValueAsDouble());
-    inputs.prestageLeftClosedLoopError =
-        RotationsPerSecond.of(leftClosedLoopError.getValueAsDouble());
-    inputs.prestageLeftPos = leftPos.getValue();
-
-    // Right motor — read from cache (BUG FIX: was previously reading left motor signals)
-    inputs.prestageRightVelocity = rightVelocity.getValue();
-    inputs.prestageRightStatorAmps = rightStatorCurrent.getValue();
-    inputs.prestageRightSupplyAmps = rightSupplyCurrent.getValue();
-    inputs.prestageRightVoltage = rightMotorVoltage.getValue();
-    inputs.prestageRightTemperature = rightDeviceTemp.getValue();
-    inputs.prestageRightClosedLoopReference =
-        RotationsPerSecond.of(rightClosedLoopReference.getValueAsDouble());
-    inputs.prestageRightClosedLoopError =
-        RotationsPerSecond.of(rightClosedLoopError.getValueAsDouble());
-    inputs.prestageRightPos = rightPos.getValue();
+    inputs.prestageVelocity = Velocity.getValue();
+    inputs.prestageStatorAmps = StatorCurrent.getValue();
+    inputs.prestageSupplyAmps = SupplyCurrent.getValue();
+    inputs.prestageVoltage = MotorVoltage.getValue();
+    inputs.prestageTemperature = DeviceTemp.getValue();
+    inputs.prestageClosedLoopReference =
+        RotationsPerSecond.of(ClosedLoopReference.getValueAsDouble());
+    inputs.prestageClosedLoopError = RotationsPerSecond.of(ClosedLoopError.getValueAsDouble());
+    inputs.prestagePos = Pos.getValue();
   }
 
   @Override
   public void setPrestageVoltage(Voltage volts) {
     prestageLeft.setControl(voltageRequest.withOutput(volts));
-    prestageRight.setControl(voltageRequest.withOutput(volts));
   }
 
   @Override
   public void setPrestageVelocity(AngularVelocity prestageVelo) {
     prestageLeft.setControl(torqueRequest.withVelocity(prestageVelo));
-    prestageRight.setControl(torqueRequest.withVelocity(prestageVelo));
-  }
-
-  @Override
-  public void setOneVelo(AngularVelocity leaderVelo) {
-    prestageRight.setControl(torqueRequest.withVelocity(leaderVelo));
   }
 }

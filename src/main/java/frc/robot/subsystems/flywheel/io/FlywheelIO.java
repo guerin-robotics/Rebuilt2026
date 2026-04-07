@@ -56,6 +56,13 @@ public interface FlywheelIO {
     public Current follower3SupplyCurrentAmps;
     public Current follower3StatorCurrentAmps;
     public Temperature follower3Temp;
+
+    // Follower 4 motor
+    public AngularVelocity follower4Velocity;
+    public Voltage follower4AppliedVolts;
+    public Current follower4SupplyCurrentAmps;
+    public Current follower4StatorCurrentAmps;
+    public Temperature follower4Temp;
   }
 
   /** Read sensor data from the flywheel motor. */

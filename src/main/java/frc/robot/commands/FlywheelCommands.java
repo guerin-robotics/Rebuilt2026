@@ -8,6 +8,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotState;
 import frc.robot.subsystems.flywheel.Flywheel;
 
 /**
@@ -79,7 +80,7 @@ public class FlywheelCommands {
    * @return Command that sets flywheel velocity, stops on end
    */
   public static Command setPassVelocity(Flywheel flywheel) {
-    return setVelocityForTarget(flywheel, flywheel.getPassTarget());
+    return setVelocityForTarget(flywheel, RobotState.getInstance().getPassTarget());
   }
 
   /**

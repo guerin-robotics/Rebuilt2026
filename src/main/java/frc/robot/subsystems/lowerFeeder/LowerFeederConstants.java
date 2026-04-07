@@ -23,7 +23,7 @@ public class LowerFeederConstants {
 
   public static class Mechanical {
     // Needs updated
-    public static final double lowerFeederRatio = 1 / 0.417;
+    public static final double lowerFeederRatio = 24 / 11;
   }
 
   // Real robot PID gains for torque-current velocity control

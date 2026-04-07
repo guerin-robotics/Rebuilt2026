@@ -94,7 +94,7 @@ public class FlywheelConstants {
     /** Hood angle for trajectory visualization (degrees). */
     public static final boolean INVERTED = false;
 
-    public static final double flywheelRatio = 1 / 1.47;
+    public static final double flywheelRatio = 36 / 24; // Sensor rotations to mechanism rotations
     public static final double flywheelMetersPerRotation = inchesToMeters(Math.PI * 4);
     public static final double flywheelRotationsPerMeter = 1 / flywheelMetersPerRotation;
   }
@@ -129,7 +129,7 @@ public class FlywheelConstants {
     public static final DCMotor FLYWHEEL_MOTOR = DCMotor.getKrakenX60Foc(4);
 
     /** Number of motors driving the flywheel (used for DCMotorSim). */
-    public static final int NUM_MOTORS = 4;
+    public static final int NUM_MOTORS = 5;
 
     /** Moment of inertia of the flywheel (kg·m²). Larger than small rollers due to mass. */
     public static final double FLYWHEEL_MOI = 0.01;

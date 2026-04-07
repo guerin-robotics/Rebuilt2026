@@ -17,7 +17,7 @@ public class HoodConstants {
 
     public static double leftServoOffset = -0.02;
 
-    public static double hoodRatio = 1;
+    public static double hoodRatio = 15 / 12;
   }
 
   public static class SoftwareConstants {

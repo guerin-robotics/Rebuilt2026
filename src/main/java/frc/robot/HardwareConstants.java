@@ -14,33 +14,33 @@ public class HardwareConstants {
 
   public static class CanIds {
     // Flywheel
-    public static int MAIN_FLYWHEEL_LEADER_ID = 31;
-    public static int MAIN_FLYWHEEL_FOLLOWER1_ID = 32;
-    public static int MAIN_FLYWHEEL_FOLLOWER2_ID = 33;
-    public static int MAIN_FLYWHEEL_FOLLOWER3_ID = 34;
-
-    // Prestage
-    public static int PRESTAGE_LEADER_ID = 35;
-    public static int PRESTAGE_FOLLOWER_ID = 36;
-
-    // Feeder
-    public static int UPPER_FEEDER_MOTOR_ID = 37;
-    public static int LOWER_FEEDER_MOTOR_ID = 45;
-
-    // Transport
-    public static int TRANSPORT_MOTOR_ID = 38;
-
-    // Intake
-    public static int INTAKE_PIVOT_MOTOR_ID = 39;
-    public static int INTAKE_ROLLER_LEADER_ID = 40;
-    public static int INTAKE_ROLLER_FOLLOWER_ID = 41;
-    public static int INTAKE_PIVOT_ENCODER_ID = 42;
+    public static int MAIN_FLYWHEEL_LEADER_ID = 30;
+    public static int MAIN_FLYWHEEL_FOLLOWER1_ID = 31;
+    public static int MAIN_FLYWHEEL_FOLLOWER2_ID = 32;
+    public static int MAIN_FLYWHEEL_FOLLOWER3_ID = 33;
+    public static int MAIN_FLYWHEEL_FOLLOWER4_ID = 34;
 
     // Hood
-    public static int HOOD_SERVO_CHANNEL = 0;
-    public static int HOOD_LEFT_SERVO_CHANNEL = 1;
-    public static int HOOD_MOTOR = 43;
-    public static int HOOD_ENCODER = 44;
+    // public static int HOOD_SERVO_CHANNEL = 0;
+    // public static int HOOD_LEFT_SERVO_CHANNEL = 1;
+    public static int HOOD_MOTOR = 35;
+    public static int HOOD_ENCODER = 36;
+
+    // Prestage
+    public static int PRESTAGE_LEADER_ID = 37;
+
+    // Feeder
+    public static int UPPER_FEEDER_MOTOR_ID = 38;
+    public static int LOWER_FEEDER_MOTOR_ID = 39;
+
+    // Transport
+    public static int TRANSPORT_MOTOR_ID = 40;
+
+    // Intake
+    public static int INTAKE_PIVOT_MOTOR_ID = 41;
+    public static int INTAKE_ROLLER_LEADER_ID = 42;
+    public static int INTAKE_ROLLER_FOLLOWER_ID = 43;
+    public static int INTAKE_PIVOT_ENCODER_ID = 44;
   }
 
   public static class CompConstants {
@@ -168,6 +168,7 @@ public class HardwareConstants {
     public static final int JoystickControllerPort = 2;
     public static final int ButtonPanelPort = 0;
     public static final double DEADBAND = 0.08;
+    public static final int SimControllerPort = 5;
   }
 
   public static class Zones {

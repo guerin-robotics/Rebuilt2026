@@ -20,7 +20,7 @@ public class PrestageConstants {
   }
 
   public static class Mechanical {
-    public static final double prestageRatio = 2;
+    public static final double prestageRatio = 1;
   }
 
   // Real robot PID gains for torque-current velocity control
