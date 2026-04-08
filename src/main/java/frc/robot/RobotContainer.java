@@ -585,9 +585,11 @@ public class RobotContainer {
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos));
 
     // Subsystem PID tuning - requires tuning mode on
-    Triggers.getInstance()
-        .tuningButton()
-        .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
+    // Triggers.getInstance()
+    //     .tuningButton()
+    //     .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
+    thrustmaster
+        .button(7)
         .whileTrue(
             FlywheelCommands.setFlywheelVelocity(
                 flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity));

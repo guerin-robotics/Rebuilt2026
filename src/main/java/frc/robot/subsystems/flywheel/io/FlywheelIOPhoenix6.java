@@ -99,7 +99,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
 
     // Configure followers
     int leaderId = leader.getDeviceID();
-    follower1.setControl(new Follower(leaderId, MotorAlignmentValue.Opposed));
+    follower1.setControl(new Follower(leaderId, MotorAlignmentValue.Aligned));
     follower2.setControl(new Follower(leaderId, MotorAlignmentValue.Aligned));
     follower3.setControl(new Follower(leaderId, MotorAlignmentValue.Opposed));
     follower4.setControl(new Follower(leaderId, MotorAlignmentValue.Opposed));
