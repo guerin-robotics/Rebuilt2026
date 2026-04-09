@@ -199,13 +199,13 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     // Current limits
     var limits = new CurrentLimitsConfigs();
     limits.SupplyCurrentLimit = FlywheelConstants.CurrentLimits.SHOOTER_MAIN_SUPPLY_AMP;
-    limits.SupplyCurrentLimitEnable = true;
+    limits.SupplyCurrentLimitEnable = false;
     limits.SupplyCurrentLowerLimit =
         FlywheelConstants.CurrentLimits.SHOOTER_MAIN_SUPPLY_TRIGGER_AMP;
     limits.SupplyCurrentLowerTime =
         FlywheelConstants.CurrentLimits.SHOOTER_MAIN_SUPPLY_TRIGGER_TIME_SEC.in(Seconds);
     limits.StatorCurrentLimit = FlywheelConstants.CurrentLimits.SHOOTER_MAIN_STATOR_AMP;
-    limits.StatorCurrentLimitEnable = true;
+    limits.StatorCurrentLimitEnable = false;
 
     leader.getConfigurator().apply(config);
     leader.getConfigurator().apply(limits);
@@ -293,6 +293,11 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
   @Override
   public void setFlywheelVoltage(Voltage volts) {
     leader.setControl(voltageRequest.withOutput(volts.in(Volts)));
+    // Logger.recordOutput("RobotState/Leader connected", leader.isConnected());
+    // Logger.recordOutput("RobotState/Follower1 connected", follower1.isConnected());
+    // Logger.recordOutput("RobotState/Follower2 connected", follower2.isConnected());
+    // Logger.recordOutput("RobotState/Follower3 connected", follower3.isConnected());
+    // Logger.recordOutput("RobotState/Folloer4 connected", follower4.isConnected());
   }
 
   @Override

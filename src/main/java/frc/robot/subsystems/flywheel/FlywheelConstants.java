@@ -94,7 +94,8 @@ public class FlywheelConstants {
     /** Hood angle for trajectory visualization (degrees). */
     public static final boolean INVERTED = true;
 
-    public static final double flywheelRatio = 36 / 24; // Sensor rotations to mechanism rotations
+    public static final double flywheelRatio =
+        36.0 / 24.0; // Sensor rotations to mechanism rotations
     public static final double flywheelMetersPerRotation = inchesToMeters(Math.PI * 4);
     public static final double flywheelRotationsPerMeter = 1 / flywheelMetersPerRotation;
   }

@@ -591,8 +591,9 @@ public class RobotContainer {
     thrustmaster
         .button(7)
         .whileTrue(
-            FlywheelCommands.setFlywheelVelocity(
-                flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity));
+            // FlywheelCommands.setFlywheelVelocity(
+            //     flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity)
+            FlywheelCommands.setFlywheelVoltage(flywheel, Volts.of(10)));
   }
 
   private void configureSimBindings() {
