@@ -36,14 +36,14 @@ public class VisionConstants {
 
   public static final Transform3d robotToCamera0 =
       new Transform3d(
-          new Translation3d(Inches.of(-11.859), Inches.of(-11.508), Inches.of(8.605)),
-          new Rotation3d(Radians.zero(), Degrees.of(-20), Degrees.of(210)));
+          new Translation3d(Inches.of(-0.815), Inches.of(-13.299), Inches.of(4.727)),
+          new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(-90)));
 
   // Left Cam
   public static final Transform3d robotToCamera1 =
       new Transform3d(
-          new Translation3d(Inches.of(-11.859), Inches.of(11.508), Inches.of(8.605)),
-          new Rotation3d(Radians.zero(), Degrees.of(-20), Degrees.of(150)));
+          new Translation3d(Inches.of(-0.815), Inches.of(13.299), Inches.of(4.727)),
+          new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(90)));
 
   // Shooter right
   public static final Transform3d robotToCamera2 =
