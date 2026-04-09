@@ -205,7 +205,21 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     config.Slot0.kP = FlywheelConstants.TorqueControl.KP;
     config.Slot0.kD = FlywheelConstants.TorqueControl.KD;
 
+    var rightSideConfig = new TalonFXConfiguration();
+    rightSideConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    rightSideConfig.MotorOutput.Inverted =
+        FlywheelConstants.Mechanical.FOLLOWER_INVERTED
+            ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
+            : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
+    rightSideConfig.Feedback.SensorToMechanismRatio = FlywheelConstants.Mechanical.flywheelRatio;
+
+    rightSideConfig.Slot0.kS = FlywheelConstants.TorqueControl.KS;
+    rightSideConfig.Slot0.kV = FlywheelConstants.TorqueControl.KV;
+    rightSideConfig.Slot0.kP = FlywheelConstants.TorqueControl.KP;
+    rightSideConfig.Slot0.kD = FlywheelConstants.TorqueControl.KD;
+
     var flywheelMotionMagic = config.MotionMagic;
+    flywheelMotionMagic = rightSideConfig.MotionMagic;
     flywheelMotionMagic.MotionMagicAcceleration =
         FlywheelConstants.flywheelMagicConstants.flywheelAccel;
 
