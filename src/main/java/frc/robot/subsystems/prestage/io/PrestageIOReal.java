@@ -56,10 +56,11 @@ public class PrestageIOReal implements PrestageIO {
   public PrestageIOReal() {
     prestageLeft = new TalonFX(HardwareConstants.CanIds.PRESTAGE_LEADER_ID, CAN_BUS);
     prestageRight = new TalonFX(HardwareConstants.CanIds.PRESTAGE_FOLLOWER_ID, CAN_BUS);
+
     configurePrestageMotor();
 
     prestageRight.setControl(
-        new Follower(HardwareConstants.CanIds.PRESTAGE_LEADER_ID, MotorAlignmentValue.Aligned));
+        new Follower(HardwareConstants.CanIds.PRESTAGE_LEADER_ID, MotorAlignmentValue.Opposed));
 
     // Cache signal references once in the constructor — LEFT motor
     leftVelocity = prestageLeft.getVelocity();
@@ -101,6 +102,7 @@ public class PrestageIOReal implements PrestageIO {
 
     // Stop sending signals we didn't register — reduces CAN bus traffic
     prestageLeft.optimizeBusUtilization();
+    prestageRight.optimizeBusUtilization();
   }
 
   private void configurePrestageMotor() {

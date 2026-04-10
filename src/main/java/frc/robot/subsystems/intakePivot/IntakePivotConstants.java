@@ -41,11 +41,11 @@ public class IntakePivotConstants {
    * TUNED
    */
   public static class PID {
-    public static final double KG = 8; // 14
+    public static final double KG = 8; // 8
     public static final double KV = 0.0;
-    public static final double KP = 750.0; // 100.0
+    public static final double KP = 750.0; // 750.0
     public static final double KI = 0.0;
-    public static final double KD = 5.0; // 30.0; // 1.0
+    public static final double KD = 5.0; // 5.0
   }
 
   /** Mechanical properties of the pivot. */

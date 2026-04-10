@@ -29,11 +29,11 @@ public class intakeRollerConstants {
 
   // Real robot PID gains for torque-current velocity control
   public static class PID {
-    public static final double KS = 3.5;
-    public static final double KV = 0.0;
-    public static final double KP = 1.0;
-    public static final double KI = 0.0;
-    public static final double KD = 0.0;
+    public static final double KS = 3.5; // 3.5
+    public static final double KV = 0.0; // 0.0
+    public static final double KP = 1.0; // 1.0
+    public static final double KI = 0.0; // 0.0
+    public static final double KD = 0.0; // 0.0
   }
 
   /** Simulation constants for the intake roller. */

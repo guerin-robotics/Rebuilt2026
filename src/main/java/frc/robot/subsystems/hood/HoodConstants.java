@@ -36,9 +36,9 @@ public class HoodConstants {
   }
 
   public static class PID {
-    public static final double KG = 0;
-    public static final double KP = 0;
-    public static final double KD = 0;
+    public static final double KG = 0; // 0
+    public static final double KP = 0; // 0
+    public static final double KD = 0; // 0
   }
 
   public static class HoodMagicConstants {

@@ -100,14 +100,14 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     follower3 = new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_FOLLOWER3_ID, CAN_BUS);
     follower4 = new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_FOLLOWER4_ID, CAN_BUS);
 
+    configureMotors();
+
     // Configure followers
     int leaderId = leader.getDeviceID();
     follower1.setControl(new Follower(leaderId, MotorAlignmentValue.Aligned));
     follower2.setControl(new Follower(leaderId, MotorAlignmentValue.Aligned));
     follower3.setControl(new Follower(leaderId, MotorAlignmentValue.Opposed));
     follower4.setControl(new Follower(leaderId, MotorAlignmentValue.Opposed));
-
-    configureMotors();
 
     // Cache signal references once — LEADER
     leaderVelocity = leader.getVelocity();
@@ -240,9 +240,9 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     follower1.getConfigurator().apply(limits);
     follower2.getConfigurator().apply(config);
     follower2.getConfigurator().apply(limits);
-    follower3.getConfigurator().apply(config);
+    follower3.getConfigurator().apply(rightSideConfig);
     follower3.getConfigurator().apply(limits);
-    follower4.getConfigurator().apply(config);
+    follower4.getConfigurator().apply(rightSideConfig);
     follower4.getConfigurator().apply(limits);
   }
 

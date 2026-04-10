@@ -26,11 +26,11 @@ public class TransportConstants {
 
   // Real robot PID gains for torque-current velocity control
   public static class PID {
-    public static final double KS = 14.0;
-    public static final double KV = 0.0;
-    public static final double KP = 2.5;
-    public static final double KI = 0.0;
-    public static final double KD = 0.0;
+    public static final double KS = 14.0; // 14.0
+    public static final double KV = 0.0; // 0.0
+    public static final double KP = 2.5; // 2.5
+    public static final double KI = 0.0; // 0.0
+    public static final double KD = 0.0; // 0.0
   }
 
   public static class transportMagicConstants {

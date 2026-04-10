@@ -26,11 +26,11 @@ public class UpperFeederConstants {
 
   // Real robot PID gains for torque-current velocity control
   public static class PID {
-    public static final double KS = 6.0; // 5.0
-    public static final double KV = 0.0;
-    public static final double KP = 4.0; // 3.0
-    public static final double KI = 0.0;
-    public static final double KD = 0.0;
+    public static final double KS = 6.0; // 6.0
+    public static final double KV = 0.0; // 0.0
+    public static final double KP = 4.0; // 4.0
+    public static final double KI = 0.0; // 0.0
+    public static final double KD = 0.0; // 0.0
   }
 
   public static class feederMagicConstants {

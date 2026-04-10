@@ -14,9 +14,9 @@ public class HardwareConstants {
 
   public static class CanIds {
     // Flywheel
-    public static int MAIN_FLYWHEEL_LEADER_ID = 30;
-    public static int MAIN_FLYWHEEL_FOLLOWER1_ID = 31;
-    public static int MAIN_FLYWHEEL_FOLLOWER2_ID = 32;
+    public static int MAIN_FLYWHEEL_LEADER_ID = 30; // 30
+    public static int MAIN_FLYWHEEL_FOLLOWER1_ID = 31; // 31
+    public static int MAIN_FLYWHEEL_FOLLOWER2_ID = 32; // 32
     public static int MAIN_FLYWHEEL_FOLLOWER3_ID = 33;
     public static int MAIN_FLYWHEEL_FOLLOWER4_ID = 34;
 
@@ -61,7 +61,7 @@ public class HardwareConstants {
     // Subsystems that run at a constant velocity: prestage, feeder
     public static class Velocities {
       public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(40.0);
-      public static final AngularVelocity feederVelocity = RotationsPerSecond.of(40.0);
+      public static final AngularVelocity feederVelocity = RotationsPerSecond.of(-40.0);
       public static final AngularVelocity prestageIdleVelocity = RotationsPerSecond.of(5);
       public static final AngularVelocity flywheelIdleVelocity = RotationsPerSecond.of(5);
       public static final AngularVelocity prestageIdleVelocityHigh = RotationsPerSecond.of(20);
@@ -96,9 +96,10 @@ public class HardwareConstants {
   public static class TestConstants {
 
     public static class TestVoltages {
-      public static final Voltage FlywheelTestVoltage = Volts.of(6.0); // Volts
-      public static final Voltage FeederTestVoltage = Volts.of(3.0);
-      public static final Voltage PrestageTestVoltage = Volts.of(5.0);
+      public static final Voltage FlywheelTestVoltage = Volts.of(10.0); // Volts
+      public static final Voltage FeederTestVoltage = Volts.of(6.0);
+      public static final Voltage LowerFeederTestVoltage = Volts.of(-6.0);
+      public static final Voltage PrestageTestVoltage = Volts.of(8.0);
       public static final Voltage TransportTestVoltage = Volts.of(-12.0);
       public static final Voltage intakePivotTestVoltageUp = Volts.of(2.0);
       public static final Voltage intakePivotTestVoltageDown = Volts.of(-8.0);
@@ -161,7 +162,7 @@ public class HardwareConstants {
 
   public static class TuningConstants {
     public static boolean TUNING_MODE;
-    public static boolean isTuning = true;
+    public static boolean isTuning = false;
     public static boolean atComp = false;
 
     public static final AngularVelocity FlywheelTuningVelocity = RPM.of(1700);

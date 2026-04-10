@@ -59,8 +59,8 @@ public class FlywheelConstants {
     // public static double KV = tunableKV.get();
     // public static double KP = tunableKP.get();
 
-    public static double KS = 30; // 4.5
-    public static double KV = 0.0; // 0.5
+    public static double KS = 4.5; // 4.5
+    public static double KV = 0.5; // 0.5
     public static double KP = 11; // 11
     public static double KD = 0; // 0
   }
@@ -93,7 +93,8 @@ public class FlywheelConstants {
   public static class Mechanical {
     /** Hood angle for trajectory visualization (degrees). */
     public static final boolean INVERTED = true;
-    public static final boolean FOLLOWER_INVERTED = false;
+
+    public static final boolean FOLLOWER_INVERTED = true;
 
     public static final double flywheelRatio =
         36.0 / 24.0; // Sensor rotations to mechanism rotations

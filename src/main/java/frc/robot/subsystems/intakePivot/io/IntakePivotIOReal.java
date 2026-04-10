@@ -136,10 +136,10 @@ public class IntakePivotIOReal implements IntakePivotIO {
     feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder);
 
     // Software limits
-    config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    config.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
     config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
         IntakePivotConstants.SoftwareConstants.softwareUpperRotationLimit;
-    config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    config.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
     config.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
         IntakePivotConstants.SoftwareConstants.softwareLowerRotationLimit;
 

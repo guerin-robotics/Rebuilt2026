@@ -12,7 +12,7 @@ public class PrestageConstants {
     public static final int PRESTAGE_MAIN_SUPPLY_AMP = 40;
     public static final int PRESTAGE_MAIN_SUPPLY_TRIGGER_AMP = 35;
     public static final Time PRESTAGE_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
-    public static final int PRESTAGE_MAIN_STATOR_AMP = 60;
+    public static final int PRESTAGE_MAIN_STATOR_AMP = 80;
   }
 
   public static class SoftwareConstants {
@@ -25,17 +25,13 @@ public class PrestageConstants {
 
   // Real robot PID gains for torque-current velocity control
   public static class PID {
-    public static final double KS = 2.0; // 4.0
-    public static final double KV = 0.0;
-    public static final double KP = 6.0;
+    public static final double KS = 8.0; // 2.0
+    public static final double KV = 0.0; // 0.0
+    public static final double KP = 15.0; // 6.0
 
-    public static final double followerKS = 5.5; // 5.5
-    public static final double followerKV = 0.0; // 0.0
-    public static final double followerKP = 8.5; // 7.5
+    public static final double KI = 0.0; // 0.0
 
-    public static final double KI = 0.0;
-
-    public static final double KD = 0.0;
+    public static final double KD = 0.0; // 0.0
   }
 
   public static class prestageMagicConstants {
@@ -76,15 +72,5 @@ public class PrestageConstants {
   /** Returns the appropriate left KP for the current mode (real vs sim). */
   public static double getLeftKP() {
     return Constants.currentMode == Constants.Mode.SIM ? Sim.LEFT_KP : PID.KP;
-  }
-
-  /** Returns the appropriate right KS for the current mode (real vs sim). */
-  public static double getRightKS() {
-    return Constants.currentMode == Constants.Mode.SIM ? Sim.RIGHT_KS : PID.followerKS;
-  }
-
-  /** Returns the appropriate right KP for the current mode (real vs sim). */
-  public static double getRightKP() {
-    return Constants.currentMode == Constants.Mode.SIM ? Sim.RIGHT_KP : PID.followerKP;
   }
 }

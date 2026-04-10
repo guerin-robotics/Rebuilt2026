@@ -124,6 +124,8 @@ public class RobotContainer {
       new CommandXboxController(HardwareConstants.ControllerConstants.XboxControllerPort);
   private final CommandJoystick thrustmaster =
       new CommandJoystick(HardwareConstants.ControllerConstants.JoystickControllerPort);
+  private final CommandJoystick buttonPanel =
+      new CommandJoystick(HardwareConstants.ControllerConstants.ButtonPanelPort);
 
   public RobotContainer() {
     switch (Constants.currentMode) {
@@ -438,9 +440,13 @@ public class RobotContainer {
     // tuning false
     Triggers.getInstance()
         .shootButton()
-        .and(Triggers.getInstance().isShootClear())
-        .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
-        .whileTrue(FlywheelCommands.setVelocityForHub(flywheel));
+        // .and(Triggers.getInstance().isShootClear())
+        // .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
+        .whileTrue(
+            // FlywheelCommands.setVelocityForHub(flywheel)
+            FlywheelCommands.setFlywheelVoltage(
+                flywheel, HardwareConstants.TestConstants.TestVoltages.FlywheelTestVoltage))
+        .onFalse(FlywheelCommands.stop(flywheel));
 
     // Set passing velocity if shoot button is pressed but we're not in our alliance zone and tuning
     // false,
@@ -481,8 +487,11 @@ public class RobotContainer {
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
-            PrestageCommands.setPrestageVelocity(
-                prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity));
+            // PrestageCommands.setPrestageVelocity(
+            //     prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity)
+            PrestageCommands.setPrestageVoltage(
+                prestage, HardwareConstants.TestConstants.TestVoltages.PrestageTestVoltage))
+        .onFalse(PrestageCommands.stop(prestage));
 
     // Increase idle speed if hub active
     Triggers.getInstance()
@@ -499,11 +508,18 @@ public class RobotContainer {
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
-            FeederCommands.setLowerVelocityAfterWait(
-                    lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
+            // FeederCommands.setLowerVelocityAfterWait(
+            //         lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
+            //     .alongWith(
+            //         FeederCommands.setUpperVelocityAfterWait(
+            //             upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+            FeederCommands.setLowerFeederVoltage(
+                    lowerFeeder,
+                    HardwareConstants.TestConstants.TestVoltages.LowerFeederTestVoltage)
                 .alongWith(
-                    FeederCommands.setUpperVelocityAfterWait(
-                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)))
+                    FeederCommands.setUpperFeederVoltage(
+                        upperFeeder,
+                        HardwareConstants.TestConstants.TestVoltages.FeederTestVoltage)))
         .onFalse(
             FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)));
 
@@ -588,12 +604,46 @@ public class RobotContainer {
     // Triggers.getInstance()
     //     .tuningButton()
     //     .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
-    thrustmaster
-        .button(7)
+    // thrustmaster.button(7).whileTrue(FlywheelCommands.setFlywheelVoltage(flywheel,
+    // Volts.of(10)));
+
+    buttonPanel
+        .button(1)
         .whileTrue(
-            // FlywheelCommands.setFlywheelVelocity(
-            //     flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity)
-            FlywheelCommands.setFlywheelVoltage(flywheel, Volts.of(10)));
+            PrestageCommands.setPrestageVoltage(
+                prestage, HardwareConstants.TestConstants.TestVoltages.PrestageTestVoltage)
+            //         setPrestageVelocity(
+            //         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
+            // .onFalse(PrestageCommands.stop(prestage)
+            );
+
+    buttonPanel
+        .button(2)
+        .whileTrue(
+            FeederCommands.setLowerFeederVelocity(
+                lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity));
+
+    buttonPanel
+        .button(3)
+        .whileTrue(
+            FeederCommands.setUpperFeederVelocity(
+                upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity));
+
+    buttonPanel
+        .button(4)
+        .whileTrue(
+            TransportCommands.setTransportVoltage(
+                transport, HardwareConstants.CompConstants.Voltages.transportVoltage));
+
+    buttonPanel
+        .button(5)
+        .whileTrue(
+            intakeRollerCommands.setRollerVoltage(
+                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage));
+
+    buttonPanel.button(6).whileTrue(HoodCommands.setHoodPos(hood, 1));
+
+    buttonPanel.button(7).whileTrue(IntakePivotCommands.setPivotRotations(intakePivot, 0.25));
   }
 
   private void configureSimBindings() {
