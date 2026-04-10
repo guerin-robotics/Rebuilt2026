@@ -440,13 +440,12 @@ public class RobotContainer {
     // tuning false
     Triggers.getInstance()
         .shootButton()
-        // .and(Triggers.getInstance().isShootClear())
-        // .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
+        .and(Triggers.getInstance().isShootClear())
+        .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .whileTrue(
-            // FlywheelCommands.setVelocityForHub(flywheel)
-            FlywheelCommands.setFlywheelVoltage(
-                flywheel, HardwareConstants.TestConstants.TestVoltages.FlywheelTestVoltage))
-        .onFalse(FlywheelCommands.stop(flywheel));
+            FlywheelCommands.setVelocityForHub(flywheel)
+            )
+        .onFalse(FlywheelCommands.flywheelIdle(flywheel));
 
     // Set passing velocity if shoot button is pressed but we're not in our alliance zone and tuning
     // false,
@@ -456,29 +455,34 @@ public class RobotContainer {
             .and(() -> !Triggers.getInstance().isShootSafeZone().getAsBoolean())
             .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
         .or(Triggers.getInstance().passButton())
-        .whileTrue(FlywheelCommands.setPassVelocity(flywheel));
+        .whileTrue(FlywheelCommands.setPassVelocity(flywheel))
+        .onFalse(FlywheelCommands.flywheelIdle(flywheel));
 
     // Hard-coded tower shot
     Triggers.getInstance()
         .shootFromTowerButton()
         .whileTrue(
             FlywheelCommands.setFlywheelVelocity(
-                flywheel, HardwareConstants.TowerConstants.FlywheelTowerVelocity));
+                flywheel, HardwareConstants.TowerConstants.FlywheelTowerVelocity))
+        .onFalse(FlywheelCommands.flywheelIdle(flywheel));
 
-    // Increase idle speed if hub active
+    // Increase idle speed if hub active and if tuning mode false
     Triggers.getInstance()
         .isShootSafeTimeSure()
+        .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .whileTrue(
             FlywheelCommands.setFlywheelVelocity(
-                flywheel, HardwareConstants.CompConstants.Velocities.flywheelIdleVelocityHigh));
+                flywheel, HardwareConstants.CompConstants.Velocities.flywheelIdleVelocityHigh))
+        .onFalse(FlywheelCommands.flywheelIdle(flywheel));
 
-    // Distance map shot (if tuning true)
+    // Distance map shot if tuning mode true
     Triggers.getInstance()
         .shootButton()
         .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
         .whileTrue(
-            FlywheelCommands.setFlywheelVelocity(
-                flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity));
+            FlywheelCommands.setFlywheelVelocity(flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity)
+        )
+        .onFalse(FlywheelCommands.flywheelIdle(flywheel));
 
     // PRESTAGE
     // Set to velocity when any shooting sequence is started (shoot to hub, pass, shoot from tower)
@@ -491,14 +495,15 @@ public class RobotContainer {
             //     prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity)
             PrestageCommands.setPrestageVoltage(
                 prestage, HardwareConstants.TestConstants.TestVoltages.PrestageTestVoltage))
-        .onFalse(PrestageCommands.stop(prestage));
+        .onFalse(PrestageCommands.prestageIdle(prestage));
 
     // Increase idle speed if hub active
     Triggers.getInstance()
         .isShootSafeTimeSure()
         .whileTrue(
             PrestageCommands.setPrestageVelocity(
-                prestage, HardwareConstants.CompConstants.Velocities.prestageIdleVelocityHigh));
+                prestage, HardwareConstants.CompConstants.Velocities.prestageIdleVelocityHigh))
+        .onFalse(PrestageCommands.prestageIdle(prestage));
 
     // FEEDER
     // Set to velocity (after a wait) when any shooting sequence is started (shoot to hub, pass,
@@ -600,22 +605,14 @@ public class RobotContainer {
         .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos));
 
-    // Subsystem PID tuning - requires tuning mode on
-    // Triggers.getInstance()
-    //     .tuningButton()
-    //     .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
-    // thrustmaster.button(7).whileTrue(FlywheelCommands.setFlywheelVoltage(flywheel,
-    // Volts.of(10)));
-
+    // Subsystem tuning controls
     buttonPanel
         .button(1)
         .whileTrue(
-            PrestageCommands.setPrestageVoltage(
-                prestage, HardwareConstants.TestConstants.TestVoltages.PrestageTestVoltage)
-            //         setPrestageVelocity(
-            //         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
-            // .onFalse(PrestageCommands.stop(prestage)
-            );
+            PrestageCommands.setPrestageVelocity(
+                    prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
+        .onFalse(PrestageCommands.stop(prestage)
+        );
 
     buttonPanel
         .button(2)
@@ -644,6 +641,9 @@ public class RobotContainer {
     buttonPanel.button(6).whileTrue(HoodCommands.setHoodPos(hood, 1));
 
     buttonPanel.button(7).whileTrue(IntakePivotCommands.setPivotRotations(intakePivot, 0.25));
+
+    buttonPanel.button(8).whileTrue(FlywheelCommands.setFlywheelVelocity(flywheel,
+        HardwareConstants.TuningConstants.FlywheelTuningVelocity));
   }
 
   private void configureSimBindings() {
