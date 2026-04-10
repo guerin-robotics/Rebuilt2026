@@ -1,8 +1,10 @@
 package frc.robot.subsystems.upperFeeder;
 
+import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.subsystems.upperFeeder.io.UpperFeederIO;
 import frc.robot.subsystems.upperFeeder.io.UpperFeederIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
@@ -21,6 +23,12 @@ public class UpperFeeder extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Feeder", inputs);
+
+    // Report upper feeder current usage to the battery logger
+    Robot.batteryLogger.reportCurrentUsage(
+        "Feeder/Upper",
+        false,
+        inputs.upperFeederSupplyAmps != null ? inputs.upperFeederSupplyAmps.in(Units.Amps) : 0.0);
   }
 
   public void setUpperFeederVoltage(Voltage volts) {

@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -13,6 +14,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.FieldConstants;
 import frc.robot.HardwareConstants;
+import frc.robot.Robot;
 import frc.robot.RobotState;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.ShooterIOInputsAutoLogged;
@@ -44,6 +46,38 @@ public class Flywheel extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Flywheel", inputs);
+
+    // Report flywheel current usage to the battery logger (leader + 4 followers)
+    Robot.batteryLogger.reportCurrentUsage(
+        "Flywheel/Leader",
+        false,
+        inputs.leaderSupplyCurrentAmps != null
+            ? inputs.leaderSupplyCurrentAmps.in(Units.Amps)
+            : 0.0);
+    Robot.batteryLogger.reportCurrentUsage(
+        "Flywheel/Follower1",
+        false,
+        inputs.follower1SupplyCurrentAmps != null
+            ? inputs.follower1SupplyCurrentAmps.in(Units.Amps)
+            : 0.0);
+    Robot.batteryLogger.reportCurrentUsage(
+        "Flywheel/Follower2",
+        false,
+        inputs.follower2SupplyCurrentAmps != null
+            ? inputs.follower2SupplyCurrentAmps.in(Units.Amps)
+            : 0.0);
+    Robot.batteryLogger.reportCurrentUsage(
+        "Flywheel/Follower3",
+        false,
+        inputs.follower3SupplyCurrentAmps != null
+            ? inputs.follower3SupplyCurrentAmps.in(Units.Amps)
+            : 0.0);
+    Robot.batteryLogger.reportCurrentUsage(
+        "Flywheel/Follower4",
+        false,
+        inputs.follower4SupplyCurrentAmps != null
+            ? inputs.follower4SupplyCurrentAmps.in(Units.Amps)
+            : 0.0);
   }
 
   public void setFlywheelVoltage(Voltage volts) {

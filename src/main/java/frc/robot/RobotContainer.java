@@ -442,9 +442,7 @@ public class RobotContainer {
         .shootButton()
         .and(Triggers.getInstance().isShootClear())
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
-        .whileTrue(
-            FlywheelCommands.setVelocityForHub(flywheel)
-            )
+        .whileTrue(FlywheelCommands.setVelocityForHub(flywheel))
         .onFalse(FlywheelCommands.flywheelIdle(flywheel));
 
     // Set passing velocity if shoot button is pressed but we're not in our alliance zone and tuning
@@ -480,8 +478,8 @@ public class RobotContainer {
         .shootButton()
         .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
         .whileTrue(
-            FlywheelCommands.setFlywheelVelocity(flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity)
-        )
+            FlywheelCommands.setFlywheelVelocity(
+                flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity))
         .onFalse(FlywheelCommands.flywheelIdle(flywheel));
 
     // PRESTAGE
@@ -610,9 +608,8 @@ public class RobotContainer {
         .button(1)
         .whileTrue(
             PrestageCommands.setPrestageVelocity(
-                    prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
-        .onFalse(PrestageCommands.stop(prestage)
-        );
+                prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
+        .onFalse(PrestageCommands.stop(prestage));
 
     buttonPanel
         .button(2)
@@ -642,8 +639,11 @@ public class RobotContainer {
 
     buttonPanel.button(7).whileTrue(IntakePivotCommands.setPivotRotations(intakePivot, 0.25));
 
-    buttonPanel.button(8).whileTrue(FlywheelCommands.setFlywheelVelocity(flywheel,
-        HardwareConstants.TuningConstants.FlywheelTuningVelocity));
+    buttonPanel
+        .button(8)
+        .whileTrue(
+            FlywheelCommands.setFlywheelVelocity(
+                flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity));
   }
 
   private void configureSimBindings() {

@@ -1,6 +1,8 @@
 package frc.robot.subsystems.hood;
 
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.subsystems.hood.io.HoodIO;
 import frc.robot.subsystems.hood.io.HoodIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
@@ -20,6 +22,12 @@ public class Hood extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Hood", inputs);
+
+    // Report hood current usage to the battery logger
+    Robot.batteryLogger.reportCurrentUsage(
+        "Hood",
+        false,
+        inputs.hoodSupplyCurrent != null ? inputs.hoodSupplyCurrent.in(Units.Amps) : 0.0);
   }
 
   public void setHoodPos(double position) {

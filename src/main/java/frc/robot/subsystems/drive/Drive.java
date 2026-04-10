@@ -42,6 +42,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.FieldConstants;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.Robot;
 import frc.robot.RobotState;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.LocalADStarAK;
@@ -208,6 +209,14 @@ public class Drive extends SubsystemBase {
 
     RobotState.getInstance()
         .addOdometryObservation(rawGyroRotation, lastModulePositions, getModuleStates());
+
+    // Report current usage to the battery logger for each swerve module
+    for (int i = 0; i < 4; i++) {
+      Robot.batteryLogger.reportCurrentUsage(
+          "Drive/Module" + i + "-Drive", true, modules[i].getDriveCurrentAmps());
+      Robot.batteryLogger.reportCurrentUsage(
+          "Drive/Module" + i + "-Turn", true, modules[i].getTurnCurrentAmps());
+    }
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
