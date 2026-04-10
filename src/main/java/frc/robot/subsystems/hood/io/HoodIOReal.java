@@ -94,12 +94,12 @@ public class HoodIOReal implements HoodIO {
     // Current limits
     var limits = new CurrentLimitsConfigs();
     limits.SupplyCurrentLimit = HoodConstants.CurrentLimits.HOOD__MAIN_SUPPLY_AMP;
-    limits.SupplyCurrentLimitEnable = false;
+    limits.SupplyCurrentLimitEnable = true;
     limits.SupplyCurrentLowerLimit = HoodConstants.CurrentLimits.HOOD_MAIN_SUPPLY_TRIGGER_AMP;
     limits.SupplyCurrentLowerTime =
         HoodConstants.CurrentLimits.HOOD_MAIN_SUPPLY_TRIGGER_TIME_SEC.in(Seconds);
     limits.StatorCurrentLimit = HoodConstants.CurrentLimits.HOOD_MAIN_STATOR_AMP;
-    limits.StatorCurrentLimitEnable = false;
+    limits.StatorCurrentLimitEnable = true;
 
     // CANcoder remote feedback
     var feedback = new FeedbackConfigs();
