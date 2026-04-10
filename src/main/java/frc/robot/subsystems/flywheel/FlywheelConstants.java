@@ -59,9 +59,18 @@ public class FlywheelConstants {
     // public static double KV = tunableKV.get();
     // public static double KP = tunableKP.get();
 
+    // For MotionMagicVelocityTorqueCurrentFOC (torque-current output):
+    //   kS = Amps to overcome static friction
+    //   kV = Amps per rps of target velocity (feedforward)
+    //   kP = Amps per rps of velocity error (feedback)
+    //   kD = Amps per rps/s of velocity error derivative
+    //
+    // With kV=0 and kP=0 the motor only applies static friction amps — it never
+    // actually drives toward the velocity setpoint. Start with small values and
+    // tune up from there.
     public static double KS = 10.0; // 4.5
-    public static double KV = 0.0; // 0.5
-    public static double KP = 0.0; // 11
+    public static double KV = 0.12; // feedforward: Amps per rps — start ~0.12, tune to taste
+    public static double KP = 2.0; // feedback: Amps per rps of error — start ~2.0, tune to taste
     public static double KD = 0; // 0
   }
 

@@ -218,9 +218,14 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     rightSideConfig.Slot0.kP = FlywheelConstants.TorqueControl.KP;
     rightSideConfig.Slot0.kD = FlywheelConstants.TorqueControl.KD;
 
-    var flywheelMotionMagic = config.MotionMagic;
-    flywheelMotionMagic = rightSideConfig.MotionMagic;
-    flywheelMotionMagic.MotionMagicAcceleration =
+    // Set MotionMagic acceleration on BOTH configs.
+    // Previously, the local variable was reassigned from config.MotionMagic to
+    // rightSideConfig.MotionMagic, so only the right-side config got the acceleration —
+    // the leader (and followers 1 & 2) had MotionMagicAcceleration = 0, which means
+    // MotionMagicVelocityTorqueCurrentFOC would never ramp to the target velocity.
+    config.MotionMagic.MotionMagicAcceleration =
+        FlywheelConstants.flywheelMagicConstants.flywheelAccel;
+    rightSideConfig.MotionMagic.MotionMagicAcceleration =
         FlywheelConstants.flywheelMagicConstants.flywheelAccel;
 
     // Current limits
