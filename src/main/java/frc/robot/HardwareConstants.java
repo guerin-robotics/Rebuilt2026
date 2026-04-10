@@ -51,6 +51,7 @@ public class HardwareConstants {
       public static final Voltage intakeRollerVoltage = Volts.of(12.0);
       public static final Voltage intakeRollerAgitateVoltage = Volts.of(3);
       public static final Voltage prestageIdleVoltage = Volts.of(-1);
+      public static final Voltage prestageVoltage = Volts.of(8);
     }
 
     public static class SpitVoltages {
@@ -62,10 +63,11 @@ public class HardwareConstants {
     public static class Velocities {
       public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(40.0);
       public static final AngularVelocity feederVelocity = RotationsPerSecond.of(-40.0);
-      public static final AngularVelocity prestageIdleVelocity = RotationsPerSecond.of(5);
+      public static final AngularVelocity prestageIdleVelocity = RotationsPerSecond.of(18);
       public static final AngularVelocity flywheelIdleVelocity = RotationsPerSecond.of(5);
       public static final AngularVelocity prestageIdleVelocityHigh = RotationsPerSecond.of(20);
       public static final AngularVelocity flywheelIdleVelocityHigh = RotationsPerSecond.of(20);
+      public static final AngularVelocity intakeRollerVelocity = RotationsPerSecond.of(40);
     }
 
     public static class SpitVelocities {

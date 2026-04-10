@@ -59,14 +59,14 @@ public class FlywheelConstants {
     // public static double KV = tunableKV.get();
     // public static double KP = tunableKP.get();
 
-    public static double KS = 4.5; // 4.5
-    public static double KV = 0.5; // 0.5
-    public static double KP = 11; // 11
+    public static double KS = 10.0; // 4.5
+    public static double KV = 0.0; // 0.5
+    public static double KP = 0.0; // 11
     public static double KD = 0; // 0
   }
 
   public static class flywheelMagicConstants {
-    public static final double flywheelAccel = 60;
+    public static final double flywheelAccel = 100;
   }
 
   /**

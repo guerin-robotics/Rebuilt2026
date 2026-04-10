@@ -13,7 +13,7 @@ public class LowerFeederConstants {
     public static final int LOWER_FEEDER_MAIN_SUPPLY_AMP = 40;
     public static final int LOWER_FEEDER_MAIN_SUPPLY_TRIGGER_AMP = 35;
     public static final Time LOWER_FEEDER_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
-    public static final int LOWER_FEEDER_MAIN_STATOR_AMP = 80;
+    public static final int LOWER_FEEDER_MAIN_STATOR_AMP = 60;
   }
 
   public static class SoftwareConstants {
@@ -23,21 +23,21 @@ public class LowerFeederConstants {
 
   public static class Mechanical {
     // Needs updated
-    public static final double lowerFeederRatio = 24 / 11;
+    public static final double lowerFeederRatio = 24.0 / 11;
   }
 
   // Real robot PID gains for torque-current velocity control
   // All need updated
   public static class PID {
-    public static final double KS = 6.0; // 6.0
+    public static final double KS = 2.0; // 6.0
     public static final double KV = 0.0; // 0.0
-    public static final double KP = 4.0; // 4.0
+    public static final double KP = 16.0; // 4.0
     public static final double KI = 0.0; // 0.0
     public static final double KD = 0.0; // 0.0
   }
 
   public static class feederMagicConstants {
-    public static final double lowerFeederAccel = 60.0;
+    public static final double lowerFeederAccel = 120.0;
   }
 
   /** Simulation constants for the feeder motor. */

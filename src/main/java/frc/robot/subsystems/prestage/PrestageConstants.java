@@ -12,7 +12,7 @@ public class PrestageConstants {
     public static final int PRESTAGE_MAIN_SUPPLY_AMP = 40;
     public static final int PRESTAGE_MAIN_SUPPLY_TRIGGER_AMP = 35;
     public static final Time PRESTAGE_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
-    public static final int PRESTAGE_MAIN_STATOR_AMP = 80;
+    public static final int PRESTAGE_MAIN_STATOR_AMP = 60;
   }
 
   public static class SoftwareConstants {
@@ -25,17 +25,17 @@ public class PrestageConstants {
 
   // Real robot PID gains for torque-current velocity control
   public static class PID {
-    public static final double KS = 8.0; // 2.0
+    public static final double KS = 13; // 8.0
     public static final double KV = 0.0; // 0.0
-    public static final double KP = 15.0; // 6.0
+    public static final double KP = 11; // 15.0
 
     public static final double KI = 0.0; // 0.0
 
-    public static final double KD = 0.0; // 0.0
+    public static final double KD = 0.1; // 0.0
   }
 
   public static class prestageMagicConstants {
-    public static final double prestageAccel = 60.0;
+    public static final double prestageAccel = 100.0;
   }
 
   /** Simulation constants for the prestage motors. */

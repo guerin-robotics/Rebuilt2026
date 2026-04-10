@@ -610,6 +610,12 @@ public class RobotContainer {
             PrestageCommands.setPrestageVelocity(
                 prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
         .onFalse(PrestageCommands.stop(prestage));
+    // buttonPanel
+    //     .button(1)
+    //     .whileTrue(
+    //         PrestageCommands.setPrestageVoltage(
+    //             prestage, HardwareConstants.CompConstants.Voltages.prestageVoltage))
+    //     .onFalse(PrestageCommands.stop(prestage));
 
     buttonPanel
         .button(2)
@@ -632,8 +638,8 @@ public class RobotContainer {
     buttonPanel
         .button(5)
         .whileTrue(
-            intakeRollerCommands.setRollerVoltage(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage));
+            intakeRollerCommands.setRollerVelocity(
+                intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity));
 
     buttonPanel.button(6).whileTrue(HoodCommands.setHoodPos(hood, 1));
 
@@ -644,6 +650,7 @@ public class RobotContainer {
         .whileTrue(
             FlywheelCommands.setFlywheelVelocity(
                 flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity));
+    // buttonPanel.button(8).whileTrue(FlywheelCommands.setFlywheelVoltage(flywheel, Volts.of(6)));
   }
 
   private void configureSimBindings() {
