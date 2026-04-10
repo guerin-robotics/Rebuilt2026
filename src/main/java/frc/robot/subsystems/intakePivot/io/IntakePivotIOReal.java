@@ -122,13 +122,13 @@ public class IntakePivotIOReal implements IntakePivotIO {
     // Current limits
     var limits = new CurrentLimitsConfigs();
     limits.SupplyCurrentLimit = IntakePivotConstants.CurrentLimits.INTAKE_PIVOT_MAIN_SUPPLY_AMP;
-    limits.SupplyCurrentLimitEnable = false;
+    limits.SupplyCurrentLimitEnable = true;
     limits.SupplyCurrentLowerLimit =
         IntakePivotConstants.CurrentLimits.INTAKE_PIVOT_MAIN_SUPPLY_TRIGGER_AMP;
     limits.SupplyCurrentLowerTime =
         IntakePivotConstants.CurrentLimits.INTAKE_PIVOT_MAIN_SUPPLY_TRIGGER_TIME_SEC.in(Second);
     limits.StatorCurrentLimit = IntakePivotConstants.CurrentLimits.INTAKE_PIVOT_MAIN_STATOR_AMP;
-    limits.StatorCurrentLimitEnable = false;
+    limits.StatorCurrentLimitEnable = true;
 
     // CANcoder remote feedback
     var feedback = new FeedbackConfigs();
