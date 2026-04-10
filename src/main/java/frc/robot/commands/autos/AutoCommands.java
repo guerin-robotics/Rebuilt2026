@@ -14,8 +14,8 @@ import frc.robot.commands.HoodCommands;
 import frc.robot.commands.IntakePivotCommands;
 import frc.robot.commands.PrestageCommands;
 import frc.robot.commands.TransportCommands;
-import frc.robot.commands.intakeRollerCommands;
 import frc.robot.commands.autos.utils.AutoContext;
+import frc.robot.commands.intakeRollerCommands;
 
 /**
  * Reusable command factories for autonomous routines.
@@ -34,8 +34,8 @@ public class AutoCommands {
   /**
    * Deploys the intake pivot to the down position and runs the intake rollers + transport.
    *
-   * <p>When the command ends (interrupted or finished), the rollers and transport stop. The pivot is
-   * left in the deployed position so a separate retract command can handle it.
+   * <p>When the command ends (interrupted or finished), the rollers and transport stop. The pivot
+   * is left in the deployed position so a separate retract command can handle it.
    */
   public static Command deployAndRunIntake(AutoContext ctx) {
     return Commands.parallel(
@@ -44,8 +44,7 @@ public class AutoCommands {
         Commands.startEnd(
             () -> {
               ctx.intakeRoller()
-                  .setRollerVoltage(
-                      HardwareConstants.CompConstants.Voltages.intakeRollerVoltage);
+                  .setRollerVoltage(HardwareConstants.CompConstants.Voltages.intakeRollerVoltage);
               ctx.transport()
                   .setTransportVoltage(HardwareConstants.CompConstants.Voltages.transportVoltage);
             },
@@ -97,11 +96,9 @@ public class AutoCommands {
             new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
             Commands.parallel(
                 FeederCommands.setLowerFeederVelocity(
-                    ctx.lowerFeeder(),
-                    HardwareConstants.CompConstants.Velocities.feederVelocity),
+                    ctx.lowerFeeder(), HardwareConstants.CompConstants.Velocities.feederVelocity),
                 FeederCommands.setUpperFeederVelocity(
-                    ctx.upperFeeder(),
-                    HardwareConstants.CompConstants.Velocities.feederVelocity),
+                    ctx.upperFeeder(), HardwareConstants.CompConstants.Velocities.feederVelocity),
                 TransportCommands.setTransportVoltage(
                     ctx.transport(), HardwareConstants.CompConstants.Voltages.transportVoltage),
                 intakeRollerCommands.setRollerVoltage(
@@ -118,8 +115,7 @@ public class AutoCommands {
     return Commands.parallel(
         FlywheelCommands.stop(ctx.flywheel()),
         PrestageCommands.stop(ctx.prestage()),
-        HoodCommands.setHoodPos(
-            ctx.hood(), HardwareConstants.CompConstants.Positions.hoodDownPos),
+        HoodCommands.setHoodPos(ctx.hood(), HardwareConstants.CompConstants.Positions.hoodDownPos),
         FeederCommands.stopUpper(ctx.upperFeeder()),
         FeederCommands.stopLower(ctx.lowerFeeder()),
         TransportCommands.stop(ctx.transport()),

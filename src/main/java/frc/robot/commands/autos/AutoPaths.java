@@ -63,9 +63,7 @@ public class AutoPaths {
     AutoTrajectory trajectory = routine.trajectory("ScoreAndPickup");
 
     // When the routine starts, reset odometry then follow the trajectory
-    routine
-        .active()
-        .onTrue(Commands.sequence(trajectory.resetOdometry(), trajectory.cmd()));
+    routine.active().onTrue(Commands.sequence(trajectory.resetOdometry(), trajectory.cmd()));
 
     // At the "deployIntake" event marker, deploy the intake and run rollers + transport
     trajectory.atTime("deployIntake").onTrue(AutoCommands.deployAndRunIntake(ctx));
@@ -74,9 +72,7 @@ public class AutoPaths {
     trajectory
         .done()
         .onTrue(
-            AutoCommands.shootSequence(ctx)
-                .withTimeout(3.0)
-                .andThen(AutoCommands.stopAll(ctx)));
+            AutoCommands.shootSequence(ctx).withTimeout(3.0).andThen(AutoCommands.stopAll(ctx)));
 
     // ── Build preview data from the trajectory poses ─────────────────────────
     List<Pose2d> previewPoses = getTrajectoryPoses(trajectory);
@@ -114,25 +110,19 @@ public class AutoPaths {
     AutoTrajectory scoreTraj = routine.trajectory("TwoPiece", 1);
 
     // When the routine starts, reset odometry then follow the first trajectory
-    routine
-        .active()
-        .onTrue(Commands.sequence(pickupTraj.resetOdometry(), pickupTraj.cmd()));
+    routine.active().onTrue(Commands.sequence(pickupTraj.resetOdometry(), pickupTraj.cmd()));
 
     // At the "deployIntake" event marker, deploy intake and run rollers + transport
     pickupTraj.atTime("deployIntake").onTrue(AutoCommands.deployAndRunIntake(ctx));
 
     // When the first trajectory finishes, retract intake and start the second trajectory
-    pickupTraj
-        .done()
-        .onTrue(Commands.sequence(AutoCommands.retractIntake(ctx), scoreTraj.cmd()));
+    pickupTraj.done().onTrue(Commands.sequence(AutoCommands.retractIntake(ctx), scoreTraj.cmd()));
 
     // When the second trajectory finishes, run the shoot sequence then stop everything
     scoreTraj
         .done()
         .onTrue(
-            AutoCommands.shootSequence(ctx)
-                .withTimeout(3.0)
-                .andThen(AutoCommands.stopAll(ctx)));
+            AutoCommands.shootSequence(ctx).withTimeout(3.0).andThen(AutoCommands.stopAll(ctx)));
 
     // ── Build preview data from both trajectory segments ─────────────────────
     List<Pose2d> previewPoses = new java.util.ArrayList<>();
