@@ -1,5 +1,6 @@
 package frc.robot.subsystems.hood.io;
 
+import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -55,7 +56,7 @@ public class HoodIOReal implements HoodIO {
     statorCurrent = hoodMotor.getStatorCurrent();
     supplyCurrent = hoodMotor.getSupplyCurrent();
     deviceTemp = hoodMotor.getDeviceTemp();
-    devicePos = hoodEncoder.getAbsolutePosition();
+    devicePos = hoodMotor.getPosition();
     closedLoopReference = hoodMotor.getClosedLoopReference();
     closedLoopError = hoodMotor.getClosedLoopError();
 
@@ -149,17 +150,17 @@ public class HoodIOReal implements HoodIO {
 
     // Read from cache — no additional CAN traffic
     inputs.hoodVelocity = velocity.getValue();
-    inputs.hoodPosition = devicePos.getValueAsDouble();
+    inputs.hoodPosition = devicePos.getValue();
     inputs.hoodVoltage = motorVoltage.getValue();
     inputs.hoodStatorCurrent = statorCurrent.getValue();
     inputs.hoodSupplyCurrent = supplyCurrent.getValue();
     inputs.hoodTemperature = deviceTemp.getValue();
-    inputs.hoodClosedLoopReference = closedLoopReference.getValueAsDouble();
-    inputs.hoodClosedLoopError = closedLoopError.getValueAsDouble();
+    inputs.hoodClosedLoopReference = Rotation.of(closedLoopReference.getValueAsDouble());
+    inputs.hoodClosedLoopError = Rotation.of(closedLoopError.getValueAsDouble());
   }
 
   @Override
-  public void setHoodPos(double position) {
+  public void setHoodPos(Angle position) {
     // hoodServo.setPosition(position);
     // hoodLeftServo.setPosition(position + HoodConstants.Mechanical.leftServoOffset);
     hoodMotor.setControl(positionRequest.withPosition(position));

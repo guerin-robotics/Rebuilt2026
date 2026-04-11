@@ -1,6 +1,9 @@
 package frc.robot.subsystems.hood;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.hood.io.HoodIO;
@@ -30,16 +33,16 @@ public class Hood extends SubsystemBase {
         inputs.hoodSupplyCurrent != null ? inputs.hoodSupplyCurrent.in(Units.Amps) : 0.0);
   }
 
-  public void setHoodPos(double position) {
+  public void setHoodPos(Angle position) {
     // if (Triggers.getInstance().isHoodSafe(RobotState.getInstance().getEstimatedPose())) {
     io.setHoodPos(position);
     // }
   }
 
   public void incrementHoodPos() {
-    double position = inputs.hoodPosition;
+    Angle position = inputs.hoodPosition;
     // if (RobotState.getInstance().isHoodSafe(RobotState.getInstance().getEstimatedPose())) {
-    io.setHoodPos(position + 0.05);
+    io.setHoodPos(position.plus(Degrees.of(5)));
     // }
   }
 
@@ -61,7 +64,7 @@ public class Hood extends SubsystemBase {
    * distance changes every loop so the lookup is necessary.
    */
   public void setHoodPosForHub() {
-    double position = HoodPosCalculator.getInstance().getHoodPosForHub();
+    Angle position = HoodPosCalculator.getInstance().getHoodPosForHub();
     io.setHoodPos(position);
   }
 

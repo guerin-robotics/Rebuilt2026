@@ -1,10 +1,13 @@
 package frc.robot;
 
 import static edu.wpi.first.math.util.Units.inchesToMeters;
+import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.lib.AllianceFlipUtil;
@@ -79,7 +82,7 @@ public class HardwareConstants {
 
     // Subsystems that run on position control: hood, pivot
     public static class Positions {
-      public static final double hoodDownPos = 0.0;
+      public static final Angle hoodDownPos = Degree.of(0);
       public static final double pivotUpPos = 0.33;
       public static final double pivotDownPos = 0.0;
       public static final double pivotJostleUpPos = 0.25;
@@ -145,22 +148,22 @@ public class HardwareConstants {
       public static final double intakeDegreesDownTest = 0.075;
       public static final double intakeJostleTest = 0.25;
       // Hood position (0.0-1.0)
-      public static final double hoodPos1Test = 0.1;
-      public static final double hoodPos2Test = 0.25;
-      public static final double hoodPos3Test = 0.5;
-      public static final double hoodPos4Test = 0.75;
-      public static final double hoodPos5Test = 1.0;
+      public static final Angle hoodPos1Test = Degrees.of(0.1);
+      public static final Angle hoodPos2Test = Degrees.of(0.25);
+      public static final Angle hoodPos3Test = Degrees.of(0.5);
+      public static final Angle hoodPos4Test = Degrees.of(0.75);
+      public static final Angle hoodPos5Test = Degrees.of(1.0);
     }
   }
 
   public static class TowerConstants {
     public static final AngularVelocity FlywheelTowerVelocity = RPM.of(2100);
-    public static final double hoodTowerPos = 0.55;
+    public static final Angle hoodTowerPos = Degrees.of(0.55);
   }
 
   public static class PassConstants {
     public static final AngularVelocity FlywheelPassVelocity = RPM.of(2800);
-    public static final double hoodPassPos = 0.75;
+    public static final Angle hoodPassPos = Degrees.of(0.75);
   }
 
   public static class TuningConstants {
@@ -169,7 +172,7 @@ public class HardwareConstants {
     public static boolean atComp = false;
 
     public static final AngularVelocity FlywheelTuningVelocity = RPM.of(3400);
-    public static final double HoodTuningPos = 0.45;
+    public static final Angle HoodTuningPos = Degrees.of(0.45);
   }
 
   public static class ControllerConstants {

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.hood.io;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
@@ -17,9 +18,9 @@ public interface HoodIO {
     public Current hoodStatorCurrent;
     public Temperature hoodTemperature;
     public AngularVelocity hoodVelocity;
-    public double hoodPosition;
-    public double hoodClosedLoopReference;
-    public double hoodClosedLoopError;
+    public Angle hoodPosition;
+    public Angle hoodClosedLoopReference;
+    public Angle hoodClosedLoopError;
   }
 
   public default void updateInputs(HoodIOInputs inputs) {}
@@ -29,7 +30,7 @@ public interface HoodIO {
    *
    * @param position in rotations
    */
-  public default void setHoodPos(double position) {}
+  public default void setHoodPos(Angle position) {}
 
   public default void stopHood() {}
 }

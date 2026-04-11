@@ -32,18 +32,18 @@ public class HoodConstants {
     public static final double HOOD__MAIN_SUPPLY_AMP = 40;
     public static final double HOOD_MAIN_SUPPLY_TRIGGER_AMP = 35;
     public static final Time HOOD_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
-    public static final double HOOD_MAIN_STATOR_AMP = 60;
+    public static final double HOOD_MAIN_STATOR_AMP = 20;
   }
 
   public static class PID {
-    public static final double KG = 0; // 0.8
+    public static final double KG = 10; // 0.8
     public static final double KP = 0; // 0
     public static final double KD = 0; // 0
   }
 
   public static class HoodMagicConstants {
     public static double hoodAccel = 10.0;
-    public static double hoodVelo = 5;
+    public static double hoodVelo = 1;
   }
 
   public class HoodMap {
