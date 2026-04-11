@@ -106,24 +106,24 @@ public class AutoPaths {
   public static AutoOption leftAuto(AutoContext ctx) {
     // ── Build the routine ────────────────────────────────────────────────────
     AutoRoutine routine = ctx.autoFactory().newRoutine("LeftAuto");
-    AutoTrajectory path1Traj = routine.trajectory("LeftAuto1", 0);
-    AutoTrajectory path2Traj = routine.trajectory("LeftAuto2", 1);
+    AutoTrajectory path1Traj = routine.trajectory("LeftAuto1");
+    AutoTrajectory path2Traj = routine.trajectory("LeftAuto2");
 
     // When the routine starts, reset odometry then follow the first trajectory
     routine.active().onTrue(Commands.sequence(path1Traj.resetOdometry(), path1Traj.spawnCmd()));
 
     // At the "deployIntake" event marker, deploy intake and run rollers + transport
-    //path1Traj.atTime("deployIntake").onTrue(AutoCommands.deployAndRunIntake(ctx));
+    // path1Traj.atTime("deployIntake").onTrue(AutoCommands.deployAndRunIntake(ctx));
 
     // When the first trajectory finishes, retract intake and start the second trajectory
     path1Traj.done().onTrue(path2Traj.cmd());
     // Commands.sequence(AutoCommands.retractIntake(ctx), path2Traj.cmd());
 
     // When the second trajectory finishes, run the shoot sequence then stop everything
-    path2Traj
-        .done()
-        .onTrue(
-            AutoCommands.shootSequence(ctx).withTimeout(3.0).andThen(AutoCommands.stopAll(ctx)));
+    // path2Traj
+    //     .done()
+    //     .onTrue(
+    //         AutoCommands.shootSequence(ctx).withTimeout(3.0).andThen(AutoCommands.stopAll(ctx)));
 
     // ── Build preview data from both trajectory segments ─────────────────────
     List<Pose2d> previewPoses = new java.util.ArrayList<>();
