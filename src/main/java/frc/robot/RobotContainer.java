@@ -632,8 +632,8 @@ public class RobotContainer {
     buttonPanel
         .button(4)
         .whileTrue(
-            TransportCommands.setTransportVoltage(
-                transport, HardwareConstants.CompConstants.Voltages.transportVoltage));
+            TransportCommands.setTransportVelocity(
+                transport, HardwareConstants.CompConstants.Velocities.transportVelocity));
 
     buttonPanel
         .button(5)

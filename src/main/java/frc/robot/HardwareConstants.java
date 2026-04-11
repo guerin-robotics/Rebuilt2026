@@ -27,8 +27,8 @@ public class HardwareConstants {
     public static int HOOD_ENCODER = 50;
 
     // Prestage
-    public static int PRESTAGE_LEADER_ID = 37;
-    public static int PRESTAGE_FOLLOWER_ID = 38;
+    public static int PRESTAGE_LEADER_ID = 38;
+    public static int PRESTAGE_FOLLOWER_ID = 37;
 
     // Feeder
     public static int UPPER_FEEDER_MOTOR_ID = 36;
@@ -68,6 +68,7 @@ public class HardwareConstants {
       public static final AngularVelocity prestageIdleVelocityHigh = RotationsPerSecond.of(20);
       public static final AngularVelocity flywheelIdleVelocityHigh = RotationsPerSecond.of(20);
       public static final AngularVelocity intakeRollerVelocity = RotationsPerSecond.of(40);
+      public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-30);
     }
 
     public static class SpitVelocities {
@@ -167,7 +168,7 @@ public class HardwareConstants {
     public static boolean isTuning = false;
     public static boolean atComp = false;
 
-    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(1700);
+    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(3400);
     public static final double HoodTuningPos = 0.45;
   }
 
