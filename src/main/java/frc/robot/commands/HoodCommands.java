@@ -31,15 +31,26 @@ public class HoodCommands {
   }
 
   /**
-   * Idle command for the hood — continuously sends zero voltage to the motor. Use this as the
-   * default command so the hood motor doesn't hold a stale closed-loop reference when no other
-   * command is active.
+   * Idle command for the hood — continuously sends the hood to the stow position (0°). The tuning
+   * offset is applied inside {@code Hood.setHoodPos}, so in tuning mode the "stow" position shifts
+   * by whatever offset the operator has dialed in. Use this as the default command so the hood
+   * always has a target when no other command is active.
    */
   public static Command hoodIdle(Hood hood) {
-    return Commands.run(() -> hood.setHoodPos(Degrees.of(1)), hood).withName("HoodIdle");
+    return Commands.run(() -> hood.setHoodPos(Degrees.of(0)), hood).withName("HoodIdle");
   }
 
-  public static Command incrementHoodPos(Hood hood) {
-    return Commands.runOnce(() -> hood.incrementHoodPos(), hood);
+  /**
+   * Increments the persistent tuning offset by +5°. The offset is added to every hood position
+   * command, so the next time the hood moves it will be 5° higher than before. Only useful in
+   * tuning mode.
+   */
+  public static Command incrementHoodOffset(Hood hood) {
+    return Commands.runOnce(() -> hood.incrementHoodOffset(), hood);
+  }
+
+  /** Resets the persistent tuning offset back to 0°. */
+  public static Command resetHoodOffset(Hood hood) {
+    return Commands.runOnce(() -> hood.resetHoodOffset(), hood);
   }
 }

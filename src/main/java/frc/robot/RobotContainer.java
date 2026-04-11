@@ -373,12 +373,13 @@ public class RobotContainer {
     Triggers.getInstance().allianceWinFlipper().onTrue(HubShiftUtil.flipWinner());
     Triggers.getInstance().allianceWinDisabler().onTrue(HubShiftUtil.disableHubShiftUtil());
 
-    // ==================== DEFAULT SUBSYSTEM COMMANDS (comp mode only) ====================
-    // When NOT in tuning mode, set idle/default behaviors for shooting subsystems
+    // ==================== DEFAULT SUBSYSTEM COMMANDS ====================
+    // Hood default: always stow at 0° (tuning offset is applied inside Hood.setHoodPos)
+    hood.setDefaultCommand(HoodCommands.hoodIdle(hood));
+
+    // When NOT in tuning mode, also idle the flywheel
     if (!HardwareConstants.TuningConstants.TUNING_MODE) {
       flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
-      hood.setDefaultCommand(
-          HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
     }
 
     // ==================== SHOOT TO HUB (Trigger button 1) ====================
@@ -555,11 +556,13 @@ public class RobotContainer {
         .whileTrue(IntakePivotCommands.compressPivot(intakePivot));
 
     // ==================== BUTTON PANEL ====================
-    // Tuning mode: button 1 increments hood +5°, button 2 resets hood to 0°
-    // This lets the operator adjust hood angle between shots while the shoot button
-    // handles auto-aim + fixed flywheel velocity (hood is NOT part of the shoot command).
-    buttonPanel.button(1).onTrue(HoodCommands.incrementHoodPos(hood));
-    buttonPanel.button(2).onTrue(HoodCommands.stowHood(hood));
+    // Tuning mode only: button 1 increments the persistent hood offset by +5°,
+    // button 2 resets it to 0°. The offset is applied to every hood position command
+    // (including the default stow), so the operator can dial in the angle between shots.
+    if (HardwareConstants.TuningConstants.TUNING_MODE) {
+      buttonPanel.button(1).onTrue(HoodCommands.incrementHoodOffset(hood));
+      buttonPanel.button(2).onTrue(HoodCommands.resetHoodOffset(hood));
+    }
   }
 
   private void configureSimBindings() {

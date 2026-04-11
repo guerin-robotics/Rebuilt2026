@@ -16,6 +16,13 @@ public class Hood extends SubsystemBase {
 
   private final HoodIOInputsAutoLogged inputs;
 
+  /**
+   * Persistent offset (in degrees) added to every hood position command. In tuning mode the
+   * operator can increment this with a button so each shot lands a little higher/lower without
+   * editing constants. The offset survives across commands because it lives on the subsystem.
+   */
+  private Angle hoodOffset = Degrees.of(0);
+
   public Hood(HoodIO io) {
     this.io = io;
     this.inputs = new HoodIOInputsAutoLogged();
@@ -26,6 +33,9 @@ public class Hood extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Hood", inputs);
 
+    // Log the tuning offset so we can see it in AdvantageScope
+    Logger.recordOutput("Hood/TuningOffset", hoodOffset.in(Degrees));
+
     // Report hood current usage to the battery logger
     Robot.batteryLogger.reportCurrentUsage(
         "Hood",
@@ -33,15 +43,30 @@ public class Hood extends SubsystemBase {
         inputs.hoodSupplyCurrent != null ? inputs.hoodSupplyCurrent.in(Units.Amps) : 0.0);
   }
 
+  /**
+   * Sets the hood to the given position <b>plus</b> the current tuning offset. Every command that
+   * targets a hood angle goes through here, so the offset is always applied.
+   */
   public void setHoodPos(Angle position) {
-    // if (Triggers.getInstance().isHoodSafe(RobotState.getInstance().getEstimatedPose())) {
-    io.setHoodPos(position);
-    // }
+    io.setHoodPos(position.plus(hoodOffset));
   }
 
-  public void incrementHoodPos() {
-    Angle position = inputs.hoodPosition;
-    io.setHoodPos(position.plus(Degrees.of(5)));
+  /**
+   * Increments the persistent tuning offset by 5°. This is intended for use in tuning mode so the
+   * operator can nudge the hood angle between shots without changing code constants.
+   */
+  public void incrementHoodOffset() {
+    hoodOffset = hoodOffset.plus(Degrees.of(5));
+  }
+
+  /** Resets the tuning offset back to 0°. */
+  public void resetHoodOffset() {
+    hoodOffset = Degrees.of(0);
+  }
+
+  /** Returns the current tuning offset. */
+  public Angle getHoodOffset() {
+    return hoodOffset;
   }
 
   /**
