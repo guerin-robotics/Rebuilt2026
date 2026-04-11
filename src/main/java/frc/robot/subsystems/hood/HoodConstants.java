@@ -20,7 +20,23 @@ public class HoodConstants {
 
     public static double leftServoOffset = -0.02;
 
-    public static double hoodRatio = 122.0 / 12.0;
+    /**
+     * Gear ratio from the output shaft (where the CANcoder is) to the hood mechanism.
+     *
+     * <p>The 12T lantern gear on the shaft meshes with the 122T hood gear, so one shaft rotation =
+     * 12/122 hood rotations → ratio = 122/12.
+     */
+    public static double shaftToHoodRatio = 122.0 / 12.0;
+
+    /**
+     * Belt ratio from the motor rotor to the output shaft.
+     * 
+     * This needs updated to the real values: GH 4/11
+     *
+     * <p>30T pulley on motor → belt → 20T pulley on output shaft. One motor rotation = 20/30 shaft
+     * rotations → ratio = 30/20.
+     */
+    public static double motorToShaftRatio = 0;
   }
 
   public static class SoftwareConstants {

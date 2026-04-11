@@ -68,6 +68,12 @@ public class HoodIOReal implements HoodIO {
     // 10Hz for diagnostic-only signals (temperature, closed-loop error)
     BaseStatusSignal.setUpdateFrequencyForAll(10.0, deviceTemp, closedLoopError);
 
+    // The CANcoder's Position and Velocity signals must keep publishing at a reasonable rate
+    // because the motor's RemoteCANcoder reads them directly off the CAN bus.
+    // Without this, optimizeBusUtilization() would slow them to 4 Hz, starving the motor.
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        50.0, hoodEncoder.getPosition(), hoodEncoder.getVelocity());
+
     // Stop sending signals we didn't register — reduces CAN bus traffic
     hoodMotor.optimizeBusUtilization();
     hoodEncoder.optimizeBusUtilization();
@@ -82,11 +88,24 @@ public class HoodIOReal implements HoodIO {
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
 
-    // Remote CANcoder feedback — set directly on the config object so everything is applied at once
+    // FusedCANcoder feedback — fuses the CANcoder's absolute position with the motor's internal
+    // rotor sensor to provide accurate multi-turn position tracking. This is required because the
+    // CANcoder shaft turns ~2.5 rotations over the hood's full range of motion, so plain
+    // RemoteCANcoder (which only sees the absolute position) would wrap/drop to 0 at each
+    // full shaft rotation.
+    //
+    // The mechanical chain is: Motor → 30T belt → 20T shaft → CANcoder → 12T lantern → 122T hood
+    //
+    // RotorToSensorRatio = motor-to-CANcoder ratio (belt: 30/20 = 1.5)
+    //   → Tells the motor how many rotor turns per CANcoder turn for fusion math.
+    //
+    // SensorToMechanismRatio = CANcoder-to-hood ratio (gear: 122/12 ≈ 10.17)
+    //   → The CANcoder is on the shaft, and the shaft is geared down to the hood.
+    //   → Motor position is reported in hood rotations (CANcoder position / 10.17).
     config.Feedback.FeedbackRemoteSensorID = HardwareConstants.CanIds.HOOD_ENCODER;
-    config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-    config.Feedback.RotorToSensorRatio = 1;
-    config.Feedback.SensorToMechanismRatio = HoodConstants.Mechanical.hoodRatio;
+    config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+    config.Feedback.RotorToSensorRatio = HoodConstants.Mechanical.motorToShaftRatio;
+    config.Feedback.SensorToMechanismRatio = HoodConstants.Mechanical.shaftToHoodRatio;
 
     config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     config.Slot0.kG = HoodConstants.PID.KG;
