@@ -21,7 +21,7 @@ import org.littletonrobotics.junction.Logger;
 public class VisionConstants {
   // AprilTag layout
   public static AprilTagFieldLayout aprilTagLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+      AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
 
   // Camera names, must match names configured on coprocessor
   public static String camera0Name = "RobotRight";
@@ -76,7 +76,6 @@ public class VisionConstants {
       new Transform3d(
           new Translation3d(Inches.of(-13.573), Inches.of(4.809), Inches.of(12.44)),
           new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(-192.5)));
-
 
   // ---- Filtering thresholds ----
 
