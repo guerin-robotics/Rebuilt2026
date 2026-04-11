@@ -28,17 +28,21 @@ public class HoodPosCalculator {
 
   public Angle getHoodPosForDistance(Distance distance) {
     double distanceMeters = distance.in(Meters);
-    double hoodPos = HoodConstants.HoodMap.ANGLE_MAP.get(distanceMeters);
+    // Map returns degrees now
+    double hoodPosDegrees = HoodConstants.HoodMap.ANGLE_MAP.get(distanceMeters);
 
-    Logger.recordOutput("Hood/HoodPosCalculator/HoodPos", Degrees.of(hoodPos));
+    Logger.recordOutput("Hood/HoodPosCalculator/HoodPosDegrees", hoodPosDegrees);
 
-    if (hoodPos > HoodConstants.Mechanical.hoodMaxPos) {
-      hoodPos = HoodConstants.Mechanical.hoodMaxPos;
-    } else if (hoodPos < HoodConstants.Mechanical.hoodMinPos) {
-      hoodPos = HoodConstants.Mechanical.hoodMinPos;
+    Angle hoodAngle = Degrees.of(hoodPosDegrees);
+
+    // Clamp to mechanical limits (both are Angle types now)
+    if (hoodAngle.gt(HoodConstants.Mechanical.hoodMaxPos)) {
+      hoodAngle = HoodConstants.Mechanical.hoodMaxPos;
+    } else if (hoodAngle.lt(HoodConstants.Mechanical.hoodMinPos)) {
+      hoodAngle = HoodConstants.Mechanical.hoodMinPos;
     }
 
-    return Degrees.of(hoodPos);
+    return hoodAngle;
   }
 
   public Angle getHoodPosForTarget(Translation3d target) {

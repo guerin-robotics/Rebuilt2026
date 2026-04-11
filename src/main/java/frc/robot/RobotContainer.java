@@ -8,7 +8,7 @@
 package frc.robot;
 
 import static edu.wpi.first.math.util.Units.metersToInches;
-import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -642,7 +642,7 @@ public class RobotContainer {
             intakeRollerCommands.setRollerVelocity(
                 intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity));
 
-    buttonPanel.button(6).whileTrue(HoodCommands.setHoodPos(hood, Degree.of(5)));
+    buttonPanel.button(6).whileTrue(HoodCommands.setHoodPos(hood, Degrees.of(5)));
 
     buttonPanel.button(7).whileTrue(IntakePivotCommands.setPivotRotations(intakePivot, 0.25));
 

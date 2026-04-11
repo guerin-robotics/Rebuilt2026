@@ -1,10 +1,12 @@
 package frc.robot.subsystems.hood;
 
 import static edu.wpi.first.math.util.Units.inchesToMeters;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Time;
 
 public class HoodConstants {
@@ -12,8 +14,9 @@ public class HoodConstants {
   public static class Mechanical {
     public static final double magnetSensorDiscontinuityPoint = 1;
     public static final double magnetOffset = -0.16;
-    public static double hoodMaxPos = 1.0;
-    public static double hoodMinPos = 0.0;
+    // Hood position limits in degrees (mechanism output)
+    public static final Angle hoodMaxPos = Degrees.of(234); // was 0.65 rotations
+    public static final Angle hoodMinPos = Degrees.of(0);
 
     public static double leftServoOffset = -0.02;
 
@@ -50,16 +53,16 @@ public class HoodConstants {
     public static final InterpolatingDoubleTreeMap ANGLE_MAP = new InterpolatingDoubleTreeMap();
 
     // Key is distance from center of hub (converted to meters)
-    // Value is hood position (0.0-1.0)
+    // Value is hood position in degrees
     static {
-      ANGLE_MAP.put(inchesToMeters(70), 0.45);
-      ANGLE_MAP.put(inchesToMeters(83), 0.475);
-      ANGLE_MAP.put(inchesToMeters(90), 0.5);
-      ANGLE_MAP.put(inchesToMeters(100), 0.5);
-      ANGLE_MAP.put(inchesToMeters(120), 0.55);
-      ANGLE_MAP.put(inchesToMeters(130), 0.5);
-      ANGLE_MAP.put(inchesToMeters(150), 0.65);
-      ANGLE_MAP.put(inchesToMeters(205), 0.65);
+      ANGLE_MAP.put(inchesToMeters(70), 162.0); // was 0.45 rotations → 0.45 × 360 = 162°
+      ANGLE_MAP.put(inchesToMeters(83), 171.0); // was 0.475 rotations → 171°
+      ANGLE_MAP.put(inchesToMeters(90), 180.0); // was 0.5 rotations → 180°
+      ANGLE_MAP.put(inchesToMeters(100), 180.0); // was 0.5 rotations → 180°
+      ANGLE_MAP.put(inchesToMeters(120), 198.0); // was 0.55 rotations → 198°
+      ANGLE_MAP.put(inchesToMeters(130), 180.0); // was 0.5 rotations → 180°
+      ANGLE_MAP.put(inchesToMeters(150), 234.0); // was 0.65 rotations → 234°
+      ANGLE_MAP.put(inchesToMeters(205), 234.0); // was 0.65 rotations → 234°
     }
   }
 }

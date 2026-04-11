@@ -277,7 +277,7 @@ public class ShootSequences {
     return Commands.parallel(
         FlywheelCommands.stop(flywheel),
         PrestageCommands.stop(prestage),
-        HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos),
+        HoodCommands.stopHood(hood),
         FeederCommands.stopUpper(upperFeeder),
         FeederCommands.stopLower(lowerFeeder),
         TransportCommands.stop(transport),
