@@ -63,10 +63,10 @@ public class HardwareConstants {
 
     // Subsystems that run at a constant velocity: prestage, feeder
     public static class Velocities {
-      public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(40.0);
-      public static final AngularVelocity feederVelocity = RotationsPerSecond.of(-40.0);
+      public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(50.0);
+      public static final AngularVelocity feederVelocity = RotationsPerSecond.of(-25.0);
       public static final AngularVelocity prestageIdleVelocity = RotationsPerSecond.of(18);
-      public static final AngularVelocity flywheelIdleVelocity = RotationsPerSecond.of(5);
+      public static final AngularVelocity flywheelIdleVelocity = RotationsPerSecond.of(10);
       public static final AngularVelocity prestageIdleVelocityHigh = RotationsPerSecond.of(20);
       public static final AngularVelocity flywheelIdleVelocityHigh = RotationsPerSecond.of(20);
       public static final AngularVelocity intakeRollerVelocity = RotationsPerSecond.of(40);
@@ -171,7 +171,7 @@ public class HardwareConstants {
     public static boolean atComp = false;
 
     public static final AngularVelocity FlywheelTuningVelocity = RPM.of(3400);
-    public static final Angle HoodTuningPos = Degrees.of(162); // was 0.45 rot → 162°
+    public static final Angle HoodTuningPos = Degrees.of(20);
   }
 
   public static class ControllerConstants {

@@ -187,10 +187,4 @@ public class HoodIOReal implements HoodIO {
     // hoodLeftServo.setPosition(position + HoodConstants.Mechanical.leftServoOffset);
     hoodMotor.setControl(positionRequest.withPosition(position));
   }
-
-  public void stopHood() {
-    // hoodServo.setSpeed(0);
-    // hoodLeftServo.setSpeed(0);
-    hoodMotor.setVoltage(0);
-  }
 }

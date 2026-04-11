@@ -41,9 +41,7 @@ public class Hood extends SubsystemBase {
 
   public void incrementHoodPos() {
     Angle position = inputs.hoodPosition;
-    // if (RobotState.getInstance().isHoodSafe(RobotState.getInstance().getEstimatedPose())) {
     io.setHoodPos(position.plus(Degrees.of(5)));
-    // }
   }
 
   /**
@@ -68,7 +66,7 @@ public class Hood extends SubsystemBase {
     io.setHoodPos(position);
   }
 
-  public void stopHood() {
-    io.stopHood();
+  public void stowHood() {
+    io.setHoodPos(Degrees.of(0));
   }
 }

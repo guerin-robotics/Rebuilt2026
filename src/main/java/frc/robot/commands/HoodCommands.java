@@ -14,7 +14,7 @@ public class HoodCommands {
    * motor is stopped so it doesn't keep holding a closed-loop reference.
    */
   public static Command setHoodPos(Hood hood, Angle position) {
-    return Commands.startEnd(() -> hood.setHoodPos(position), () -> hood.stopHood(), hood);
+    return Commands.startEnd(() -> hood.setHoodPos(position), () -> hood.stowHood(), hood);
   }
 
   /**
@@ -22,12 +22,12 @@ public class HoodCommands {
    * stopped.
    */
   public static Command setHoodPosForHub(Hood hood) {
-    return Commands.runEnd(() -> hood.setHoodPosForHub(), () -> hood.stopHood(), hood);
+    return Commands.runEnd(() -> hood.setHoodPosForHub(), () -> hood.stowHood(), hood);
   }
 
   /** Stops the hood motor. */
-  public static Command stopHood(Hood hood) {
-    return Commands.runOnce(() -> hood.stopHood(), hood);
+  public static Command stowHood(Hood hood) {
+    return Commands.runOnce(() -> hood.stowHood(), hood);
   }
 
   /**

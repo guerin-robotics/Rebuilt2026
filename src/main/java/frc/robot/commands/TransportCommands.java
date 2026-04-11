@@ -34,6 +34,7 @@ public class TransportCommands {
         new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
         setTransportVoltage(transport, voltage));
   }
+
   public static Command setVelocityAfterWait(Transport transport, AngularVelocity transportVelo) {
     return Commands.sequence(
         new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),

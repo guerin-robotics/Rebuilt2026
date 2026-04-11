@@ -8,7 +8,6 @@
 package frc.robot;
 
 import static edu.wpi.first.math.util.Units.metersToInches;
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -372,11 +371,11 @@ public class RobotContainer {
             () -> MathUtil.clamp(-getThrustX(), -1.0, 1.0),
             () -> MathUtil.clamp(-getThrustRot(), -1.0, 1.0)));
     // // Flywheel - idle
-    // flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
+    flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // // Prestage - idle
     // prestage.setDefaultCommand(PrestageCommands.prestageIdle(prestage));
     // Hood - stop motor when no command is running (prevents stale closed-loop reference)
-    hood.setDefaultCommand(HoodCommands.hoodIdle(hood));
+    // hood.setDefaultCommand(HoodCommands.hoodIdle(hood));
 
     // OVERRIDES
     // Flip alliance winner
@@ -514,13 +513,13 @@ public class RobotContainer {
                 .alongWith(
                     FeederCommands.setUpperVelocityAfterWait(
                         upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)))
-            // FeederCommands.setLowerFeederVoltage(
-            //         lowerFeeder,
-            //         HardwareConstants.TestConstants.TestVoltages.LowerFeederTestVoltage)
-            //     .alongWith(
-            //         FeederCommands.setUpperFeederVoltage(
-            //             upperFeeder,
-            //             HardwareConstants.TestConstants.TestVoltages.FeederTestVoltage)))
+        // FeederCommands.setLowerFeederVoltage(
+        //         lowerFeeder,
+        //         HardwareConstants.TestConstants.TestVoltages.LowerFeederTestVoltage)
+        //     .alongWith(
+        //         FeederCommands.setUpperFeederVoltage(
+        //             upperFeeder,
+        //             HardwareConstants.TestConstants.TestVoltages.FeederTestVoltage)))
         .onFalse(
             FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)));
 
@@ -573,11 +572,11 @@ public class RobotContainer {
 
     // Compress on shoot button and when deploy button is not pressed (allowing driver to override
     // and force deploy w/o canceling shoot sequence), or on compress button
-    (Triggers.getInstance()
-            .shootButton()
-            .and(() -> !Triggers.getInstance().intakeOutButton().getAsBoolean()))
-        .or(Triggers.getInstance().intakeCompressButton())
-        .whileTrue(IntakePivotCommands.compressPivot(intakePivot));
+    // (Triggers.getInstance()
+    //         .shootButton()
+    //         .and(() -> !Triggers.getInstance().intakeOutButton().getAsBoolean()))
+    //     .or(Triggers.getInstance().intakeCompressButton())
+    //     .whileTrue(IntakePivotCommands.compressPivot(intakePivot));
 
     // HOOD
     // Set pos for hub if shoot to hub button or shoot to tower button is pressed, and we're in our
@@ -592,22 +591,19 @@ public class RobotContainer {
     (Triggers.getInstance()
             .shootButton()
             .and(() -> !Triggers.getInstance().isShootSafeZone().getAsBoolean()))
+        .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .or(Triggers.getInstance().passButton())
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.PassConstants.hoodPassPos));
 
     // Distance map shot if shoot button is pressed and tuning mode is true
-    Triggers.getInstance()
-        .shootButton()
-        .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
-        .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos));
+    // Triggers.getInstance()
+    //     .shootButton()
+    //     .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
+    //     .whileTrue(HoodCommands.setHoodPos(hood,
+    // HardwareConstants.TuningConstants.HoodTuningPos));
 
     // Subsystem tuning controls
-    buttonPanel
-        .button(1)
-        .whileTrue(
-            PrestageCommands.setPrestageVelocity(
-                prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
-        .onFalse(PrestageCommands.stop(prestage));
+    buttonPanel.button(1).onTrue(HoodCommands.stowHood(hood));
     // buttonPanel
     //     .button(1)
     //     .whileTrue(
@@ -615,39 +611,35 @@ public class RobotContainer {
     //             prestage, HardwareConstants.CompConstants.Voltages.prestageVoltage))
     //     .onFalse(PrestageCommands.stop(prestage));
 
-    buttonPanel
-        .button(2)
-        .whileTrue(
-            FeederCommands.setLowerFeederVelocity(
-                lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity));
+    buttonPanel.button(2).onTrue(HoodCommands.incrementHoodPos(hood));
 
-    buttonPanel
-        .button(3)
-        .whileTrue(
-            FeederCommands.setUpperFeederVelocity(
-                upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity));
+    // buttonPanel
+    //     .button(3)
+    //     .whileTrue(
+    //         FeederCommands.setUpperFeederVelocity(
+    //             upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity));
 
-    buttonPanel
-        .button(4)
-        .whileTrue(
-            TransportCommands.setTransportVelocity(
-                transport, HardwareConstants.CompConstants.Velocities.transportVelocity));
+    // buttonPanel
+    //     .button(4)
+    //     .whileTrue(
+    //         TransportCommands.setTransportVelocity(
+    //             transport, HardwareConstants.CompConstants.Velocities.transportVelocity));
 
-    buttonPanel
-        .button(5)
-        .whileTrue(
-            intakeRollerCommands.setRollerVelocity(
-                intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity));
+    // buttonPanel
+    //     .button(5)
+    //     .whileTrue(
+    //         intakeRollerCommands.setRollerVelocity(
+    //             intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity));
 
-    buttonPanel.button(6).whileTrue(HoodCommands.setHoodPos(hood, Degrees.of(30)));
+    // buttonPanel.button(6).whileTrue(HoodCommands.setHoodPos(hood, Degrees.of(30)));
 
-    buttonPanel.button(7).whileTrue(IntakePivotCommands.setPivotRotations(intakePivot, 0.25));
+    // buttonPanel.button(7).whileTrue(IntakePivotCommands.setPivotRotations(intakePivot, 0.25));
 
-    buttonPanel
-        .button(8)
-        .whileTrue(
-            FlywheelCommands.setFlywheelVelocity(
-                flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity));
+    // buttonPanel
+    //     .button(8)
+    //     .whileTrue(
+    //         FlywheelCommands.setFlywheelVelocity(
+    //             flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity));
     // buttonPanel.button(8).whileTrue(FlywheelCommands.setFlywheelVoltage(flywheel, Volts.of(6)));
   }
 

@@ -16,7 +16,7 @@ public class PrestageConstants {
   }
 
   public static class SoftwareConstants {
-    public static final boolean INVERTED = false;
+    public static final boolean INVERTED = true;
   }
 
   public static class Mechanical {
