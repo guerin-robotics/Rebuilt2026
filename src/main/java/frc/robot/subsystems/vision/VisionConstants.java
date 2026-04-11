@@ -21,57 +21,62 @@ import org.littletonrobotics.junction.Logger;
 public class VisionConstants {
   // AprilTag layout
   public static AprilTagFieldLayout aprilTagLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+      AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
 
   // Camera names, must match names configured on coprocessor
-  public static String camera0Name = "SwerveRight";
-  public static String camera1Name = "SwerveLeft";
+  public static String camera0Name = "RobotRight";
+  public static String camera1Name = "RobotLeft";
   public static String camera2Name = "FlywheelRight";
   public static String camera3Name = "FlywheelLeft";
 
-  // Right Cam
-  // 10.75 x
-  // 4.75
-  // 8.75 y
-
+  // robot right camera:
+  // x: -1.000
+  // y: -12.630
+  // z: 4.811 + belly to flooor (1.75) = 6.561
+  // roll: 0
+  // pitch: -15
+  // yaw: -90
   public static final Transform3d robotToCamera0 =
       new Transform3d(
-          new Translation3d(Inches.of(-0.815), Inches.of(-13.299), Inches.of(4.727)),
+          new Translation3d(Inches.of(-1.0), Inches.of(-12.630), Inches.of(6.561)),
           new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(-90)));
 
-  // Left Cam
+  // robot left camera:
+  // x: -1.000
+  // y: 12.880
+  // z: 4.811 + belly to flooor (1.75) = 6.561
+  // roll: 0
+  // pitch: -15
+  // yaw: 90
   public static final Transform3d robotToCamera1 =
       new Transform3d(
-          new Translation3d(Inches.of(-0.815), Inches.of(13.299), Inches.of(4.727)),
+          new Translation3d(Inches.of(-1.0), Inches.of(12.880), Inches.of(6.561)),
           new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(90)));
 
-  // Shooter right
+  // Shooter right:
+  // x: -12.991
+  // y: -6.279
+  // z: 10.777 + belly to floor (1.75) = 12.527
+  // roll: 0
+  // pitch: -15
+  // yaw: 192.5
   public static final Transform3d robotToCamera2 =
       new Transform3d(
-          new Translation3d(Inches.of(-13.573), Inches.of(-4.809), Inches.of(9.945)),
+          new Translation3d(Inches.of(-12.991), Inches.of(-6.279), Inches.of(12.527)),
           new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(192.5)));
 
-  // Old shooter right:
-  // x: 1.536
-  // y: -10.653
-  // z: 20.993
+  // Shooter left:
+  // x: -12.979
+  // y: 5.394
+  // z: 10.690 + belly to floor (1.75) = 12.44
   // roll: 0
   // pitch: -15
-  // yaw: 0
-
-  // Shooter left
+  // yaw: -192.5
   public static final Transform3d robotToCamera3 =
       new Transform3d(
-          new Translation3d(Inches.of(-13.573), Inches.of(4.809), Inches.of(9.945)),
+          new Translation3d(Inches.of(-13.573), Inches.of(4.809), Inches.of(12.44)),
           new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(-192.5)));
 
-  // Old shooter left:
-  // x: 1.536
-  // y: 10.653
-  // z: 20.993
-  // roll: 0
-  // pitch: -15
-  // yaw: 0
 
   // ---- Filtering thresholds ----
 
