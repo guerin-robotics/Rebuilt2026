@@ -8,6 +8,7 @@
 package frc.robot;
 
 import static edu.wpi.first.math.util.Units.metersToInches;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -423,20 +424,21 @@ public class RobotContainer {
       Triggers.getInstance()
           .shootButton()
           .whileTrue(
-              DriveCommands.joystickDriveAtAngle(
-                      drive,
-                      () -> -thrustmaster.getY(),
-                      () -> -thrustmaster.getX(),
-                      () -> RobotState.getInstance().getAngleToAllianceHub())
-                  .alongWith(
-                      ShootSequences.mapTuningShootNoHood(
-                          flywheel,
-                          prestage,
-                          intakePivot,
-                          upperFeeder,
-                          lowerFeeder,
-                          transport,
-                          intakeRoller)));
+              //   DriveCommands.joystickDriveAtAngle(
+              //           drive,
+              //           () -> -thrustmaster.getY(),
+              //           () -> -thrustmaster.getX(),
+              //           () -> RobotState.getInstance().getAngleToAllianceHub())
+              //       .alongWith(
+              ShootSequences.mapTuningShootNoHood(
+                      flywheel,
+                      prestage,
+                      intakePivot,
+                      upperFeeder,
+                      lowerFeeder,
+                      transport,
+                      intakeRoller)
+                  .alongWith(HoodCommands.setHoodPos(hood, Degrees.of(22)))); // );
     }
 
     // ==================== PASS (Trigger button 11) ====================
@@ -482,22 +484,16 @@ public class RobotContainer {
     Triggers.getInstance()
         .shootFromTowerButton()
         .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                    drive,
-                    () -> -thrustmaster.getY(),
-                    () -> -thrustmaster.getX(),
-                    () -> RobotState.getInstance().getAngleToAllianceHub())
-                .alongWith(
-                    new WaitCommand(0.5)
-                        .andThen(
-                            ShootSequences.shootForTower(
-                                flywheel,
-                                prestage,
-                                hood,
-                                upperFeeder,
-                                lowerFeeder,
-                                transport,
-                                intakeRoller))))
+            //     DriveCommands.joystickDriveAtAngle(
+            //             drive,
+            //             () -> -thrustmaster.getY(),
+            //             () -> -thrustmaster.getX(),
+            //             () -> RobotState.getInstance().getAngleToAllianceHub())
+            //         .alongWith(
+            //             new WaitCommand(0.5)
+            // .andThen(
+            ShootSequences.shootForTower(
+                flywheel, prestage, hood, upperFeeder, lowerFeeder, transport, intakeRoller)) // ))
         .onFalse(
             ShootSequences.shootEndBehavior(
                 flywheel,
@@ -584,22 +580,22 @@ public class RobotContainer {
     Triggers.getInstance()
         .simShootButton()
         .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                    drive,
-                    () -> -controller.getLeftY(),
-                    () -> -controller.getLeftX(),
-                    () -> RobotState.getInstance().getShootAngleForZoneAndTime())
-                .alongWith(
-                    ShootSequences.zoneAndTimePassOrShoot(
-                        drive,
-                        flywheel,
-                        prestage,
-                        hood,
-                        upperFeeder,
-                        lowerFeeder,
-                        transport,
-                        intakeRoller,
-                        intakePivot)))
+            // DriveCommands.joystickDriveAtAngle(
+            //         drive,
+            //         () -> -controller.getLeftY(),
+            //         () -> -controller.getLeftX(),
+            //         () -> RobotState.getInstance().getShootAngleForZoneAndTime())
+            //     .alongWith(
+            ShootSequences.zoneAndTimePassOrShoot(
+                drive,
+                flywheel,
+                prestage,
+                hood,
+                upperFeeder,
+                lowerFeeder,
+                transport,
+                intakeRoller,
+                intakePivot)) // )
         .onFalse(
             ShootSequences.shootEndBehavior(
                 flywheel,
