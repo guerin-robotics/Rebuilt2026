@@ -371,7 +371,7 @@ public class RobotContainer {
             () -> MathUtil.clamp(-getThrustX(), -1.0, 1.0),
             () -> MathUtil.clamp(-getThrustRot(), -1.0, 1.0)));
     // // Flywheel - idle
-    flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
+    // flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // // Prestage - idle
     // prestage.setDefaultCommand(PrestageCommands.prestageIdle(prestage));
     // Hood - stop motor when no command is running (prevents stale closed-loop reference)
@@ -386,7 +386,8 @@ public class RobotContainer {
     // DRIVETRAIN
     // Align for shoot when shoot button is pressed and we're in our alliance zone and hub is
     // active, or if tower shoot button is pressed
-    (Triggers.getInstance().shootButton().and(Triggers.getInstance().isShootClear()))
+    (Triggers.getInstance().shootButton())
+        // .and(Triggers.getInstance().isShootClear()))
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
@@ -442,7 +443,7 @@ public class RobotContainer {
         .and(Triggers.getInstance().isShootClear())
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .whileTrue(FlywheelCommands.setVelocityForHub(flywheel))
-        .onFalse(FlywheelCommands.flywheelIdle(flywheel));
+        .onFalse(FlywheelCommands.stop(flywheel));
 
     // Set passing velocity if shoot button is pressed but we're not in our alliance zone and tuning
     // false,
@@ -453,7 +454,7 @@ public class RobotContainer {
             .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
         .or(Triggers.getInstance().passButton())
         .whileTrue(FlywheelCommands.setPassVelocity(flywheel))
-        .onFalse(FlywheelCommands.flywheelIdle(flywheel));
+        .onFalse(FlywheelCommands.stop(flywheel));
 
     // Hard-coded tower shot
     Triggers.getInstance()
@@ -461,7 +462,7 @@ public class RobotContainer {
         .whileTrue(
             FlywheelCommands.setFlywheelVelocity(
                 flywheel, HardwareConstants.TowerConstants.FlywheelTowerVelocity))
-        .onFalse(FlywheelCommands.flywheelIdle(flywheel));
+        .onFalse(FlywheelCommands.stop(flywheel));
 
     // Increase idle speed if hub active and if tuning mode false
     Triggers.getInstance()
@@ -470,7 +471,7 @@ public class RobotContainer {
         .whileTrue(
             FlywheelCommands.setFlywheelVelocity(
                 flywheel, HardwareConstants.CompConstants.Velocities.flywheelIdleVelocityHigh))
-        .onFalse(FlywheelCommands.flywheelIdle(flywheel));
+        .onFalse(FlywheelCommands.stop(flywheel));
 
     // Distance map shot if tuning mode true
     Triggers.getInstance()
@@ -479,7 +480,7 @@ public class RobotContainer {
         .whileTrue(
             FlywheelCommands.setFlywheelVelocity(
                 flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity))
-        .onFalse(FlywheelCommands.flywheelIdle(flywheel));
+        .onFalse(FlywheelCommands.stop(flywheel));
 
     // PRESTAGE
     // Set to velocity when any shooting sequence is started (shoot to hub, pass, shoot from tower)

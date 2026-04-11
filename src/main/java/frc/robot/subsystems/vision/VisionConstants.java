@@ -63,7 +63,7 @@ public class VisionConstants {
   public static final Transform3d robotToCamera2 =
       new Transform3d(
           new Translation3d(Inches.of(-12.991), Inches.of(-6.279), Inches.of(12.527)),
-          new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(192.5)));
+          new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(180 - 12.5)));
 
   // Shooter left:
   // x: -12.979
@@ -75,7 +75,7 @@ public class VisionConstants {
   public static final Transform3d robotToCamera3 =
       new Transform3d(
           new Translation3d(Inches.of(-13.573), Inches.of(4.809), Inches.of(12.44)),
-          new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(-192.5)));
+          new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(192.5)));
 
   // ---- Filtering thresholds ----
 
