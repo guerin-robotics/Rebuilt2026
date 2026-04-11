@@ -30,8 +30,8 @@ public class HoodConstants {
 
     /**
      * Belt ratio from the motor rotor to the output shaft.
-     * 
-     * This needs updated to the real values: GH 4/11
+     *
+     * <p>This needs updated to the real values: GH 4/11
      *
      * <p>30T pulley on motor → belt → 20T pulley on output shaft. One motor rotation = 20/30 shaft
      * rotations → ratio = 30/20.
@@ -40,11 +40,12 @@ public class HoodConstants {
   }
 
   public static class SoftwareConstants {
-    public static final double softwareLowerRotationLimit = 0;
+    // Software limits in degrees — converted to mechanism rotations when applied to the motor
+    public static final Angle softwareLowerLimit = Degrees.of(0);
+    public static final Angle softwareUpperLimit = Degrees.of(62); // matches hoodMaxPos
     public static final SensorDirectionValue ENCODER_DIRECTION =
         SensorDirectionValue.Clockwise_Positive;
     public static boolean MOTOR_INVERTED = false;
-    public static double softwareUpperRotationLimit = 2.0;
   }
 
   public static class CurrentLimits {

@@ -1,6 +1,7 @@
 package frc.robot.subsystems.hood.io;
 
-import static edu.wpi.first.units.Units.Rotation;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -126,13 +127,13 @@ public class HoodIOReal implements HoodIO {
     config.CurrentLimits.StatorCurrentLimit = HoodConstants.CurrentLimits.HOOD_MAIN_STATOR_AMP;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-    // Software limits
+    // Software limits — TalonFX expects mechanism rotations, so convert from degrees
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-        HoodConstants.SoftwareConstants.softwareUpperRotationLimit;
+        HoodConstants.SoftwareConstants.softwareUpperLimit.in(Rotations);
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-        HoodConstants.SoftwareConstants.softwareLowerRotationLimit;
+        HoodConstants.SoftwareConstants.softwareLowerLimit.in(Rotations);
 
     // Apply everything in a single call — this avoids separate apply() calls overwriting each other
     hoodMotor.getConfigurator().apply(config);
@@ -169,13 +170,17 @@ public class HoodIOReal implements HoodIO {
 
     // Read from cache — no additional CAN traffic
     inputs.hoodVelocity = velocity.getValue();
-    inputs.hoodPosition = devicePos.getValue();
+    // CTRE returns position in mechanism rotations; wrap in Degrees for consistent logging.
+    // This ensures AdvantageScope displays the value in degrees (not rotations).
+    inputs.hoodPosition = Degrees.of(devicePos.getValue().in(Degrees));
     inputs.hoodVoltage = motorVoltage.getValue();
     inputs.hoodStatorCurrent = statorCurrent.getValue();
     inputs.hoodSupplyCurrent = supplyCurrent.getValue();
     inputs.hoodTemperature = deviceTemp.getValue();
-    inputs.hoodClosedLoopReference = Rotation.of(closedLoopReference.getValueAsDouble());
-    inputs.hoodClosedLoopError = Rotation.of(closedLoopError.getValueAsDouble());
+    // closedLoopReference and closedLoopError are raw doubles in mechanism rotations.
+    // Convert to degrees so all hood angles are in degrees throughout the codebase.
+    inputs.hoodClosedLoopReference = Degrees.of(closedLoopReference.getValueAsDouble() * 360.0);
+    inputs.hoodClosedLoopError = Degrees.of(closedLoopError.getValueAsDouble() * 360.0);
   }
 
   @Override

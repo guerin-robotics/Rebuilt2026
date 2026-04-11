@@ -375,9 +375,8 @@ public class RobotContainer {
     // flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // // Prestage - idle
     // prestage.setDefaultCommand(PrestageCommands.prestageIdle(prestage));
-    // // Hood - down
-    // hood.setDefaultCommand(
-    //     HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
+    // Hood - stop motor when no command is running (prevents stale closed-loop reference)
+    hood.setDefaultCommand(HoodCommands.hoodIdle(hood));
 
     // OVERRIDES
     // Flip alliance winner
