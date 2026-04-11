@@ -103,32 +103,33 @@ public class AutoPaths {
    *   <li>When the second segment finishes, runs the full shoot sequence then stops all
    * </ol>
    */
-  public static AutoOption twoPiece(AutoContext ctx) {
+  public static AutoOption leftAuto(AutoContext ctx) {
     // ── Build the routine ────────────────────────────────────────────────────
-    AutoRoutine routine = ctx.autoFactory().newRoutine("TwoPiece");
-    AutoTrajectory pickupTraj = routine.trajectory("TwoPiece", 0);
-    AutoTrajectory scoreTraj = routine.trajectory("TwoPiece", 1);
+    AutoRoutine routine = ctx.autoFactory().newRoutine("LeftAuto");
+    AutoTrajectory path1Traj = routine.trajectory("LeftAuto1", 0);
+    AutoTrajectory path2Traj = routine.trajectory("LeftAuto2", 1);
 
     // When the routine starts, reset odometry then follow the first trajectory
-    routine.active().onTrue(Commands.sequence(pickupTraj.resetOdometry(), pickupTraj.cmd()));
+    routine.active().onTrue(Commands.sequence(path1Traj.resetOdometry(), path1Traj.spawnCmd()));
 
     // At the "deployIntake" event marker, deploy intake and run rollers + transport
-    pickupTraj.atTime("deployIntake").onTrue(AutoCommands.deployAndRunIntake(ctx));
+    //path1Traj.atTime("deployIntake").onTrue(AutoCommands.deployAndRunIntake(ctx));
 
     // When the first trajectory finishes, retract intake and start the second trajectory
-    pickupTraj.done().onTrue(Commands.sequence(AutoCommands.retractIntake(ctx), scoreTraj.cmd()));
+    path1Traj.done().onTrue(path2Traj.cmd());
+    // Commands.sequence(AutoCommands.retractIntake(ctx), path2Traj.cmd());
 
     // When the second trajectory finishes, run the shoot sequence then stop everything
-    scoreTraj
+    path2Traj
         .done()
         .onTrue(
             AutoCommands.shootSequence(ctx).withTimeout(3.0).andThen(AutoCommands.stopAll(ctx)));
 
     // ── Build preview data from both trajectory segments ─────────────────────
     List<Pose2d> previewPoses = new java.util.ArrayList<>();
-    previewPoses.addAll(getTrajectoryPoses(pickupTraj));
-    previewPoses.addAll(getTrajectoryPoses(scoreTraj));
-    Pose2d startPose = getStartingPose(pickupTraj);
+    previewPoses.addAll(getTrajectoryPoses(path1Traj));
+    previewPoses.addAll(getTrajectoryPoses(path2Traj));
+    Pose2d startPose = getStartingPose(path1Traj);
 
     return new AutoOption(routine::cmd, previewPoses, startPose);
   }
