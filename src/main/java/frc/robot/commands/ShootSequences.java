@@ -51,6 +51,42 @@ public class ShootSequences {
                     HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))));
   }
 
+  /**
+   * Tuning shoot WITHOUT hood control. The hood is left to the button panel so the operator can
+   * increment/reset the hood position independently while shooting.
+   *
+   * <p>Runs: flywheel at tuning velocity, prestage, intake jostle, and (after spinup delay) feeders
+   * + transport + intake agitate.
+   */
+  public static Command mapTuningShootNoHood(
+      Flywheel flywheel,
+      Prestage prestage,
+      IntakePivot intakePivot,
+      UpperFeeder upperFeeder,
+      LowerFeeder lowerFeeder,
+      Transport transport,
+      intakeRoller intakeRoller) {
+    return Commands.parallel(
+        Commands.parallel(
+            FlywheelCommands.setFlywheelVelocity(
+                flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity),
+            PrestageCommands.setPrestageVelocity(
+                prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
+            IntakePivotCommands.jostlePivotByPos(intakePivot)),
+        Commands.sequence(
+            new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
+            Commands.parallel(
+                FeederCommands.setLowerFeederVelocity(
+                    lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
+                FeederCommands.setUpperFeederVelocity(
+                    upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
+                TransportCommands.setTransportVoltage(
+                    transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
+                intakeRollerCommands.setRollerVoltage(
+                    intakeRoller,
+                    HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))));
+  }
+
   public static Command shootForTower(
       Flywheel flywheel,
       Prestage prestage,

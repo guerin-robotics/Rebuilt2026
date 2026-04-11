@@ -138,17 +138,19 @@ public class Triggers {
   }
 
   // Returns true if robot is able to score fuel at the current match time, or if timer is disabled
+  // NOTE: The boolean values must be read INSIDE the lambda so they are evaluated every loop.
+  // Capturing them outside the lambda freezes the value at construction time.
   public LoggedTrigger isShootSafeTime() {
-    boolean disabled = HubShiftUtil.disabled;
-    boolean safe = HubShiftUtil.getShiftedShiftInfo().active();
-    return new LoggedTrigger("isShootSafeTime", () -> (safe || disabled));
+    return new LoggedTrigger(
+        "isShootSafeTime",
+        () -> (HubShiftUtil.getShiftedShiftInfo().active() || HubShiftUtil.disabled));
   }
 
   // Adaptation of above trigger that returns true if time is safe, but not if timer is disabled
   // (Used for smart idle speeds)
   public LoggedTrigger isShootSafeTimeSure() {
-    boolean safe = HubShiftUtil.getShiftedShiftInfo().active();
-    return new LoggedTrigger("isShootSafeTimeSure", () -> safe);
+    return new LoggedTrigger(
+        "isShootSafeTimeSure", () -> HubShiftUtil.getShiftedShiftInfo().active());
   }
 
   // Composite checker for time and zone

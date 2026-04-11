@@ -342,7 +342,7 @@ public class RobotState {
 
     // Calculate the angle using atan2
     // This gives us the direction we need to face to point at the hub
-    return new Rotation2d(robotToHub.getX(), robotToHub.getY()).plus(new Rotation2d().kPi);
+    return new Rotation2d(robotToHub.getX(), robotToHub.getY());
   }
 
   // Gets angle to any target
@@ -355,7 +355,7 @@ public class RobotState {
 
     // Calculate the angle using atan2
     // This gives us the direction we need to face to point at the hub
-    return new Rotation2d(robotToTarget.getX(), robotToTarget.getY()).plus(new Rotation2d().kPi);
+    return new Rotation2d(robotToTarget.getX(), robotToTarget.getY());
   }
 
   // ==================== ODOMETRY UPDATES ====================
