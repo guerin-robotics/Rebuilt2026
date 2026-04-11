@@ -5,8 +5,6 @@ import static edu.wpi.first.units.Units.Seconds;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
@@ -44,12 +42,14 @@ public class HoodIOReal implements HoodIO {
   private final StatusSignal<Double> closedLoopError;
 
   public HoodIOReal() {
-    // hoodServo = new PWM(HardwareConstants.CanIds.HOOD_SERVO_CHANNEL);
-    // hoodLeftServo = new PWM(HardwareConstants.CanIds.HOOD_LEFT_SERVO_CHANNEL);
-
     hoodMotor = new TalonFX(HardwareConstants.CanIds.HOOD_MOTOR);
     hoodEncoder = new CANcoder(HardwareConstants.CanIds.HOOD_ENCODER);
 
+    // Configure encoder first so the CANcoder is ready before the motor tries to use it
+    configureEncoder();
+    configureMotor();
+
+    // Cache signal references once — motor signals
     velocity = hoodMotor.getVelocity();
     motorVoltage = hoodMotor.getMotorVoltage();
     statorCurrent = hoodMotor.getStatorCurrent();
@@ -69,9 +69,10 @@ public class HoodIOReal implements HoodIO {
 
     // Stop sending signals we didn't register — reduces CAN bus traffic
     hoodMotor.optimizeBusUtilization();
+    hoodEncoder.optimizeBusUtilization();
   }
 
-  public void configureMotor() {
+  private void configureMotor() {
     var config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
@@ -79,8 +80,12 @@ public class HoodIOReal implements HoodIO {
         HoodConstants.SoftwareConstants.MOTOR_INVERTED
             ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
             : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
-    config.Feedback.RotorToSensorRatio = HoodConstants.Mechanical.hoodRatio;
-    config.Feedback.SensorToMechanismRatio = 1;
+
+    // Remote CANcoder feedback — set directly on the config object so everything is applied at once
+    config.Feedback.FeedbackRemoteSensorID = HardwareConstants.CanIds.HOOD_ENCODER;
+    config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+    config.Feedback.RotorToSensorRatio = 1;
+    config.Feedback.SensorToMechanismRatio = HoodConstants.Mechanical.hoodRatio;
 
     config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     config.Slot0.kG = HoodConstants.PID.KG;
@@ -91,20 +96,15 @@ public class HoodIOReal implements HoodIO {
     hoodMotionMagic.MotionMagicAcceleration = HoodConstants.HoodMagicConstants.hoodAccel;
     hoodMotionMagic.MotionMagicCruiseVelocity = HoodConstants.HoodMagicConstants.hoodVelo;
 
-    // Current limits
-    var limits = new CurrentLimitsConfigs();
-    limits.SupplyCurrentLimit = HoodConstants.CurrentLimits.HOOD__MAIN_SUPPLY_AMP;
-    limits.SupplyCurrentLimitEnable = true;
-    limits.SupplyCurrentLowerLimit = HoodConstants.CurrentLimits.HOOD_MAIN_SUPPLY_TRIGGER_AMP;
-    limits.SupplyCurrentLowerTime =
+    // Current limits — set directly on the config object
+    config.CurrentLimits.SupplyCurrentLimit = HoodConstants.CurrentLimits.HOOD__MAIN_SUPPLY_AMP;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.CurrentLimits.SupplyCurrentLowerLimit =
+        HoodConstants.CurrentLimits.HOOD_MAIN_SUPPLY_TRIGGER_AMP;
+    config.CurrentLimits.SupplyCurrentLowerTime =
         HoodConstants.CurrentLimits.HOOD_MAIN_SUPPLY_TRIGGER_TIME_SEC.in(Seconds);
-    limits.StatorCurrentLimit = HoodConstants.CurrentLimits.HOOD_MAIN_STATOR_AMP;
-    limits.StatorCurrentLimitEnable = true;
-
-    // CANcoder remote feedback
-    var feedback = new FeedbackConfigs();
-    feedback.withFeedbackRemoteSensorID(HardwareConstants.CanIds.HOOD_ENCODER);
-    feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder);
+    config.CurrentLimits.StatorCurrentLimit = HoodConstants.CurrentLimits.HOOD_MAIN_STATOR_AMP;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
 
     // Software limits
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
@@ -114,12 +114,11 @@ public class HoodIOReal implements HoodIO {
     config.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
         HoodConstants.SoftwareConstants.softwareLowerRotationLimit;
 
+    // Apply everything in a single call — this avoids separate apply() calls overwriting each other
     hoodMotor.getConfigurator().apply(config);
-    hoodMotor.getConfigurator().apply(limits);
-    hoodMotor.getConfigurator().apply(feedback);
   }
 
-  public void configureEncoder() {
+  private void configureEncoder() {
     var encoderConfig = new CANcoderConfiguration();
 
     var magnetConfig = new MagnetSensorConfigs();
