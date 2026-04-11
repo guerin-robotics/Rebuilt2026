@@ -10,8 +10,8 @@ import edu.wpi.first.units.measure.Time;
 public class HoodConstants {
 
   public static class Mechanical {
-    public static final double magnetSensorDiscontinuityPoint = 0.5;
-    public static final double magnetOffset = 0.3;
+    public static final double magnetSensorDiscontinuityPoint = 1;
+    public static final double magnetOffset = -0.16;
     public static double hoodMaxPos = 1.0;
     public static double hoodMinPos = 0.0;
 
@@ -32,11 +32,11 @@ public class HoodConstants {
     public static final double HOOD__MAIN_SUPPLY_AMP = 40;
     public static final double HOOD_MAIN_SUPPLY_TRIGGER_AMP = 35;
     public static final Time HOOD_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
-    public static final double HOOD_MAIN_STATOR_AMP = 70;
+    public static final double HOOD_MAIN_STATOR_AMP = 60;
   }
 
   public static class PID {
-    public static final double KG = 0; // 0
+    public static final double KG = 0; // 0.8
     public static final double KP = 0; // 0
     public static final double KD = 0; // 0
   }
