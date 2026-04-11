@@ -557,7 +557,7 @@ public class RobotContainer {
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // INTAKE PIVOT
-    // Retract on retract button
+    // Retract on retractbutton
     Triggers.getInstance()
         .intakeInButton()
         .whileTrue(
