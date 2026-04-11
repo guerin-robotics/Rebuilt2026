@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 
 import edu.wpi.first.units.measure.Angle;
@@ -37,7 +36,7 @@ public class HoodCommands {
    * command is active.
    */
   public static Command hoodIdle(Hood hood) {
-    return Commands.run(() -> hood.setHoodPos(Degrees.of(0)), hood).withName("HoodIdle");
+    return Commands.run(() -> hood.setHoodPos(Degrees.of(1)), hood).withName("HoodIdle");
   }
 
   public static Command incrementHoodPos(Hood hood) {

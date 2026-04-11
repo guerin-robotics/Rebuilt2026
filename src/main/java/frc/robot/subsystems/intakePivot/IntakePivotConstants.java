@@ -27,7 +27,7 @@ public class IntakePivotConstants {
 
   /** Software configuration: motor inversion, encoder direction, and soft limits. NEEDS TUNED */
   public static class SoftwareConstants {
-    public static final boolean MOTOR_INVERTED = true;
+    public static final boolean MOTOR_INVERTED = false;
     public static final SensorDirectionValue ENCODER_DIRECTION =
         SensorDirectionValue.Clockwise_Positive;
     /** Upper software limit in rotations of the mechanism. */

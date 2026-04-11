@@ -12,7 +12,7 @@ import edu.wpi.first.units.measure.Time;
 public class HoodConstants {
 
   public static class Mechanical {
-    public static final double magnetSensorDiscontinuityPoint = 1;
+    public static final double magnetSensorDiscontinuityPoint = 0.75 / 2 + 0.25; // 1;
     public static final double magnetOffset = -0.16;
     // Hood position limits in degrees (mechanism output)
     public static final Angle hoodMaxPos = Degrees.of(234); // was 0.65 rotations
@@ -36,7 +36,7 @@ public class HoodConstants {
      * <p>30T pulley on motor → belt → 20T pulley on output shaft. One motor rotation = 20/30 shaft
      * rotations → ratio = 30/20.
      */
-    public static double motorToShaftRatio = 0;
+    public static double motorToShaftRatio = 5.0;
   }
 
   public static class SoftwareConstants {
@@ -56,8 +56,8 @@ public class HoodConstants {
   }
 
   public static class PID {
-    public static final double KG = 10; // 0.8
-    public static final double KP = 0; // 0
+    public static final double KS = 9;
+    public static final double KP = 4000; // 0
     public static final double KD = 0; // 0
   }
 

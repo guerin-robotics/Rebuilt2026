@@ -489,19 +489,17 @@ public class RobotContainer {
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
-            // PrestageCommands.setPrestageVelocity(
-            //     prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity)
-            PrestageCommands.setPrestageVoltage(
-                prestage, HardwareConstants.TestConstants.TestVoltages.PrestageTestVoltage))
-        .onFalse(PrestageCommands.prestageIdle(prestage));
+            PrestageCommands.setPrestageVelocity(
+                prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
+        .onFalse(PrestageCommands.stop(prestage));
 
     // Increase idle speed if hub active
-    Triggers.getInstance()
-        .isShootSafeTimeSure()
-        .whileTrue(
-            PrestageCommands.setPrestageVelocity(
-                prestage, HardwareConstants.CompConstants.Velocities.prestageIdleVelocityHigh))
-        .onFalse(PrestageCommands.prestageIdle(prestage));
+    // Triggers.getInstance()
+    //     .isShootSafeTimeSure()
+    //     .whileTrue(
+    //         PrestageCommands.setPrestageVelocity(
+    //             prestage, HardwareConstants.CompConstants.Velocities.prestageIdleVelocityHigh))
+    //     .onFalse(PrestageCommands.prestageIdle(prestage));
 
     // FEEDER
     // Set to velocity (after a wait) when any shooting sequence is started (shoot to hub, pass,
@@ -511,18 +509,18 @@ public class RobotContainer {
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
-            // FeederCommands.setLowerVelocityAfterWait(
-            //         lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
-            //     .alongWith(
-            //         FeederCommands.setUpperVelocityAfterWait(
-            //             upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
-            FeederCommands.setLowerFeederVoltage(
-                    lowerFeeder,
-                    HardwareConstants.TestConstants.TestVoltages.LowerFeederTestVoltage)
+            FeederCommands.setLowerVelocityAfterWait(
+                    lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
                 .alongWith(
-                    FeederCommands.setUpperFeederVoltage(
-                        upperFeeder,
-                        HardwareConstants.TestConstants.TestVoltages.FeederTestVoltage)))
+                    FeederCommands.setUpperVelocityAfterWait(
+                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)))
+            // FeederCommands.setLowerFeederVoltage(
+            //         lowerFeeder,
+            //         HardwareConstants.TestConstants.TestVoltages.LowerFeederTestVoltage)
+            //     .alongWith(
+            //         FeederCommands.setUpperFeederVoltage(
+            //             upperFeeder,
+            //             HardwareConstants.TestConstants.TestVoltages.FeederTestVoltage)))
         .onFalse(
             FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)));
 
@@ -534,8 +532,8 @@ public class RobotContainer {
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
-            TransportCommands.setVoltageAfterWait(
-                transport, HardwareConstants.CompConstants.Voltages.transportVoltage))
+            TransportCommands.setVelocityAfterWait(
+                transport, HardwareConstants.CompConstants.Velocities.transportVelocity))
         .onFalse(TransportCommands.stop(transport));
 
     // INTAKE ROLLER
@@ -641,7 +639,7 @@ public class RobotContainer {
             intakeRollerCommands.setRollerVelocity(
                 intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity));
 
-    buttonPanel.button(6).whileTrue(HoodCommands.setHoodPos(hood, Degrees.of(5)));
+    buttonPanel.button(6).whileTrue(HoodCommands.setHoodPos(hood, Degrees.of(30)));
 
     buttonPanel.button(7).whileTrue(IntakePivotCommands.setPivotRotations(intakePivot, 0.25));
 

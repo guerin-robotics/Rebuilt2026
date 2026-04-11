@@ -13,7 +13,6 @@ import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
-import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -108,8 +107,7 @@ public class HoodIOReal implements HoodIO {
     config.Feedback.RotorToSensorRatio = HoodConstants.Mechanical.motorToShaftRatio;
     config.Feedback.SensorToMechanismRatio = HoodConstants.Mechanical.shaftToHoodRatio;
 
-    config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-    config.Slot0.kG = HoodConstants.PID.KG;
+    config.Slot0.kS = HoodConstants.PID.KS;
     config.Slot0.kP = HoodConstants.PID.KP;
     config.Slot0.kD = HoodConstants.PID.KD;
 
