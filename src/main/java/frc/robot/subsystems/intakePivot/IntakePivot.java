@@ -6,7 +6,6 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Robot;
 import frc.robot.subsystems.intakePivot.io.IntakePivotIO;
 import frc.robot.subsystems.intakePivot.io.IntakePivotIOInputsAutoLogged;

@@ -59,17 +59,13 @@ public class IntakePivotCommands {
                     HardwareConstants.CompConstants.Positions.pivotDownPos));
   }
 
-  // public static Command compressPivot(IntakePivot intakePivot, double rotations, double seconds)
-  // {
-  //   AngularVelocity pivotVelo = RotationsPerSecond.of(rotations / seconds);
-  //   return Commands.deadline(new WaitCommand(seconds), setPivotVelocity(intakePivot, pivotVelo));
-  // }
-
   public static Command compressPivot(IntakePivot intakePivot) {
     return Commands.sequence(
             Commands.deadline(
-                //new WaitCommand(0.75),
-                IntakePivotCommands.setPivotVelocity(intakePivot, HardwareConstants.CompConstants.Velocities.intakePivotCompressVelocity)),
+                // new WaitCommand(0.75),
+                IntakePivotCommands.setPivotVelocity(
+                    intakePivot,
+                    HardwareConstants.CompConstants.Velocities.intakePivotCompressVelocity)),
             new WaitCommand(0.25),
             IntakePivotCommands.setPivotRotations(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos))
