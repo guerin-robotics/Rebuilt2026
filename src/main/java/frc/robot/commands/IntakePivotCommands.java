@@ -44,7 +44,7 @@ public class IntakePivotCommands {
   public static Command setPivotRotations(IntakePivot intakePivot, double angleRotations) {
     return Commands.runOnce(() -> intakePivot.setPivotPosition(angleRotations), intakePivot);
   }
-  
+
   public static Command jostlePivotByPos(IntakePivot intakePivot) {
     return Commands.sequence(
             setPivotRotations(
@@ -68,9 +68,9 @@ public class IntakePivotCommands {
   public static Command compressPivot(IntakePivot intakePivot) {
     return Commands.sequence(
             Commands.deadline(
-                new WaitCommand(0.75),
-                IntakePivotCommands.setPivotVoltage(intakePivot, Volts.of(1.7))),
-            new WaitCommand(0.5),
+                //new WaitCommand(0.75),
+                IntakePivotCommands.setPivotVelocity(intakePivot, HardwareConstants.CompConstants.Velocities.intakePivotCompressVelocity)),
+            new WaitCommand(0.25),
             IntakePivotCommands.setPivotRotations(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos))
         .repeatedly()

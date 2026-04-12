@@ -76,7 +76,10 @@ public class HardwareConstants {
       // Transport Velocities
       public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-30);
 
-      // Intake Velocities
+      // Intake Pivot Velocities
+      public static final AngularVelocity intakePivotCompressVelocity = RotationsPerSecond.of(0.15);
+
+      // Intake Roller Velocities
       public static final AngularVelocity intakeRollerVelocity = RotationsPerSecond.of(50);
       public static final AngularVelocity intakeRollerAgitateVelocity = RotationsPerSecond.of(15);
     }
