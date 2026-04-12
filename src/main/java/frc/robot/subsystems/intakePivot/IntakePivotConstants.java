@@ -22,7 +22,7 @@ public class IntakePivotConstants {
     public static final int INTAKE_PIVOT_MAIN_SUPPLY_AMP = 40;
     public static final int INTAKE_PIVOT_MAIN_SUPPLY_TRIGGER_AMP = 35;
     public static final Time INTAKE_PIVOT_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
-    public static final int INTAKE_PIVOT_MAIN_STATOR_AMP = 70;
+    public static final int INTAKE_PIVOT_MAIN_STATOR_AMP = 50;
   }
 
   /** Software configuration: motor inversion, encoder direction, and soft limits. NEEDS TUNED */
@@ -52,8 +52,6 @@ public class IntakePivotConstants {
   public static class Mechanical {
     /** Total gear ratio from motor to pivot output. */
     public static final double pivotRatio = 45;
-    /** Current threshold (stator amps) used in the jostle routine. */
-    public static final double pivotJostleCurrentLimit = 70;
     /** CANcoder magnet offset in rotations. */
     public static final double magnetOffset = -0.58;
     /** CANcoder absolute sensor discontinuity point. */
