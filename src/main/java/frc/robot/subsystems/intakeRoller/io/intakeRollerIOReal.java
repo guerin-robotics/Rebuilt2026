@@ -156,7 +156,7 @@ public class intakeRollerIOReal implements intakeRollerIO {
         RotationsPerSecond.of(closedLoopReference.getValueAsDouble());
     inputs.rollerClosedLoopError = RotationsPerSecond.of(closedLoopError.getValueAsDouble());
     inputs.rollerPos = pos.getValue();
-    inputs.intakeRollerVelocity = Followervelocity.getValue();
+    inputs.intakeRollerFollowerVelocity = Followervelocity.getValue();
     inputs.intakeRollerFollowerStatorCurrent = FollowerstatorCurrent.getValue();
     inputs.intakeRollerFollowerSupplyCurrent = FollowersupplyCurrent.getValue();
     inputs.intakeRollerFollowerVoltage = FollowermotorVoltage.getValue();

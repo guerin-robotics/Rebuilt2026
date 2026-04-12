@@ -40,5 +40,4 @@ public interface PrestageIO {
 
   public default void setPrestageVelocity(AngularVelocity prestageVelo) {}
 
-  public default void setOneVelo(AngularVelocity prestageVelo) {}
 }

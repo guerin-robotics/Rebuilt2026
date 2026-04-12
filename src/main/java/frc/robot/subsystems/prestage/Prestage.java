@@ -44,8 +44,4 @@ public class Prestage extends SubsystemBase {
   public void setPrestageVelocity(AngularVelocity prestageVelo) {
     io.setPrestageVelocity(prestageVelo);
   }
-
-  public void setOneVelo(AngularVelocity prestageVelo) {
-    io.setOneVelo(prestageVelo);
-  }
 }

@@ -37,6 +37,4 @@ public interface HoodIO {
    * @param position in rotations
    */
   public default void setHoodPos(Angle position) {}
-
-  public default void stopHood() {}
 }
