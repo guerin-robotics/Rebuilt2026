@@ -64,14 +64,14 @@ public class HardwareConstants {
       public static final AngularVelocity flywheelIdleVelocityHigh = RotationsPerSecond.of(20);
 
       // Prestage Velocities
-      public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(50.0);
+      public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(60.0);
       public static final AngularVelocity prestageIdleVelocity = RotationsPerSecond.of(10);
       public static final AngularVelocity prestageIdleVelocityHigh = RotationsPerSecond.of(20);
 
       // Feeder Velocities
       public static final AngularVelocity feederVelocity = RotationsPerSecond.of(-25.0);
       public static final AngularVelocity upperFeederVelocity = RotationsPerSecond.of(-25.0);
-      public static final AngularVelocity lowerFeederVelocity = RotationsPerSecond.of(-25.0);
+      public static final AngularVelocity lowerFeederVelocity = RotationsPerSecond.of(-40.0);
 
       // Transport Velocities
       public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-30);
@@ -86,7 +86,7 @@ public class HardwareConstants {
 
     public static class ClearVelocities {
       public static final AngularVelocity prestageSpitVelocity = RotationsPerSecond.of(-50.0);
-      public static final AngularVelocity feederSpitVelocity = RotationsPerSecond.of(50.0);
+      public static final AngularVelocity feederSpitVelocity = RotationsPerSecond.of(40.0);
     }
 
     // Subsystems that run on position control: hood, pivot
