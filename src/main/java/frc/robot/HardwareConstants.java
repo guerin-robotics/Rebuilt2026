@@ -6,6 +6,8 @@ import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.CANBus;
+
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
@@ -13,8 +15,11 @@ import frc.lib.AllianceFlipUtil;
 
 public class HardwareConstants {
   public static final int NUMBER_OF_CAMERAS = 4;
+  public static final CANBus CAN_BUS = new CANBus("rio");
 
   public static class CanIds {
+
+
     // Flywheel
     public static int MAIN_FLYWHEEL_LEADER_ID = 30; // 30
     public static int MAIN_FLYWHEEL_FOLLOWER1_ID = 31; // 31

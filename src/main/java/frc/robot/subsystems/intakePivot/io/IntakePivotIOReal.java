@@ -3,7 +3,6 @@ package frc.robot.subsystems.intakePivot.io;
 import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -36,8 +35,6 @@ import org.littletonrobotics.junction.Logger;
  */
 public class IntakePivotIOReal implements IntakePivotIO {
 
-  private static final CANBus CAN_BUS = new CANBus("rio");
-
   private final TalonFX intakePivotMotor;
   private final CANcoder intakePivotEncoder;
 
@@ -59,8 +56,8 @@ public class IntakePivotIOReal implements IntakePivotIO {
   private final StatusSignal<Angle> encoderPosition;
 
   public IntakePivotIOReal() {
-    intakePivotMotor = new TalonFX(HardwareConstants.CanIds.INTAKE_PIVOT_MOTOR_ID, CAN_BUS);
-    intakePivotEncoder = new CANcoder(HardwareConstants.CanIds.INTAKE_PIVOT_ENCODER_ID, CAN_BUS);
+    intakePivotMotor = new TalonFX(HardwareConstants.CanIds.INTAKE_PIVOT_MOTOR_ID, HardwareConstants.CAN_BUS);
+    intakePivotEncoder = new CANcoder(HardwareConstants.CanIds.INTAKE_PIVOT_ENCODER_ID, HardwareConstants.CAN_BUS);
 
     configurePivotMotor();
     configureEncoder();

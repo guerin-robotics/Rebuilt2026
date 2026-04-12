@@ -43,8 +43,8 @@ public class HoodIOReal implements HoodIO {
   private final StatusSignal<Double> closedLoopError;
 
   public HoodIOReal() {
-    hoodMotor = new TalonFX(HardwareConstants.CanIds.HOOD_MOTOR);
-    hoodEncoder = new CANcoder(HardwareConstants.CanIds.HOOD_ENCODER);
+    hoodMotor = new TalonFX(HardwareConstants.CanIds.HOOD_MOTOR, HardwareConstants.CAN_BUS);
+    hoodEncoder = new CANcoder(HardwareConstants.CanIds.HOOD_ENCODER, HardwareConstants.CAN_BUS);
 
     // Configure encoder first so the CANcoder is ready before the motor tries to use it
     configureEncoder();

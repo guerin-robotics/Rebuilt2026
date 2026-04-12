@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -21,8 +20,6 @@ import frc.robot.HardwareConstants;
 import frc.robot.subsystems.transport.TransportConstants;
 
 public class TransportIOReal implements TransportIO {
-
-  private static final CANBus CAN_BUS = new CANBus("rio");
 
   private final TalonFX transportMotor;
 
@@ -41,7 +38,7 @@ public class TransportIOReal implements TransportIO {
   private final StatusSignal<Angle> pos;
 
   public TransportIOReal() {
-    transportMotor = new TalonFX(HardwareConstants.CanIds.TRANSPORT_MOTOR_ID, CAN_BUS);
+    transportMotor = new TalonFX(HardwareConstants.CanIds.TRANSPORT_MOTOR_ID, HardwareConstants.CAN_BUS);
     configureTransportMotor();
 
     // Cache signal references once in the constructor

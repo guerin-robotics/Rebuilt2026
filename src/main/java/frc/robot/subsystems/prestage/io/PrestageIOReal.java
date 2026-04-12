@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -23,8 +22,6 @@ import frc.robot.HardwareConstants;
 import frc.robot.subsystems.prestage.PrestageConstants;
 
 public class PrestageIOReal implements PrestageIO {
-
-  private static final CANBus CAN_BUS = new CANBus("rio");
 
   private final TalonFX prestageLeft;
   private final TalonFX prestageRight;
@@ -54,8 +51,8 @@ public class PrestageIOReal implements PrestageIO {
   private final StatusSignal<Angle> rightPos;
 
   public PrestageIOReal() {
-    prestageLeft = new TalonFX(HardwareConstants.CanIds.PRESTAGE_LEADER_ID, CAN_BUS);
-    prestageRight = new TalonFX(HardwareConstants.CanIds.PRESTAGE_FOLLOWER_ID, CAN_BUS);
+    prestageLeft = new TalonFX(HardwareConstants.CanIds.PRESTAGE_LEADER_ID, HardwareConstants.CAN_BUS);
+    prestageRight = new TalonFX(HardwareConstants.CanIds.PRESTAGE_FOLLOWER_ID, HardwareConstants.CAN_BUS);
 
     configurePrestageMotor();
 

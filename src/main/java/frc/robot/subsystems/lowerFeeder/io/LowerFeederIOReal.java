@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -21,8 +20,6 @@ import frc.robot.HardwareConstants;
 import frc.robot.subsystems.lowerFeeder.LowerFeederConstants;
 
 public class LowerFeederIOReal implements LowerFeederIO {
-
-  private static final CANBus CAN_BUS = new CANBus("rio");
 
   private final TalonFX lowerFeederMotor;
 
@@ -41,7 +38,7 @@ public class LowerFeederIOReal implements LowerFeederIO {
   private final StatusSignal<Angle> pos;
 
   public LowerFeederIOReal() {
-    lowerFeederMotor = new TalonFX(HardwareConstants.CanIds.LOWER_FEEDER_MOTOR_ID, CAN_BUS);
+    lowerFeederMotor = new TalonFX(HardwareConstants.CanIds.LOWER_FEEDER_MOTOR_ID, HardwareConstants.CAN_BUS);
     configureFeederMotor();
 
     // Cache signal references once in the constructor

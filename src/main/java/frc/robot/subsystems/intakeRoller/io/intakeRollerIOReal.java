@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -24,8 +23,6 @@ import frc.robot.subsystems.intakeRoller.intakeRollerConstants;
 import frc.robot.subsystems.intakeRoller.intakeRollerConstants.rollerMagicConstants;
 
 public class intakeRollerIOReal implements intakeRollerIO {
-
-  private static final CANBus CAN_BUS = new CANBus("rio");
 
   private final TalonFX intakeRollerLeader;
   private final TalonFX intakeRollerFollower;
@@ -53,8 +50,8 @@ public class intakeRollerIOReal implements intakeRollerIO {
   private final StatusSignal<Angle> Followerpos;
 
   public intakeRollerIOReal() {
-    intakeRollerLeader = new TalonFX(HardwareConstants.CanIds.INTAKE_ROLLER_LEADER_ID, CAN_BUS);
-    intakeRollerFollower = new TalonFX(HardwareConstants.CanIds.INTAKE_ROLLER_FOLLOWER_ID, CAN_BUS);
+    intakeRollerLeader = new TalonFX(HardwareConstants.CanIds.INTAKE_ROLLER_LEADER_ID, HardwareConstants.CAN_BUS);
+    intakeRollerFollower = new TalonFX(HardwareConstants.CanIds.INTAKE_ROLLER_FOLLOWER_ID, HardwareConstants.CAN_BUS);
 
     intakeRollerFollower.setControl(
         new Follower(
