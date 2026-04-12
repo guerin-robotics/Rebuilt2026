@@ -43,4 +43,3 @@ All changes made in response to the code review on `code-review-of-main` branch.
 ### Skipped
 
 - **Issue 10 (`zeroPivot` missing subsystem requirement)**: Skipped per user request — acceptable since it only resets the encoder.
-

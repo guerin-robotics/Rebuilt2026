@@ -81,41 +81,4 @@ public class IntakePivot extends SubsystemBase {
     return inputs.intakePivotPosition;
   }
 
-  /**
-   * Jostle the intake by current. If stator current is below the threshold, drive downward.
-   * Otherwise, retract by a set amount and pause briefly.
-   */
-  public void intakeJostleByCurrent(
-      AngularVelocity upVelocity,
-      AngularVelocity downVelocity,
-      double degreesDown,
-      double seconds) {
-    double currentPos = inputs.intakePivotPosition;
-    if (inputs.intakePivotStatorCurrent.in(Amps)
-        < IntakePivotConstants.Mechanical.pivotJostleCurrentLimit) {
-      io.setPivotVelocity(downVelocity);
-    } else {
-      setPivotPosition(currentPos + degreesDown);
-      new WaitCommand(seconds);
-    }
-  }
-
-  public void intakeJostleByPos() {
-    io.setPivotPosition(IntakePivotConstants.Mechanical.pivotJostleDegreesUp);
-    // new WaitCommand(1);
-    // io.setPivotPosition(IntakePivotConstants.Mechanical.pivotDegreesDown);
-    // new WaitCommand(1);
-  }
-
-  /**
-   * Slowly drive the pivot toward the home position until stator current indicates a hard stop,
-   * then zero the encoder.
-   */
-  public void intakeHome(AngularVelocity homeVelo) {
-    if (inputs.intakePivotStatorCurrent.in(Amps) > 0.5) {
-      io.setPivotVelocity(homeVelo);
-    } else {
-      io.zeroPivotEncoder();
-    }
-  }
 }

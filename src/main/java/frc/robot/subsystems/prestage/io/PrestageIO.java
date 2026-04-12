@@ -39,5 +39,4 @@ public interface PrestageIO {
   public default void setPrestageVoltage(Voltage volts) {}
 
   public default void setPrestageVelocity(AngularVelocity prestageVelo) {}
-
 }
