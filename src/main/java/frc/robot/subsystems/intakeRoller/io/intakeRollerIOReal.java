@@ -120,6 +120,8 @@ public class intakeRollerIOReal implements intakeRollerIO {
 
     intakeRollerLeader.getConfigurator().apply(config);
     intakeRollerLeader.getConfigurator().apply(limits);
+    intakeRollerFollower.getConfigurator().apply(config);
+    intakeRollerFollower.getConfigurator().apply(limits);
   }
 
   @Override
