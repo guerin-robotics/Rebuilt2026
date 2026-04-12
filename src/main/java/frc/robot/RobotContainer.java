@@ -239,10 +239,6 @@ public class RobotContainer {
     }
   }
 
-  private double deadband(double value) {
-    return MathUtil.applyDeadband(value, HardwareConstants.ControllerConstants.DEADBAND);
-  }
-
   private double getThrustX() {
     return thrustmaster.getRawAxis(0); // strafe
   }
@@ -273,11 +269,11 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "RunIntake",
         intakeRollerCommands
-            .setRollerVoltage(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)
+            .setRollerVelocity(
+                intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity)
             .alongWith(
-                TransportCommands.setTransportVoltage(
-                    transport, HardwareConstants.CompConstants.Voltages.transportVoltage)));
+                TransportCommands.setTransportVelocity(
+                    transport, HardwareConstants.CompConstants.Velocities.transportVelocity)));
 
     // Auto shoot command
     NamedCommands.registerCommand(
@@ -346,8 +342,8 @@ public class RobotContainer {
         .whileTrue(
             Commands.startEnd(
                 () -> {
-                  intakeRoller.setRollerVoltage(
-                      HardwareConstants.CompConstants.Voltages.intakeRollerVoltage);
+                  intakeRoller.setRollerVelocity(
+                      HardwareConstants.CompConstants.Velocities.intakeRollerVelocity);
                 },
                 () -> {
                   intakeRoller.setRollerVoltage(Volts.of(0));

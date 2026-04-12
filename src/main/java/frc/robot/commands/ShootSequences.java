@@ -44,11 +44,11 @@ public class ShootSequences {
                     lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
                 FeederCommands.setUpperFeederVelocity(
                     upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
-                TransportCommands.setTransportVoltage(
-                    transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
-                intakeRollerCommands.setRollerVoltage(
+                TransportCommands.setTransportVelocity(
+                    transport, HardwareConstants.CompConstants.Velocities.transportVelocity),
+                intakeRollerCommands.setRollerVelocity(
                     intakeRoller,
-                    HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))));
+                    HardwareConstants.CompConstants.Velocities.intakeRollerVelocity))));
   }
 
   /**
@@ -80,11 +80,11 @@ public class ShootSequences {
                     lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
                 FeederCommands.setUpperFeederVelocity(
                     upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
-                TransportCommands.setTransportVoltage(
-                    transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
-                intakeRollerCommands.setRollerVoltage(
+                TransportCommands.setTransportVelocity(
+                    transport, HardwareConstants.CompConstants.Velocities.transportVelocity),
+                intakeRollerCommands.setRollerVelocity(
                     intakeRoller,
-                    HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))));
+                    HardwareConstants.CompConstants.Velocities.intakeRollerVelocity))));
   }
 
   public static Command shootForTower(
@@ -108,11 +108,11 @@ public class ShootSequences {
                 lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
             FeederCommands.setUpperFeederVelocity(
                 upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
-            TransportCommands.setTransportVoltage(
-                transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
-            intakeRollerCommands.setRollerVoltage(
+            TransportCommands.setTransportVelocity(
+                transport, HardwareConstants.CompConstants.Velocities.transportVelocity),
+            intakeRollerCommands.setRollerVelocity(
                 intakeRoller,
-                HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage)));
+                HardwareConstants.CompConstants.Velocities.intakeRollerVelocity)));
   }
 
   public static Command shootToHub(
@@ -138,11 +138,11 @@ public class ShootSequences {
                     lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
                 FeederCommands.setUpperFeederVelocity(
                     upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
-                TransportCommands.setTransportVoltage(
-                    transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
-                intakeRollerCommands.setRollerVoltage(
+                TransportCommands.setTransportVelocity(
+                    transport, HardwareConstants.CompConstants.Velocities.transportVelocity),
+                intakeRollerCommands.setRollerVelocity(
                     intakeRoller,
-                    (HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage)))),
+                    HardwareConstants.CompConstants.Velocities.intakeRollerVelocity))),
         Commands.sequence(new WaitCommand(1.5), IntakePivotCommands.compressPivot(intakePivot)))
     // .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
     ;
@@ -171,11 +171,11 @@ public class ShootSequences {
                     lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
                 FeederCommands.setUpperFeederVelocity(
                     upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
-                TransportCommands.setTransportVoltage(
-                    transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
-                intakeRollerCommands.setRollerVoltage(
+                TransportCommands.setTransportVelocity(
+                    transport, HardwareConstants.CompConstants.Velocities.transportVelocity),
+                intakeRollerCommands.setRollerVelocity(
                     intakeRoller,
-                    HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))),
+                    HardwareConstants.CompConstants.Velocities.intakeRollerVelocity))),
         Commands.sequence(new WaitCommand(1.5), IntakePivotCommands.compressPivot(intakePivot)));
   }
 
