@@ -68,15 +68,16 @@ public class ShootSequences {
             HoodCommands.setHoodPos(hood, HardwareConstants.TowerConstants.hoodTowerPos)),
         Commands.sequence(
             new WaitCommand(0.15),
-            FeederCommands.setLowerFeederVelocity(
-                lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
-            FeederCommands.setUpperFeederVelocity(
-                upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
-            TransportCommands.setTransportVoltage(
-                transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
-            intakeRollerCommands.setRollerVoltage(
-                intakeRoller,
-                HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage)));
+            Commands.parallel(
+                FeederCommands.setLowerFeederVelocity(
+                    lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
+                FeederCommands.setUpperFeederVelocity(
+                    upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
+                TransportCommands.setTransportVoltage(
+                    transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
+                intakeRollerCommands.setRollerVoltage(
+                    intakeRoller,
+                    HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))));
   }
 
   public static Command shootToHub(
@@ -88,8 +89,8 @@ public class ShootSequences {
       Transport transport,
       intakeRoller intakeRoller,
       IntakePivot intakePivot) {
-    Logger.recordOutput("RobotState/shooting", true);
     return Commands.parallel(
+        Commands.runOnce(() -> Logger.recordOutput("RobotState/shooting", true)),
         Commands.parallel(
             FlywheelCommands.setVelocityForHub(flywheel),
             PrestageCommands.setPrestageVelocity(
@@ -121,8 +122,8 @@ public class ShootSequences {
       Transport transport,
       IntakePivot intakePivot,
       intakeRoller intakeRoller) {
-    Logger.recordOutput("RobotState/shooting", false);
     return Commands.parallel(
+        Commands.runOnce(() -> Logger.recordOutput("RobotState/shooting", false)),
         Commands.parallel(
             FlywheelCommands.setPassVelocity(flywheel),
             PrestageCommands.setPrestageVelocity(
@@ -164,7 +165,7 @@ public class ShootSequences {
             intakeRoller),
         FlywheelCommands.flywheelIdle(flywheel),
         () -> {
-          boolean zoneSafe = Triggers.getInstance().isShootSafeZone().getAsBoolean();
+          boolean zoneSafe = Triggers.getInstance().isShootSafeZone.getAsBoolean();
           return !zoneSafe;
         });
   }
@@ -199,7 +200,7 @@ public class ShootSequences {
             intakePivot,
             intakeRoller),
         () -> {
-          boolean safe = Triggers.getInstance().isShootSafeZone().getAsBoolean();
+          boolean safe = Triggers.getInstance().isShootSafeZone.getAsBoolean();
           Logger.recordOutput("Flywheel/shootOrPass", safe ? "shooting" : "passing");
           return safe;
         });
@@ -236,8 +237,8 @@ public class ShootSequences {
             intakeRoller,
             intakePivot),
         () -> {
-          boolean zoneSafe = Triggers.getInstance().isShootSafeZone().getAsBoolean();
-          boolean timeSafe = Triggers.getInstance().isShootSafeTime().getAsBoolean();
+          boolean zoneSafe = Triggers.getInstance().isShootSafeZone.getAsBoolean();
+          boolean timeSafe = Triggers.getInstance().isShootSafeTime.getAsBoolean();
           boolean disabled = HubShiftUtil.disabled;
           return (!zoneSafe && !disabled) || (!timeSafe && !disabled);
         });

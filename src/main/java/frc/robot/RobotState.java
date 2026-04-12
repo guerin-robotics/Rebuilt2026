@@ -342,7 +342,8 @@ public class RobotState {
 
     // Calculate the angle using atan2
     // This gives us the direction we need to face to point at the hub
-    return new Rotation2d(robotToHub.getX(), robotToHub.getY()).plus(new Rotation2d().kPi);
+    // Add 180° because the shooter faces the back of the robot
+    return new Rotation2d(robotToHub.getX(), robotToHub.getY()).plus(Rotation2d.kPi);
   }
 
   // Gets angle to any target
@@ -354,8 +355,9 @@ public class RobotState {
     Translation2d robotToTarget = target.minus(currentPose.getTranslation());
 
     // Calculate the angle using atan2
-    // This gives us the direction we need to face to point at the hub
-    return new Rotation2d(robotToTarget.getX(), robotToTarget.getY()).plus(new Rotation2d().kPi);
+    // This gives us the direction we need to face to point at the target
+    // Add 180° because the shooter faces the back of the robot
+    return new Rotation2d(robotToTarget.getX(), robotToTarget.getY()).plus(Rotation2d.kPi);
   }
 
   // ==================== ODOMETRY UPDATES ====================
@@ -479,11 +481,11 @@ public class RobotState {
   // Returns current rotation if in alliance zone but hub inactive
   public Rotation2d getShootAngleForZoneAndTime() {
     if (!HubShiftUtil.disabled) {
-      if (Triggers.getInstance().isShootClear().getAsBoolean()) {
+      if (Triggers.getInstance().isShootClear.getAsBoolean()) {
         Logger.recordOutput("RobotState/zoneSafeToShoot", true);
         return RobotState.getInstance().getAngleToAllianceHub();
       } else {
-        if (Triggers.getInstance().isShootSafeZone().getAsBoolean()) {
+        if (Triggers.getInstance().isShootSafeZone.getAsBoolean()) {
           return RobotState.getInstance().getEstimatedPose().getRotation();
         } else {
           Logger.recordOutput("RobotState/zoneSafeToShoot", false);
@@ -499,7 +501,7 @@ public class RobotState {
 
   // No time logic
   public Rotation2d getShootAngleForZone() {
-    if (Triggers.getInstance().isShootSafeZone().getAsBoolean()) {
+    if (Triggers.getInstance().isShootSafeZone.getAsBoolean()) {
       Logger.recordOutput("RobotState/zoneSafeToShoot", true);
       return RobotState.getInstance().getAngleToAllianceHub();
     } else {

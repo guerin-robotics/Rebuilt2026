@@ -37,6 +37,7 @@ public class PrestageCommands {
     return Commands.run(
         () ->
             prestage.setPrestageVelocity(
-                HardwareConstants.CompConstants.Velocities.prestageIdleVelocity));
+                HardwareConstants.CompConstants.Velocities.prestageIdleVelocity),
+        prestage);
   }
 }
