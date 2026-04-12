@@ -15,10 +15,8 @@ public class HoodConstants {
     public static final double magnetSensorDiscontinuityPoint = 0.75 / 2 + 0.25; // 1;
     public static final double magnetOffset = -0.16;
     // Hood position limits in degrees (mechanism output)
-    public static final Angle hoodMaxPos = Degrees.of(234); // was 0.65 rotations
+    public static final Angle hoodMaxPos = Degrees.of(80); // was 0.65 rotations
     public static final Angle hoodMinPos = Degrees.of(0);
-
-    public static double leftServoOffset = -0.02;
 
     /**
      * Gear ratio from the output shaft (where the CANcoder is) to the hood mechanism.
@@ -42,7 +40,7 @@ public class HoodConstants {
   public static class SoftwareConstants {
     // Software limits in degrees — converted to mechanism rotations when applied to the motor
     public static final Angle softwareLowerLimit = Degrees.of(0);
-    public static final Angle softwareUpperLimit = Degrees.of(62); // matches hoodMaxPos
+    public static final Angle softwareUpperLimit = Degrees.of(80); // matches hoodMaxPos
     public static final SensorDirectionValue ENCODER_DIRECTION =
         SensorDirectionValue.Clockwise_Positive;
     public static boolean MOTOR_INVERTED = false;
