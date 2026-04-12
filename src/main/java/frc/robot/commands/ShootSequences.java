@@ -111,8 +111,7 @@ public class ShootSequences {
             TransportCommands.setTransportVelocity(
                 transport, HardwareConstants.CompConstants.Velocities.transportVelocity),
             intakeRollerCommands.setRollerVelocity(
-                intakeRoller,
-                HardwareConstants.CompConstants.Velocities.intakeRollerVelocity)));
+                intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity)));
   }
 
   public static Command shootToHub(

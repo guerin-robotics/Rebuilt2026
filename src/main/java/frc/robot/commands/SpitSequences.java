@@ -27,20 +27,19 @@ public class SpitSequences {
                 Commands.run(
                     () ->
                         prestage.setPrestageVelocity(
-                            HardwareConstants.CompConstants.SpitVelocities.prestageSpitVelocity),
+                            HardwareConstants.CompConstants.ClearVelocities.prestageSpitVelocity),
                     prestage),
                 Commands.run(
                     () ->
                         upperFeeder.setUpperFeederVelocity(
-                            HardwareConstants.CompConstants.SpitVelocities.feederSpitVelocity),
+                            HardwareConstants.CompConstants.ClearVelocities.feederSpitVelocity),
                     upperFeeder),
                 Commands.run(
                     () ->
                         lowerFeeder.setLowerFeederVelocity(
-                            HardwareConstants.CompConstants.SpitVelocities.feederSpitVelocity),
+                            HardwareConstants.CompConstants.ClearVelocities.feederSpitVelocity),
                     lowerFeeder)),
         Commands.parallel(
-
             PrestageCommands.setPrestageVelocity(prestage, RotationsPerSecond.of(0)),
             FeederCommands.setUpperFeederVelocity(upperFeeder, RotationsPerSecond.of(0)),
             FeederCommands.setLowerFeederVelocity(lowerFeeder, RotationsPerSecond.of(0))));

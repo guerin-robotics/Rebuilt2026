@@ -75,10 +75,9 @@ public class HardwareConstants {
 
       // Intake Velocities
       public static final AngularVelocity intakeRollerVelocity = RotationsPerSecond.of(50);
-
     }
 
-    public static class SpitVelocities {
+    public static class ClearVelocities {
       public static final AngularVelocity prestageSpitVelocity = RotationsPerSecond.of(-50.0);
       public static final AngularVelocity feederSpitVelocity = RotationsPerSecond.of(50.0);
     }
@@ -106,11 +105,11 @@ public class HardwareConstants {
 
     public static class TestPositions {
       // Hood position in degrees (converted from old 0.0-1.0 rotation range × 360)
-      public static final Angle hoodPos1Test = Degrees.of(30); // was 0.1 rot
-      public static final Angle hoodPos2Test = Degrees.of(45); // was 0.25 rot
-      public static final Angle hoodPos3Test = Degrees.of(60); // was 0.5 rot
-      public static final Angle hoodPos4Test = Degrees.of(75); // was 0.75 rot
-      public static final Angle hoodPos5Test = Degrees.of(90); // was 1.0 rot
+      public static final Angle hoodPos1Test = Degrees.of(15); // was 0.1 rot
+      public static final Angle hoodPos2Test = Degrees.of(30); // was 0.25 rot
+      public static final Angle hoodPos3Test = Degrees.of(45); // was 0.5 rot
+      public static final Angle hoodPos4Test = Degrees.of(60); // was 0.75 rot
+      public static final Angle hoodPos5Test = Degrees.of(75); // was 1.0 rot
     }
   }
 
