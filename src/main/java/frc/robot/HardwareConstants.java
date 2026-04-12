@@ -23,8 +23,6 @@ public class HardwareConstants {
     public static int MAIN_FLYWHEEL_FOLLOWER4_ID = 34;
 
     // Hood
-    // public static int HOOD_SERVO_CHANNEL = 0;
-    // public static int HOOD_LEFT_SERVO_CHANNEL = 1;
     public static int HOOD_MOTOR = 35;
     public static int HOOD_ENCODER = 50;
 
@@ -56,27 +54,33 @@ public class HardwareConstants {
       public static final Voltage prestageVoltage = Volts.of(8);
     }
 
-    public static class SpitVoltages {
-      public static final Voltage transportSpitVoltage = Volts.of(12);
-      public static final Voltage intakeRollerSpitVoltage = Volts.of(10);
-    }
-
     // Subsystems that run at a constant velocity: prestage, feeder
     public static class Velocities {
-      public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(50.0);
-      public static final AngularVelocity feederVelocity = RotationsPerSecond.of(-25.0);
-      public static final AngularVelocity prestageIdleVelocity = RotationsPerSecond.of(18);
+      // Flywheel Velocities
       public static final AngularVelocity flywheelIdleVelocity = RotationsPerSecond.of(10);
-      public static final AngularVelocity prestageIdleVelocityHigh = RotationsPerSecond.of(20);
       public static final AngularVelocity flywheelIdleVelocityHigh = RotationsPerSecond.of(20);
-      public static final AngularVelocity intakeRollerVelocity = RotationsPerSecond.of(40);
+
+      // Prestage Velocities
+      public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(50.0);
+      public static final AngularVelocity prestageIdleVelocity = RotationsPerSecond.of(10);
+      public static final AngularVelocity prestageIdleVelocityHigh = RotationsPerSecond.of(20);
+
+      // Feeder Velocities
+      public static final AngularVelocity feederVelocity = RotationsPerSecond.of(-25.0);
+      public static final AngularVelocity upperFeederVelocity = RotationsPerSecond.of(-25.0);
+      public static final AngularVelocity lowerFeederVelocity = RotationsPerSecond.of(-25.0);
+
+      // Transport Velocities
       public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-30);
+
+      // Intake Velocities
+      public static final AngularVelocity intakeRollerVelocity = RotationsPerSecond.of(50);
+      public static final AngularVelocity intakeRollerAgitateVelocity = RotationsPerSecond.of(15);
     }
 
-    public static class SpitVelocities {
-      public static final AngularVelocity prestageSpitVelocity = RotationsPerSecond.of(50.0);
+    public static class ClearVelocities {
+      public static final AngularVelocity prestageSpitVelocity = RotationsPerSecond.of(-50.0);
       public static final AngularVelocity feederSpitVelocity = RotationsPerSecond.of(50.0);
-      public static final AngularVelocity flywheelSpitVelocity = RotationsPerSecond.of(17);
     }
 
     // Subsystems that run on position control: hood, pivot
@@ -89,7 +93,7 @@ public class HardwareConstants {
 
     public static class Waits {
       public static final double flywheelSpinupSeconds = 0.3;
-      public static final double passSpinUpSeconds = 0.75;
+      public static final double passSpinUpSeconds = 0.3;
       public static final double waitToCompressSeconds = 1;
     }
 
@@ -100,69 +104,24 @@ public class HardwareConstants {
 
   public static class TestConstants {
 
-    public static class TestVoltages {
-      public static final Voltage FlywheelTestVoltage = Volts.of(10.0); // Volts
-      public static final Voltage FeederTestVoltage = Volts.of(6.0);
-      public static final Voltage LowerFeederTestVoltage = Volts.of(-6.0);
-      public static final Voltage PrestageTestVoltage = Volts.of(8.0);
-      public static final Voltage TransportTestVoltage = Volts.of(-12.0);
-      public static final Voltage intakePivotTestVoltageUp = Volts.of(2.0);
-      public static final Voltage intakePivotTestVoltageDown = Volts.of(-8.0);
-      public static final Voltage intakeRollerTestVoltage = Volts.of(12.0);
-      public static final Voltage intakeRollerAgitateVoltage = Volts.of(3);
-    }
-
-    public static class TestVelocities {
-      public static final AngularVelocity FlywheelVelocity = RPM.of(600); // rotations/s
-      public static final AngularVelocity flywheelIdleVelocity = RotationsPerSecond.of(5);
-      public static final AngularVelocity feederVelocity = RotationsPerSecond.of(180.0);
-      public static final AngularVelocity rollerVelocity = RotationsPerSecond.of(-50.0);
-      public static final AngularVelocity rollerAgitateVelocity = RotationsPerSecond.of(-25);
-      public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(100.0);
-      public static final AngularVelocity transportIntakeVelocity = RotationsPerSecond.of(0.0);
-      public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-100.0);
-      public static final AngularVelocity pivotUpVelocity = RotationsPerSecond.of(60.0);
-      public static final AngularVelocity pivotDownVelocity = RotationsPerSecond.of(-60.0);
-    }
-
-    public static class SpitVelocities {
-      public static final AngularVelocity FlywheelSpitTestVelocity =
-          RotationsPerSecond.of(17); // rotations/s
-      public static final AngularVelocity feederSpitTestVelocity = RotationsPerSecond.of(50.0);
-      public static final AngularVelocity rollerSpitTestVelocity = RotationsPerSecond.of(50.0);
-      public static final AngularVelocity prestageSpitTestVelocity = RotationsPerSecond.of(50.0);
-      public static final AngularVelocity transportSpitTestVelocity = RotationsPerSecond.of(-10.0);
-    }
-
-    public static class SpitVoltages {
-      public static final Voltage rollerSpitTestVolts = Volts.of(10);
-      public static final Voltage transportSpitTestVolts = Volts.of(12);
-    }
-
     public static class TestPositions {
-      // Pivot pulse seconds
-      public static final double pulseSeconds = 0.25;
-      // Pivot extension test degrees
-      public static final double intakeDegreesUpTest = 0.45;
-      public static final double intakeDegreesDownTest = 0.075;
-      public static final double intakeJostleTest = 0.25;
       // Hood position in degrees (converted from old 0.0-1.0 rotation range × 360)
-      public static final Angle hoodPos1Test = Degrees.of(36); // was 0.1 rot
-      public static final Angle hoodPos2Test = Degrees.of(90); // was 0.25 rot
-      public static final Angle hoodPos3Test = Degrees.of(180); // was 0.5 rot
-      public static final Angle hoodPos4Test = Degrees.of(270); // was 0.75 rot
-      public static final Angle hoodPos5Test = Degrees.of(360); // was 1.0 rot
+      public static final Angle hoodPos1Test = Degrees.of(15); // was 0.1 rot
+      public static final Angle hoodPos2Test = Degrees.of(30); // was 0.25 rot
+      public static final Angle hoodPos3Test = Degrees.of(45); // was 0.5 rot
+      public static final Angle hoodPos4Test = Degrees.of(60); // was 0.75 rot
+      public static final Angle hoodPos5Test = Degrees.of(75); // was 1.0 rot
     }
   }
 
   public static class TowerConstants {
     public static final AngularVelocity FlywheelTowerVelocity = RPM.of(2100);
-    public static final Angle hoodTowerPos = Degrees.of(198); // was 0.55 rot → 198°
+    public static final Angle hoodTowerPos = Degrees.of(20); // was 0.55 rot → 198°
   }
 
   public static class PassConstants {
     public static final AngularVelocity FlywheelPassVelocity = RPM.of(2800);
-    public static final Angle hoodPassPos = Degrees.of(270); // was 0.75 rot → 270°
+    public static final Angle hoodPassPos = Degrees.of(30); // was 0.75 rot → 270°
   }
 
   public static class TuningConstants {

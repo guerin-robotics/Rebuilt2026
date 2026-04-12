@@ -9,6 +9,7 @@ package frc.robot;
 
 import static edu.wpi.first.math.util.Units.metersToInches;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -274,11 +275,8 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "RunIntake",
         intakeRollerCommands
-            .setRollerVoltage(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)
-            .alongWith(
-                TransportCommands.setTransportVoltage(
-                    transport, HardwareConstants.CompConstants.Voltages.transportVoltage)));
+            .setRollerVelocity(
+                intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity));
 
     // Auto shoot command
     NamedCommands.registerCommand(
@@ -347,11 +345,11 @@ public class RobotContainer {
         .whileTrue(
             Commands.startEnd(
                 () -> {
-                  intakeRoller.setRollerVoltage(
-                      HardwareConstants.CompConstants.Voltages.intakeRollerVoltage);
+                  intakeRoller.setRollerVelocity(
+                      HardwareConstants.CompConstants.Velocities.intakeRollerVelocity);
                 },
                 () -> {
-                  intakeRoller.setRollerVoltage(Volts.of(0));
+                  intakeRoller.setRollerVelocity(RPM.of(0));
                 }));
 
     // Event marker for setting the hood position to down
@@ -514,18 +512,11 @@ public class RobotContainer {
                 .alongWith(
                     FeederCommands.setUpperVelocityAfterWait(
                         upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)))
-        // FeederCommands.setLowerFeederVoltage(
-        //         lowerFeeder,
-        //         HardwareConstants.TestConstants.TestVoltages.LowerFeederTestVoltage)
-        //     .alongWith(
-        //         FeederCommands.setUpperFeederVoltage(
-        //             upperFeeder,
-        //             HardwareConstants.TestConstants.TestVoltages.FeederTestVoltage)))
         .onFalse(
             FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)));
 
     // TRANSPORT
-    // Set to voltage (after a wait) when any shooting sequence is started (shoot to hub, pass,
+    // Set to velocity (after a wait) when any shooting sequence is started (shoot to hub, pass,
     // shoot from tower)
     Triggers.getInstance()
         .shootButton()
@@ -537,23 +528,23 @@ public class RobotContainer {
         .onFalse(TransportCommands.stop(transport));
 
     // INTAKE ROLLER
-    // Set to intaking voltage when intake button is pressed
+    // Set to intaking velocity when intake button is pressed
     Triggers.getInstance()
         .intakeRollerButton()
         .whileTrue(
-            intakeRollerCommands.setRollerVoltage(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage))
+            intakeRollerCommands.setRollerVelocity(
+                intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity))
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
-    // Set to agitate voltage (after a wait) when any shooting sequence is started (shoot to hub,
+    // Set to agitate velocity (after a wait) when any shooting sequence is started (shoot to hub,
     // pass, shoot from tower)
     Triggers.getInstance()
         .shootButton()
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
-            intakeRollerCommands.setVoltageAfterWait(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))
+            intakeRollerCommands.setVelocityAfterWait(
+                intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerAgitateVelocity))
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // INTAKE PIVOT
@@ -605,43 +596,8 @@ public class RobotContainer {
 
     // Subsystem tuning controls
     buttonPanel.button(1).onTrue(HoodCommands.stowHood(hood));
-    // buttonPanel
-    //     .button(1)
-    //     .whileTrue(
-    //         PrestageCommands.setPrestageVoltage(
-    //             prestage, HardwareConstants.CompConstants.Voltages.prestageVoltage))
-    //     .onFalse(PrestageCommands.stop(prestage));
 
     buttonPanel.button(2).onTrue(HoodCommands.incrementHoodPos(hood));
-
-    // buttonPanel
-    //     .button(3)
-    //     .whileTrue(
-    //         FeederCommands.setUpperFeederVelocity(
-    //             upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity));
-
-    // buttonPanel
-    //     .button(4)
-    //     .whileTrue(
-    //         TransportCommands.setTransportVelocity(
-    //             transport, HardwareConstants.CompConstants.Velocities.transportVelocity));
-
-    // buttonPanel
-    //     .button(5)
-    //     .whileTrue(
-    //         intakeRollerCommands.setRollerVelocity(
-    //             intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity));
-
-    // buttonPanel.button(6).whileTrue(HoodCommands.setHoodPos(hood, Degrees.of(30)));
-
-    // buttonPanel.button(7).whileTrue(IntakePivotCommands.setPivotRotations(intakePivot, 0.25));
-
-    // buttonPanel
-    //     .button(8)
-    //     .whileTrue(
-    //         FlywheelCommands.setFlywheelVelocity(
-    //             flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity));
-    // buttonPanel.button(8).whileTrue(FlywheelCommands.setFlywheelVoltage(flywheel, Volts.of(6)));
   }
 
   private void configureSimBindings() {
@@ -766,33 +722,33 @@ public class RobotContainer {
                         upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)));
 
     // TRANSPORT
-    // Set to voltage (after a wait) when any shooting sequence is started (shoot to hub, pass,
+    // Set to velocity (after a wait) when any shooting sequence is started (shoot to hub, pass,
     // shoot from tower)
     Triggers.getInstance()
         .simShootButton()
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
-            TransportCommands.setVoltageAfterWait(
-                transport, HardwareConstants.CompConstants.Voltages.transportVoltage));
+            TransportCommands.setVelocityAfterWait(
+                transport, HardwareConstants.CompConstants.Velocities.transportVelocity));
 
     // INTAKE ROLLER
-    // Set to intaking voltage when intake button is pressed
+    // Set to intaking velocity when intake button is pressed
     Triggers.getInstance()
         .simIntakeRollerButton()
         .whileTrue(
-            intakeRollerCommands.setRollerVoltage(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage));
+            intakeRollerCommands.setRollerVelocity(
+                intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity));
 
-    // Set to agitate voltage (after a wait) when any shooting sequence is started (shoot to hub,
+    // Set to agitate velocity (after a wait) when any shooting sequence is started (shoot to hub,
     // pass, shoot from tower)
     Triggers.getInstance()
         .simShootButton()
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
-            intakeRollerCommands.setVoltageAfterWait(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage));
+            intakeRollerCommands.setVelocityAfterWait(
+                intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerAgitateVelocity));
 
     // INTAKE PIVOT
     // Retract on retract button

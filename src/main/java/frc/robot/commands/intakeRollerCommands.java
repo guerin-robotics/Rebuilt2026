@@ -34,4 +34,10 @@ public class intakeRollerCommands {
         new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
         setRollerVoltage(intakeRoller, voltage));
   }
+
+  public static Command setVelocityAfterWait(intakeRoller intakeRoller, AngularVelocity velocity) {
+    return Commands.sequence(
+        new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
+        setRollerVelocity(intakeRoller, velocity));
+  }
 }
