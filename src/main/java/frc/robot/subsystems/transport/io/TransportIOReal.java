@@ -38,7 +38,8 @@ public class TransportIOReal implements TransportIO {
   private final StatusSignal<Angle> pos;
 
   public TransportIOReal() {
-    transportMotor = new TalonFX(HardwareConstants.CanIds.TRANSPORT_MOTOR_ID, HardwareConstants.CAN_BUS);
+    transportMotor =
+        new TalonFX(HardwareConstants.CanIds.TRANSPORT_MOTOR_ID, HardwareConstants.CAN_BUS);
     configureTransportMotor();
 
     // Cache signal references once in the constructor

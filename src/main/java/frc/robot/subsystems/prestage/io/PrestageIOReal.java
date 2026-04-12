@@ -51,8 +51,10 @@ public class PrestageIOReal implements PrestageIO {
   private final StatusSignal<Angle> rightPos;
 
   public PrestageIOReal() {
-    prestageLeft = new TalonFX(HardwareConstants.CanIds.PRESTAGE_LEADER_ID, HardwareConstants.CAN_BUS);
-    prestageRight = new TalonFX(HardwareConstants.CanIds.PRESTAGE_FOLLOWER_ID, HardwareConstants.CAN_BUS);
+    prestageLeft =
+        new TalonFX(HardwareConstants.CanIds.PRESTAGE_LEADER_ID, HardwareConstants.CAN_BUS);
+    prestageRight =
+        new TalonFX(HardwareConstants.CanIds.PRESTAGE_FOLLOWER_ID, HardwareConstants.CAN_BUS);
 
     configurePrestageMotor();
 

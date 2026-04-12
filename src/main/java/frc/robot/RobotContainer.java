@@ -255,9 +255,8 @@ public class RobotContainer {
     // Auto run intake command
     NamedCommands.registerCommand(
         "RunIntake",
-        intakeRollerCommands
-            .setRollerVelocity(
-                intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity));
+        intakeRollerCommands.setRollerVelocity(
+            intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity));
 
     // Auto shoot command
     NamedCommands.registerCommand(
@@ -349,7 +348,7 @@ public class RobotContainer {
             () -> thrustmaster.getRawAxis(0), // strafe
             () -> thrustmaster.getRawAxis(1), // forward
             () -> thrustmaster.getRawAxis(2) // twist
-));
+            ));
     // // Flywheel - idle
     // flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // // Prestage - idle
@@ -526,7 +525,8 @@ public class RobotContainer {
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             intakeRollerCommands.setVelocityAfterWait(
-                intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerAgitateVelocity))
+                intakeRoller,
+                HardwareConstants.CompConstants.Velocities.intakeRollerAgitateVelocity))
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // INTAKE PIVOT
@@ -730,7 +730,8 @@ public class RobotContainer {
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             intakeRollerCommands.setVelocityAfterWait(
-                intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerAgitateVelocity));
+                intakeRoller,
+                HardwareConstants.CompConstants.Velocities.intakeRollerAgitateVelocity));
 
     // INTAKE PIVOT
     // Retract on retract button

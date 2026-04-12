@@ -38,7 +38,8 @@ public class UpperFeederIOReal implements UpperFeederIO {
   private final StatusSignal<Angle> pos;
 
   public UpperFeederIOReal() {
-    upperFeederMotor = new TalonFX(HardwareConstants.CanIds.UPPER_FEEDER_MOTOR_ID, HardwareConstants.CAN_BUS);
+    upperFeederMotor =
+        new TalonFX(HardwareConstants.CanIds.UPPER_FEEDER_MOTOR_ID, HardwareConstants.CAN_BUS);
     configureFeederMotor();
 
     // Cache signal references once in the constructor

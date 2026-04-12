@@ -56,8 +56,10 @@ public class IntakePivotIOReal implements IntakePivotIO {
   private final StatusSignal<Angle> encoderPosition;
 
   public IntakePivotIOReal() {
-    intakePivotMotor = new TalonFX(HardwareConstants.CanIds.INTAKE_PIVOT_MOTOR_ID, HardwareConstants.CAN_BUS);
-    intakePivotEncoder = new CANcoder(HardwareConstants.CanIds.INTAKE_PIVOT_ENCODER_ID, HardwareConstants.CAN_BUS);
+    intakePivotMotor =
+        new TalonFX(HardwareConstants.CanIds.INTAKE_PIVOT_MOTOR_ID, HardwareConstants.CAN_BUS);
+    intakePivotEncoder =
+        new CANcoder(HardwareConstants.CanIds.INTAKE_PIVOT_ENCODER_ID, HardwareConstants.CAN_BUS);
 
     configurePivotMotor();
     configureEncoder();

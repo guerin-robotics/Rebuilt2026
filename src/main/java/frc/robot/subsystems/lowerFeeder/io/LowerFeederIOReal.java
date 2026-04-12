@@ -38,7 +38,8 @@ public class LowerFeederIOReal implements LowerFeederIO {
   private final StatusSignal<Angle> pos;
 
   public LowerFeederIOReal() {
-    lowerFeederMotor = new TalonFX(HardwareConstants.CanIds.LOWER_FEEDER_MOTOR_ID, HardwareConstants.CAN_BUS);
+    lowerFeederMotor =
+        new TalonFX(HardwareConstants.CanIds.LOWER_FEEDER_MOTOR_ID, HardwareConstants.CAN_BUS);
     configureFeederMotor();
 
     // Cache signal references once in the constructor

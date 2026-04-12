@@ -50,8 +50,10 @@ public class intakeRollerIOReal implements intakeRollerIO {
   private final StatusSignal<Angle> Followerpos;
 
   public intakeRollerIOReal() {
-    intakeRollerLeader = new TalonFX(HardwareConstants.CanIds.INTAKE_ROLLER_LEADER_ID, HardwareConstants.CAN_BUS);
-    intakeRollerFollower = new TalonFX(HardwareConstants.CanIds.INTAKE_ROLLER_FOLLOWER_ID, HardwareConstants.CAN_BUS);
+    intakeRollerLeader =
+        new TalonFX(HardwareConstants.CanIds.INTAKE_ROLLER_LEADER_ID, HardwareConstants.CAN_BUS);
+    intakeRollerFollower =
+        new TalonFX(HardwareConstants.CanIds.INTAKE_ROLLER_FOLLOWER_ID, HardwareConstants.CAN_BUS);
 
     intakeRollerFollower.setControl(
         new Follower(

@@ -91,11 +91,16 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
   private final StatusSignal<Temperature> follower4Temp;
 
   public FlywheelIOPhoenix6() {
-    leader = new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_LEADER_ID, HardwareConstants.CAN_BUS);
-    follower1 = new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_FOLLOWER1_ID, HardwareConstants.CAN_BUS);
-    follower2 = new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_FOLLOWER2_ID, HardwareConstants.CAN_BUS);
-    follower3 = new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_FOLLOWER3_ID, HardwareConstants.CAN_BUS);
-    follower4 = new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_FOLLOWER4_ID, HardwareConstants.CAN_BUS);
+    leader =
+        new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_LEADER_ID, HardwareConstants.CAN_BUS);
+    follower1 =
+        new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_FOLLOWER1_ID, HardwareConstants.CAN_BUS);
+    follower2 =
+        new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_FOLLOWER2_ID, HardwareConstants.CAN_BUS);
+    follower3 =
+        new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_FOLLOWER3_ID, HardwareConstants.CAN_BUS);
+    follower4 =
+        new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_FOLLOWER4_ID, HardwareConstants.CAN_BUS);
 
     configureMotors();
 
