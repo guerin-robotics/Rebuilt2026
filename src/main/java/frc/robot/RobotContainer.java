@@ -350,11 +350,11 @@ public class RobotContainer {
             () -> thrustmaster.getRawAxis(2) // twist
             ));
     // // Flywheel - idle
-    // flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
+    flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // // Prestage - idle
     // prestage.setDefaultCommand(PrestageCommands.prestageIdle(prestage));
     // Hood - stop motor when no command is running (prevents stale closed-loop reference)
-    // hood.setDefaultCommand(HoodCommands.hoodIdle(hood));
+    hood.setDefaultCommand(HoodCommands.hoodIdle(hood));
 
     // OVERRIDES
     // Flip alliance winner
