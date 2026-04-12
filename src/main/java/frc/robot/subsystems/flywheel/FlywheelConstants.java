@@ -137,8 +137,8 @@ public class FlywheelConstants {
 
   /** Simulation constants for the flywheel. */
   public static class Sim {
-    /** Four Kraken X60 FOC motors drive the flywheel. */
-    public static final DCMotor FLYWHEEL_MOTOR = DCMotor.getKrakenX60Foc(4);
+    /** Four Kraken X44 FOC motors drive the flywheel. */
+    public static final DCMotor FLYWHEEL_MOTOR = DCMotor.getKrakenX44Foc(5);
 
     /** Number of motors driving the flywheel (used for DCMotorSim). */
     public static final int NUM_MOTORS = 5;

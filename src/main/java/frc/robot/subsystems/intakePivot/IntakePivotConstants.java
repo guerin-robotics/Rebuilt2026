@@ -73,8 +73,8 @@ public class IntakePivotConstants {
 
   /** Simulation constants for the intake pivot motor and arm physics. */
   public static class Sim {
-    /** One Kraken X60 FOC motor drives the pivot. */
-    public static final DCMotor PIVOT_MOTOR = DCMotor.getKrakenX60Foc(1);
+    /** One Kraken X44 FOC motor drives the pivot. */
+    public static final DCMotor PIVOT_MOTOR = DCMotor.getKrakenX44Foc(1);
 
     /** Moment of inertia of the pivot arm (kg·m²). Approximate value — tune in sim. */
     public static final double PIVOT_MOI = 0.01;

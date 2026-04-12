@@ -38,8 +38,8 @@ public class intakeRollerConstants {
 
   /** Simulation constants for the intake roller. */
   public static class Sim {
-    /** Two Kraken X60 FOC motors (leader + follower) drive the intake roller. */
-    public static final DCMotor ROLLER_MOTOR = DCMotor.getKrakenX60Foc(2);
+    /** Two Kraken X44 FOC motors (leader + follower) drive the intake roller. */
+    public static final DCMotor ROLLER_MOTOR = DCMotor.getKrakenX44Foc(2);
 
     /** Number of motors driving the roller (used for DCMotorSim). */
     public static final int NUM_MOTORS = 2;

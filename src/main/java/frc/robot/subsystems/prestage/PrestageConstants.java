@@ -40,8 +40,8 @@ public class PrestageConstants {
 
   /** Simulation constants for the prestage motors. */
   public static class Sim {
-    /** One Kraken X60 FOC motor per prestage side. */
-    public static final DCMotor PRESTAGE_MOTOR = DCMotor.getKrakenX60Foc(1);
+    /** One Kraken X44 FOC motor per prestage side. */
+    public static final DCMotor PRESTAGE_MOTOR = DCMotor.getKrakenX44Foc(2);
 
     /** Number of motors per prestage side (used for DCMotorSim). */
     public static final int NUM_MOTORS_PER_SIDE = 1;

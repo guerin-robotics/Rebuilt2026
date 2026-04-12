@@ -39,8 +39,8 @@ public class UpperFeederConstants {
 
   /** Simulation constants for the feeder motor. */
   public static class Sim {
-    /** One Kraken X60 FOC motor drives the feeder. */
-    public static final DCMotor UPPER_FEEDER_MOTOR = DCMotor.getKrakenX60Foc(1);
+    /** One Kraken X44 FOC motor drives the feeder. */
+    public static final DCMotor UPPER_FEEDER_MOTOR = DCMotor.getKrakenX44Foc(1);
 
     /** Number of motors driving the feeder (used for DCMotorSim). */
     public static final int NUM_MOTORS = 1;
