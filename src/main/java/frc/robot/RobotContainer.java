@@ -10,7 +10,6 @@ package frc.robot;
 import static edu.wpi.first.math.util.Units.metersToInches;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Volts;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -240,23 +239,6 @@ public class RobotContainer {
       configureSimBindings();
     }
   }
-
-  private double deadband(double value) {
-    return MathUtil.applyDeadband(value, HardwareConstants.ControllerConstants.DEADBAND);
-  }
-
-  private double getThrustX() {
-    return thrustmaster.getRawAxis(0); // strafe
-  }
-
-  private double getThrustY() {
-    return thrustmaster.getRawAxis(1); // forward
-  }
-
-  private double getThrustRot() {
-    return thrustmaster.getRawAxis(2); // twist
-  }
-
   // NamedCommands
   private void registerNamedCommands() {
     // Auto deploy intake command
@@ -365,9 +347,10 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> MathUtil.clamp(-getThrustY(), -1.0, 1.0),
-            () -> MathUtil.clamp(-getThrustX(), -1.0, 1.0),
-            () -> MathUtil.clamp(-getThrustRot(), -1.0, 1.0)));
+            () -> thrustmaster.getRawAxis(0), // strafe
+            () -> thrustmaster.getRawAxis(1), // forward
+            () -> thrustmaster.getRawAxis(2) // twist
+));
     // // Flywheel - idle
     // flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // // Prestage - idle
@@ -605,9 +588,9 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> MathUtil.clamp(-controller.getLeftY() - getThrustY(), -1.0, 1.0),
-            () -> MathUtil.clamp(-controller.getLeftX() - getThrustX(), -1.0, 1.0),
-            () -> MathUtil.clamp(-controller.getRightTriggerAxis() - getThrustRot(), -1.0, 1.0)));
+            () -> -controller.getLeftY(),
+            () -> -controller.getLeftX(),
+            () -> -controller.getRightTriggerAxis()));
 
     flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
 
