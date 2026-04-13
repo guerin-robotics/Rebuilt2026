@@ -269,8 +269,7 @@ public class ShootSequences {
                 IntakePivotCommands.setPivotPosition(
                     intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos)),
             new WaitCommand(0.25),
-            FlywheelCommands.setFlywheelVelocity(
-                flywheel, HardwareConstants.CompConstants.Velocities.flywheelIdleVelocity))
+            FlywheelCommands.stop(flywheel))
         .withName("ShootEndBehavior");
   }
 
