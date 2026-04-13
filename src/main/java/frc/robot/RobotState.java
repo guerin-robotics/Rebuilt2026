@@ -2,24 +2,20 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Meters;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.HubShiftUtil;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -81,23 +77,17 @@ public class RobotState {
 
   // ==================== POSE ESTIMATION ====================
 
+  /**
+   * Supplier that provides the current estimated pose from Drive's pose estimator.
+   *
+   * <p>RobotState does NOT maintain its own pose estimator. Instead, it delegates to Drive's single
+   * SwerveDrivePoseEstimator via this supplier. This eliminates the dual-estimator divergence bug
+   * where two independent estimators would drift apart and cause pose jumps when vision was lost.
+   */
+  private Supplier<Pose2d> poseSupplier = Pose2d::new;
+
   /** Kinematics for converting between chassis speeds and module states */
   private final SwerveDriveKinematics kinematics;
-
-  /** Pose estimator that fuses odometry and vision measurements */
-  private final SwerveDrivePoseEstimator poseEstimator;
-
-  /** Last known gyro rotation (used for odometry updates) */
-  private Rotation2d rawGyroRotation = new Rotation2d();
-
-  /** Last known module positions (used for delta calculations) */
-  private SwerveModulePosition[] lastModulePositions =
-      new SwerveModulePosition[] {
-        new SwerveModulePosition(),
-        new SwerveModulePosition(),
-        new SwerveModulePosition(),
-        new SwerveModulePosition()
-      };
 
   /** Current module states for velocity calculation */
   private SwerveModuleState[] currentModuleStates =
@@ -112,14 +102,21 @@ public class RobotState {
 
   /** Private constructor - use getInstance() instead. */
   private RobotState() {
-    // Use the same module translations as Drive to keep both pose estimators in sync.
+    // Kinematics is still needed for velocity calculations (toChassisSpeeds).
     // Drive.getModuleTranslations() reads from TunerConstants — the single source of truth.
     kinematics = new SwerveDriveKinematics(Drive.getModuleTranslations());
+  }
 
-    // Initialize pose estimator at origin
-    poseEstimator =
-        new SwerveDrivePoseEstimator(
-            kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+  /**
+   * Sets the pose supplier that RobotState uses to get the current estimated pose.
+   *
+   * <p>This should be called once during initialization (e.g., in Drive's constructor) to wire
+   * RobotState to Drive's single pose estimator.
+   *
+   * @param poseSupplier A supplier that returns the current estimated pose (e.g., drive::getPose)
+   */
+  public void setPoseSupplier(Supplier<Pose2d> poseSupplier) {
+    this.poseSupplier = poseSupplier;
   }
 
   // ==================== POSE GETTERS ====================
@@ -142,7 +139,7 @@ public class RobotState {
    */
   @AutoLogOutput(key = "RobotState/EstimatedPose")
   public Pose2d getEstimatedPose() {
-    return poseEstimator.getEstimatedPosition();
+    return poseSupplier.get();
   }
 
   /**
@@ -361,93 +358,19 @@ public class RobotState {
     return new Rotation2d(robotToTarget.getX(), robotToTarget.getY()).plus(Rotation2d.kPi);
   }
 
-  // ==================== ODOMETRY UPDATES ====================
+  // ==================== MODULE STATE UPDATES ====================
 
   /**
-   * Adds an odometry observation to update the pose estimate.
+   * Updates the current module states used for velocity calculation.
    *
-   * <p>This should be called by the Drive subsystem every loop with the latest gyro reading and
-   * module positions.
+   * <p>Called once per cycle from Drive.periodic() after the high-frequency odometry loop. Only the
+   * module states (velocity + angle) are needed — pose estimation is handled entirely by Drive's
+   * single SwerveDrivePoseEstimator.
    *
-   * <p><b>How it works:</b>
-   *
-   * <ol>
-   *   <li>Calculates how far each wheel has moved since last update
-   *   <li>Combines wheel movements with gyro rotation
-   *   <li>Updates the pose estimator with the new data
-   * </ol>
-   *
-   * @param gyroRotation The current gyro rotation
-   * @param modulePositions The current module positions (distance and angle for each module)
    * @param moduleStates The current module states (velocity and angle for each module)
    */
-  public void addOdometryObservation(
-      Rotation2d gyroRotation,
-      SwerveModulePosition[] modulePositions,
-      SwerveModuleState[] moduleStates) {
-
-    // Store for next iteration
-    rawGyroRotation = gyroRotation;
-    lastModulePositions = modulePositions;
+  public void updateModuleStates(SwerveModuleState[] moduleStates) {
     currentModuleStates = moduleStates;
-
-    // Update pose estimator
-    poseEstimator.update(gyroRotation, modulePositions);
-
-    // Log the update
-    Logger.recordOutput("RobotState/GyroRotation", gyroRotation);
-  }
-
-  /**
-   * Adds an odometry observation with a specific timestamp.
-   *
-   * <p>This version is used when processing high-frequency odometry samples that were captured at
-   * different times during a single loop.
-   *
-   * @param timestamp The timestamp when the observation was captured (seconds)
-   * @param gyroRotation The gyro rotation at that timestamp
-   * @param modulePositions The module positions at that timestamp
-   * @param moduleStates The module states for velocity calculation
-   */
-  public void addOdometryObservation(
-      double timestamp,
-      Rotation2d gyroRotation,
-      SwerveModulePosition[] modulePositions,
-      SwerveModuleState[] moduleStates) {
-
-    // Store for next iteration
-    rawGyroRotation = gyroRotation;
-    lastModulePositions = modulePositions;
-    currentModuleStates = moduleStates;
-
-    // Update pose estimator with timestamp
-    poseEstimator.updateWithTime(timestamp, gyroRotation, modulePositions);
-  }
-
-  /**
-   * Adds a vision measurement to improve the pose estimate.
-   *
-   * <p>Vision measurements help correct for odometry drift. The standard deviations control how
-   * much the vision data is trusted compared to odometry.
-   *
-   * @param visionPose The pose measured by vision
-   * @param timestampSeconds When the measurement was captured
-   * @param stdDevs Standard deviations for x, y, and rotation (smaller = more trust)
-   */
-  public void addVisionMeasurement(
-      Pose2d visionPose, double timestampSeconds, Matrix<N3, N1> stdDevs) {
-    poseEstimator.addVisionMeasurement(visionPose, timestampSeconds, stdDevs);
-  }
-
-  /**
-   * Resets the pose estimator to a specific pose.
-   *
-   * <p>Use this to set the robot's starting position at the beginning of autonomous.
-   *
-   * @param pose The pose to reset to
-   */
-  public void resetPose(Pose2d pose) {
-    poseEstimator.resetPosition(rawGyroRotation, lastModulePositions, pose);
   }
 
   // SHOOTING ALIGNMENT
