@@ -153,10 +153,10 @@ public class DriveCommands {
         joystickDriveLimited(drive, xSupplier, ySupplier, omegaSupplier),
         () -> {
           boolean driveNormal =
-              (Triggers.getInstance().isIntakeSafe().getAsBoolean() || override.getAsBoolean());
+              (Triggers.getInstance().isIntakeSafe.getAsBoolean() || override.getAsBoolean());
           Logger.recordOutput(
               "RobotState/isIntakeSafe",
-              Triggers.getInstance().isIntakeSafe().getAsBoolean() ? "intakeSafe" : "intakeUnsafe");
+              Triggers.getInstance().isIntakeSafe.getAsBoolean() ? "intakeSafe" : "intakeUnsafe");
           Logger.recordOutput(
               "RobotState/isOverrideActive", override.getAsBoolean() ? "override" : "noOverride");
           return driveNormal;
@@ -395,12 +395,17 @@ public class DriveCommands {
   }
 
   public static Command stopWithX(Drive drive) {
-    Logger.recordOutput("RobotState/Drive", "Stopping with X");
-    return Commands.run(() -> stopWithX(drive), drive);
+    return Commands.run(
+            () -> {
+              Logger.recordOutput("RobotState/Drive", "Stopping with X");
+              drive.stopWithX();
+            },
+            drive)
+        .withName("StopWithX");
   }
 
   public static Command stopWithXAfterWait(Drive drive) {
-    return Commands.sequence(new WaitCommand(2), Commands.runOnce(() -> stopWithX(drive), drive));
+    return Commands.sequence(new WaitCommand(2), Commands.runOnce(() -> drive.stopWithX(), drive));
   }
 
   /**
