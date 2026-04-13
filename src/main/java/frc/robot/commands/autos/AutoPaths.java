@@ -109,8 +109,11 @@ public class AutoPaths {
     AutoTrajectory path1Traj = routine.trajectory("LeftAuto1");
     AutoTrajectory path2Traj = routine.trajectory("LeftAuto2");
 
-    // When the routine starts, reset odometry then follow the first trajectory
-    routine.active().onTrue(Commands.sequence(path1Traj.resetOdometry(), path1Traj.spawnCmd()));
+    // When the routine starts, reset odometry then follow the first trajectory.
+    // Use cmd() (not spawnCmd()) so the trajectory command holds the drive subsystem
+    // and blocks until it finishes. This ensures path1's done() trigger fires correctly
+    // and that the drive subsystem is available for path2 to claim immediately after.
+    routine.active().onTrue(Commands.sequence(path1Traj.resetOdometry(), path1Traj.cmd()));
 
     // At the "deployIntake" event marker, deploy intake and run rollers + transport
     // path1Traj.atTime("deployIntake").onTrue(AutoCommands.deployAndRunIntake(ctx));
