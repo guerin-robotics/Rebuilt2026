@@ -150,6 +150,11 @@ public class Drive extends SubsystemBase {
                 (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
+
+    // Wire RobotState to use Drive's single pose estimator.
+    // This ensures there is only ONE SwerveDrivePoseEstimator — eliminating the dual-estimator
+    // divergence bug where two independent estimators would drift apart.
+    RobotState.getInstance().setPoseSupplier(this::getPose);
   }
 
   @Override
@@ -207,8 +212,7 @@ public class Drive extends SubsystemBase {
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
     }
 
-    RobotState.getInstance()
-        .addOdometryObservation(rawGyroRotation, lastModulePositions, getModuleStates());
+    RobotState.getInstance().updateModuleStates(getModuleStates());
 
     // Report current usage to the battery logger for each swerve module
     for (int i = 0; i < 4; i++) {
@@ -367,7 +371,6 @@ public class Drive extends SubsystemBase {
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
-    RobotState.getInstance().resetPose(pose);
   }
 
   /** Adds a new timestamped vision measurement. */
@@ -377,8 +380,6 @@ public class Drive extends SubsystemBase {
       Matrix<N3, N1> visionMeasurementStdDevs) {
     poseEstimator.addVisionMeasurement(
         visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
-    RobotState.getInstance()
-        .addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
   }
 
   /** Returns the maximum linear speed in meters per sec. */
