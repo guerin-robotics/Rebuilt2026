@@ -175,7 +175,7 @@ public class FlywheelConstants {
      * Fudge factor applied to the calculated launch velocity. Tune this to make the trajectory
      * preview match real-world behavior. 1.0 = no adjustment.
      */
-    public static final double VELOCITY_FUDGE_FACTOR = 0.5;
+    public static final double VELOCITY_FUDGE_FACTOR = 0.8;
 
     /** Minimum flywheel RPM before showing a trajectory. Below this the preview is hidden. */
     public static final double MIN_RPM_FOR_TRAJECTORY = 50.0;
