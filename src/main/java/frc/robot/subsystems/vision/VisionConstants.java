@@ -9,7 +9,6 @@ package frc.robot.subsystems.vision;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Radians;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -26,10 +25,10 @@ public class VisionConstants {
   // Camera names, must match names configured on coprocessor
   public static String camera0Name = "RobotRight";
   public static String camera1Name = "RobotLeft";
-  public static String camera2Name = "FlywheelRight";
-  public static String camera3Name = "FlywheelLeft";
+  public static String camera2Name = "ShooterRight";
+  public static String camera3Name = "ShooterLeft";
 
-  // robot right camera:
+  // Robot right camera:
   // x: -1.000
   // y: -12.630
   // z: 4.811 + belly to flooor (1.75) = 6.561
@@ -38,10 +37,10 @@ public class VisionConstants {
   // yaw: -90
   public static final Transform3d robotToCamera0 =
       new Transform3d(
-          new Translation3d(Inches.of(-1.0), Inches.of(-12.630), Inches.of(6.561)),
-          new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(-90)));
+          new Translation3d(Inches.of(1.0), Inches.of(-13.175), Inches.of(6.708)),
+          new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(-90.0)));
 
-  // robot left camera:
+  // Robot left camera:
   // x: -1.000
   // y: 12.880
   // z: 4.811 + belly to flooor (1.75) = 6.561
@@ -50,8 +49,8 @@ public class VisionConstants {
   // yaw: 90
   public static final Transform3d robotToCamera1 =
       new Transform3d(
-          new Translation3d(Inches.of(-1.0), Inches.of(12.880), Inches.of(6.561)),
-          new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(90)));
+          new Translation3d(Inches.of(1.0), Inches.of(13.425), Inches.of(6.708)),
+          new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(90.0)));
 
   // Shooter right:
   // x: -12.991
@@ -59,11 +58,11 @@ public class VisionConstants {
   // z: 10.777 + belly to floor (1.75) = 12.527
   // roll: 0
   // pitch: -15
-  // yaw: 192.5
+  // yaw: 167.5
   public static final Transform3d robotToCamera2 =
       new Transform3d(
-          new Translation3d(Inches.of(-12.991), Inches.of(-6.279), Inches.of(12.527)),
-          new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(180 - 12.5)));
+          new Translation3d(Inches.of(-13.524), Inches.of(-6.175), Inches.of(12.684)),
+          new Rotation3d(Degrees.of(0.0), Degrees.of(-16.5), Degrees.of(167.5)));
 
   // Shooter left:
   // x: -12.979
@@ -74,8 +73,8 @@ public class VisionConstants {
   // yaw: -192.5
   public static final Transform3d robotToCamera3 =
       new Transform3d(
-          new Translation3d(Inches.of(-13.573), Inches.of(4.809), Inches.of(12.44)),
-          new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(192.5)));
+          new Translation3d(Inches.of(-13.512), Inches.of(5.272), Inches.of(12.59)),
+          new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(-167.5)));
 
   // ---- Filtering thresholds ----
 
