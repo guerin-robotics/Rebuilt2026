@@ -1,6 +1,9 @@
 package frc.robot.subsystems.intakePivot;
 
+import static edu.wpi.first.units.Units.Rotations;
+
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -21,8 +24,8 @@ public class IntakePivot extends SubsystemBase {
   public final IntakePivotIOInputsAutoLogged inputs;
   private final IntakePivotVisualizer visualizer;
 
-  /** The last goal position set by the user, in rotations. Used for visualization. */
-  private double goalPositionRotations = 0.0;
+  /** The last goal position set by the user. Used for visualization. */
+  private Angle goalPosition = Rotations.of(0.0);
 
   public IntakePivot(IntakePivotIO io) {
     this.io = io;
@@ -44,12 +47,14 @@ public class IntakePivot extends SubsystemBase {
             : 0.0);
 
     // Determine if we are within tolerance of our goal
+    double currentRotations = inputs.intakePivotPosition.in(Rotations);
+    double goalRotations = goalPosition.in(Rotations);
     boolean atGoal =
-        Math.abs(inputs.intakePivotPosition - goalPositionRotations)
+        Math.abs(currentRotations - goalRotations)
             < IntakePivotConstants.Visualization.POSITION_TOLERANCE_ROTATIONS;
 
     // Update the visualizer every loop
-    visualizer.update(inputs.intakePivotPosition, goalPositionRotations, atGoal);
+    visualizer.update(currentRotations, goalRotations, atGoal);
 
     // Log the currently running command for this subsystem
     Logger.recordOutput(
@@ -65,9 +70,10 @@ public class IntakePivot extends SubsystemBase {
     io.setPivotVelocity(pivotVelo);
   }
 
-  public void setPivotPosition(double positionRotations) {
-    this.goalPositionRotations = positionRotations;
-    io.setPivotPosition(positionRotations);
+  /** Sets the pivot to a target position using closed-loop control. */
+  public void setPivotPosition(Angle position) {
+    this.goalPosition = position;
+    io.setPivotPosition(position);
   }
 
   public void zeroPivotEncoder() {
@@ -75,11 +81,11 @@ public class IntakePivot extends SubsystemBase {
   }
 
   /**
-   * Returns the current pivot position in rotations.
+   * Returns the current pivot position.
    *
-   * @return current position from the CANcoder in rotations
+   * @return current position from the CANcoder
    */
-  public double getPosition() {
+  public Angle getPosition() {
     return inputs.intakePivotPosition;
   }
 }

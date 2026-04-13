@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intakePivot.io;
 
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -178,7 +179,7 @@ public class IntakePivotIOReal implements IntakePivotIO {
 
     // Read from cache — no additional CAN traffic
     inputs.intakePivotVelocity = velocity.getValue();
-    inputs.intakePivotPosition = encoderPosition.getValueAsDouble();
+    inputs.intakePivotPosition = Rotations.of(encoderPosition.getValueAsDouble());
     inputs.intakePivotVoltage = motorVoltage.getValue();
     inputs.intakePivotStatorCurrent = statorCurrent.getValue();
     inputs.intakePivotSupplyCurrent = supplyCurrent.getValue();
@@ -199,8 +200,8 @@ public class IntakePivotIOReal implements IntakePivotIO {
   }
 
   @Override
-  public void setPivotPosition(double positionRotations) {
-    intakePivotMotor.setControl(positionRequest.withPosition(positionRotations));
+  public void setPivotPosition(Angle position) {
+    intakePivotMotor.setControl(positionRequest.withPosition(position.in(Rotations)));
   }
 
   @Override

@@ -3,6 +3,7 @@ package frc.robot.commands;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -43,32 +44,32 @@ public class IntakePivotCommands {
         .withName("IntakePivotStop");
   }
 
-  /** Move the pivot to a specific position in rotations. */
-  public static Command setPivotRotations(IntakePivot intakePivot, double angleRotations) {
-    return Commands.runOnce(() -> intakePivot.setPivotPosition(angleRotations), intakePivot)
-        .withName("IntakePivotSetPos_" + angleRotations + "rot");
+  /** Move the pivot to a specific position. */
+  public static Command setPivotPosition(IntakePivot intakePivot, Angle position) {
+    return Commands.runOnce(() -> intakePivot.setPivotPosition(position), intakePivot)
+        .withName("IntakePivotSetPos_" + position);
   }
 
   public static Command jostlePivotByPos(IntakePivot intakePivot) {
     return Commands.sequence(
-            setPivotRotations(
+            setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos),
             new WaitCommand(0.25),
-            setPivotRotations(intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
+            setPivotPosition(intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
             new WaitCommand(0.25))
         .repeatedly()
         .finallyDo(
-            () ->
+            (interrupted) -> {
+              // Only reset to down position if the command ended naturally (not interrupted).
+              // If interrupted by the driver pressing intake in/out, we don't want to
+              // override the position they just commanded.
+              if (!interrupted) {
                 intakePivot.setPivotPosition(
-                    HardwareConstants.CompConstants.Positions.pivotDownPos))
+                    HardwareConstants.CompConstants.Positions.pivotDownPos);
+              }
+            })
         .withName("IntakePivotJostle");
   }
-
-  // public static Command compressPivot(IntakePivot intakePivot, double rotations, double seconds)
-  // {
-  //   AngularVelocity pivotVelo = RotationsPerSecond.of(rotations / seconds);
-  //   return Commands.deadline(new WaitCommand(seconds), setPivotVelocity(intakePivot, pivotVelo));
-  // }
 
   public static Command compressPivot(IntakePivot intakePivot) {
     return Commands.sequence(
@@ -76,13 +77,19 @@ public class IntakePivotCommands {
                 new WaitCommand(0.75),
                 IntakePivotCommands.setPivotVoltage(intakePivot, Volts.of(1.7))),
             new WaitCommand(0.5),
-            IntakePivotCommands.setPivotRotations(
+            IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos))
         .repeatedly()
         .finallyDo(
-            () ->
+            (interrupted) -> {
+              // Only reset to down position if the command ended naturally (not interrupted).
+              // If interrupted by the driver pressing intake in/out, we don't want to
+              // override the position they just commanded.
+              if (!interrupted) {
                 intakePivot.setPivotPosition(
-                    HardwareConstants.CompConstants.Positions.pivotDownPos))
+                    HardwareConstants.CompConstants.Positions.pivotDownPos);
+              }
+            })
         .withName("IntakePivotCompress");
   }
 

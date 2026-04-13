@@ -3,6 +3,7 @@ package frc.robot;
 import static edu.wpi.first.math.util.Units.inchesToMeters;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -82,9 +83,9 @@ public class HardwareConstants {
     // Subsystems that run on position control: hood, pivot
     public static class Positions {
       public static final Angle hoodDownPos = Degrees.of(0);
-      public static final double pivotUpPos = 0.33;
-      public static final double pivotDownPos = 0.0;
-      public static final double pivotJostleUpPos = 0.25;
+      public static final Angle pivotUpPos = Rotations.of(0.33);
+      public static final Angle pivotDownPos = Rotations.of(0.0);
+      public static final Angle pivotJostleUpPos = Rotations.of(0.25);
     }
 
     public static class Waits {
@@ -162,7 +163,7 @@ public class HardwareConstants {
 
   public static class PassConstants {
     public static final AngularVelocity FlywheelPassVelocity = RPM.of(2800);
-    public static final Angle hoodPassPos = Degrees.of(270); // was 0.75 rot → 270°
+    public static final Angle hoodPassPos = Degrees.of(45);
   }
 
   public static class TuningConstants {

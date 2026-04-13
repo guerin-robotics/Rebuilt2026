@@ -266,7 +266,7 @@ public class ShootSequences {
                 FeederCommands.stopLower(lowerFeeder),
                 TransportCommands.stop(transport),
                 intakeRollerCommands.stopIntakeRoller(intakeRoller),
-                IntakePivotCommands.setPivotRotations(
+                IntakePivotCommands.setPivotPosition(
                     intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos)),
             new WaitCommand(0.25),
             FlywheelCommands.setFlywheelVelocity(
