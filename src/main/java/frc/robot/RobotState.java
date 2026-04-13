@@ -18,7 +18,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.FieldConstants;
-import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.HubShiftUtil;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -112,8 +112,9 @@ public class RobotState {
 
   /** Private constructor - use getInstance() instead. */
   private RobotState() {
-    // Initialize kinematics with module positions from DriveConstants
-    kinematics = new SwerveDriveKinematics(DriveConstants.moduleTranslations);
+    // Use the same module translations as Drive to keep both pose estimators in sync.
+    // Drive.getModuleTranslations() reads from TunerConstants — the single source of truth.
+    kinematics = new SwerveDriveKinematics(Drive.getModuleTranslations());
 
     // Initialize pose estimator at origin
     poseEstimator =
