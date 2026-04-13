@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intakePivot.io;
 
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -122,13 +123,13 @@ public class IntakePivotIOReal implements IntakePivotIO {
     // Current limits
     var limits = new CurrentLimitsConfigs();
     limits.SupplyCurrentLimit = IntakePivotConstants.CurrentLimits.INTAKE_PIVOT_MAIN_SUPPLY_AMP;
-    limits.SupplyCurrentLimitEnable = false;
+    limits.SupplyCurrentLimitEnable = true;
     limits.SupplyCurrentLowerLimit =
         IntakePivotConstants.CurrentLimits.INTAKE_PIVOT_MAIN_SUPPLY_TRIGGER_AMP;
     limits.SupplyCurrentLowerTime =
         IntakePivotConstants.CurrentLimits.INTAKE_PIVOT_MAIN_SUPPLY_TRIGGER_TIME_SEC.in(Second);
     limits.StatorCurrentLimit = IntakePivotConstants.CurrentLimits.INTAKE_PIVOT_MAIN_STATOR_AMP;
-    limits.StatorCurrentLimitEnable = false;
+    limits.StatorCurrentLimitEnable = true;
 
     // CANcoder remote feedback
     var feedback = new FeedbackConfigs();
@@ -136,10 +137,10 @@ public class IntakePivotIOReal implements IntakePivotIO {
     feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder);
 
     // Software limits
-    config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    config.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
     config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
         IntakePivotConstants.SoftwareConstants.softwareUpperRotationLimit;
-    config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    config.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
     config.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
         IntakePivotConstants.SoftwareConstants.softwareLowerRotationLimit;
 
@@ -178,7 +179,7 @@ public class IntakePivotIOReal implements IntakePivotIO {
 
     // Read from cache — no additional CAN traffic
     inputs.intakePivotVelocity = velocity.getValue();
-    inputs.intakePivotPosition = encoderPosition.getValueAsDouble();
+    inputs.intakePivotPosition = Rotations.of(encoderPosition.getValueAsDouble());
     inputs.intakePivotVoltage = motorVoltage.getValue();
     inputs.intakePivotStatorCurrent = statorCurrent.getValue();
     inputs.intakePivotSupplyCurrent = supplyCurrent.getValue();
@@ -199,8 +200,8 @@ public class IntakePivotIOReal implements IntakePivotIO {
   }
 
   @Override
-  public void setPivotPosition(double positionRotations) {
-    intakePivotMotor.setControl(positionRequest.withPosition(positionRotations));
+  public void setPivotPosition(Angle position) {
+    intakePivotMotor.setControl(positionRequest.withPosition(position.in(Rotations)));
   }
 
   @Override

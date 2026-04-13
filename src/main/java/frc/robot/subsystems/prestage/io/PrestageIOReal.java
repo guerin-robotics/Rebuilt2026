@@ -8,9 +8,11 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -54,7 +56,11 @@ public class PrestageIOReal implements PrestageIO {
   public PrestageIOReal() {
     prestageLeft = new TalonFX(HardwareConstants.CanIds.PRESTAGE_LEADER_ID, CAN_BUS);
     prestageRight = new TalonFX(HardwareConstants.CanIds.PRESTAGE_FOLLOWER_ID, CAN_BUS);
+
     configurePrestageMotor();
+
+    prestageRight.setControl(
+        new Follower(HardwareConstants.CanIds.PRESTAGE_LEADER_ID, MotorAlignmentValue.Opposed));
 
     // Cache signal references once in the constructor — LEFT motor
     leftVelocity = prestageLeft.getVelocity();
@@ -101,7 +107,7 @@ public class PrestageIOReal implements PrestageIO {
 
   private void configurePrestageMotor() {
     var config = new TalonFXConfiguration();
-    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     config.MotorOutput.Inverted =
         PrestageConstants.SoftwareConstants.INVERTED
@@ -117,24 +123,6 @@ public class PrestageIOReal implements PrestageIO {
     var prestageMagic = config.MotionMagic;
     prestageMagic.MotionMagicAcceleration = PrestageConstants.prestageMagicConstants.prestageAccel;
 
-    var followerConfig = new TalonFXConfiguration();
-    followerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
-    followerConfig.MotorOutput.Inverted =
-        PrestageConstants.SoftwareConstants.INVERTED
-            ? com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive
-            : com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive;
-    followerConfig.Feedback.SensorToMechanismRatio = PrestageConstants.Mechanical.prestageRatio;
-
-    // Slot0 PID/FF gains for velocity control
-    followerConfig.Slot0.kS = PrestageConstants.PID.followerKS;
-    followerConfig.Slot0.kV = PrestageConstants.PID.followerKV;
-    followerConfig.Slot0.kP = PrestageConstants.PID.followerKP;
-
-    var prestageRightMagic = followerConfig.MotionMagic;
-    prestageRightMagic.MotionMagicAcceleration =
-        PrestageConstants.prestageMagicConstants.prestageAccel;
-
     // Current limits
     var limits = new CurrentLimitsConfigs();
     limits.SupplyCurrentLimit = PrestageConstants.CurrentLimits.PRESTAGE_MAIN_SUPPLY_AMP;
@@ -147,8 +135,9 @@ public class PrestageIOReal implements PrestageIO {
     limits.StatorCurrentLimitEnable = true;
 
     prestageLeft.getConfigurator().apply(config);
-    prestageRight.getConfigurator().apply(followerConfig);
     prestageLeft.getConfigurator().apply(limits);
+    prestageRight.getConfigurator().apply(config);
+    prestageRight.getConfigurator().apply(limits);
   }
 
   @Override
@@ -200,17 +189,10 @@ public class PrestageIOReal implements PrestageIO {
   @Override
   public void setPrestageVoltage(Voltage volts) {
     prestageLeft.setControl(voltageRequest.withOutput(volts));
-    prestageRight.setControl(voltageRequest.withOutput(volts));
   }
 
   @Override
   public void setPrestageVelocity(AngularVelocity prestageVelo) {
     prestageLeft.setControl(torqueRequest.withVelocity(prestageVelo));
-    prestageRight.setControl(torqueRequest.withVelocity(prestageVelo));
-  }
-
-  @Override
-  public void setOneVelo(AngularVelocity leaderVelo) {
-    prestageRight.setControl(torqueRequest.withVelocity(leaderVelo));
   }
 }

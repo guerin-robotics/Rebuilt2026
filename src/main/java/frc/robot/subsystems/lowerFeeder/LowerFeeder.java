@@ -1,8 +1,10 @@
 package frc.robot.subsystems.lowerFeeder;
 
+import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.subsystems.lowerFeeder.io.LowerFeederIO;
 import frc.robot.subsystems.lowerFeeder.io.LowerFeederIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
@@ -20,7 +22,18 @@ public class LowerFeeder extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Feeder", inputs);
+    Logger.processInputs("Feeder/Lower", inputs);
+
+    // Report lower feeder current usage to the battery logger
+    Robot.batteryLogger.reportCurrentUsage(
+        "Feeder/Lower",
+        false,
+        inputs.lowerFeederSupplyAmps != null ? inputs.lowerFeederSupplyAmps.in(Units.Amps) : 0.0);
+
+    // Log the currently running command for this subsystem
+    Logger.recordOutput(
+        "Feeder/Lower/CurrentCommand",
+        getCurrentCommand() != null ? getCurrentCommand().getName() : "none");
   }
 
   public void setLowerFeederVoltage(Voltage volts) {

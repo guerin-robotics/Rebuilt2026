@@ -13,7 +13,7 @@ public class UpperFeederConstants {
     public static final int UPPER_FEEDER_MAIN_SUPPLY_AMP = 40;
     public static final int UPPER_FEEDER_MAIN_SUPPLY_TRIGGER_AMP = 35;
     public static final Time UPPER_FEEDER_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
-    public static final int UPPER_FEEDER_MAIN_STATOR_AMP = 80;
+    public static final int UPPER_FEEDER_MAIN_STATOR_AMP = 60;
   }
 
   public static class SoftwareConstants {
@@ -21,20 +21,20 @@ public class UpperFeederConstants {
   }
 
   public static class Mechanical {
-    public static final double upperFeederRatio = 1 / 0.417;
+    public static final double upperFeederRatio = 24.0 / 11;
   }
 
   // Real robot PID gains for torque-current velocity control
   public static class PID {
-    public static final double KS = 6.0; // 5.0
-    public static final double KV = 0.0;
-    public static final double KP = 4.0; // 3.0
-    public static final double KI = 0.0;
-    public static final double KD = 0.0;
+    public static final double KS = 2.0; // 6.0
+    public static final double KV = 0.0; // 0.0
+    public static final double KP = 13.0; // 4.0
+    public static final double KI = 0.0; // 0.0
+    public static final double KD = 0.0; // 0.0
   }
 
   public static class feederMagicConstants {
-    public static final double upperFeederAccel = 60.0;
+    public static final double upperFeederAccel = 120.0;
   }
 
   /** Simulation constants for the feeder motor. */

@@ -121,6 +121,7 @@ public class UpperFeederIOSim implements UpperFeederIO {
         RotationsPerSecond.of(feederMotor.getClosedLoopReference().getValueAsDouble());
     inputs.upperFeederClosedLoopError =
         RotationsPerSecond.of(feederMotor.getClosedLoopError().getValueAsDouble());
+    inputs.upperFeederPos = feederMotor.getPosition().getValue();
   }
 
   @Override

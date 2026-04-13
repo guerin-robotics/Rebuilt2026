@@ -41,22 +41,26 @@ public class FeederCommands {
   }
 
   public static Command setLowerFeederVelocity(LowerFeeder feeder, AngularVelocity feederVelo) {
-    return Commands.runOnce(() -> feeder.setLowerFeederVelocity(feederVelo), feeder);
+    return Commands.runOnce(() -> feeder.setLowerFeederVelocity(feederVelo), feeder)
+        .withName("LowerFeederVelocity");
   }
 
   public static Command setUpperFeederVelocity(UpperFeeder feeder, AngularVelocity feederVelo) {
-    return Commands.runOnce(() -> feeder.setUpperFeederVelocity(feederVelo), feeder);
+    return Commands.runOnce(() -> feeder.setUpperFeederVelocity(feederVelo), feeder)
+        .withName("UpperFeederVelocity");
   }
 
   public static Command setLowerVelocityAfterWait(LowerFeeder feeder, AngularVelocity feederVelo) {
     return Commands.sequence(
-        new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
-        setLowerFeederVelocity(feeder, feederVelo));
+            new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
+            setLowerFeederVelocity(feeder, feederVelo))
+        .withName("LowerFeederVelocityAfterWait");
   }
 
   public static Command setUpperVelocityAfterWait(UpperFeeder feeder, AngularVelocity feederVelo) {
     return Commands.sequence(
-        new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
-        setUpperFeederVelocity(feeder, feederVelo));
+            new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
+            setUpperFeederVelocity(feeder, feederVelo))
+        .withName("UpperFeederVelocityAfterWait");
   }
 }

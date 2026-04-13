@@ -26,12 +26,21 @@ public class TransportCommands {
   }
 
   public static Command setTransportVelocity(Transport transport, AngularVelocity transportVelo) {
-    return Commands.runOnce(() -> transport.setTransportVelocity(transportVelo), transport);
+    return Commands.runOnce(() -> transport.setTransportVelocity(transportVelo), transport)
+        .withName("TransportVelocity");
   }
 
   public static Command setVoltageAfterWait(Transport transport, Voltage voltage) {
     return Commands.sequence(
-        new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
-        setTransportVoltage(transport, voltage));
+            new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
+            setTransportVoltage(transport, voltage))
+        .withName("TransportVoltageAfterWait");
+  }
+
+  public static Command setVelocityAfterWait(Transport transport, AngularVelocity transportVelo) {
+    return Commands.sequence(
+            new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
+            setTransportVelocity(transport, transportVelo))
+        .withName("TransportVelocityAfterWait");
   }
 }

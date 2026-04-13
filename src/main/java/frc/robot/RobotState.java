@@ -15,9 +15,11 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.FieldConstants;
 import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.util.HubShiftUtil;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -340,7 +342,8 @@ public class RobotState {
 
     // Calculate the angle using atan2
     // This gives us the direction we need to face to point at the hub
-    return new Rotation2d(robotToHub.getX(), robotToHub.getY());
+    // Add 180° because the shooter faces the back of the robot
+    return new Rotation2d(robotToHub.getX(), robotToHub.getY()).plus(Rotation2d.kPi);
   }
 
   // Gets angle to any target
@@ -352,8 +355,9 @@ public class RobotState {
     Translation2d robotToTarget = target.minus(currentPose.getTranslation());
 
     // Calculate the angle using atan2
-    // This gives us the direction we need to face to point at the hub
-    return new Rotation2d(robotToTarget.getX(), robotToTarget.getY());
+    // This gives us the direction we need to face to point at the target
+    // Add 180° because the shooter faces the back of the robot
+    return new Rotation2d(robotToTarget.getX(), robotToTarget.getY()).plus(Rotation2d.kPi);
   }
 
   // ==================== ODOMETRY UPDATES ====================
@@ -443,6 +447,68 @@ public class RobotState {
    */
   public void resetPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, lastModulePositions, pose);
+  }
+
+  // SHOOTING ALIGNMENT
+
+  // Finds pass target based on position
+  public Translation3d getPassTarget() {
+    Translation3d passTarget;
+    if (DriverStation.getAlliance().isEmpty()
+        || DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+      if (RobotState.getInstance().getEstimatedPose().getY() > (FieldConstants.fieldWidth / 2)) {
+        passTarget =
+            new Translation3d(Meters.of(13.373).magnitude(), Meters.of(6.136).magnitude(), 0);
+      } else {
+        passTarget =
+            new Translation3d(Meters.of(12.950).magnitude(), Meters.of(2.293).magnitude(), 0);
+      }
+    } else {
+      if (RobotState.getInstance().getEstimatedPose().getY() < (FieldConstants.fieldWidth / 2)) {
+        passTarget =
+            new Translation3d(Meters.of(2.993).magnitude(), Meters.of(2.114).magnitude(), 0);
+      } else {
+        passTarget =
+            new Translation3d(Meters.of(3.135).magnitude(), Meters.of(6.129).magnitude(), 0);
+      }
+    }
+    Logger.recordOutput("Flywheel/passTarget", passTarget);
+    return passTarget;
+  }
+
+  // Returns angle to hub if shooting, returns angle to passing target if passing
+  // Includes time logic, both zone and time logic overrideable
+  // Returns current rotation if in alliance zone but hub inactive
+  public Rotation2d getShootAngleForZoneAndTime() {
+    if (!HubShiftUtil.disabled) {
+      if (Triggers.getInstance().isShootClear.getAsBoolean()) {
+        Logger.recordOutput("RobotState/zoneSafeToShoot", true);
+        return RobotState.getInstance().getAngleToAllianceHub();
+      } else {
+        if (Triggers.getInstance().isShootSafeZone.getAsBoolean()) {
+          return RobotState.getInstance().getEstimatedPose().getRotation();
+        } else {
+          Logger.recordOutput("RobotState/zoneSafeToShoot", false);
+          return RobotState.getInstance()
+              .getAngleToTarget(new Translation2d(getPassTarget().getX(), getPassTarget().getY()));
+        }
+      }
+    } else {
+      Logger.recordOutput("RobotState/shootAngleOverriden", true);
+      return RobotState.getInstance().getAngleToAllianceHub();
+    }
+  }
+
+  // No time logic
+  public Rotation2d getShootAngleForZone() {
+    if (Triggers.getInstance().isShootSafeZone.getAsBoolean()) {
+      Logger.recordOutput("RobotState/zoneSafeToShoot", true);
+      return RobotState.getInstance().getAngleToAllianceHub();
+    } else {
+      Logger.recordOutput("RobotState/zoneSafeToShoot", false);
+      return RobotState.getInstance()
+          .getAngleToTarget(new Translation2d(getPassTarget().getX(), getPassTarget().getY()));
+    }
   }
 
   // ZONE CALCULATIONS

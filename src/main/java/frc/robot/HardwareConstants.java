@@ -1,10 +1,13 @@
 package frc.robot;
 
 import static edu.wpi.first.math.util.Units.inchesToMeters;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.lib.AllianceFlipUtil;
@@ -14,33 +17,34 @@ public class HardwareConstants {
 
   public static class CanIds {
     // Flywheel
-    public static int MAIN_FLYWHEEL_LEADER_ID = 31;
-    public static int MAIN_FLYWHEEL_FOLLOWER1_ID = 32;
-    public static int MAIN_FLYWHEEL_FOLLOWER2_ID = 33;
-    public static int MAIN_FLYWHEEL_FOLLOWER3_ID = 34;
-
-    // Prestage
-    public static int PRESTAGE_LEADER_ID = 35;
-    public static int PRESTAGE_FOLLOWER_ID = 36;
-
-    // Feeder
-    public static int UPPER_FEEDER_MOTOR_ID = 37;
-    public static int LOWER_FEEDER_MOTOR_ID = 45;
-
-    // Transport
-    public static int TRANSPORT_MOTOR_ID = 38;
-
-    // Intake
-    public static int INTAKE_PIVOT_MOTOR_ID = 39;
-    public static int INTAKE_ROLLER_LEADER_ID = 40;
-    public static int INTAKE_ROLLER_FOLLOWER_ID = 41;
-    public static int INTAKE_PIVOT_ENCODER_ID = 42;
+    public static int MAIN_FLYWHEEL_LEADER_ID = 30; // 30
+    public static int MAIN_FLYWHEEL_FOLLOWER1_ID = 31; // 31
+    public static int MAIN_FLYWHEEL_FOLLOWER2_ID = 32; // 32
+    public static int MAIN_FLYWHEEL_FOLLOWER3_ID = 33;
+    public static int MAIN_FLYWHEEL_FOLLOWER4_ID = 34;
 
     // Hood
-    public static int HOOD_SERVO_CHANNEL = 0;
-    public static int HOOD_LEFT_SERVO_CHANNEL = 1;
-    public static int HOOD_MOTOR = 43;
-    public static int HOOD_ENCODER = 44;
+    // public static int HOOD_SERVO_CHANNEL = 0;
+    // public static int HOOD_LEFT_SERVO_CHANNEL = 1;
+    public static int HOOD_MOTOR = 35;
+    public static int HOOD_ENCODER = 50;
+
+    // Prestage
+    public static int PRESTAGE_LEADER_ID = 38;
+    public static int PRESTAGE_FOLLOWER_ID = 37;
+
+    // Feeder
+    public static int UPPER_FEEDER_MOTOR_ID = 36;
+    public static int LOWER_FEEDER_MOTOR_ID = 39;
+
+    // Transport
+    public static int TRANSPORT_MOTOR_ID = 40;
+
+    // Intake
+    public static int INTAKE_PIVOT_MOTOR_ID = 41;
+    public static int INTAKE_ROLLER_LEADER_ID = 42;
+    public static int INTAKE_ROLLER_FOLLOWER_ID = 43;
+    public static int INTAKE_PIVOT_ENCODER_ID = 44;
   }
 
   public static class CompConstants {
@@ -50,6 +54,7 @@ public class HardwareConstants {
       public static final Voltage intakeRollerVoltage = Volts.of(12.0);
       public static final Voltage intakeRollerAgitateVoltage = Volts.of(3);
       public static final Voltage prestageIdleVoltage = Volts.of(-1);
+      public static final Voltage prestageVoltage = Volts.of(8);
     }
 
     public static class SpitVoltages {
@@ -59,12 +64,14 @@ public class HardwareConstants {
 
     // Subsystems that run at a constant velocity: prestage, feeder
     public static class Velocities {
-      public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(40.0);
-      public static final AngularVelocity feederVelocity = RotationsPerSecond.of(40.0);
-      public static final AngularVelocity prestageIdleVelocity = RotationsPerSecond.of(5);
-      public static final AngularVelocity flywheelIdleVelocity = RotationsPerSecond.of(5);
+      public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(50.0);
+      public static final AngularVelocity feederVelocity = RotationsPerSecond.of(-25.0);
+      public static final AngularVelocity prestageIdleVelocity = RotationsPerSecond.of(18);
+      public static final AngularVelocity flywheelIdleVelocity = RotationsPerSecond.of(10);
       public static final AngularVelocity prestageIdleVelocityHigh = RotationsPerSecond.of(20);
       public static final AngularVelocity flywheelIdleVelocityHigh = RotationsPerSecond.of(20);
+      public static final AngularVelocity intakeRollerVelocity = RotationsPerSecond.of(40);
+      public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-30);
     }
 
     public static class SpitVelocities {
@@ -75,10 +82,10 @@ public class HardwareConstants {
 
     // Subsystems that run on position control: hood, pivot
     public static class Positions {
-      public static final double hoodDownPos = 0.0;
-      public static final double pivotUpPos = 0.33;
-      public static final double pivotDownPos = 0.0;
-      public static final double pivotJostleUpPos = 0.25;
+      public static final Angle hoodDownPos = Degrees.of(0);
+      public static final Angle pivotUpPos = Rotations.of(0.33);
+      public static final Angle pivotDownPos = Rotations.of(0.0);
+      public static final Angle pivotJostleUpPos = Rotations.of(0.25);
     }
 
     public static class Waits {
@@ -86,14 +93,19 @@ public class HardwareConstants {
       public static final double passSpinUpSeconds = 0.75;
       public static final double waitToCompressSeconds = 1;
     }
+
+    public static class Thresholds {
+      public static final double flywheelSpinupThreshold = 200;
+    }
   }
 
   public static class TestConstants {
 
     public static class TestVoltages {
-      public static final Voltage FlywheelTestVoltage = Volts.of(6.0); // Volts
-      public static final Voltage FeederTestVoltage = Volts.of(3.0);
-      public static final Voltage PrestageTestVoltage = Volts.of(5.0);
+      public static final Voltage FlywheelTestVoltage = Volts.of(10.0); // Volts
+      public static final Voltage FeederTestVoltage = Volts.of(6.0);
+      public static final Voltage LowerFeederTestVoltage = Volts.of(-6.0);
+      public static final Voltage PrestageTestVoltage = Volts.of(8.0);
       public static final Voltage TransportTestVoltage = Volts.of(-12.0);
       public static final Voltage intakePivotTestVoltageUp = Volts.of(2.0);
       public static final Voltage intakePivotTestVoltageDown = Volts.of(-8.0);
@@ -135,23 +147,23 @@ public class HardwareConstants {
       public static final double intakeDegreesUpTest = 0.45;
       public static final double intakeDegreesDownTest = 0.075;
       public static final double intakeJostleTest = 0.25;
-      // Hood position (0.0-1.0)
-      public static final double hoodPos1Test = 0.1;
-      public static final double hoodPos2Test = 0.25;
-      public static final double hoodPos3Test = 0.5;
-      public static final double hoodPos4Test = 0.75;
-      public static final double hoodPos5Test = 1.0;
+      // Hood position in degrees (converted from old 0.0-1.0 rotation range × 360)
+      public static final Angle hoodPos1Test = Degrees.of(36); // was 0.1 rot
+      public static final Angle hoodPos2Test = Degrees.of(90); // was 0.25 rot
+      public static final Angle hoodPos3Test = Degrees.of(180); // was 0.5 rot
+      public static final Angle hoodPos4Test = Degrees.of(270); // was 0.75 rot
+      public static final Angle hoodPos5Test = Degrees.of(360); // was 1.0 rot
     }
   }
 
   public static class TowerConstants {
     public static final AngularVelocity FlywheelTowerVelocity = RPM.of(2100);
-    public static final double hoodTowerPos = 0.55;
+    public static final Angle hoodTowerPos = Degrees.of(198); // was 0.55 rot → 198°
   }
 
   public static class PassConstants {
     public static final AngularVelocity FlywheelPassVelocity = RPM.of(2800);
-    public static final double hoodPassPos = 0.75;
+    public static final Angle hoodPassPos = Degrees.of(45);
   }
 
   public static class TuningConstants {
@@ -159,8 +171,8 @@ public class HardwareConstants {
     public static boolean isTuning = false;
     public static boolean atComp = false;
 
-    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(1700);
-    public static final double HoodTuningPos = 0.45;
+    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(3400);
+    public static final Angle HoodTuningPos = Degrees.of(20);
   }
 
   public static class ControllerConstants {
@@ -168,6 +180,7 @@ public class HardwareConstants {
     public static final int JoystickControllerPort = 2;
     public static final int ButtonPanelPort = 0;
     public static final double DEADBAND = 0.08;
+    public static final int SimControllerPort = 5;
   }
 
   public static class Zones {

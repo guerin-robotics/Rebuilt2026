@@ -9,7 +9,6 @@ package frc.robot.subsystems.vision;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Radians;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -21,57 +20,61 @@ import org.littletonrobotics.junction.Logger;
 public class VisionConstants {
   // AprilTag layout
   public static AprilTagFieldLayout aprilTagLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+      AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
 
   // Camera names, must match names configured on coprocessor
-  public static String camera0Name = "SwerveRight";
-  public static String camera1Name = "SwerveLeft";
-  public static String camera2Name = "FlywheelRight";
-  public static String camera3Name = "FlywheelLeft";
+  public static String camera0Name = "RobotRight";
+  public static String camera1Name = "RobotLeft";
+  public static String camera2Name = "ShooterRight";
+  public static String camera3Name = "ShooterLeft";
 
-  // Right Cam
-  // 10.75 x
-  // 4.75
-  // 8.75 y
-
+  // Robot right camera:
+  // x: -1.000
+  // y: -12.630
+  // z: 4.811 + belly to flooor (1.75) = 6.561
+  // roll: 0
+  // pitch: -15
+  // yaw: -90
   public static final Transform3d robotToCamera0 =
       new Transform3d(
-          new Translation3d(Inches.of(-11.859), Inches.of(-11.508), Inches.of(8.605)),
-          new Rotation3d(Radians.zero(), Degrees.of(-20), Degrees.of(210)));
+          new Translation3d(Inches.of(1.0), Inches.of(-13.175), Inches.of(6.708)),
+          new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(-90.0)));
 
-  // Left Cam
+  // Robot left camera:
+  // x: -1.000
+  // y: 12.880
+  // z: 4.811 + belly to flooor (1.75) = 6.561
+  // roll: 0
+  // pitch: -15
+  // yaw: 90
   public static final Transform3d robotToCamera1 =
       new Transform3d(
-          new Translation3d(Inches.of(-11.859), Inches.of(11.508), Inches.of(8.605)),
-          new Rotation3d(Radians.zero(), Degrees.of(-20), Degrees.of(150)));
+          new Translation3d(Inches.of(1.0), Inches.of(13.425), Inches.of(6.708)),
+          new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(90.0)));
 
-  // Shooter right
+  // Shooter right:
+  // x: -12.991
+  // y: -6.279
+  // z: 10.777 + belly to floor (1.75) = 12.527
+  // roll: 0
+  // pitch: -15
+  // yaw: 167.5
   public static final Transform3d robotToCamera2 =
       new Transform3d(
-          new Translation3d(Inches.of(1.536), Inches.of(-10.653), Inches.of(20.993)),
-          new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(0)));
+          new Translation3d(Inches.of(-13.524), Inches.of(-6.175), Inches.of(12.684)),
+          new Rotation3d(Degrees.of(0.0), Degrees.of(-16.5), Degrees.of(167.5)));
 
-  // Old shooter right:
-  // x: 3.945
-  // y: -1.417
-  // z: 19.233388
+  // Shooter left:
+  // x: -12.979
+  // y: 5.394
+  // z: 10.690 + belly to floor (1.75) = 12.44
   // roll: 0
-  // pitch: -10
-  // yaw: -40
-
-  // Shooter left
+  // pitch: -15
+  // yaw: -192.5
   public static final Transform3d robotToCamera3 =
       new Transform3d(
-          new Translation3d(Inches.of(1.536), Inches.of(10.653), Inches.of(20.993)),
-          new Rotation3d(Radians.zero(), Degrees.of(-15), Degrees.of(0)));
-
-  // Old shooter left:
-  // x: 3.945
-  // y: 1.417
-  // z: 19.233388
-  // roll: 0
-  // pitch: -10
-  // yaw: 40
+          new Translation3d(Inches.of(-13.512), Inches.of(5.272), Inches.of(12.59)),
+          new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(-167.5)));
 
   // ---- Filtering thresholds ----
 

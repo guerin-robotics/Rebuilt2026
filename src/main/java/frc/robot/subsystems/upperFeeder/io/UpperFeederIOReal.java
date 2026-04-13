@@ -67,7 +67,7 @@ public class UpperFeederIOReal implements UpperFeederIO {
 
   private void configureFeederMotor() {
     var config = new TalonFXConfiguration();
-    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     config.MotorOutput.Inverted =
         UpperFeederConstants.SoftwareConstants.INVERTED

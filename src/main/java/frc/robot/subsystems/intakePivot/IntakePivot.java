@@ -1,11 +1,13 @@
 package frc.robot.subsystems.intakePivot;
 
-import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Rotations;
 
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Robot;
 import frc.robot.subsystems.intakePivot.io.IntakePivotIO;
 import frc.robot.subsystems.intakePivot.io.IntakePivotIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
@@ -22,8 +24,8 @@ public class IntakePivot extends SubsystemBase {
   public final IntakePivotIOInputsAutoLogged inputs;
   private final IntakePivotVisualizer visualizer;
 
-  /** The last goal position set by the user, in rotations. Used for visualization. */
-  private double goalPositionRotations = 0.0;
+  /** The last goal position set by the user. Used for visualization. */
+  private Angle goalPosition = Rotations.of(0.0);
 
   public IntakePivot(IntakePivotIO io) {
     this.io = io;
@@ -36,13 +38,28 @@ public class IntakePivot extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Intake Pivot", inputs);
 
+    // Report intake pivot current usage to the battery logger
+    Robot.batteryLogger.reportCurrentUsage(
+        "Intake/Pivot",
+        false,
+        inputs.intakePivotSupplyCurrent != null
+            ? inputs.intakePivotSupplyCurrent.in(Units.Amps)
+            : 0.0);
+
     // Determine if we are within tolerance of our goal
+    double currentRotations = inputs.intakePivotPosition.in(Rotations);
+    double goalRotations = goalPosition.in(Rotations);
     boolean atGoal =
-        Math.abs(inputs.intakePivotPosition - goalPositionRotations)
+        Math.abs(currentRotations - goalRotations)
             < IntakePivotConstants.Visualization.POSITION_TOLERANCE_ROTATIONS;
 
     // Update the visualizer every loop
-    visualizer.update(inputs.intakePivotPosition, goalPositionRotations, atGoal);
+    visualizer.update(currentRotations, goalRotations, atGoal);
+
+    // Log the currently running command for this subsystem
+    Logger.recordOutput(
+        "Intake Pivot/CurrentCommand",
+        getCurrentCommand() != null ? getCurrentCommand().getName() : "none");
   }
 
   public void setPivotVoltage(Voltage volts) {
@@ -53,9 +70,10 @@ public class IntakePivot extends SubsystemBase {
     io.setPivotVelocity(pivotVelo);
   }
 
-  public void setPivotPosition(double positionRotations) {
-    this.goalPositionRotations = positionRotations;
-    io.setPivotPosition(positionRotations);
+  /** Sets the pivot to a target position using closed-loop control. */
+  public void setPivotPosition(Angle position) {
+    this.goalPosition = position;
+    io.setPivotPosition(position);
   }
 
   public void zeroPivotEncoder() {
@@ -63,49 +81,11 @@ public class IntakePivot extends SubsystemBase {
   }
 
   /**
-   * Returns the current pivot position in rotations.
+   * Returns the current pivot position.
    *
-   * @return current position from the CANcoder in rotations
+   * @return current position from the CANcoder
    */
-  public double getPosition() {
+  public Angle getPosition() {
     return inputs.intakePivotPosition;
-  }
-
-  /**
-   * Jostle the intake by current. If stator current is below the threshold, drive downward.
-   * Otherwise, retract by a set amount and pause briefly.
-   */
-  public void intakeJostleByCurrent(
-      AngularVelocity upVelocity,
-      AngularVelocity downVelocity,
-      double degreesDown,
-      double seconds) {
-    double currentPos = inputs.intakePivotPosition;
-    if (inputs.intakePivotStatorCurrent.in(Amps)
-        < IntakePivotConstants.Mechanical.pivotJostleCurrentLimit) {
-      io.setPivotVelocity(downVelocity);
-    } else {
-      setPivotPosition(currentPos + degreesDown);
-      new WaitCommand(seconds);
-    }
-  }
-
-  public void intakeJostleByPos() {
-    io.setPivotPosition(IntakePivotConstants.Mechanical.pivotJostleDegreesUp);
-    // new WaitCommand(1);
-    // io.setPivotPosition(IntakePivotConstants.Mechanical.pivotDegreesDown);
-    // new WaitCommand(1);
-  }
-
-  /**
-   * Slowly drive the pivot toward the home position until stator current indicates a hard stop,
-   * then zero the encoder.
-   */
-  public void intakeHome(AngularVelocity homeVelo) {
-    if (inputs.intakePivotStatorCurrent.in(Amps) > 0.5) {
-      io.setPivotVelocity(homeVelo);
-    } else {
-      io.zeroPivotEncoder();
-    }
   }
 }

@@ -1,6 +1,11 @@
 package frc.robot.subsystems.hood;
 
+import static edu.wpi.first.units.Units.Degrees;
+
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.subsystems.hood.io.HoodIO;
 import frc.robot.subsystems.hood.io.HoodIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
@@ -20,19 +25,28 @@ public class Hood extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Hood", inputs);
+
+    // Report hood current usage to the battery logger
+    Robot.batteryLogger.reportCurrentUsage(
+        "Hood",
+        false,
+        inputs.hoodSupplyCurrent != null ? inputs.hoodSupplyCurrent.in(Units.Amps) : 0.0);
+
+    // Log the currently running command for this subsystem
+    Logger.recordOutput(
+        "Hood/CurrentCommand",
+        getCurrentCommand() != null ? getCurrentCommand().getName() : "none");
   }
 
-  public void setHoodPos(double position) {
+  public void setHoodPos(Angle position) {
     // if (Triggers.getInstance().isHoodSafe(RobotState.getInstance().getEstimatedPose())) {
     io.setHoodPos(position);
     // }
   }
 
   public void incrementHoodPos() {
-    double position = inputs.hoodPosition;
-    // if (RobotState.getInstance().isHoodSafe(RobotState.getInstance().getEstimatedPose())) {
-    io.setHoodPos(position + 0.05);
-    // }
+    Angle position = inputs.hoodPosition;
+    io.setHoodPos(position.plus(Degrees.of(5)));
   }
 
   /**
@@ -53,11 +67,20 @@ public class Hood extends SubsystemBase {
    * distance changes every loop so the lookup is necessary.
    */
   public void setHoodPosForHub() {
-    double position = HoodPosCalculator.getInstance().getHoodPosForHub();
+    Angle position = HoodPosCalculator.getInstance().getHoodPosForHub();
     io.setHoodPos(position);
   }
 
-  public void stopHood() {
-    io.stopHood();
+  public void stowHood() {
+    io.setHoodPos(Degrees.of(0));
+  }
+
+  /**
+   * Returns the current hood position (mechanism angle).
+   *
+   * @return The hood angle as reported by the CANcoder
+   */
+  public Angle getPosition() {
+    return inputs.hoodPosition;
   }
 }

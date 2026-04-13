@@ -1,26 +1,26 @@
 package frc.robot.subsystems.flywheel;
 
-import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.FieldConstants;
 import frc.robot.HardwareConstants;
+import frc.robot.Robot;
 import frc.robot.RobotState;
-import frc.robot.Triggers;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.ShooterIOInputsAutoLogged;
-import frc.robot.util.HubShiftUtil;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -32,7 +32,14 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 public class Flywheel extends SubsystemBase {
   private final FlywheelIO io;
   private final ShooterIOInputsAutoLogged inputs;
+  private final FlywheelVisualizer visualizer;
   private LoggedNetworkNumber tuningRPM;
+
+  /**
+   * Supplier for the current hood angle. Set via {@link #setHoodAngleSupplier} after construction
+   * so the Flywheel doesn't depend directly on the Hood subsystem. Defaults to 0° if not set.
+   */
+  private Supplier<Angle> hoodAngleSupplier = () -> Degrees.of(0);
 
   /**
    * Creates a new Shooter subsystem.
@@ -43,12 +50,66 @@ public class Flywheel extends SubsystemBase {
     this.io = shooterIO;
     inputs = new ShooterIOInputsAutoLogged();
     tuningRPM = new LoggedNetworkNumber("Tune/flywheel/tuningRPM", 20);
+    visualizer = new FlywheelVisualizer();
+  }
+
+  /**
+   * Sets the supplier that provides the current hood angle for trajectory visualization.
+   *
+   * <p>Call this from RobotContainer after both Flywheel and Hood are constructed:
+   *
+   * <pre>flywheel.setHoodAngleSupplier(hood::getPosition);</pre>
+   *
+   * @param supplier A supplier returning the current hood mechanism angle
+   */
+  public void setHoodAngleSupplier(Supplier<Angle> supplier) {
+    this.hoodAngleSupplier = supplier;
   }
 
   @Override
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Flywheel", inputs);
+
+    // Report flywheel current usage to the battery logger (leader + 4 followers)
+    Robot.batteryLogger.reportCurrentUsage(
+        "Flywheel/Leader",
+        false,
+        inputs.leaderSupplyCurrentAmps != null
+            ? inputs.leaderSupplyCurrentAmps.in(Units.Amps)
+            : 0.0);
+    Robot.batteryLogger.reportCurrentUsage(
+        "Flywheel/Follower1",
+        false,
+        inputs.follower1SupplyCurrentAmps != null
+            ? inputs.follower1SupplyCurrentAmps.in(Units.Amps)
+            : 0.0);
+    Robot.batteryLogger.reportCurrentUsage(
+        "Flywheel/Follower2",
+        false,
+        inputs.follower2SupplyCurrentAmps != null
+            ? inputs.follower2SupplyCurrentAmps.in(Units.Amps)
+            : 0.0);
+    Robot.batteryLogger.reportCurrentUsage(
+        "Flywheel/Follower3",
+        false,
+        inputs.follower3SupplyCurrentAmps != null
+            ? inputs.follower3SupplyCurrentAmps.in(Units.Amps)
+            : 0.0);
+    Robot.batteryLogger.reportCurrentUsage(
+        "Flywheel/Follower4",
+        false,
+        inputs.follower4SupplyCurrentAmps != null
+            ? inputs.follower4SupplyCurrentAmps.in(Units.Amps)
+            : 0.0);
+
+    // Update trajectory visualization every loop
+    visualizer.updateTrajectory(inputs.flywheelVelocity, hoodAngleSupplier.get());
+
+    // Log the currently running command for this subsystem
+    Logger.recordOutput(
+        "Flywheel/CurrentCommand",
+        getCurrentCommand() != null ? getCurrentCommand().getName() : "none");
   }
 
   public void setFlywheelVoltage(Voltage volts) {
@@ -78,44 +139,6 @@ public class Flywheel extends SubsystemBase {
     io.setFlywheelVelocity(velocity);
   }
 
-  public Translation3d getPassTarget() {
-    Translation3d passTarget;
-    // if (RobotState.getInstance().getEstimatedPose().getY()
-    //     > (AllianceFlipUtil.applyY(FieldConstants.fieldWidth / 2))) {
-    //   passTarget =
-    //       new Translation3d(
-    //           (AllianceFlipUtil.applyY(FieldConstants.LinesVertical.neutralZoneNear / 2)),
-    //           ((3 * AllianceFlipUtil.applyY(FieldConstants.LinesHorizontal.center)) / 4),
-    //           0);
-    // } else {
-    //   passTarget =
-    //       new Translation3d(
-    //           (AllianceFlipUtil.applyY(FieldConstants.LinesVertical.neutralZoneNear / 2)),
-    //           ((AllianceFlipUtil.applyY(FieldConstants.LinesHorizontal.center)) / 4),
-    //           0);
-    // }
-    if (DriverStation.getAlliance().isEmpty()
-        || DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-      if (RobotState.getInstance().getEstimatedPose().getY() > (FieldConstants.fieldWidth / 2)) {
-        passTarget =
-            new Translation3d(Meters.of(13.373).magnitude(), Meters.of(6.136).magnitude(), 0);
-      } else {
-        passTarget =
-            new Translation3d(Meters.of(12.950).magnitude(), Meters.of(2.293).magnitude(), 0);
-      }
-    } else {
-      if (RobotState.getInstance().getEstimatedPose().getY() < (FieldConstants.fieldWidth / 2)) {
-        passTarget =
-            new Translation3d(Meters.of(2.993).magnitude(), Meters.of(2.114).magnitude(), 0);
-      } else {
-        passTarget =
-            new Translation3d(Meters.of(3.135).magnitude(), Meters.of(6.129).magnitude(), 0);
-      }
-    }
-    Logger.recordOutput("Flywheel/passTarget", passTarget);
-    return passTarget;
-  }
-
   public AngularVelocity getTuningRPM() {
     return RPM.of(tuningRPM.get());
   }
@@ -123,41 +146,6 @@ public class Flywheel extends SubsystemBase {
   public void setTuningRPM() {
     AngularVelocity velocity = getTuningRPM();
     io.setFlywheelVelocity(velocity);
-  }
-
-  // Returns angle to hub if shooting, returns angle to passing target if passing
-  // Includes time logic, both zone and time logic overrideable
-  // Returns current rotation if in alliance zone but hub inactive
-  public Rotation2d getShootAngleForZoneAndTime() {
-    if (!HubShiftUtil.disabled) {
-      if (Triggers.getInstance().isShootClear().getAsBoolean()) {
-        Logger.recordOutput("RobotState/zoneSafeToShoot", true);
-        return RobotState.getInstance().getAngleToAllianceHub();
-      } else {
-        if (Triggers.getInstance().isShootSafeZone().getAsBoolean()) {
-          return RobotState.getInstance().getEstimatedPose().getRotation();
-        } else {
-          Logger.recordOutput("RobotState/zoneSafeToShoot", false);
-          return RobotState.getInstance()
-              .getAngleToTarget(new Translation2d(getPassTarget().getX(), getPassTarget().getY()));
-        }
-      }
-    } else {
-      Logger.recordOutput("RobotState/shootAngleOverriden", true);
-      return RobotState.getInstance().getAngleToAllianceHub();
-    }
-  }
-
-  // No time logic
-  public Rotation2d getShootAngleForZone() {
-    if (Triggers.getInstance().isShootSafeZone().getAsBoolean()) {
-      Logger.recordOutput("RobotState/zoneSafeToShoot", true);
-      return RobotState.getInstance().getAngleToAllianceHub();
-    } else {
-      Logger.recordOutput("RobotState/zoneSafeToShoot", false);
-      return RobotState.getInstance()
-          .getAngleToTarget(new Translation2d(getPassTarget().getX(), getPassTarget().getY()));
-    }
   }
 
   // Definitely getting ahead of ourselves but when we get to shooting on the move...

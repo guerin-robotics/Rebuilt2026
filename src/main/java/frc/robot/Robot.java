@@ -8,11 +8,13 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.AllianceFlipUtil;
+import frc.robot.util.BatteryLogger;
 import frc.robot.util.Elastic;
 import frc.robot.util.HubShiftUtil;
 import org.littletonrobotics.junction.AutoLogOutputManager;
@@ -32,6 +34,9 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
+
+  /** Shared battery/energy logger — subsystems call {@code reportCurrentUsage()} each loop. */
+  public static final BatteryLogger batteryLogger = new BatteryLogger();
 
   // Field2d widget to display the robot's current pose on the dashboard.
   // This is updated every loop so the drive team can always see where the robot thinks it is.
@@ -104,6 +109,11 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    // Update battery logger with voltage and RIO current, then log after scheduler
+    batteryLogger.setBatteryVoltage(RobotController.getBatteryVoltage());
+    batteryLogger.setRioCurrent(RobotController.getInputCurrent());
+    batteryLogger.periodicAfterScheduler();
 
     // Refresh the cached alliance color once per loop so that AllianceFlipUtil.shouldFlip()
     // doesn't call DriverStation.getAlliance() (which creates an Optional) 20-30+ times per cycle.

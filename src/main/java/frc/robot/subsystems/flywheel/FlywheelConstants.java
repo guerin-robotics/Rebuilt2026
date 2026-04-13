@@ -59,14 +59,23 @@ public class FlywheelConstants {
     // public static double KV = tunableKV.get();
     // public static double KP = tunableKP.get();
 
-    public static double KS = 4.5; // 10
-    public static double KV = 0.5;
-    public static double KP = 11; // 13
-    public static double KD = 0; // 3
+    // For MotionMagicVelocityTorqueCurrentFOC (torque-current output):
+    //   kS = Amps to overcome static friction
+    //   kV = Amps per rps of target velocity (feedforward)
+    //   kP = Amps per rps of velocity error (feedback)
+    //   kD = Amps per rps/s of velocity error derivative
+    //
+    // With kV=0 and kP=0 the motor only applies static friction amps — it never
+    // actually drives toward the velocity setpoint. Start with small values and
+    // tune up from there.
+    public static double KS = 10.0; // 4.5
+    public static double KV = 0.12; // feedforward: Amps per rps — start ~0.12, tune to taste
+    public static double KP = 2.0; // feedback: Amps per rps of error — start ~2.0, tune to taste
+    public static double KD = 0; // 0
   }
 
   public static class flywheelMagicConstants {
-    public static final double flywheelAccel = 60;
+    public static final double flywheelAccel = 100;
   }
 
   /**
@@ -92,9 +101,12 @@ public class FlywheelConstants {
 
   public static class Mechanical {
     /** Hood angle for trajectory visualization (degrees). */
-    public static final boolean INVERTED = false;
+    public static final boolean INVERTED = true;
 
-    public static final double flywheelRatio = 1 / 1.47;
+    public static final boolean FOLLOWER_INVERTED = true;
+
+    public static final double flywheelRatio =
+        36.0 / 24.0; // Sensor rotations to mechanism rotations
     public static final double flywheelMetersPerRotation = inchesToMeters(Math.PI * 4);
     public static final double flywheelRotationsPerMeter = 1 / flywheelMetersPerRotation;
   }
@@ -125,11 +137,11 @@ public class FlywheelConstants {
 
   /** Simulation constants for the flywheel. */
   public static class Sim {
-    /** Four Kraken X60 FOC motors drive the flywheel. */
-    public static final DCMotor FLYWHEEL_MOTOR = DCMotor.getKrakenX60Foc(4);
+    /** Five Kraken X60 FOC motors drive the flywheel (1 leader + 4 followers). */
+    public static final DCMotor FLYWHEEL_MOTOR = DCMotor.getKrakenX60Foc(5);
 
-    /** Number of motors driving the flywheel (used for DCMotorSim). */
-    public static final int NUM_MOTORS = 4;
+    /** Number of motors driving the flywheel. */
+    public static final int NUM_MOTORS = 5;
 
     /** Moment of inertia of the flywheel (kg·m²). Larger than small rollers due to mass. */
     public static final double FLYWHEEL_MOI = 0.01;
@@ -143,6 +155,38 @@ public class FlywheelConstants {
     public static final double KP = 8.0;
     public static final double KI = 0.0;
     public static final double KD = 0.0;
+  }
+
+  /** Constants for the trajectory visualization in AdvantageScope. */
+  public static class TrajectoryVisualization {
+    /** Number of sample points along the trajectory arc. More = smoother curve. */
+    public static final int TRAJECTORY_POINTS = 50;
+
+    /** Total time span (seconds) to project the trajectory forward. */
+    public static final double TRAJECTORY_TIME_SPAN = 2.0;
+
+    /** Height above the ground where fuel leaves the shooter (meters). */
+    public static final double LAUNCH_HEIGHT_METERS = inchesToMeters(20);
+
+    /** Drum radius used to convert flywheel angular velocity to linear launch velocity. */
+    public static final double DRUM_RADIUS_METERS = inchesToMeters(1.5);
+
+    /**
+     * Fudge factor applied to the calculated launch velocity. Tune this to make the trajectory
+     * preview match real-world behavior. 1.0 = no adjustment.
+     */
+    public static final double VELOCITY_FUDGE_FACTOR = 0.8;
+
+    /** Minimum flywheel RPM before showing a trajectory. Below this the preview is hidden. */
+    public static final double MIN_RPM_FOR_TRAJECTORY = 50.0;
+
+    /**
+     * Offset from the robot origin to the shooter exit point in the robot frame (X = forward, Y =
+     * left, Z = up). Adjust to match your actual shooter placement on the robot.
+     */
+    public static final double SHOOTER_EXIT_X_METERS = inchesToMeters(-6); // behind center
+
+    public static final double SHOOTER_EXIT_Y_METERS = 0.0; // centered left-right
   }
 
   /**

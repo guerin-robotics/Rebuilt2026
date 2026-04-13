@@ -113,6 +113,7 @@ public class TransportIOSim implements TransportIO {
         RotationsPerSecond.of(transportMotor.getClosedLoopReference().getValueAsDouble());
     inputs.transportClosedLoopError =
         RotationsPerSecond.of(transportMotor.getClosedLoopError().getValueAsDouble());
+    inputs.transportPos = transportMotor.getPosition().getValue();
   }
 
   @Override

@@ -32,7 +32,6 @@ public class PrestageIOSim implements PrestageIO {
   private final TalonFXSimState leftSimState;
   private final DCMotorSim leftPhysicsSim;
 
-  // Right prestage motor and its sim state
   private final TalonFX prestageRight;
   private final TalonFXSimState rightSimState;
   private final DCMotorSim rightPhysicsSim;
@@ -160,6 +159,8 @@ public class PrestageIOSim implements PrestageIO {
         RotationsPerSecond.of(prestageRight.getClosedLoopReference().getValueAsDouble());
     inputs.prestageRightClosedLoopError =
         RotationsPerSecond.of(prestageRight.getClosedLoopError().getValueAsDouble());
+    inputs.prestageLeftPos = prestageLeft.getPosition().getValue();
+    inputs.prestageRightPos = prestageRight.getPosition().getValue();
   }
 
   @Override
@@ -172,11 +173,5 @@ public class PrestageIOSim implements PrestageIO {
   public void setPrestageVelocity(AngularVelocity prestageVelo) {
     prestageLeft.setControl(velocityRequest.withVelocity(prestageVelo));
     prestageRight.setControl(velocityRequest.withVelocity(prestageVelo));
-  }
-
-  @Override
-  public void setOneVelo(AngularVelocity leaderVelo) {
-    // Only controls the right motor independently (matches real behavior)
-    prestageRight.setControl(velocityRequest.withVelocity(leaderVelo));
   }
 }

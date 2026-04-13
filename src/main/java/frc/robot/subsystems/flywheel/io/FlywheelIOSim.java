@@ -40,6 +40,7 @@ public class FlywheelIOSim implements FlywheelIO {
   private final TalonFX follower1;
   private final TalonFX follower2;
   private final TalonFX follower3;
+  private final TalonFX follower4;
 
   // Sim state for the leader motor (followers mirror the leader)
   private final TalonFXSimState leaderSimState;
@@ -58,12 +59,14 @@ public class FlywheelIOSim implements FlywheelIO {
     follower1 = new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_FOLLOWER1_ID);
     follower2 = new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_FOLLOWER2_ID);
     follower3 = new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_FOLLOWER3_ID);
+    follower4 = new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_FOLLOWER4_ID);
 
-    // Set up follower relationships (matching real robot configuration)
+    // Set up follower relationships (matching real robot configuration in FlywheelIOPhoenix6)
     int leaderId = leader.getDeviceID();
-    follower1.setControl(new Follower(leaderId, MotorAlignmentValue.Opposed));
+    follower1.setControl(new Follower(leaderId, MotorAlignmentValue.Aligned));
     follower2.setControl(new Follower(leaderId, MotorAlignmentValue.Aligned));
     follower3.setControl(new Follower(leaderId, MotorAlignmentValue.Opposed));
+    follower4.setControl(new Follower(leaderId, MotorAlignmentValue.Opposed));
 
     configureMotors();
 
@@ -140,6 +143,7 @@ public class FlywheelIOSim implements FlywheelIO {
     inputs.leaderSupplyCurrentAmps = leader.getSupplyCurrent().getValue();
     inputs.leaderStatorCurrentAmps = leader.getStatorCurrent().getValue();
     inputs.leaderTemp = leader.getDeviceTemp().getValue();
+    inputs.leaderAngle = leader.getPosition().getValue();
 
     // Follower 1 motor
     inputs.follower1Velocity = follower1.getVelocity().getValue();
@@ -161,6 +165,13 @@ public class FlywheelIOSim implements FlywheelIO {
     inputs.follower3SupplyCurrentAmps = follower3.getSupplyCurrent().getValue();
     inputs.follower3StatorCurrentAmps = follower3.getStatorCurrent().getValue();
     inputs.follower3Temp = follower3.getDeviceTemp().getValue();
+
+    // Follower 4 motor
+    inputs.follower4Velocity = follower4.getVelocity().getValue();
+    inputs.follower4AppliedVolts = follower4.getMotorVoltage().getValue();
+    inputs.follower4SupplyCurrentAmps = follower4.getSupplyCurrent().getValue();
+    inputs.follower4StatorCurrentAmps = follower4.getStatorCurrent().getValue();
+    inputs.follower4Temp = follower4.getDeviceTemp().getValue();
   }
 
   @Override

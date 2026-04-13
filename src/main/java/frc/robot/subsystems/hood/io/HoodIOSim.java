@@ -1,6 +1,9 @@
 package frc.robot.subsystems.hood.io;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
+
+import edu.wpi.first.units.measure.Angle;
 
 /**
  * Simulated implementation of {@link HoodIO}.
@@ -9,7 +12,7 @@ import static edu.wpi.first.units.Units.RPM;
  */
 public class HoodIOSim implements HoodIO {
 
-  private double simPosition = 0.0;
+  private Angle simPosition = Degrees.of(0);
 
   @Override
   public void updateInputs(HoodIOInputs inputs) {
@@ -20,7 +23,7 @@ public class HoodIOSim implements HoodIO {
   }
 
   @Override
-  public void setHoodPos(double position) {
+  public void setHoodPos(Angle position) {
     simPosition = position;
   }
 }
