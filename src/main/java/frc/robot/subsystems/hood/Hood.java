@@ -31,6 +31,11 @@ public class Hood extends SubsystemBase {
         "Hood",
         false,
         inputs.hoodSupplyCurrent != null ? inputs.hoodSupplyCurrent.in(Units.Amps) : 0.0);
+
+    // Log the currently running command for this subsystem
+    Logger.recordOutput(
+        "Hood/CurrentCommand",
+        getCurrentCommand() != null ? getCurrentCommand().getName() : "none");
   }
 
   public void setHoodPos(Angle position) {

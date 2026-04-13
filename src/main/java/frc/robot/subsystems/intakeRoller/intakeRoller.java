@@ -37,6 +37,11 @@ public class intakeRoller extends SubsystemBase {
         inputs.intakeRollerFollowerSupplyCurrent != null
             ? inputs.intakeRollerFollowerSupplyCurrent.in(Units.Amps)
             : 0.0);
+
+    // Log the currently running command for this subsystem
+    Logger.recordOutput(
+        "Intake Roller/CurrentCommand",
+        getCurrentCommand() != null ? getCurrentCommand().getName() : "none");
   }
 
   public void setRollerVoltage(Voltage volts) {

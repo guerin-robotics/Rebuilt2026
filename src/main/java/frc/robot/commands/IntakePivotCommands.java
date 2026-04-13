@@ -22,27 +22,31 @@ public class IntakePivotCommands {
   /** Run the pivot at a given voltage; stop (0 V) when the command ends. */
   public static Command setPivotVoltage(IntakePivot intakePivot, Voltage voltage) {
     return Commands.startEnd(
-        () -> intakePivot.setPivotVoltage(voltage),
-        () -> intakePivot.setPivotVoltage(Volts.of(0)),
-        intakePivot);
+            () -> intakePivot.setPivotVoltage(voltage),
+            () -> intakePivot.setPivotVoltage(Volts.of(0)),
+            intakePivot)
+        .withName("IntakePivotVoltage_" + voltage.in(Volts) + "V");
   }
 
   /** Run the pivot at a given velocity; stop (0 rps) when the command ends. */
   public static Command setPivotVelocity(IntakePivot intakePivot, AngularVelocity pivotVelo) {
     return Commands.startEnd(
-        () -> intakePivot.setPivotVelocity(pivotVelo),
-        () -> intakePivot.setPivotVelocity(RotationsPerSecond.of(0)),
-        intakePivot);
+            () -> intakePivot.setPivotVelocity(pivotVelo),
+            () -> intakePivot.setPivotVelocity(RotationsPerSecond.of(0)),
+            intakePivot)
+        .withName("IntakePivotVelocity");
   }
 
   /** Stop the pivot immediately (set voltage to 0). */
   public static Command stopPivot(IntakePivot intakePivot) {
-    return Commands.runOnce(() -> intakePivot.setPivotVoltage(Volts.of(0)), intakePivot);
+    return Commands.runOnce(() -> intakePivot.setPivotVoltage(Volts.of(0)), intakePivot)
+        .withName("IntakePivotStop");
   }
 
   /** Move the pivot to a specific position in rotations. */
   public static Command setPivotRotations(IntakePivot intakePivot, double angleRotations) {
-    return Commands.runOnce(() -> intakePivot.setPivotPosition(angleRotations), intakePivot);
+    return Commands.runOnce(() -> intakePivot.setPivotPosition(angleRotations), intakePivot)
+        .withName("IntakePivotSetPos_" + angleRotations + "rot");
   }
 
   public static Command jostlePivotByPos(IntakePivot intakePivot) {
@@ -56,7 +60,8 @@ public class IntakePivotCommands {
         .finallyDo(
             () ->
                 intakePivot.setPivotPosition(
-                    HardwareConstants.CompConstants.Positions.pivotDownPos));
+                    HardwareConstants.CompConstants.Positions.pivotDownPos))
+        .withName("IntakePivotJostle");
   }
 
   // public static Command compressPivot(IntakePivot intakePivot, double rotations, double seconds)
@@ -77,11 +82,12 @@ public class IntakePivotCommands {
         .finallyDo(
             () ->
                 intakePivot.setPivotPosition(
-                    HardwareConstants.CompConstants.Positions.pivotDownPos));
+                    HardwareConstants.CompConstants.Positions.pivotDownPos))
+        .withName("IntakePivotCompress");
   }
 
   /** Zero the pivot encoder at the current position. */
   public static Command zeroPivot(IntakePivot intakePivot) {
-    return Commands.runOnce(() -> intakePivot.zeroPivotEncoder());
+    return Commands.runOnce(() -> intakePivot.zeroPivotEncoder()).withName("IntakePivotZero");
   }
 }

@@ -105,6 +105,11 @@ public class Flywheel extends SubsystemBase {
 
     // Update trajectory visualization every loop
     visualizer.updateTrajectory(inputs.flywheelVelocity, hoodAngleSupplier.get());
+
+    // Log the currently running command for this subsystem
+    Logger.recordOutput(
+        "Flywheel/CurrentCommand",
+        getCurrentCommand() != null ? getCurrentCommand().getName() : "none");
   }
 
   public void setFlywheelVoltage(Voltage volts) {

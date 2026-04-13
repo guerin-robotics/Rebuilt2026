@@ -76,34 +76,35 @@ public class DriveCommands {
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier) {
     return Commands.run(
-        () -> {
-          // Get linear velocity
-          Translation2d linearVelocity =
-              getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+            () -> {
+              // Get linear velocity
+              Translation2d linearVelocity =
+                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
-          // Apply rotation deadband
-          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+              // Apply rotation deadband
+              double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
 
-          // Square rotation value for more precise control
-          omega = Math.copySign(omega * omega, omega);
+              // Square rotation value for more precise control
+              omega = Math.copySign(omega * omega, omega);
 
-          // Convert to field relative speeds & send command
-          ChassisSpeeds speeds =
-              new ChassisSpeeds(
-                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                  omega * drive.getMaxAngularSpeedRadPerSec());
-          boolean isFlipped =
-              DriverStation.getAlliance().isPresent()
-                  && DriverStation.getAlliance().get() == Alliance.Red;
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  speeds,
-                  isFlipped
-                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                      : drive.getRotation()));
-        },
-        drive);
+              // Convert to field relative speeds & send command
+              ChassisSpeeds speeds =
+                  new ChassisSpeeds(
+                      linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                      linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                      omega * drive.getMaxAngularSpeedRadPerSec());
+              boolean isFlipped =
+                  DriverStation.getAlliance().isPresent()
+                      && DriverStation.getAlliance().get() == Alliance.Red;
+              drive.runVelocity(
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      speeds,
+                      isFlipped
+                          ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                          : drive.getRotation()));
+            },
+            drive)
+        .withName("JoystickDrive");
   }
 
   public static Command joystickDriveLimited(
@@ -112,34 +113,35 @@ public class DriveCommands {
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier) {
     return Commands.run(
-        () -> {
-          // Get linear velocity
-          Translation2d linearVelocity =
-              getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+            () -> {
+              // Get linear velocity
+              Translation2d linearVelocity =
+                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
-          // Apply rotation deadband
-          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+              // Apply rotation deadband
+              double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
 
-          // Square rotation value for more precise control
-          omega = Math.copySign(omega * omega, omega);
+              // Square rotation value for more precise control
+              omega = Math.copySign(omega * omega, omega);
 
-          // Convert to field relative speeds & send command
-          ChassisSpeeds speeds =
-              new ChassisSpeeds(
-                  linearVelocity.getX() * DriveConstants.limitedVelo,
-                  linearVelocity.getY() * DriveConstants.limitedVelo,
-                  omega * drive.getMaxAngularSpeedRadPerSec());
-          boolean isFlipped =
-              DriverStation.getAlliance().isPresent()
-                  && DriverStation.getAlliance().get() == Alliance.Red;
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  speeds,
-                  isFlipped
-                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                      : drive.getRotation()));
-        },
-        drive);
+              // Convert to field relative speeds & send command
+              ChassisSpeeds speeds =
+                  new ChassisSpeeds(
+                      linearVelocity.getX() * DriveConstants.limitedVelo,
+                      linearVelocity.getY() * DriveConstants.limitedVelo,
+                      omega * drive.getMaxAngularSpeedRadPerSec());
+              boolean isFlipped =
+                  DriverStation.getAlliance().isPresent()
+                      && DriverStation.getAlliance().get() == Alliance.Red;
+              drive.runVelocity(
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      speeds,
+                      isFlipped
+                          ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                          : drive.getRotation()));
+            },
+            drive)
+        .withName("JoystickDriveLimited");
   }
 
   public static Command driveLucasProof(
@@ -149,18 +151,22 @@ public class DriveCommands {
       DoubleSupplier omegaSupplier,
       Trigger override) {
     return new ContinuousConditionalCommand(
-        joystickDrive(drive, xSupplier, ySupplier, omegaSupplier),
-        joystickDriveLimited(drive, xSupplier, ySupplier, omegaSupplier),
-        () -> {
-          boolean driveNormal =
-              (Triggers.getInstance().isIntakeSafe.getAsBoolean() || override.getAsBoolean());
-          Logger.recordOutput(
-              "RobotState/isIntakeSafe",
-              Triggers.getInstance().isIntakeSafe.getAsBoolean() ? "intakeSafe" : "intakeUnsafe");
-          Logger.recordOutput(
-              "RobotState/isOverrideActive", override.getAsBoolean() ? "override" : "noOverride");
-          return driveNormal;
-        });
+            joystickDrive(drive, xSupplier, ySupplier, omegaSupplier),
+            joystickDriveLimited(drive, xSupplier, ySupplier, omegaSupplier),
+            () -> {
+              boolean driveNormal =
+                  (Triggers.getInstance().isIntakeSafe.getAsBoolean() || override.getAsBoolean());
+              Logger.recordOutput(
+                  "RobotState/isIntakeSafe",
+                  Triggers.getInstance().isIntakeSafe.getAsBoolean()
+                      ? "intakeSafe"
+                      : "intakeUnsafe");
+              Logger.recordOutput(
+                  "RobotState/isOverrideActive",
+                  override.getAsBoolean() ? "override" : "noOverride");
+              return driveNormal;
+            })
+        .withName("DriveLucasProof");
   }
 
   /**
@@ -219,7 +225,8 @@ public class DriveCommands {
             drive)
 
         // Reset PID controller when command starts
-        .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
+        .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()))
+        .withName("JoystickDriveAtAngle");
   }
 
   /**
@@ -405,7 +412,8 @@ public class DriveCommands {
   }
 
   public static Command stopWithXAfterWait(Drive drive) {
-    return Commands.sequence(new WaitCommand(2), Commands.runOnce(() -> drive.stopWithX(), drive));
+    return Commands.sequence(new WaitCommand(2), Commands.runOnce(() -> drive.stopWithX(), drive))
+        .withName("StopWithXAfterWait");
   }
 
   /**

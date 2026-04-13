@@ -29,6 +29,11 @@ public class LowerFeeder extends SubsystemBase {
         "Feeder/Lower",
         false,
         inputs.lowerFeederSupplyAmps != null ? inputs.lowerFeederSupplyAmps.in(Units.Amps) : 0.0);
+
+    // Log the currently running command for this subsystem
+    Logger.recordOutput(
+        "Feeder/Lower/CurrentCommand",
+        getCurrentCommand() != null ? getCurrentCommand().getName() : "none");
   }
 
   public void setLowerFeederVoltage(Voltage volts) {

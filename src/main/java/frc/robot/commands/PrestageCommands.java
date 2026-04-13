@@ -26,14 +26,16 @@ public class PrestageCommands {
   }
 
   public static Command setPrestageVelocity(Prestage prestage, AngularVelocity prestageVelo) {
-    return Commands.runOnce(() -> prestage.setPrestageVelocity(prestageVelo), prestage);
+    return Commands.runOnce(() -> prestage.setPrestageVelocity(prestageVelo), prestage)
+        .withName("PrestageVelocity");
   }
 
   public static Command prestageIdle(Prestage prestage) {
     return Commands.run(
-        () ->
-            prestage.setPrestageVelocity(
-                HardwareConstants.CompConstants.Velocities.prestageIdleVelocity),
-        prestage);
+            () ->
+                prestage.setPrestageVelocity(
+                    HardwareConstants.CompConstants.Velocities.prestageIdleVelocity),
+            prestage)
+        .withName("PrestageIdle");
   }
 }

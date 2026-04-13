@@ -8,6 +8,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.HardwareConstants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.flywheel.Flywheel;
 
@@ -60,7 +61,8 @@ public class FlywheelCommands {
    * @return Command to run shooter at velocity, stops on end
    */
   public static Command setFlywheelVelocity(Flywheel flywheel, AngularVelocity velocity) {
-    return Commands.runOnce(() -> flywheel.setFlywheelVelocity(velocity), flywheel);
+    return Commands.runOnce(() -> flywheel.setFlywheelVelocity(velocity), flywheel)
+        .withName("FlywheelVelocity_" + velocity.in(RotationsPerSecond) + "rps");
   }
 
   /**
@@ -70,7 +72,24 @@ public class FlywheelCommands {
    * @return Command to run shooter at low velocity
    */
   public static Command flywheelIdle(Flywheel flywheel) {
-    return Commands.run(() -> flywheel.setFlywheelIdle(), flywheel);
+    return Commands.run(() -> flywheel.setFlywheelIdle(), flywheel).withName("FlywheelIdle");
+  }
+
+  /**
+   * Continuously runs the flywheel at the high idle velocity. Uses Commands.run() so the command
+   * stays active for the duration of a whileTrue binding. When the trigger goes false, WPILib
+   * naturally interrupts this command — no separate .onFalse(stop) needed.
+   *
+   * @param flywheel
+   * @return Command that continuously sets flywheel to high idle velocity
+   */
+  public static Command flywheelHighIdle(Flywheel flywheel) {
+    return Commands.run(
+            () ->
+                flywheel.setFlywheelVelocity(
+                    HardwareConstants.CompConstants.Velocities.flywheelIdleVelocityHigh),
+            flywheel)
+        .withName("FlywheelHighIdle");
   }
 
   /**
@@ -80,7 +99,8 @@ public class FlywheelCommands {
    * @return Command that sets flywheel velocity, stops on end
    */
   public static Command setPassVelocity(Flywheel flywheel) {
-    return setVelocityForTarget(flywheel, RobotState.getInstance().getPassTarget());
+    return setVelocityForTarget(flywheel, RobotState.getInstance().getPassTarget())
+        .withName("FlywheelPassVelocity");
   }
 
   /**
@@ -90,7 +110,8 @@ public class FlywheelCommands {
    * @return Command that sets flywheel velocity using VelocityTorqueCurrent control, stops
    */
   public static Command setVelocityForHub(Flywheel flywheel) {
-    return Commands.run(() -> flywheel.setSpeedForHub(), flywheel);
+    return Commands.run(() -> flywheel.setSpeedForHub(), flywheel)
+        .withName("FlywheelVelocityForHub");
   }
 
   /**
@@ -102,9 +123,10 @@ public class FlywheelCommands {
    */
   public static Command setVelocityForTarget(Flywheel flywheel, Translation3d target) {
     return Commands.startEnd(
-        () -> flywheel.setSpeedForTarget(target),
-        () -> flywheel.setFlywheelVoltage(Volts.of(0)),
-        flywheel);
+            () -> flywheel.setSpeedForTarget(target),
+            () -> flywheel.setFlywheelVoltage(Volts.of(0)),
+            flywheel)
+        .withName("FlywheelVelocityForTarget");
   }
 
   /**
@@ -116,9 +138,10 @@ public class FlywheelCommands {
    */
   public static Command setVelocityForDistance(Flywheel flywheel, Distance distance) {
     return Commands.startEnd(
-        () -> flywheel.setSpeedForDistance(distance),
-        () -> flywheel.setFlywheelVoltage(Volts.of(0)),
-        flywheel);
+            () -> flywheel.setSpeedForDistance(distance),
+            () -> flywheel.setFlywheelVoltage(Volts.of(0)),
+            flywheel)
+        .withName("FlywheelVelocityForDistance");
   }
 
   /**

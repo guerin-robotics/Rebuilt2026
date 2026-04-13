@@ -29,6 +29,11 @@ public class UpperFeeder extends SubsystemBase {
         "Feeder/Upper",
         false,
         inputs.upperFeederSupplyAmps != null ? inputs.upperFeederSupplyAmps.in(Units.Amps) : 0.0);
+
+    // Log the currently running command for this subsystem
+    Logger.recordOutput(
+        "Feeder/Upper/CurrentCommand",
+        getCurrentCommand() != null ? getCurrentCommand().getName() : "none");
   }
 
   public void setUpperFeederVoltage(Voltage volts) {

@@ -15,23 +15,27 @@ public class intakeRollerCommands {
 
   public static Command setRollerVoltage(intakeRoller intakeRoller, Voltage voltage) {
     return Commands.startEnd(
-        () -> intakeRoller.setRollerVoltage(voltage),
-        () -> intakeRoller.setRollerVoltage(Volts.of(0)),
-        intakeRoller);
+            () -> intakeRoller.setRollerVoltage(voltage),
+            () -> intakeRoller.setRollerVoltage(Volts.of(0)),
+            intakeRoller)
+        .withName("IntakeRollerVoltage_" + voltage.in(Volts) + "V");
   }
 
   public static Command setRollerVelocity(intakeRoller intakeRoller, AngularVelocity rollerVelo) {
-    return Commands.runOnce(() -> intakeRoller.setRollerVelocity(rollerVelo), intakeRoller);
+    return Commands.runOnce(() -> intakeRoller.setRollerVelocity(rollerVelo), intakeRoller)
+        .withName("IntakeRollerVelocity");
   }
 
   public static Command stopIntakeRoller(intakeRoller intakeRoller) {
     return Commands.runOnce(
-        () -> intakeRoller.setRollerVelocity(RotationsPerSecond.of(0)), intakeRoller);
+            () -> intakeRoller.setRollerVelocity(RotationsPerSecond.of(0)), intakeRoller)
+        .withName("IntakeRollerStop");
   }
 
   public static Command setVoltageAfterWait(intakeRoller intakeRoller, Voltage voltage) {
     return Commands.sequence(
-        new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
-        setRollerVoltage(intakeRoller, voltage));
+            new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
+            setRollerVoltage(intakeRoller, voltage))
+        .withName("IntakeRollerVoltageAfterWait");
   }
 }
