@@ -56,11 +56,14 @@ public class intakeRollerIOReal implements intakeRollerIO {
     intakeRollerLeader = new TalonFX(HardwareConstants.CanIds.INTAKE_ROLLER_LEADER_ID, CAN_BUS);
     intakeRollerFollower = new TalonFX(HardwareConstants.CanIds.INTAKE_ROLLER_FOLLOWER_ID, CAN_BUS);
 
+    // Apply configuration to BOTH motors BEFORE setting up the follower link.
+    // Applying a TalonFXConfiguration can reset control state, so the follower
+    // setControl() call must come after all config applies are done.
+    configureintakeRollerMotor();
+
     intakeRollerFollower.setControl(
         new Follower(
             HardwareConstants.CanIds.INTAKE_ROLLER_LEADER_ID, MotorAlignmentValue.Opposed));
-
-    configureintakeRollerMotor();
 
     // Cache signal references once in the constructor
     velocity = intakeRollerLeader.getVelocity();
@@ -123,6 +126,8 @@ public class intakeRollerIOReal implements intakeRollerIO {
 
     intakeRollerLeader.getConfigurator().apply(config);
     intakeRollerLeader.getConfigurator().apply(limits);
+    intakeRollerFollower.getConfigurator().apply(config);
+    intakeRollerFollower.getConfigurator().apply(limits);
   }
 
   @Override

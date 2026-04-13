@@ -27,11 +27,12 @@
             "/RealOutputs/IntakePivot/Visualizer/Pose3d",
             "/RealOutputs/IntakePivot/Visualizer/Mechanism2d",
             "/RealOutputs/Flywheel/Visualizer",
-            "/Hood"
+            "/RealOutputs/Hood/Debug",
+            "/RealOutputs/Intake Pivot"
           ]
         },
         "tabs": {
-          "selected": 9,
+          "selected": 13,
           "tabs": [
             {
               "type": 0,
@@ -193,16 +194,70 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  -2.4452873071441443,
-                  3.7225935239747163,
-                  8.800249663460507
+                  -8.974623314709769,
+                  4.047811864671146,
+                  -3.199963049376155
                 ],
                 "cameraTarget": [
-                  -3.1617889649294066,
-                  -2.3440607058200453,
-                  1.5436590448681513
+                  -4.35114858483205,
+                  -0.7598667295744354,
+                  0.737316747633918
                 ]
               },
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "Line Graph",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Hood/Debug/InputPosition_Degrees",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/Hood/Debug/CurrentCommand",
+                    "logType": "String",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/Hood/Debug/stowHood_Called",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437"
+                    }
+                  }
+                ],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "bmxv25vdu407jmvazzfpi84317jujk9m",
+              "renderer": null,
               "controlsHeight": 200
             },
             {
@@ -534,7 +589,7 @@
                 "leftLockedRange": null,
                 "rightLockedRange": null,
                 "leftUnitConversion": {
-                  "autoTarget": "rotations/minute",
+                  "autoTarget": "rotations/second",
                   "preset": null
                 },
                 "rightUnitConversion": {
@@ -682,7 +737,17 @@
                     }
                   }
                 ],
-                "discreteSources": [],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/Intake Pivot/CurrentCommand",
+                    "logType": "String",
+                    "visible": true,
+                    "options": {
+                      "color": "#858584"
+                    }
+                  }
+                ],
                 "leftLockedRange": null,
                 "rightLockedRange": null,
                 "leftUnitConversion": {
