@@ -45,19 +45,6 @@ public class IntakePivotCommands {
     return Commands.runOnce(() -> intakePivot.setPivotPosition(angleRotations), intakePivot);
   }
 
-  /** Jostle the pivot by monitoring stator current and pulsing the position. */
-  public static Command jostlePivotByCurrent(
-      IntakePivot intakePivot,
-      AngularVelocity upVelocity,
-      AngularVelocity downVelocity,
-      double degreesDown,
-      double seconds) {
-    return Commands.startEnd(
-        () -> intakePivot.intakeJostleByCurrent(upVelocity, downVelocity, degreesDown, seconds),
-        () -> intakePivot.setPivotVoltage(Volts.of(0)),
-        intakePivot);
-  }
-
   public static Command jostlePivotByPos(IntakePivot intakePivot) {
     return Commands.sequence(
             setPivotRotations(

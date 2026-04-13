@@ -137,10 +137,10 @@ public class FlywheelConstants {
 
   /** Simulation constants for the flywheel. */
   public static class Sim {
-    /** Four Kraken X60 FOC motors drive the flywheel. */
-    public static final DCMotor FLYWHEEL_MOTOR = DCMotor.getKrakenX60Foc(4);
+    /** Five Kraken X60 FOC motors drive the flywheel (1 leader + 4 followers). */
+    public static final DCMotor FLYWHEEL_MOTOR = DCMotor.getKrakenX60Foc(5);
 
-    /** Number of motors driving the flywheel (used for DCMotorSim). */
+    /** Number of motors driving the flywheel. */
     public static final int NUM_MOTORS = 5;
 
     /** Moment of inertia of the flywheel (kg·m²). Larger than small rollers due to mass. */

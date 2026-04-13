@@ -61,9 +61,9 @@ public class FlywheelIOSim implements FlywheelIO {
     follower3 = new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_FOLLOWER3_ID);
     follower4 = new TalonFX(HardwareConstants.CanIds.MAIN_FLYWHEEL_FOLLOWER4_ID);
 
-    // Set up follower relationships (matching real robot configuration)
+    // Set up follower relationships (matching real robot configuration in FlywheelIOPhoenix6)
     int leaderId = leader.getDeviceID();
-    follower1.setControl(new Follower(leaderId, MotorAlignmentValue.Opposed));
+    follower1.setControl(new Follower(leaderId, MotorAlignmentValue.Aligned));
     follower2.setControl(new Follower(leaderId, MotorAlignmentValue.Aligned));
     follower3.setControl(new Follower(leaderId, MotorAlignmentValue.Opposed));
     follower4.setControl(new Follower(leaderId, MotorAlignmentValue.Opposed));
@@ -143,6 +143,7 @@ public class FlywheelIOSim implements FlywheelIO {
     inputs.leaderSupplyCurrentAmps = leader.getSupplyCurrent().getValue();
     inputs.leaderStatorCurrentAmps = leader.getStatorCurrent().getValue();
     inputs.leaderTemp = leader.getDeviceTemp().getValue();
+    inputs.leaderAngle = leader.getPosition().getValue();
 
     // Follower 1 motor
     inputs.follower1Velocity = follower1.getVelocity().getValue();

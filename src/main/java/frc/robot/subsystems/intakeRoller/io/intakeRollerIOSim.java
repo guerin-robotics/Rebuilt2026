@@ -49,10 +49,10 @@ public class intakeRollerIOSim implements intakeRollerIO {
     intakeRollerLeader = new TalonFX(HardwareConstants.CanIds.INTAKE_ROLLER_LEADER_ID);
     intakeRollerFollower = new TalonFX(HardwareConstants.CanIds.INTAKE_ROLLER_FOLLOWER_ID);
 
-    // Set up follower to mirror the leader (matching real robot)
+    // Set up follower to mirror the leader (matching real robot — Opposed alignment)
     intakeRollerFollower.setControl(
         new Follower(
-            HardwareConstants.CanIds.INTAKE_ROLLER_LEADER_ID, MotorAlignmentValue.Aligned));
+            HardwareConstants.CanIds.INTAKE_ROLLER_LEADER_ID, MotorAlignmentValue.Opposed));
 
     configureMotor();
 
@@ -114,6 +114,7 @@ public class intakeRollerIOSim implements intakeRollerIO {
         BatterySim.calculateDefaultBatteryLoadedVoltage(rollerPhysicsSim.getCurrentDrawAmps()));
 
     // 6. Read values from the TalonFX status signals (just like on real hardware)
+    // Leader motor
     inputs.intakeRollerVelocity =
         RotationsPerSecond.of(intakeRollerLeader.getVelocity().getValueAsDouble());
     inputs.intakeRollerVoltage = intakeRollerLeader.getMotorVoltage().getValue();
@@ -124,6 +125,19 @@ public class intakeRollerIOSim implements intakeRollerIO {
         RotationsPerSecond.of(intakeRollerLeader.getClosedLoopReference().getValueAsDouble());
     inputs.rollerClosedLoopError =
         RotationsPerSecond.of(intakeRollerLeader.getClosedLoopError().getValueAsDouble());
+    inputs.rollerPos = intakeRollerLeader.getPosition().getValue();
+
+    // Follower motor
+    inputs.intakeRollerFollowerVelocity = intakeRollerFollower.getVelocity().getValue();
+    inputs.intakeRollerFollowerVoltage = intakeRollerFollower.getMotorVoltage().getValue();
+    inputs.intakeRollerFollowerStatorCurrent = intakeRollerFollower.getStatorCurrent().getValue();
+    inputs.intakeRollerFollowerSupplyCurrent = intakeRollerFollower.getSupplyCurrent().getValue();
+    inputs.intakeRollerFollowerTemperature = intakeRollerFollower.getDeviceTemp().getValue();
+    inputs.rollerFollowerClosedLoopReference =
+        RotationsPerSecond.of(intakeRollerFollower.getClosedLoopReference().getValueAsDouble());
+    inputs.rollerFollowerClosedLoopError =
+        RotationsPerSecond.of(intakeRollerFollower.getClosedLoopError().getValueAsDouble());
+    inputs.rollerFollowerPos = intakeRollerFollower.getPosition().getValue();
   }
 
   @Override

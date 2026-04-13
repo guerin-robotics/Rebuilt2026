@@ -43,3 +43,115 @@ All changes made in response to the code review on `code-review-of-main` branch.
 ### Skipped
 
 - **Issue 10 (`zeroPivot` missing subsystem requirement)**: Skipped per user request — acceptable since it only resets the encoder.
+
+---
+
+## Subsystem IO Layer Review — Fixes
+
+All changes below address issues found during a second review pass focused on IO
+interface implementations and sim/real parity.
+
+### Critical Fixes
+
+#### `FlywheelIOSim.java` — Follower 1 Alignment (Bug #2)
+
+Sim configured `follower1` with `MotorAlignmentValue.Opposed`, but real hardware
+(`FlywheelIOPhoenix6`) configures it as `Aligned`. Simulated follower was spinning
+in the wrong direction.
+
+- **Change:** `MotorAlignmentValue.Opposed` → `MotorAlignmentValue.Aligned`
+
+#### `intakeRollerIOSim.java` — Follower Alignment (Bug #3)
+
+Sim configured the follower as `Aligned`, but real hardware (`intakeRollerIOReal`)
+configures it as `Opposed`. Simulated follower was spinning in the wrong direction.
+
+- **Change:** `MotorAlignmentValue.Aligned` → `MotorAlignmentValue.Opposed`
+
+#### `PrestageIOSim.java` — Swapped ClosedLoopReference / Error (Bugs #4 & #5)
+
+`prestageLeftClosedLoopReference` was reading `getClosedLoopError()` instead of
+`getClosedLoopReference()`, and `prestageLeftClosedLoopError` was never populated.
+
+- **Changes:** Reference now reads `getClosedLoopReference()`; added error reading `getClosedLoopError()`.
+
+#### `LowerFeeder.java` / `UpperFeeder.java` — Duplicate Logger Key (Bug #6)
+
+Both used `"Feeder"` as their `Logger.processInputs` key, causing AdvantageKit
+log collisions — one subsystem's data would overwrite the other.
+
+- **Changes:** LowerFeeder → `"Feeder/Lower"`, UpperFeeder → `"Feeder/Upper"`
+
+#### `PrestageIOSim.java` — Right Motor Never Commanded (Bug #10)
+
+`setPrestageVoltage()` and `setPrestageVelocity()` only commanded the left motor.
+The right motor was constructed but never received any control requests.
+
+- **Change:** Added `prestageRight.setControl(...)` calls in both methods.
+
+### Warnings Fixed
+
+#### `FlywheelIOSim.java` — Missing leaderAngle (Bug #7)
+
+`inputs.leaderAngle` was never populated in `updateInputs()`.
+
+- **Change:** Added `inputs.leaderAngle = leader.getPosition().getValue();`
+
+#### All IO Inputs — Null Measure Defaults (Bug #8)
+
+All `Measure<?>` fields in `@AutoLog` inputs classes had no default values. If
+`updateInputs()` is skipped before the first `periodic()`, AdvantageKit's
+auto-logger would hit a `NullPointerException`.
+
+- **Files:** `FlywheelIO`, `IntakePivotIO`, `intakeRollerIO`, `LowerFeederIO`, `PrestageIO`, `TransportIO`, `UpperFeederIO`
+- **Change:** Every `Measure` field now has a zero-value initializer (e.g., `= RotationsPerSecond.of(0)`).
+
+#### `IntakePivotIOSim.java` — Wrong NeutralMode (Bug #9)
+
+Sim used `NeutralModeValue.Coast` while real hardware uses `Brake`. Pivot would
+sag under gravity in sim but hold position on real hardware.
+
+- **Change:** `NeutralModeValue.Coast` → `NeutralModeValue.Brake`
+
+#### `FlywheelConstants.java` — Motor Count Mismatch (Bug #16)
+
+`DCMotor.getKrakenX60Foc(4)` was used in the sim gearbox, but real hardware has
+1 leader + 4 followers = 5 motors. Sim was modeling 20% less torque.
+
+- **Change:** `DCMotor.getKrakenX60Foc(4)` → `DCMotor.getKrakenX60Foc(5)`
+
+### Suggestions Implemented
+
+#### `intakeRollerIOSim.java` — Missing Follower Fields (S6)
+
+`updateInputs()` only populated leader fields. Follower velocity, voltage, current,
+temperature, closed-loop status, and position were never written.
+
+- **Change:** Added all follower input field assignments mirroring the leader pattern.
+
+#### Missing Position Fields in Sim IOs (S7)
+
+Position fields were defined in IO interfaces but never populated in sim.
+
+- **Files:** `LowerFeederIOSim`, `UpperFeederIOSim`, `TransportIOSim`, `PrestageIOSim`
+- **Change:** Added `inputs.<field> = motor.getPosition().getValue();` in each sim's `updateInputs()`.
+
+### Other
+
+#### `IntakePivotCommands.java` — Dead Command Factory
+
+`jostlePivotByCurrent()` referenced `IntakePivot.intakeJostleByCurrent()` which no
+longer exists, causing a compile error. The method was never called anywhere.
+
+- **Change:** Removed the entire `jostlePivotByCurrent` command factory method.
+
+### Skipped (per user instruction)
+
+| # | Issue | Reason |
+|---|-------|--------|
+| 1 | HoodIOSim follower alignment | Already fixed |
+| 11 | HoodIOSim sim physics | Subsystem removed |
+| 12 | IntakePivotIOSim physics accuracy | Skip physics tuning |
+| 13 | HoodIO null defaults | Subsystem removed |
+| 14 | IntakePivotIOSim voltage clamp | Leave as voltage |
+| 15 | intakeRollerIOSim FOC mismatch | Don't change |

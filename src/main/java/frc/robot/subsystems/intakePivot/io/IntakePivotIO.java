@@ -1,5 +1,10 @@
 package frc.robot.subsystems.intakePivot.io;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Celsius;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
@@ -16,11 +21,11 @@ public interface IntakePivotIO {
 
   @AutoLog
   public static class IntakePivotIOInputs {
-    public Voltage intakePivotVoltage;
-    public Current intakePivotSupplyCurrent;
-    public Current intakePivotStatorCurrent;
-    public Temperature intakePivotTemperature;
-    public AngularVelocity intakePivotVelocity;
+    public Voltage intakePivotVoltage = Volts.of(0);
+    public Current intakePivotSupplyCurrent = Amps.of(0);
+    public Current intakePivotStatorCurrent = Amps.of(0);
+    public Temperature intakePivotTemperature = Celsius.of(0);
+    public AngularVelocity intakePivotVelocity = RotationsPerSecond.of(0);
     public double intakePivotPosition;
     public double intakePivotClosedLoopReference;
     public double intakePivotClosedLoopError;

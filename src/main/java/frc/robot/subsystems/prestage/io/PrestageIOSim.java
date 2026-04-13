@@ -144,6 +144,8 @@ public class PrestageIOSim implements PrestageIO {
     inputs.prestageLeftSupplyAmps = prestageLeft.getSupplyCurrent().getValue();
     inputs.prestageLeftTemperature = prestageLeft.getDeviceTemp().getValue();
     inputs.prestageLeftClosedLoopReference =
+        RotationsPerSecond.of(prestageLeft.getClosedLoopReference().getValueAsDouble());
+    inputs.prestageLeftClosedLoopError =
         RotationsPerSecond.of(prestageLeft.getClosedLoopError().getValueAsDouble());
 
     // Read right motor values from TalonFX status signals
@@ -157,15 +159,19 @@ public class PrestageIOSim implements PrestageIO {
         RotationsPerSecond.of(prestageRight.getClosedLoopReference().getValueAsDouble());
     inputs.prestageRightClosedLoopError =
         RotationsPerSecond.of(prestageRight.getClosedLoopError().getValueAsDouble());
+    inputs.prestageLeftPos = prestageLeft.getPosition().getValue();
+    inputs.prestageRightPos = prestageRight.getPosition().getValue();
   }
 
   @Override
   public void setPrestageVoltage(Voltage volts) {
     prestageLeft.setControl(voltageRequest.withOutput(volts));
+    prestageRight.setControl(voltageRequest.withOutput(volts));
   }
 
   @Override
   public void setPrestageVelocity(AngularVelocity prestageVelo) {
     prestageLeft.setControl(velocityRequest.withVelocity(prestageVelo));
+    prestageRight.setControl(velocityRequest.withVelocity(prestageVelo));
   }
 }

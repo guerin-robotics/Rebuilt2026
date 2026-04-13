@@ -22,7 +22,7 @@ public class LowerFeeder extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Feeder", inputs);
+    Logger.processInputs("Feeder/Lower", inputs);
 
     // Report lower feeder current usage to the battery logger
     Robot.batteryLogger.reportCurrentUsage(

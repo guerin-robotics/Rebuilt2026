@@ -124,6 +124,7 @@ public class LowerFeederIOSim implements LowerFeederIO {
         RotationsPerSecond.of(lowerFeederMotor.getClosedLoopReference().getValueAsDouble());
     inputs.lowerFeederClosedLoopError =
         RotationsPerSecond.of(lowerFeederMotor.getClosedLoopError().getValueAsDouble());
+    inputs.lowerFeederPos = lowerFeederMotor.getPosition().getValue();
   }
 
   @Override
