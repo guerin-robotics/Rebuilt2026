@@ -471,14 +471,15 @@ public class RobotContainer {
         .onFalse(FlywheelCommands.stop(flywheel));
 
     // Increase idle speed if hub active, shoot button is not pressed, and if tuning mode false
+    // NOTE: No .onFalse(stop) here — when this trigger goes false because the shoot button
+    // was pressed, we do NOT want to fire a stop command that would fight the incoming
+    // shoot command for flywheel ownership (causing a momentary 0 RPM dip).
+    // The whileTrue command is naturally interrupted when the trigger goes false.
     Triggers.getInstance()
         .isShootSafeTimeSure
         .and(() -> !Triggers.getInstance().shootButton().getAsBoolean())
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
-        .whileTrue(
-            FlywheelCommands.setFlywheelVelocity(
-                flywheel, HardwareConstants.CompConstants.Velocities.flywheelIdleVelocityHigh))
-        .onFalse(FlywheelCommands.stop(flywheel));
+        .whileTrue(FlywheelCommands.flywheelHighIdle(flywheel));
 
     // Distance map shot if tuning mode true
     Triggers.getInstance()
@@ -758,14 +759,15 @@ public class RobotContainer {
         .onFalse(FlywheelCommands.stop(flywheel));
 
     // Increase idle speed if hub active, shoot button is not pressed, and if tuning mode false
+    // NOTE: No .onFalse(stop) here — when this trigger goes false because the shoot button
+    // was pressed, we do NOT want to fire a stop command that would fight the incoming
+    // shoot command for flywheel ownership (causing a momentary 0 RPM dip).
+    // The whileTrue command is naturally interrupted when the trigger goes false.
     Triggers.getInstance()
         .isShootSafeTimeSure
         .and(() -> !Triggers.getInstance().simShootButton().getAsBoolean())
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
-        .whileTrue(
-            FlywheelCommands.setFlywheelVelocity(
-                flywheel, HardwareConstants.CompConstants.Velocities.flywheelIdleVelocityHigh))
-        .onFalse(FlywheelCommands.stop(flywheel));
+        .whileTrue(FlywheelCommands.flywheelHighIdle(flywheel));
 
     // Distance map shot if tuning mode true
     Triggers.getInstance()
