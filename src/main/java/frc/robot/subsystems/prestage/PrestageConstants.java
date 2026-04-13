@@ -27,7 +27,7 @@ public class PrestageConstants {
   public static class PID {
     public static final double KS = 9.0; // 8.0
     public static final double KV = 0.0; // 0.0
-    public static final double KP = 10.0; // 15.0
+    public static final double KP = 13.0; // 15.0
 
     public static final double KI = 0.0; // 0.0
 

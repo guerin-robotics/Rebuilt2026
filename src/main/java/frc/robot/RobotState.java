@@ -565,7 +565,7 @@ public class RobotState {
       } else {
         return HardwareConstants.Zones.specificZone.OPPOSING_TRENCH_FAR;
       }
-    } else if ((getBroadZone(pose) == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE)
+    } else if ((getBroadZone(pose) == HardwareConstants.Zones.broadZone.OPPOSING_ZONE)
         && (poseX < FieldConstants.Tower.oppLeftUpright.getX())
         && (poseY < FieldConstants.Tower.oppLeftUpright.getY())
         && (poseY > FieldConstants.Tower.oppRightUpright.getY())) {

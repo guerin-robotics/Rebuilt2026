@@ -28,31 +28,31 @@ public class VisionConstants {
   public static String camera2Name = "ShooterRight";
   public static String camera3Name = "ShooterLeft";
 
-  // Robot right camera:
+  // Robot right camera (flipped to left):
   // x: -1.000
   // y: -12.630
   // z: 4.811 + belly to flooor (1.75) = 6.561
   // roll: 0
   // pitch: -15
   // yaw: -90
-  public static final Transform3d robotToCamera0 =
+  public static final Transform3d robotToCamera1 =
       new Transform3d(
           new Translation3d(Inches.of(1.0), Inches.of(-13.175), Inches.of(6.708)),
           new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(-90.0)));
 
-  // Robot left camera:
+  // Robot left camera (flipped to right):
   // x: -1.000
   // y: 12.880
   // z: 4.811 + belly to flooor (1.75) = 6.561
   // roll: 0
   // pitch: -15
   // yaw: 90
-  public static final Transform3d robotToCamera1 =
+  public static final Transform3d robotToCamera0 =
       new Transform3d(
           new Translation3d(Inches.of(1.0), Inches.of(13.425), Inches.of(6.708)),
           new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(90.0)));
 
-  // Shooter right:
+  // Shooter right (flipped to left):
   // x: -12.991
   // y: -6.279
   // z: 10.777 + belly to floor (1.75) = 12.527
@@ -64,7 +64,7 @@ public class VisionConstants {
           new Translation3d(Inches.of(-13.524), Inches.of(-6.175), Inches.of(12.684)),
           new Rotation3d(Degrees.of(0.0), Degrees.of(-16.5), Degrees.of(167.5)));
 
-  // Shooter left:
+  // Shooter left (flipped to right):
   // x: -12.979
   // y: 5.394
   // z: 10.690 + belly to floor (1.75) = 12.44
