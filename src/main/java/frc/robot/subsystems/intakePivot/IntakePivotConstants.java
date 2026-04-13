@@ -3,6 +3,7 @@ package frc.robot.subsystems.intakePivot;
 import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -116,6 +117,13 @@ public class IntakePivotConstants {
      * = left, Z = up).
      */
     public static final Translation3d PIVOT_BASE_OFFSET = new Translation3d(-0.2, 0.0, 0.15);
+
+    /**
+     * Fixed rotation of the pivot mount relative to the robot frame. For example, if the pivot
+     * joint is tilted even when the mechanism is at 0 rotations, specify that here. (roll, pitch,
+     * yaw) in radians.
+     */
+    public static final Rotation3d PIVOT_BASE_ROTATION = new Rotation3d(0.0, 0.0, 0.0);
 
     /**
      * Tolerance in rotations — when the measured position is this close to goal, "atGoal" = true.

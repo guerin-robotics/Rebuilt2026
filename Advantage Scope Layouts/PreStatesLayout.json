@@ -22,13 +22,16 @@
             "/RealOutputs/Odometry/Robot",
             "/NetworkInputs/SmartDashboard",
             "/RealOutputs",
-            "/Feeder",
-            "/Feeder/Lower",
-            "/Feeder/Upper"
+            "/RealOutputs/IntakePivot/Visualizer",
+            "/RealOutputs/IntakePivot/Visualizer/Pose3d/rotation/q",
+            "/RealOutputs/IntakePivot/Visualizer/Pose3d",
+            "/RealOutputs/IntakePivot/Visualizer/Mechanism2d",
+            "/RealOutputs/Flywheel/Visualizer",
+            "/Hood"
           ]
         },
         "tabs": {
-          "selected": 13,
+          "selected": 9,
           "tabs": [
             {
               "type": 0,
@@ -124,6 +127,15 @@
                     }
                   },
                   {
+                    "type": "mechanism",
+                    "logKey": "/RealOutputs/IntakePivot/Visualizer/Mechanism2d",
+                    "logType": "Mechanism2d",
+                    "visible": true,
+                    "options": {
+                      "plane": "xz"
+                    }
+                  },
+                  {
                     "type": "ghost",
                     "logKey": "/RealOutputs/Vision/Summary/RobotPosesAccepted",
                     "logType": "Pose3d[]",
@@ -152,6 +164,26 @@
                       "model": "Platypus",
                       "color": "#ffff00"
                     }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "/RealOutputs/Flywheel/Visualizer/Trajectory",
+                    "logType": "Translation3d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "cone",
+                    "logKey": "/RealOutputs/Flywheel/Visualizer/LaunchOriginPose",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {
+                      "color": "#0000ff",
+                      "position": "center"
+                    }
                   }
                 ],
                 "game": "FRC:2026 Field"
@@ -161,16 +193,32 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  -8.410183809806894,
-                  4.831286546788176,
-                  -4.457862538078168
+                  -2.4452873071441443,
+                  3.7225935239747163,
+                  8.800249663460507
                 ],
                 "cameraTarget": [
-                  -3.82940997346372,
-                  -2.573211477768882,
-                  1.3879882476860266
+                  -3.1617889649294066,
+                  -2.3440607058200453,
+                  1.5436590448681513
                 ]
               },
+              "controlsHeight": 200
+            },
+            {
+              "type": 10,
+              "title": "Mechanism",
+              "controller": [
+                {
+                  "type": "mechanism",
+                  "logKey": "/RealOutputs/IntakePivot/Visualizer/Mechanism2d",
+                  "logType": "Mechanism2d",
+                  "visible": true,
+                  "options": {}
+                }
+              ],
+              "controllerUUID": "ntp1wl01ohf31mdu0dgkrf0bsp9ruzyq",
+              "renderer": null,
               "controlsHeight": 200
             },
             {
@@ -378,6 +426,51 @@
               "controllerUUID": "ibtl50oqv8a9yj58lqbmd17idxg8xk7p",
               "renderer": null,
               "controlsHeight": 295
+            },
+            {
+              "type": 1,
+              "title": "Hood PID",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/Hood/HoodClosedLoopReference",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Hood/HoodPosition",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": "degrees",
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "uw6amnybvwj0ks2smo0baf7hm18dbitb",
+              "renderer": null,
+              "controlsHeight": 200
             },
             {
               "type": 1,

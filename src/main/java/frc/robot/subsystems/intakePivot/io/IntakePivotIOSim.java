@@ -1,8 +1,9 @@
 package frc.robot.subsystems.intakePivot.io;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
@@ -17,7 +18,10 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
@@ -58,6 +62,16 @@ public class IntakePivotIOSim implements IntakePivotIO {
   private final MotionMagicVelocityVoltage velocityRequest = new MotionMagicVelocityVoltage(0);
   private final MotionMagicVoltage positionRequest = new MotionMagicVoltage(0);
 
+  // Cached status signals — must be refreshed before reading, just like real hardware
+  private final StatusSignal<AngularVelocity> velocity;
+  private final StatusSignal<Voltage> motorVoltage;
+  private final StatusSignal<Current> statorCurrent;
+  private final StatusSignal<Current> supplyCurrent;
+  private final StatusSignal<Temperature> deviceTemp;
+  private final StatusSignal<Double> closedLoopReference;
+  private final StatusSignal<Double> closedLoopError;
+  private final StatusSignal<Angle> encoderPosition;
+
   public IntakePivotIOSim() {
     pivotMotor = new TalonFX(HardwareConstants.CanIds.INTAKE_PIVOT_MOTOR_ID);
     pivotEncoder = new CANcoder(HardwareConstants.CanIds.INTAKE_PIVOT_ENCODER_ID);
@@ -84,6 +98,16 @@ public class IntakePivotIOSim implements IntakePivotIO {
             IntakePivotConstants.Sim.MAX_ANGLE_RAD,
             IntakePivotConstants.Sim.SIMULATE_GRAVITY,
             IntakePivotConstants.Sim.STARTING_ANGLE_RAD);
+
+    // Cache signal references once — same pattern as IntakePivotIOReal
+    velocity = pivotMotor.getVelocity();
+    motorVoltage = pivotMotor.getMotorVoltage();
+    statorCurrent = pivotMotor.getStatorCurrent();
+    supplyCurrent = pivotMotor.getSupplyCurrent();
+    deviceTemp = pivotMotor.getDeviceTemp();
+    closedLoopReference = pivotMotor.getClosedLoopReference();
+    closedLoopError = pivotMotor.getClosedLoopError();
+    encoderPosition = pivotEncoder.getAbsolutePosition();
   }
 
   /**
@@ -186,24 +210,30 @@ public class IntakePivotIOSim implements IntakePivotIO {
     RoboRioSim.setVInVoltage(
         BatterySim.calculateDefaultBatteryLoadedVoltage(pivotPhysicsSim.getCurrentDrawAmps()));
 
-    // 8. Read values from the hardware objects (just like on real hardware)
-    inputs.intakePivotVelocity = RotationsPerSecond.of(pivotMotor.getVelocity().getValueAsDouble());
-    inputs.intakePivotPosition = pivotEncoder.getAbsolutePosition().getValueAsDouble();
+    // 8. Batch-refresh all cached status signals before reading — without this,
+    //    getValue() returns stale/default data and the position appears sporadic.
+    BaseStatusSignal.refreshAll(
+        velocity,
+        motorVoltage,
+        statorCurrent,
+        supplyCurrent,
+        deviceTemp,
+        closedLoopReference,
+        closedLoopError,
+        encoderPosition);
 
-    // Voltage, current, temperature from the motor
-    inputs.intakePivotVoltage = pivotMotor.getMotorVoltage().getValue();
-    inputs.intakePivotStatorCurrent = pivotMotor.getStatorCurrent().getValue();
-    inputs.intakePivotSupplyCurrent = pivotMotor.getSupplyCurrent().getValue();
-    inputs.intakePivotTemperature = pivotMotor.getDeviceTemp().getValue();
+    // 9. Read values from the refreshed signals (same pattern as IntakePivotIOReal)
+    inputs.intakePivotVelocity = velocity.getValue();
+    inputs.intakePivotPosition = encoderPosition.getValueAsDouble();
+    inputs.intakePivotVoltage = motorVoltage.getValue();
+    inputs.intakePivotStatorCurrent = statorCurrent.getValue();
+    inputs.intakePivotSupplyCurrent = supplyCurrent.getValue();
+    inputs.intakePivotTemperature = deviceTemp.getValue();
 
-    // The TalonFX closed-loop reference and error are reported in rotor rotations
-    // (before the gear ratio). Divide by the gear ratio to convert them back to
-    // mechanism rotations so they match intakePivotPosition and are human-readable.
-    double gearRatioForConversion = IntakePivotConstants.Mechanical.pivotRatio;
-    inputs.intakePivotClosedLoopReference =
-        pivotMotor.getClosedLoopReference().getValueAsDouble() / gearRatioForConversion;
-    inputs.intakePivotClosedLoopError =
-        pivotMotor.getClosedLoopError().getValueAsDouble() / gearRatioForConversion;
+    // Closed-loop reference and error are in rotor rotations — divide by gear
+    // ratio to convert back to mechanism rotations for readability.
+    inputs.intakePivotClosedLoopReference = closedLoopReference.getValueAsDouble() / gearRatio;
+    inputs.intakePivotClosedLoopError = closedLoopError.getValueAsDouble() / gearRatio;
   }
 
   @Override

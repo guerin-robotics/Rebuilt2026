@@ -69,4 +69,13 @@ public class Hood extends SubsystemBase {
   public void stowHood() {
     io.setHoodPos(Degrees.of(0));
   }
+
+  /**
+   * Returns the current hood position (mechanism angle).
+   *
+   * @return The hood angle as reported by the CANcoder
+   */
+  public Angle getPosition() {
+    return inputs.hoodPosition;
+  }
 }

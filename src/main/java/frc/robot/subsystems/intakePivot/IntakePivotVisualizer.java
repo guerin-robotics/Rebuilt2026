@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intakePivot;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -35,8 +37,8 @@ public class IntakePivotVisualizer {
   // ---------- Mechanism2d canvas ----------
   private static final double CANVAS_WIDTH = 1.0; // meters
   private static final double CANVAS_HEIGHT = 1.0; // meters
-  private static final double ROOT_X = 0.5; // root X on canvas (centered)
-  private static final double ROOT_Y = 0.5; // root Y on canvas (centered)
+  private static final double ROOT_X = 0.7; // root X on canvas (centered)
+  private static final double ROOT_Y = 0.2; // root Y on canvas (centered)
 
   // Mechanism2d components
   private final LoggedMechanism2d _mechanism;
@@ -121,16 +123,10 @@ public class IntakePivotVisualizer {
    */
   public void update(
       double currentPositionRotations, double goalPositionRotations, boolean atGoal) {
-    // Clamp to valid range for display
-    double lowerLimit = IntakePivotConstants.SoftwareConstants.softwareLowerRotationLimit;
-    double upperLimit = IntakePivotConstants.SoftwareConstants.softwareUpperRotationLimit;
-    double currentRotations = Math.max(lowerLimit, Math.min(currentPositionRotations, upperLimit));
-    double goalRotations = Math.max(lowerLimit, Math.min(goalPositionRotations, upperLimit));
 
     // Convert rotations to degrees for Mechanism2d ligament angles
-    double currentDeg = Units.rotationsToDegrees(currentRotations);
-    double goalDeg = Units.rotationsToDegrees(goalRotations);
-
+    double currentDeg = Units.rotationsToDegrees(currentPositionRotations);
+    double goalDeg = Units.rotationsToDegrees(goalPositionRotations);
     // Update arm angles
     _measuredArm.setAngle(currentDeg);
     _goalArm.setAngle(goalDeg);
@@ -144,29 +140,24 @@ public class IntakePivotVisualizer {
     Logger.recordOutput(_name + "/Visualizer/Mechanism2d", _mechanism);
 
     // --- 3D Pose ---
-    // Convert the current angle from rotations to radians for the 3D pose
-    double pivotAngleRad = Units.rotationsToRadians(currentRotations);
-
-    // The arm tip position relative to the pivot base
-    double armLength = IntakePivotConstants.Visualization.ARM_LENGTH_DISPLAY;
-    double dx = armLength * Math.cos(pivotAngleRad); // forward along robot X
-    double dz = armLength * Math.sin(pivotAngleRad); // up/down along robot Z
+    // The Pose3d represents the pivot base, NOT the arm tip.
+    // Start with the fixed base offset (translation + rotation of the pivot mount),
+    // then add the current pivot angle as pitch around the Y axis.
+    double pivotAngleRad = Units.rotationsToRadians(currentPositionRotations);
 
     Translation3d baseTranslation = IntakePivotConstants.Visualization.PIVOT_BASE_OFFSET;
-    Pose3d armTipPose =
-        new Pose3d(
-            new Translation3d(
-                baseTranslation.getX() + dx, baseTranslation.getY(), baseTranslation.getZ() + dz),
-            // The arm rotates around the Y axis (pitch) in the robot frame
-            new Rotation3d(0.0, -pivotAngleRad, 0.0));
+    Rotation3d baseRotation = IntakePivotConstants.Visualization.PIVOT_BASE_ROTATION;
 
-    Logger.recordOutput(_name + "/Visualizer/Pose3d", armTipPose);
+    // Combine the fixed base rotation with the pivot's current pitch
+    Rotation3d totalRotation = baseRotation.plus(new Rotation3d(0.0, -pivotAngleRad, 0.0));
+
+    Pose3d pivotBasePose = new Pose3d(baseTranslation, totalRotation);
+
+    Logger.recordOutput(_name + "/Visualizer/Pose3d", pivotBasePose);
 
     // Scalar logs for easy graphing
-    Logger.recordOutput(_name + "/Visualizer/CurrentPosition_rot", currentRotations);
-    Logger.recordOutput(_name + "/Visualizer/GoalPosition_rot", goalRotations);
-    Logger.recordOutput(_name + "/Visualizer/CurrentAngle_deg", currentDeg);
-    Logger.recordOutput(_name + "/Visualizer/GoalAngle_deg", goalDeg);
+    Logger.recordOutput(_name + "/Visualizer/CurrentAngle_deg", Degrees.of(currentDeg));
+    Logger.recordOutput(_name + "/Visualizer/GoalAngle_deg", Degrees.of(goalDeg));
     Logger.recordOutput(_name + "/Visualizer/AtGoal", atGoal);
   }
 }

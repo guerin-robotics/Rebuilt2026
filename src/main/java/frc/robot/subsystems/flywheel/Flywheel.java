@@ -1,5 +1,6 @@
 package frc.robot.subsystems.flywheel;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -7,6 +8,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -18,6 +20,7 @@ import frc.robot.Robot;
 import frc.robot.RobotState;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.ShooterIOInputsAutoLogged;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -29,7 +32,14 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 public class Flywheel extends SubsystemBase {
   private final FlywheelIO io;
   private final ShooterIOInputsAutoLogged inputs;
+  private final FlywheelVisualizer visualizer;
   private LoggedNetworkNumber tuningRPM;
+
+  /**
+   * Supplier for the current hood angle. Set via {@link #setHoodAngleSupplier} after construction
+   * so the Flywheel doesn't depend directly on the Hood subsystem. Defaults to 0° if not set.
+   */
+  private Supplier<Angle> hoodAngleSupplier = () -> Degrees.of(0);
 
   /**
    * Creates a new Shooter subsystem.
@@ -40,6 +50,20 @@ public class Flywheel extends SubsystemBase {
     this.io = shooterIO;
     inputs = new ShooterIOInputsAutoLogged();
     tuningRPM = new LoggedNetworkNumber("Tune/flywheel/tuningRPM", 20);
+    visualizer = new FlywheelVisualizer();
+  }
+
+  /**
+   * Sets the supplier that provides the current hood angle for trajectory visualization.
+   *
+   * <p>Call this from RobotContainer after both Flywheel and Hood are constructed:
+   *
+   * <pre>flywheel.setHoodAngleSupplier(hood::getPosition);</pre>
+   *
+   * @param supplier A supplier returning the current hood mechanism angle
+   */
+  public void setHoodAngleSupplier(Supplier<Angle> supplier) {
+    this.hoodAngleSupplier = supplier;
   }
 
   @Override
@@ -78,6 +102,9 @@ public class Flywheel extends SubsystemBase {
         inputs.follower4SupplyCurrentAmps != null
             ? inputs.follower4SupplyCurrentAmps.in(Units.Amps)
             : 0.0);
+
+    // Update trajectory visualization every loop
+    visualizer.updateTrajectory(inputs.flywheelVelocity, hoodAngleSupplier.get());
   }
 
   public void setFlywheelVoltage(Voltage volts) {

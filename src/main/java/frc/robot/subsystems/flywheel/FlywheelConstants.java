@@ -157,6 +157,38 @@ public class FlywheelConstants {
     public static final double KD = 0.0;
   }
 
+  /** Constants for the trajectory visualization in AdvantageScope. */
+  public static class TrajectoryVisualization {
+    /** Number of sample points along the trajectory arc. More = smoother curve. */
+    public static final int TRAJECTORY_POINTS = 50;
+
+    /** Total time span (seconds) to project the trajectory forward. */
+    public static final double TRAJECTORY_TIME_SPAN = 2.0;
+
+    /** Height above the ground where fuel leaves the shooter (meters). */
+    public static final double LAUNCH_HEIGHT_METERS = inchesToMeters(20);
+
+    /** Drum radius used to convert flywheel angular velocity to linear launch velocity. */
+    public static final double DRUM_RADIUS_METERS = inchesToMeters(1.5);
+
+    /**
+     * Fudge factor applied to the calculated launch velocity. Tune this to make the trajectory
+     * preview match real-world behavior. 1.0 = no adjustment.
+     */
+    public static final double VELOCITY_FUDGE_FACTOR = 0.5;
+
+    /** Minimum flywheel RPM before showing a trajectory. Below this the preview is hidden. */
+    public static final double MIN_RPM_FOR_TRAJECTORY = 50.0;
+
+    /**
+     * Offset from the robot origin to the shooter exit point in the robot frame (X = forward, Y =
+     * left, Z = up). Adjust to match your actual shooter placement on the robot.
+     */
+    public static final double SHOOTER_EXIT_X_METERS = inchesToMeters(-6); // behind center
+
+    public static final double SHOOTER_EXIT_Y_METERS = 0.0; // centered left-right
+  }
+
   /**
    * Helper to get the correct Slot0 gains for the current robot mode.
    *

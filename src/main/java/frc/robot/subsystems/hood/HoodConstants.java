@@ -70,16 +70,16 @@ public class HoodConstants {
     public static final InterpolatingDoubleTreeMap ANGLE_MAP = new InterpolatingDoubleTreeMap();
 
     // Key is distance from center of hub (converted to meters)
-    // Value is hood position in degrees
+    // Value is hood position in degrees (scaled to 5°..55°)
     static {
-      ANGLE_MAP.put(inchesToMeters(70), 162.0); // was 0.45 rotations → 0.45 × 360 = 162°
-      ANGLE_MAP.put(inchesToMeters(83), 171.0); // was 0.475 rotations → 171°
-      ANGLE_MAP.put(inchesToMeters(90), 180.0); // was 0.5 rotations → 180°
-      ANGLE_MAP.put(inchesToMeters(100), 180.0); // was 0.5 rotations → 180°
-      ANGLE_MAP.put(inchesToMeters(120), 198.0); // was 0.55 rotations → 198°
-      ANGLE_MAP.put(inchesToMeters(130), 180.0); // was 0.5 rotations → 180°
-      ANGLE_MAP.put(inchesToMeters(150), 234.0); // was 0.65 rotations → 234°
-      ANGLE_MAP.put(inchesToMeters(205), 234.0); // was 0.65 rotations → 234°
+      ANGLE_MAP.put(inchesToMeters(70), 5.0); // mapped from 162°
+      ANGLE_MAP.put(inchesToMeters(83), 11.25); // mapped from 171°
+      ANGLE_MAP.put(inchesToMeters(90), 17.5); // mapped from 180°
+      ANGLE_MAP.put(inchesToMeters(100), 17.5); // mapped from 180°
+      ANGLE_MAP.put(inchesToMeters(120), 30.0); // mapped from 198°
+      ANGLE_MAP.put(inchesToMeters(130), 17.5); // mapped from 180°
+      ANGLE_MAP.put(inchesToMeters(150), 55.0); // mapped from 234°
+      ANGLE_MAP.put(inchesToMeters(205), 55.0); // mapped from 234°
     }
   }
 }
