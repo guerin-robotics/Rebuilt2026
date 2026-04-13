@@ -652,6 +652,14 @@ public class RobotContainer {
   }
 
   private void configureSimBindings() {
+    // In sim there is no FMS game-specific message, so the hub shift schedule defaults
+    // to "inactive" after the first 10-second TRANSITION window.  Disabling the hub
+    // shift logic lets isShootSafeTime always return true so the hood (and other
+    // shoot-gated commands) work at any point during a sim session.
+    // if (!HubShiftUtil.disabled) {
+    //   HubShiftUtil.toggleDisable();
+    // }
+
     // Drive and flywheel defaults
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
