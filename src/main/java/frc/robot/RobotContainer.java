@@ -126,6 +126,8 @@ public class RobotContainer {
       new CommandJoystick(HardwareConstants.ControllerConstants.JoystickControllerPort);
   private final CommandJoystick buttonPanel =
       new CommandJoystick(HardwareConstants.ControllerConstants.ButtonPanelPort);
+        private final CommandXboxController simController =
+      new CommandXboxController(HardwareConstants.ControllerConstants.SimControllerPort);
 
   public RobotContainer() {
     switch (Constants.currentMode) {
@@ -650,9 +652,9 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> MathUtil.clamp(-controller.getLeftY() - getThrustY(), -1.0, 1.0),
-            () -> MathUtil.clamp(-controller.getLeftX() - getThrustX(), -1.0, 1.0),
-            () -> MathUtil.clamp(-controller.getRightTriggerAxis() - getThrustRot(), -1.0, 1.0)));
+            () -> MathUtil.clamp(-simController.getLeftY() - getThrustY(), -1.0, 1.0),
+            () -> MathUtil.clamp(-simController.getLeftX() - getThrustX(), -1.0, 1.0),
+            () -> MathUtil.clamp(-simController.getRightTriggerAxis() - getThrustRot(), -1.0, 1.0)));
 
     flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
 
@@ -670,8 +672,8 @@ public class RobotContainer {
             // DriveCommands.stopWithX(drive),
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -thrustmaster.getY(),
-                () -> -thrustmaster.getX(),
+                () -> -simController.getLeftY(),
+                () -> -simController.getLeftX(),
                 () -> RobotState.getInstance().getShootAngleForZoneAndTime())
             // ,
             // Triggers.getInstance().isRobotAlignedToShoot())
@@ -686,8 +688,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
+                () -> -simController.getLeftY(),
+                () -> -simController.getLeftX(),
                 () ->
                     RobotState.getInstance()
                         .getAngleToTarget(
@@ -705,7 +707,7 @@ public class RobotContainer {
         // .or(Triggers.getInstance().isRobotApproachingTrench())
         .whileTrue(
             DriveCommands.joystickDriveAlignForTrench(
-                drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
+                drive, () -> -simController.getLeftY(), () -> -simController.getLeftX()));
 
     // Align for bump when bump button pressed - zone logic temporarily disabled
     Triggers.getInstance()
@@ -714,7 +716,7 @@ public class RobotContainer {
         // .or(Triggers.getInstance().isRobotApproachingBump())
         .whileTrue(
             DriveCommands.joystickDriveAlignForBump(
-                drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
+                drive, () -> -simController.getLeftY(), () -> -simController.getLeftX()));
 
     // FLYWHEEL
     // Set shooting velocity if shoot button pressed, we're in our alliance zone, hub is active, and

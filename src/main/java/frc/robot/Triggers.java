@@ -74,43 +74,53 @@ public class Triggers {
   }
 
   public Trigger simShootButton() {
-    return controller.b();
+    return simController.b();
+    // return controller.b();
   }
 
   public Trigger simTrenchAlignButton() {
-    return simController.button(2);
+    // return simController.button(2);
+    return controller.a(); // not using this button right now
   }
 
   public Trigger simIntakeInButton() {
-    return simController.button(3);
+    // return simController.button(3);
+    return simController.povLeft();
   }
 
   public Trigger simIntakeOutButton() {
-    return simController.button(4);
+    // return simController.button(4);
+    return simController.povRight();
   }
 
   public Trigger simIntakeRollerButton() {
-    return simController.button(5);
+    // return simController.button(5);
+    return simController.povUp();
   }
 
   public Trigger simIntakeCompressButton() {
-    return simController.button(6);
+    // return simController.button(6);
+    return simController.povDown();
   }
 
   public Trigger simBumpAlignButton() {
-    return simController.button(7);
+    // return simController.button(7);
+    return controller.y(); // not using this button right now
   }
 
   public Trigger simShootFromTowerButton() {
-    return simController.button(8);
+    // return simController.button(8);
+    return controller.x(); // not using this button right now
   }
 
   public Trigger simPassButton() {
-    return simController.button(9);
+    // return simController.button(9);
+    return controller.b(); // not using this button right now
   }
 
   public Trigger simXWheels() {
-    return simController.button(0);
+    // return simController.button(0);
+    return controller.y(); // not using this button right now
   }
 
   public Trigger tuningButton() {
