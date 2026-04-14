@@ -72,15 +72,16 @@ public class HoodConstants {
     // Key is distance from center of hub (converted to meters)
     // Value is hood position in degrees (scaled to 5°..55°)
     static {
-      ANGLE_MAP.put(inchesToMeters(70), 5.0); // mapped from 162°
-      ANGLE_MAP.put(inchesToMeters(83), 11.25); // mapped from 171°
-      ANGLE_MAP.put(inchesToMeters(90), 17.5); // mapped from 180°
-      ANGLE_MAP.put(inchesToMeters(100), 17.5); // mapped from 180°
-      ANGLE_MAP.put(inchesToMeters(120), 30.0); // mapped from 198°
-      ANGLE_MAP.put(inchesToMeters(130), 17.5); // mapped from 180°
-      ANGLE_MAP.put(inchesToMeters(150), 55.0); // mapped from 234°
-      ANGLE_MAP.put(inchesToMeters(205), 55.0); // mapped from 234°
+      // ANGLE_MAP.put(inchesToMeters(70), 5.0); // mapped from 162°
+      // ANGLE_MAP.put(inchesToMeters(83), 11.25); // mapped from 171°
+      // ANGLE_MAP.put(inchesToMeters(90), 17.5); // mapped from 180°
+      // ANGLE_MAP.put(inchesToMeters(100), 17.5); // mapped from 180°
+      // ANGLE_MAP.put(inchesToMeters(120), 30.0); // mapped from 198°
+      // ANGLE_MAP.put(inchesToMeters(130), 17.5); // mapped from 180°
+      // ANGLE_MAP.put(inchesToMeters(150), 55.0); // mapped from 234°
+      // ANGLE_MAP.put(inchesToMeters(205), 55.0); // mapped from 234°
+      ANGLE_MAP.put(inchesToMeters(126.0), 0.1);
+      ANGLE_MAP.put(inchesToMeters(81.0), 0.1);
     }
   }
 }
-\[]

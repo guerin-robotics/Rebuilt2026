@@ -75,7 +75,7 @@ public class IntakePivotCommands {
     return Commands.sequence(
             Commands.deadline(
                 new WaitCommand(1), IntakePivotCommands.setPivotVoltage(intakePivot, Volts.of(3))),
-            new WaitCommand(0.2),
+            new WaitCommand(0.3),
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos))
         .repeatedly()

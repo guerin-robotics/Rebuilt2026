@@ -70,7 +70,7 @@ public class FlywheelConstants {
     // tune up from there.
     public static double KS = 10.0; // 4.5
     public static double KV = 0.12; // feedforward: Amps per rps — start ~0.12, tune to taste
-    public static double KP = 2.0; // feedback: Amps per rps of error — start ~2.0, tune to taste
+    public static double KP = 7.0; // feedback: Amps per rps of error — start ~2.0, tune to taste
     public static double KD = 0; // 0
   }
 
@@ -123,15 +123,17 @@ public class FlywheelConstants {
     // Key is distance from center of hub (converted to meters)
     // Value is angular velocity (RPM)
     static {
-      SPEED_MAP.put(inchesToMeters(70), 1700.0);
-      SPEED_MAP.put(inchesToMeters(83), 1950.0);
-      SPEED_MAP.put(inchesToMeters(90), 1950.0);
-      SPEED_MAP.put(inchesToMeters(100), 2000.0);
-      SPEED_MAP.put(inchesToMeters(120), 2100.0);
-      SPEED_MAP.put(inchesToMeters(130), 2500.0);
-      SPEED_MAP.put(inchesToMeters(150), 2500.0);
-      SPEED_MAP.put(inchesToMeters(163), 2800.0);
-      SPEED_MAP.put(inchesToMeters(205), 2800.0);
+      // SPEED_MAP.put(inchesToMeters(70), 1700.0);
+      // SPEED_MAP.put(inchesToMeters(83), 1950.0);
+      // SPEED_MAP.put(inchesToMeters(90), 1950.0);
+      // SPEED_MAP.put(inchesToMeters(100), 2000.0);
+      // SPEED_MAP.put(inchesToMeters(120), 2100.0);
+      // SPEED_MAP.put(inchesToMeters(130), 2500.0);
+      // SPEED_MAP.put(inchesToMeters(150), 2500.0);
+      // SPEED_MAP.put(inchesToMeters(163), 2800.0);
+      // SPEED_MAP.put(inchesToMeters(205), 2800.0);
+      SPEED_MAP.put(inchesToMeters(126.0), 1600.0);
+      SPEED_MAP.put(inchesToMeters(81.0), 1500.0);
     }
   }
 

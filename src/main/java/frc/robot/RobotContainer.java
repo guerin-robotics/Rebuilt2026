@@ -401,7 +401,7 @@ public class RobotContainer {
     // active, or if tower shoot button is pressed
     (Triggers.getInstance().shootButton())
         // .and(Triggers.getInstance().isShootClear))
-        .or(Triggers.getInstance().shootFromTowerButton())
+        // .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
@@ -622,6 +622,11 @@ public class RobotContainer {
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .or(Triggers.getInstance().passButton())
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.PassConstants.hoodPassPos));
+
+    Triggers.getInstance()
+        .shootButton()
+        .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
+        .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos));
 
     // Distance map shot if shoot button is pressed and tuning mode is true
     // Triggers.getInstance()
