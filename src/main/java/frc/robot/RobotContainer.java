@@ -407,7 +407,7 @@ public class RobotContainer {
                 drive,
                 () -> -thrustmaster.getY(),
                 () -> -thrustmaster.getX(),
-                () -> RobotState.getInstance().getShootAngleForZoneAndTime()));
+                () -> RobotState.getInstance().getAngleToAllianceHub()));
 
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
     // button is pressed
@@ -713,7 +713,7 @@ public class RobotContainer {
                 drive,
                 () -> -simController.getLeftY(),
                 () -> -simController.getLeftX(),
-                () -> RobotState.getInstance().getShootAngleForZoneAndTime()));
+                () -> RobotState.getInstance().getAngleToAllianceHub()));
 
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
     // button is pressed

@@ -407,19 +407,19 @@ public class RobotState {
     if (!HubShiftUtil.disabled) {
       if (Triggers.getInstance().isShootClear.getAsBoolean()) {
         Logger.recordOutput("RobotState/zoneSafeToShoot", true);
-        return RobotState.getInstance().getAngleToAllianceHub();
+        return getAngleToAllianceHub();
       } else {
         if (Triggers.getInstance().isShootSafeZone.getAsBoolean()) {
-          return RobotState.getInstance().getEstimatedPose().getRotation();
+          return getEstimatedPose().getRotation();
         } else {
           Logger.recordOutput("RobotState/zoneSafeToShoot", false);
-          return RobotState.getInstance()
-              .getAngleToTarget(new Translation2d(getPassTarget().getX(), getPassTarget().getY()));
+          return getAngleToTarget(
+              new Translation2d(getPassTarget().getX(), getPassTarget().getY()));
         }
       }
     } else {
       Logger.recordOutput("RobotState/shootAngleOverriden", true);
-      return RobotState.getInstance().getAngleToAllianceHub();
+      return getAngleToAllianceHub();
     }
   }
 
@@ -427,10 +427,10 @@ public class RobotState {
   public Rotation2d getShootAngleForZone() {
     if (Triggers.getInstance().isShootSafeZone.getAsBoolean()) {
       Logger.recordOutput("RobotState/zoneSafeToShoot", true);
-      return RobotState.getInstance().getAngleToAllianceHub();
+      return getInstance().getAngleToAllianceHub();
     } else {
       Logger.recordOutput("RobotState/zoneSafeToShoot", false);
-      return RobotState.getInstance()
+      return getInstance()
           .getAngleToTarget(new Translation2d(getPassTarget().getX(), getPassTarget().getY()));
     }
   }
