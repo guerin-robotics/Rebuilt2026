@@ -116,17 +116,24 @@ public class AutoPaths {
     routine.active().onTrue(Commands.sequence(path1Traj.resetOdometry(), path1Traj.cmd()));
 
     // At the "deployIntake" event marker, deploy intake and run rollers + transport
-    // path1Traj.atTime("deployIntake").onTrue(AutoCommands.deployAndRunIntake(ctx));
+    path1Traj.atTime("deployIntake").onTrue(AutoCommands.deployAndRunIntake(ctx));
 
-    // When the first trajectory finishes, retract intake and start the second trajectory
-    path1Traj.done().onTrue(path2Traj.cmd());
-    // Commands.sequence(AutoCommands.retractIntake(ctx), path2Traj.cmd());
+    // At the end of the first trajectory, run the shoot sequence and stop everything
+    path1Traj
+        .done()
+        .onTrue(
+            AutoCommands.shootSequence(ctx)
+                .withTimeout(3)
+                .andThen(AutoCommands.stopAll(ctx))
+                .andThen(path2Traj.cmd()));
 
     // When the second trajectory finishes, run the shoot sequence then stop everything
-    // path2Traj
-    //     .done()
-    //     .onTrue(
-    //         AutoCommands.shootSequence(ctx).withTimeout(3.0).andThen(AutoCommands.stopAll(ctx)));
+    path2Traj
+        .done()
+        .onTrue(
+          AutoCommands.shootSequence(ctx)
+              .withTimeout(3)
+              .andThen(AutoCommands.stopAll(ctx)));
 
     // ── Build preview data from both trajectory segments ─────────────────────
     List<Pose2d> previewPoses = new java.util.ArrayList<>();

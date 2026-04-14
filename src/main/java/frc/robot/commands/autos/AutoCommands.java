@@ -39,7 +39,7 @@ public class AutoCommands {
    */
   public static Command deployAndRunIntake(AutoContext ctx) {
     return Commands.parallel(
-        IntakePivotCommands.setPivotRotations(
+        IntakePivotCommands.setPivotPosition(
             ctx.intakePivot(), HardwareConstants.CompConstants.Positions.pivotDownPos),
         Commands.startEnd(
             () -> {
@@ -62,13 +62,13 @@ public class AutoCommands {
    * <p>This is a fire-and-forget command — it sets the position and finishes immediately.
    */
   public static Command deployIntake(AutoContext ctx) {
-    return IntakePivotCommands.setPivotRotations(
-        ctx.intakePivot(), HardwareConstants.CompConstants.Positions.pivotDownPos);
+    return IntakePivotCommands.setPivotPosition(
+        ctx.intakePivot(), HardwareConstants.CompConstants.Positions.pivotUpPos);
   }
 
   /** Retracts the intake pivot to the up position. */
   public static Command retractIntake(AutoContext ctx) {
-    return IntakePivotCommands.setPivotRotations(
+    return IntakePivotCommands.setPivotPosition(
         ctx.intakePivot(), HardwareConstants.CompConstants.Positions.pivotUpPos);
   }
 

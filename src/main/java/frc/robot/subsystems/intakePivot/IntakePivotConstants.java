@@ -95,7 +95,7 @@ public class IntakePivotConstants {
     public static final boolean SIMULATE_GRAVITY = true;
 
     /** Starting angle of the arm in radians (at the retracted/stowed position). */
-    public static final double STARTING_ANGLE_RAD = MIN_ANGLE_RAD;
+    public static final double STARTING_ANGLE_RAD = MAX_ANGLE_RAD;
 
     // Sim-specific torque-current PID gains
     // Tuned for SingleJointedArmSim physics model

@@ -60,7 +60,7 @@
    "radius":0.0508,
    "vmax":523.5987755982989,
    "tmax":0.6,
-   "cof":0.6,
+   "cof":0.65,
    "bumper":{
     "front":0.41833799999999993,
     "side":0.41833799999999993,
@@ -282,7 +282,10 @@
   "splits":[0]
  },
  "events":[
-   {"name":"DeployIntake", "from":{"target":1, "targetTimestamp":0.71121, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"DeployIntake"}}},
-   {"name":"Marker", "from":{"target":2, "targetTimestamp":1.52401, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":""}}},
-   {"name":"Marker", "from":{"target":3, "targetTimestamp":2.81815, "offset":{"exp":"0 s", "val":0.0}}, "event":null}]
+   {"name":"Shoot", "from":{"target":6, "targetTimestamp":5.01544, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"sequential", "data":{"commands":[
+       {"type":"deadline", "data":{"commands":[
+          {"type":"named", "data":{"name":"shootSequence"}},
+          {"type":"wait", "data":{"waitTime":{"exp":"3 s", "val":3.0}}}]}},
+       {"type":"named", "data":{"name":"stopAll"}}]}}},
+   {"name":"DeployIntake", "from":{"target":1, "targetTimestamp":0.71121, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"deployIntake"}}}]
 }
