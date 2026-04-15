@@ -29,52 +29,52 @@ public class VisionConstants {
   public static String camera3Name = "ShooterLeft";
 
   // Robot right camera (flipped to left):
-  // x: -1.000
-  // y: -12.630
-  // z: 4.811 + belly to flooor (1.75) = 6.561
-  // roll: 0
-  // pitch: -15
-  // yaw: -90
+  // x: 1.000
+  // y: -13.175
+  // z: 6.708 - 0.25 = 6.458
+  // roll: 0.0
+  // pitch: 15.0 (positive = tilted upward in WPILib)
+  // yaw: -90.0
   public static final Transform3d robotToCamera0 =
       new Transform3d(
           new Translation3d(Inches.of(1.0), Inches.of(-13.175), Inches.of(6.708 - 0.25)),
-          new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(-90.0)));
+          new Rotation3d(Degrees.of(0.0), Degrees.of(15.0), Degrees.of(-90.0)));
 
   // Robot left camera (flipped to right):
-  // x: -1.000
-  // y: 12.880
-  // z: 4.811 + belly to flooor (1.75) = 6.561
-  // roll: 0
-  // pitch: -15
-  // yaw: 90
+  // x: 1.000
+  // y: 13.425
+  // z: 6.708 - 0.25 = 6.458
+  // roll: 0.0
+  // pitch: 15.0
+  // yaw: 90.0
   public static final Transform3d robotToCamera1 =
       new Transform3d(
           new Translation3d(Inches.of(1.0), Inches.of(13.425), Inches.of(6.708 - 0.25)),
-          new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(90.0)));
+          new Rotation3d(Degrees.of(0.0), Degrees.of(15.0), Degrees.of(90.0)));
 
   // Shooter right (flipped to left):
-  // x: -12.991
-  // y: -6.279
-  // z: 10.777 + belly to floor (1.75) = 12.527
-  // roll: 0
-  // pitch: -15
-  // yaw: 167.5
+  // x: -13.576
+  // y: -6.125
+  // z: 11.028 + 1.5 = 12.528
+  // roll: 0.0
+  // pitch: 15.0
+  // yaw: 180.0
   public static final Transform3d robotToCamera2 =
       new Transform3d(
-          new Translation3d(Inches.of(-13.524), Inches.of(-6.175), Inches.of(12.684 - 0.25)),
-          new Rotation3d(Degrees.of(1.26), Degrees.of(-16.5), Degrees.of(167.5)));
+          new Translation3d(Inches.of(-13.576), Inches.of(-6.125), Inches.of(11.028 + 1.5)),
+          new Rotation3d(Degrees.of(0), Degrees.of(15), Degrees.of(180)));
 
   // Shooter left (flipped to right):
-  // x: -12.979
-  // y: 5.394
-  // z: 10.690 + belly to floor (1.75) = 12.44
-  // roll: 0
-  // pitch: -15
-  // yaw: -192.5
+  // x: -13.576
+  // y: 5.375
+  // z: 11.028 + 1.5 = 12.528
+  // roll: 0.0
+  // pitch: 15.0
+  // yaw: 180.0
   public static final Transform3d robotToCamera3 =
       new Transform3d(
-          new Translation3d(Inches.of(-13.516), Inches.of(5.375), Inches.of(11.012 + 1.5)),
-          new Rotation3d(Degrees.of(0), Degrees.of(-15), Degrees.of(-180)));
+          new Translation3d(Inches.of(-13.576), Inches.of(5.375), Inches.of(11.028 + 1.5)),
+          new Rotation3d(Degrees.of(0), Degrees.of(15), Degrees.of(180)));
 
   // ---- Filtering thresholds ----
 
