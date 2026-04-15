@@ -375,6 +375,44 @@ public class RobotState {
 
   // SHOOTING ALIGNMENT
 
+  /**
+   * Returns true if the robot's current heading is within the hub alignment tolerance.
+   *
+   * <p>Used as the "ready to fire" condition for hub shots. The tolerance is defined in {@code
+   * HardwareConstants.CompConstants.Thresholds.hubAlignmentToleranceDegrees} and can be tuned
+   * without changing any command logic.
+   *
+   * @return true when the robot is pointing at the hub within the allowed tolerance
+   */
+  @AutoLogOutput(key = "RobotState/IsAlignedToHub")
+  public boolean isAlignedToHub() {
+    // Calculate the error between our current heading and the desired hub-facing angle.
+    // Rotation2d.minus() handles wrap-around automatically (e.g., 179° - (-179°) = 2°, not 358°).
+    double errorDegrees =
+        Math.abs(
+            getAngleToAllianceHub().minus(getEstimatedPose().getRotation()).getDegrees());
+    return errorDegrees < HardwareConstants.CompConstants.Thresholds.hubAlignmentToleranceDegrees;
+  }
+
+  /**
+   * Returns true if the robot's current heading is within the pass alignment tolerance.
+   *
+   * <p>Used as the "ready to fire" condition for pass shots. The tolerance is defined in {@code
+   * HardwareConstants.CompConstants.Thresholds.passAlignmentToleranceDegrees} and can be tuned
+   * without changing any command logic.
+   *
+   * @return true when the robot is pointing at the pass target within the allowed tolerance
+   */
+  @AutoLogOutput(key = "RobotState/IsAlignedToPass")
+  public boolean isAlignedToPass() {
+    Translation2d passTarget2d =
+        new Translation2d(getPassTarget().getX(), getPassTarget().getY());
+    double errorDegrees =
+        Math.abs(
+            getAngleToTarget(passTarget2d).minus(getEstimatedPose().getRotation()).getDegrees());
+    return errorDegrees < HardwareConstants.CompConstants.Thresholds.passAlignmentToleranceDegrees;
+  }
+
   // Finds pass target based on position
   public Translation3d getPassTarget() {
     Translation3d passTarget;

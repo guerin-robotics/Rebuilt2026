@@ -518,37 +518,44 @@ public class RobotContainer {
 
     // FEEDER
     // Set to velocity (after a wait) when any shooting sequence is started (shoot to hub, pass,
-    // shoot from tower)
+    // shoot from tower). Feeding is delayed until the robot is aligned to the target, or 1.5s max.
     Triggers.getInstance()
         .shootButton()
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             FeederCommands.setLowerVelocityAfterWait(
-                    lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
-                .alongWith(
-                    FeederCommands.setUpperVelocityAfterWait(
-                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)))
-        // FeederCommands.setLowerFeederVoltage(
-        //         lowerFeeder,
-        //         HardwareConstants.TestConstants.TestVoltages.LowerFeederTestVoltage)
-        //     .alongWith(
-        //         FeederCommands.setUpperFeederVoltage(
-        //             upperFeeder,
-        //             HardwareConstants.TestConstants.TestVoltages.FeederTestVoltage)))
+                        lowerFeeder,
+                        HardwareConstants.CompConstants.Velocities.feederVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot)
+                    .alongWith(
+                        FeederCommands.setUpperVelocityAfterWait(
+                            upperFeeder,
+                            HardwareConstants.CompConstants.Velocities.feederVelocity,
+                            Triggers.getInstance().isAlignedForCurrentShot))
+            // FeederCommands.setLowerFeederVoltage(
+            //         lowerFeeder,
+            //         HardwareConstants.TestConstants.TestVoltages.LowerFeederTestVoltage)
+            //     .alongWith(
+            //         FeederCommands.setUpperFeederVoltage(
+            //             upperFeeder,
+            //             HardwareConstants.TestConstants.TestVoltages.FeederTestVoltage)))
+            )
         .onFalse(
             FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)));
 
     // TRANSPORT
-    // Set to voltage (after a wait) when any shooting sequence is started (shoot to hub, pass,
-    // shoot from tower)
+    // Set to velocity (after a wait) when any shooting sequence is started (shoot to hub, pass,
+    // shoot from tower). Transport is delayed until aligned, matching the feeder gate.
     Triggers.getInstance()
         .shootButton()
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             TransportCommands.setVelocityAfterWait(
-                transport, HardwareConstants.CompConstants.Velocities.transportVelocity))
+                transport,
+                HardwareConstants.CompConstants.Velocities.transportVelocity,
+                Triggers.getInstance().isAlignedForCurrentShot))
         .onFalse(TransportCommands.stop(transport));
 
     // INTAKE ROLLER
@@ -561,14 +568,16 @@ public class RobotContainer {
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // Set to agitate voltage (after a wait) when any shooting sequence is started (shoot to hub,
-    // pass, shoot from tower)
+    // pass, shoot from tower). Agitate is also delayed until aligned.
     Triggers.getInstance()
         .shootButton()
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             intakeRollerCommands.setVoltageAfterWait(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))
+                intakeRoller,
+                HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage,
+                Triggers.getInstance().isAlignedForCurrentShot))
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // INTAKE PIVOT
@@ -816,30 +825,36 @@ public class RobotContainer {
 
     // FEEDER
     // Set to velocity (after a wait) when any shooting sequence is started (shoot to hub, pass,
-    // shoot from tower)
+    // shoot from tower). Feeding is delayed until the robot is aligned to the target, or 1.5s max.
     Triggers.getInstance()
         .simShootButton()
         .or(Triggers.getInstance().simPassButton())
         .or(Triggers.getInstance().simShootFromTowerButton())
         .whileTrue(
             FeederCommands.setLowerVelocityAfterWait(
-                    lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
-                .alongWith(
-                    FeederCommands.setUpperVelocityAfterWait(
-                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)))
+                        lowerFeeder,
+                        HardwareConstants.CompConstants.Velocities.feederVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot)
+                    .alongWith(
+                        FeederCommands.setUpperVelocityAfterWait(
+                            upperFeeder,
+                            HardwareConstants.CompConstants.Velocities.feederVelocity,
+                            Triggers.getInstance().isAlignedForCurrentShot)))
         .onFalse(
             FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)));
 
     // TRANSPORT
     // Set to velocity (after a wait) when any shooting sequence is started (shoot to hub, pass,
-    // shoot from tower)
+    // shoot from tower). Transport is delayed until aligned, matching the feeder gate.
     Triggers.getInstance()
         .simShootButton()
         .or(Triggers.getInstance().simPassButton())
         .or(Triggers.getInstance().simShootFromTowerButton())
         .whileTrue(
             TransportCommands.setVelocityAfterWait(
-                transport, HardwareConstants.CompConstants.Velocities.transportVelocity))
+                transport,
+                HardwareConstants.CompConstants.Velocities.transportVelocity,
+                Triggers.getInstance().isAlignedForCurrentShot))
         .onFalse(TransportCommands.stop(transport));
 
     // INTAKE ROLLER
@@ -852,14 +867,16 @@ public class RobotContainer {
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // Set to agitate voltage (after a wait) when any shooting sequence is started (shoot to hub,
-    // pass, shoot from tower)
+    // pass, shoot from tower). Agitate is also delayed until aligned.
     Triggers.getInstance()
         .simShootButton()
         .or(Triggers.getInstance().simPassButton())
         .or(Triggers.getInstance().simShootFromTowerButton())
         .whileTrue(
             intakeRollerCommands.setVoltageAfterWait(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))
+                intakeRoller,
+                HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage,
+                Triggers.getInstance().isAlignedForCurrentShot))
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // INTAKE PIVOT

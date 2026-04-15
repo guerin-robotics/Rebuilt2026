@@ -319,6 +319,42 @@ public class Triggers {
         });
   }
 
+  // ==================== SHOOTING ALIGNMENT TRIGGERS ====================
+
+  // True when the robot's heading is within hubAlignmentToleranceDegrees of the alliance hub.
+  public final LoggedTrigger isAlignedToHubTarget =
+      new LoggedTrigger(
+          "isAlignedToHubTarget", () -> RobotState.getInstance().isAlignedToHub());
+
+  // True when the robot's heading is within passAlignmentToleranceDegrees of the pass target.
+  public final LoggedTrigger isAlignedToPassTarget =
+      new LoggedTrigger(
+          "isAlignedToPassTarget", () -> RobotState.getInstance().isAlignedToPass());
+
+  /**
+   * True when the robot is aligned well enough to start feeding for the current shot type.
+   *
+   * <ul>
+   *   <li>In alliance zone → checks hub alignment
+   *   <li>Outside alliance zone → checks pass-target alignment
+   * </ul>
+   *
+   * <p>Used as the "ready to feed" gate in the shooting sequence. Feeding will start when this
+   * returns true, or after {@code alignmentTimeoutSeconds} regardless, to prevent stalling a shot.
+   */
+  public final LoggedTrigger isAlignedForCurrentShot =
+      new LoggedTrigger(
+          "isAlignedForCurrentShot",
+          () -> {
+            if (isShootSafeZone.getAsBoolean()) {
+              // In our alliance zone — we're doing a hub shot, check hub alignment
+              return RobotState.getInstance().isAlignedToHub();
+            } else {
+              // Outside alliance zone — we're doing a pass, check pass target alignment
+              return RobotState.getInstance().isAlignedToPass();
+            }
+          });
+
   // ==================== ZONE TRIGGERS (cached as final fields) ====================
   // All zone checkers require review - not practical for high-velocity zone changes
 

@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.lowerFeeder.LowerFeeder;
 import frc.robot.subsystems.upperFeeder.UpperFeeder;
+import java.util.function.BooleanSupplier;
 
 public class FeederCommands {
 
@@ -50,16 +51,57 @@ public class FeederCommands {
         .withName("UpperFeederVelocity");
   }
 
-  public static Command setLowerVelocityAfterWait(LowerFeeder feeder, AngularVelocity feederVelo) {
+  /**
+   * Runs the lower feeder at the given velocity, but only after:
+   *
+   * <ol>
+   *   <li>The flywheel has had {@code flywheelSpinupSeconds} to spin up, AND
+   *   <li>The robot is aligned to its target (as reported by {@code isAligned}), OR
+   *   <li>{@code alignmentTimeoutSeconds} have elapsed since the button was pressed (failsafe).
+   * </ol>
+   *
+   * <p>This prevents wasting balls by feeding before the robot is facing the target.
+   *
+   * @param feeder The lower feeder subsystem
+   * @param feederVelo The velocity to run at once ready
+   * @param isAligned Supplier that returns true when the robot is facing its target
+   */
+  public static Command setLowerVelocityAfterWait(
+      LowerFeeder feeder, AngularVelocity feederVelo, BooleanSupplier isAligned) {
     return Commands.sequence(
+            // Always wait for the flywheel to spin up first (fast, 0.3 s).
             new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
+            // Then wait until aimed, but give up after the remaining alignment budget so we
+            // never stall a shot. Total max wait = alignmentTimeoutSeconds from button press.
+            Commands.waitUntil(isAligned)
+                .withTimeout(
+                    HardwareConstants.CompConstants.Waits.alignmentTimeoutSeconds
+                        - HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
             setLowerFeederVelocity(feeder, feederVelo))
         .withName("LowerFeederVelocityAfterWait");
   }
 
-  public static Command setUpperVelocityAfterWait(UpperFeeder feeder, AngularVelocity feederVelo) {
+  /**
+   * Runs the upper feeder at the given velocity, but only after:
+   *
+   * <ol>
+   *   <li>The flywheel has had {@code flywheelSpinupSeconds} to spin up, AND
+   *   <li>The robot is aligned to its target (as reported by {@code isAligned}), OR
+   *   <li>{@code alignmentTimeoutSeconds} have elapsed since the button was pressed (failsafe).
+   * </ol>
+   *
+   * @param feeder The upper feeder subsystem
+   * @param feederVelo The velocity to run at once ready
+   * @param isAligned Supplier that returns true when the robot is facing its target
+   */
+  public static Command setUpperVelocityAfterWait(
+      UpperFeeder feeder, AngularVelocity feederVelo, BooleanSupplier isAligned) {
     return Commands.sequence(
             new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
+            Commands.waitUntil(isAligned)
+                .withTimeout(
+                    HardwareConstants.CompConstants.Waits.alignmentTimeoutSeconds
+                        - HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
             setUpperFeederVelocity(feeder, feederVelo))
         .withName("UpperFeederVelocityAfterWait");
   }

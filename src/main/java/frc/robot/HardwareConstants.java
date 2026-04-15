@@ -92,10 +92,18 @@ public class HardwareConstants {
       public static final double flywheelSpinupSeconds = 0.3;
       public static final double passSpinUpSeconds = 0.75;
       public static final double waitToCompressSeconds = 1;
+      // Maximum time to wait for heading alignment before shooting regardless.
+      // After this many seconds, feeding starts even if the robot isn't facing the target.
+      public static final double alignmentTimeoutSeconds = 1.5;
     }
 
     public static class Thresholds {
       public static final double flywheelSpinupThreshold = 200;
+      // How close (in degrees) the robot's heading must be to the hub before we start feeding.
+      public static final double hubAlignmentToleranceDegrees = 5.0;
+      // How close (in degrees) the robot's heading must be to the pass target before we start
+      // feeding. Slightly more lenient than hub since pass shots tolerate more error.
+      public static final double passAlignmentToleranceDegrees = 7.0;
     }
   }
 
