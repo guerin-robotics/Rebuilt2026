@@ -247,7 +247,20 @@ public class RobotContainer {
     //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     if (Robot.isReal()) {
-      configureStateBindings();
+      //   configureStateBindings();
+      drive.setDefaultCommand(
+          DriveCommands.joystickDrive(
+              drive,
+              () -> MathUtil.clamp(-getThrustY(), -1.0, 1.0),
+              () -> MathUtil.clamp(-getThrustX(), -1.0, 1.0),
+              () -> MathUtil.clamp(-getThrustRot(), -1.0, 1.0)));
+      thrustmaster.button(1)
+          .whileTrue(
+              DriveCommands.joystickDriveAtAngle(
+                  drive,
+                  () -> -thrustmaster.getY(),
+                  () -> -thrustmaster.getX(),
+                  () -> RobotState.getInstance().getAngleToAllianceHub()));
     } else if (Robot.isSimulation()) {
       configureSimBindings();
     }
@@ -598,13 +611,13 @@ public class RobotContainer {
     //   - neither intake deploy nor retract button is currently pressed
     //   - compression has not been cancelled by a prior intake override this shoot press
     // Also starts on the dedicated compress button.
-    (Triggers.getInstance()
-            .shootButton()
-            .and(() -> !Triggers.getInstance().intakeOutButton().getAsBoolean())
-            .and(() -> !Triggers.getInstance().intakeInButton().getAsBoolean())
-            .and(() -> !compressCancelledReal))
-        .or(Triggers.getInstance().intakeCompressButton())
-        .whileTrue(IntakePivotCommands.compressPivot(intakePivot));
+    // (Triggers.getInstance()
+    //         .shootButton()
+    //         .and(() -> !Triggers.getInstance().intakeOutButton().getAsBoolean())
+    //         .and(() -> !Triggers.getInstance().intakeInButton().getAsBoolean())
+    //         .and(() -> !compressCancelledReal))
+    //     .or(Triggers.getInstance().intakeCompressButton())
+    //     .whileTrue(IntakePivotCommands.compressPivot(intakePivot));
 
     // HOOD
     // Set pos for hub if shoot to hub button or shoot to tower button is pressed, and we're in our

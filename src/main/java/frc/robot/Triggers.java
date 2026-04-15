@@ -168,134 +168,134 @@ public class Triggers {
 
   // ── Intake safety sub-triggers (private, used only by isIntakeSafe) ──────────
 
-  private final LoggedTrigger tooCloseToAllianceHub =
-      new LoggedTrigger(
-          "tooCloseToAllianceHub",
-          () ->
-              (RobotState.getInstance().getDistanceToAllianceHub().magnitude()
-                  < HardwareConstants.hubDangerZone.intakeOffset));
+  // private final LoggedTrigger tooCloseToAllianceHub =
+  //     new LoggedTrigger(
+  //         "tooCloseToAllianceHub",
+  //         () ->
+  //             (RobotState.getInstance().getDistanceToAllianceHub().magnitude()
+  //                 < HardwareConstants.hubDangerZone.intakeOffset));
 
-  private final LoggedTrigger tooCloseToOpposingHub =
-      new LoggedTrigger(
-          "tooCloseToOpposingHub",
-          () ->
-              (RobotState.getInstance().getDistanceToOpposingHub().magnitude()
-                  < HardwareConstants.hubDangerZone.intakeOffset));
+  // private final LoggedTrigger tooCloseToOpposingHub =
+  //     new LoggedTrigger(
+  //         "tooCloseToOpposingHub",
+  //         () ->
+  //             (RobotState.getInstance().getDistanceToOpposingHub().magnitude()
+  //                 < HardwareConstants.hubDangerZone.intakeOffset));
 
-  // BUG FIX (issue 4): use current estimated pose instead of a null parameter
-  private final LoggedTrigger facingAllianceHub =
-      new LoggedTrigger(
-          "facingAllianceHub",
-          () -> {
-            Pose2d pose = RobotState.getInstance().getEstimatedPose();
-            double heading = AllianceFlipUtil.apply(pose.getRotation()).getDegrees();
-            HardwareConstants.Zones.specificZone currentSpecificZone =
-                RobotState.getInstance().getSpecificZone(pose);
-            HardwareConstants.Zones.broadZone currentBroadZone =
-                RobotState.getInstance().getBroadZone(pose);
-            if (((currentBroadZone == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE)
-                    && (Math.abs(heading) < 90))
-                || ((currentBroadZone == HardwareConstants.Zones.broadZone.NEUTRAL)
-                    && (Math.abs(heading) >= 90))
-                || (currentSpecificZone == HardwareConstants.Zones.specificZone.ALLIANCE_BUMP_FAR
-                    && (heading < 0))
-                || (currentSpecificZone == HardwareConstants.Zones.specificZone.ALLIANCE_BUMP_NEAR
-                    && (heading > 0))) {
-              return true;
-            } else {
-              return false;
-            }
-          });
+  // // BUG FIX (issue 4): use current estimated pose instead of a null parameter
+  // private final LoggedTrigger facingAllianceHub =
+  //     new LoggedTrigger(
+  //         "facingAllianceHub",
+  //         () -> {
+  //           Pose2d pose = RobotState.getInstance().getEstimatedPose();
+  //           double heading = AllianceFlipUtil.apply(pose.getRotation()).getDegrees();
+  //           HardwareConstants.Zones.specificZone currentSpecificZone =
+  //               RobotState.getInstance().getSpecificZone(pose);
+  //           HardwareConstants.Zones.broadZone currentBroadZone =
+  //               RobotState.getInstance().getBroadZone(pose);
+  //           if (((currentBroadZone == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE)
+  //                   && (Math.abs(heading) < 90))
+  //               || ((currentBroadZone == HardwareConstants.Zones.broadZone.NEUTRAL)
+  //                   && (Math.abs(heading) >= 90))
+  //               || (currentSpecificZone == HardwareConstants.Zones.specificZone.ALLIANCE_BUMP_FAR
+  //                   && (heading < 0))
+  //               || (currentSpecificZone == HardwareConstants.Zones.specificZone.ALLIANCE_BUMP_NEAR
+  //                   && (heading > 0))) {
+  //             return true;
+  //           } else {
+  //             return false;
+  //           }
+  //         });
 
-  // BUG FIX (issue 4): use current estimated pose instead of a null parameter
-  private final LoggedTrigger facingOpposingHub =
-      new LoggedTrigger(
-          "facingOpposingHub",
-          () -> {
-            Pose2d pose = RobotState.getInstance().getEstimatedPose();
-            double heading = AllianceFlipUtil.apply(pose.getRotation()).getDegrees();
-            HardwareConstants.Zones.specificZone currentSpecificZone =
-                RobotState.getInstance().getSpecificZone(pose);
-            HardwareConstants.Zones.broadZone currentBroadZone =
-                RobotState.getInstance().getBroadZone(pose);
-            if (((currentBroadZone == HardwareConstants.Zones.broadZone.NEUTRAL)
-                    && (Math.abs(heading) < 90))
-                || ((currentBroadZone == HardwareConstants.Zones.broadZone.OPPOSING_ZONE)
-                    && (Math.abs(heading) >= 90))
-                || (currentSpecificZone == HardwareConstants.Zones.specificZone.OPPOSING_BUMP_FAR
-                    && (heading < 0))
-                || (currentSpecificZone == HardwareConstants.Zones.specificZone.OPPOSING_BUMP_NEAR
-                    && (heading > 0))) {
-              return true;
-            } else {
-              return false;
-            }
-          });
+  // // BUG FIX (issue 4): use current estimated pose instead of a null parameter
+  // private final LoggedTrigger facingOpposingHub =
+  //     new LoggedTrigger(
+  //         "facingOpposingHub",
+  //         () -> {
+  //           Pose2d pose = RobotState.getInstance().getEstimatedPose();
+  //           double heading = AllianceFlipUtil.apply(pose.getRotation()).getDegrees();
+  //           HardwareConstants.Zones.specificZone currentSpecificZone =
+  //               RobotState.getInstance().getSpecificZone(pose);
+  //           HardwareConstants.Zones.broadZone currentBroadZone =
+  //               RobotState.getInstance().getBroadZone(pose);
+  //           if (((currentBroadZone == HardwareConstants.Zones.broadZone.NEUTRAL)
+  //                   && (Math.abs(heading) < 90))
+  //               || ((currentBroadZone == HardwareConstants.Zones.broadZone.OPPOSING_ZONE)
+  //                   && (Math.abs(heading) >= 90))
+  //               || (currentSpecificZone == HardwareConstants.Zones.specificZone.OPPOSING_BUMP_FAR
+  //                   && (heading < 0))
+  //               || (currentSpecificZone == HardwareConstants.Zones.specificZone.OPPOSING_BUMP_NEAR
+  //                   && (heading > 0))) {
+  //             return true;
+  //           } else {
+  //             return false;
+  //           }
+  //         });
 
-  private final LoggedTrigger movingTowardAllianceHub =
-      new LoggedTrigger(
-          "movingTowardAllianceHub",
-          () -> {
-            HardwareConstants.Zones.specificZone currentSpecificZone =
-                RobotState.getInstance()
-                    .getSpecificZone(RobotState.getInstance().getEstimatedPose());
-            HardwareConstants.Zones.broadZone currentBroadZone =
-                RobotState.getInstance().getBroadZone(RobotState.getInstance().getEstimatedPose());
-            double currentXVelocity =
-                RobotState.getInstance().getFieldRelativeVelocity().vxMetersPerSecond;
-            double currentYVelocity =
-                RobotState.getInstance().getFieldRelativeVelocity().vyMetersPerSecond;
-            if (((currentBroadZone == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE)
-                    && AllianceFlipUtil.applyX(currentXVelocity) >= AllianceFlipUtil.applyX(0))
-                || ((currentBroadZone == HardwareConstants.Zones.broadZone.NEUTRAL)
-                    && (currentXVelocity) <= AllianceFlipUtil.applyX(0))
-                || (currentSpecificZone == HardwareConstants.Zones.specificZone.ALLIANCE_BUMP_NEAR
-                    && AllianceFlipUtil.applyY(currentYVelocity) >= AllianceFlipUtil.applyY(0))
-                || (currentSpecificZone == HardwareConstants.Zones.specificZone.ALLIANCE_BUMP_FAR
-                    && (currentYVelocity) <= AllianceFlipUtil.applyY(0))) {
-              return true;
-            } else {
-              return false;
-            }
-          });
+  // private final LoggedTrigger movingTowardAllianceHub =
+  //     new LoggedTrigger(
+  //         "movingTowardAllianceHub",
+  //         () -> {
+  //           HardwareConstants.Zones.specificZone currentSpecificZone =
+  //               RobotState.getInstance()
+  //                   .getSpecificZone(RobotState.getInstance().getEstimatedPose());
+  //           HardwareConstants.Zones.broadZone currentBroadZone =
+  //               RobotState.getInstance().getBroadZone(RobotState.getInstance().getEstimatedPose());
+  //           double currentXVelocity =
+  //               RobotState.getInstance().getFieldRelativeVelocity().vxMetersPerSecond;
+  //           double currentYVelocity =
+  //               RobotState.getInstance().getFieldRelativeVelocity().vyMetersPerSecond;
+  //           if (((currentBroadZone == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE)
+  //                   && AllianceFlipUtil.applyX(currentXVelocity) >= AllianceFlipUtil.applyX(0))
+  //               || ((currentBroadZone == HardwareConstants.Zones.broadZone.NEUTRAL)
+  //                   && (currentXVelocity) <= AllianceFlipUtil.applyX(0))
+  //               || (currentSpecificZone == HardwareConstants.Zones.specificZone.ALLIANCE_BUMP_NEAR
+  //                   && AllianceFlipUtil.applyY(currentYVelocity) >= AllianceFlipUtil.applyY(0))
+  //               || (currentSpecificZone == HardwareConstants.Zones.specificZone.ALLIANCE_BUMP_FAR
+  //                   && (currentYVelocity) <= AllianceFlipUtil.applyY(0))) {
+  //             return true;
+  //           } else {
+  //             return false;
+  //           }
+  //         });
 
-  private final LoggedTrigger movingTowardOpposingHub =
-      new LoggedTrigger(
-          "movingTowardOpposingHub",
-          () -> {
-            HardwareConstants.Zones.specificZone currentSpecificZone =
-                RobotState.getInstance()
-                    .getSpecificZone(RobotState.getInstance().getEstimatedPose());
-            HardwareConstants.Zones.broadZone currentBroadZone =
-                RobotState.getInstance().getBroadZone(RobotState.getInstance().getEstimatedPose());
-            double currentXVelocity =
-                RobotState.getInstance().getFieldRelativeVelocity().vxMetersPerSecond;
-            double currentYVelocity =
-                RobotState.getInstance().getFieldRelativeVelocity().vyMetersPerSecond;
-            if (((currentBroadZone == HardwareConstants.Zones.broadZone.OPPOSING_ZONE)
-                    && AllianceFlipUtil.applyX(currentXVelocity) <= AllianceFlipUtil.applyX(0))
-                || ((currentBroadZone == HardwareConstants.Zones.broadZone.NEUTRAL)
-                    && AllianceFlipUtil.applyX(currentXVelocity) >= AllianceFlipUtil.applyX(0))
-                || (currentSpecificZone == HardwareConstants.Zones.specificZone.OPPOSING_BUMP_NEAR
-                    && AllianceFlipUtil.applyY(currentYVelocity) >= AllianceFlipUtil.applyY(0))
-                || (currentSpecificZone == HardwareConstants.Zones.specificZone.OPPOSING_BUMP_FAR
-                    && AllianceFlipUtil.applyY(currentYVelocity) <= AllianceFlipUtil.applyY(0))) {
-              return true;
-            } else {
-              return false;
-            }
-          });
+  // private final LoggedTrigger movingTowardOpposingHub =
+  //     new LoggedTrigger(
+  //         "movingTowardOpposingHub",
+  //         () -> {
+  //           HardwareConstants.Zones.specificZone currentSpecificZone =
+  //               RobotState.getInstance()
+  //                   .getSpecificZone(RobotState.getInstance().getEstimatedPose());
+  //           HardwareConstants.Zones.broadZone currentBroadZone =
+  //               RobotState.getInstance().getBroadZone(RobotState.getInstance().getEstimatedPose());
+  //           double currentXVelocity =
+  //               RobotState.getInstance().getFieldRelativeVelocity().vxMetersPerSecond;
+  //           double currentYVelocity =
+  //               RobotState.getInstance().getFieldRelativeVelocity().vyMetersPerSecond;
+  //           if (((currentBroadZone == HardwareConstants.Zones.broadZone.OPPOSING_ZONE)
+  //                   && AllianceFlipUtil.applyX(currentXVelocity) <= AllianceFlipUtil.applyX(0))
+  //               || ((currentBroadZone == HardwareConstants.Zones.broadZone.NEUTRAL)
+  //                   && AllianceFlipUtil.applyX(currentXVelocity) >= AllianceFlipUtil.applyX(0))
+  //               || (currentSpecificZone == HardwareConstants.Zones.specificZone.OPPOSING_BUMP_NEAR
+  //                   && AllianceFlipUtil.applyY(currentYVelocity) >= AllianceFlipUtil.applyY(0))
+  //               || (currentSpecificZone == HardwareConstants.Zones.specificZone.OPPOSING_BUMP_FAR
+  //                   && AllianceFlipUtil.applyY(currentYVelocity) <= AllianceFlipUtil.applyY(0))) {
+  //             return true;
+  //           } else {
+  //             return false;
+  //           }
+  //         });
 
   // ── Intake safety composite trigger ──────────────────────────────────────────
   // BUG FIX (issue 5): Returns true when intake IS safe (not in danger of crashing into a hub).
   // The sub-conditions detect the DANGER state (close + facing + moving toward hub), then we
   // negate so that true = safe. Callers (e.g., driveLucasProof) expect true = safe.
-  public final LoggedTrigger isIntakeSafe =
-      new LoggedTrigger(
-          "isIntakeSafe",
-          (tooCloseToAllianceHub.and(facingAllianceHub).and(movingTowardAllianceHub))
-              .or(tooCloseToOpposingHub.and(facingOpposingHub).and(movingTowardOpposingHub))
-              .negate());
+  // public final LoggedTrigger isIntakeSafe =
+  //     new LoggedTrigger(
+  //         "isIntakeSafe",
+  //         (tooCloseToAllianceHub.and(facingAllianceHub).and(movingTowardAllianceHub))
+  //             .or(tooCloseToOpposingHub.and(facingOpposingHub).and(movingTowardOpposingHub))
+  //             .negate());
 
   // Returns true if the robot's estimated pose is NOT in a trench zone and NOT moving towards one
   public LoggedTrigger isHoodSafe(Pose2d pose) {
@@ -419,31 +419,31 @@ public class Triggers {
 
   // At or approaching wall - position checker, split into at and approaching, consider adding
   // velocity-based
-  public final LoggedTrigger isRobotAtWall =
-      new LoggedTrigger(
-          "isRobotAtWall",
-          () -> {
-            double currentX = RobotState.getInstance().getEstimatedPose().getX();
-            double currentY = RobotState.getInstance().getEstimatedPose().getY();
-            if (((currentX > (FieldConstants.fieldLength - HardwareConstants.Zones.zoneOffset))
-                    && (currentY
-                            < (FieldConstants.Tower.oppRightUpright.getY()
-                                - HardwareConstants.Zones.zoneOffset)
-                        || currentY
-                            > (FieldConstants.Tower.oppLeftUpright.getY()
-                                - HardwareConstants.Zones.zoneOffset)))
-                || ((currentX < HardwareConstants.Zones.zoneOffset)
-                    && (currentY
-                            < (FieldConstants.Tower.oppRightUpright.getY()
-                                - HardwareConstants.Zones.zoneOffset)
-                        || currentY
-                            > (FieldConstants.Tower.oppLeftUpright.getY()
-                                - HardwareConstants.Zones.zoneOffset)))
-                || (currentY > (FieldConstants.fieldWidth - HardwareConstants.Zones.zoneOffset))
-                || (currentY < HardwareConstants.Zones.zoneOffset)) {
-              return true;
-            } else {
-              return false;
-            }
-          });
+  // public final LoggedTrigger isRobotAtWall =
+  //     new LoggedTrigger(
+  //         "isRobotAtWall",
+  //         () -> {
+  //           double currentX = RobotState.getInstance().getEstimatedPose().getX();
+  //           double currentY = RobotState.getInstance().getEstimatedPose().getY();
+  //           if (((currentX > (FieldConstants.fieldLength - HardwareConstants.Zones.zoneOffset))
+  //                   && (currentY
+  //                           < (FieldConstants.Tower.oppRightUpright.getY()
+  //                               - HardwareConstants.Zones.zoneOffset)
+  //                       || currentY
+  //                           > (FieldConstants.Tower.oppLeftUpright.getY()
+  //                               - HardwareConstants.Zones.zoneOffset)))
+  //               || ((currentX < HardwareConstants.Zones.zoneOffset)
+  //                   && (currentY
+  //                           < (FieldConstants.Tower.oppRightUpright.getY()
+  //                               - HardwareConstants.Zones.zoneOffset)
+  //                       || currentY
+  //                           > (FieldConstants.Tower.oppLeftUpright.getY()
+  //                               - HardwareConstants.Zones.zoneOffset)))
+  //               || (currentY > (FieldConstants.fieldWidth - HardwareConstants.Zones.zoneOffset))
+  //               || (currentY < HardwareConstants.Zones.zoneOffset)) {
+  //             return true;
+  //           } else {
+  //             return false;
+  //           }
+  //         });
 }

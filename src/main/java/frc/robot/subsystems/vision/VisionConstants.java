@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems.vision;
 
+import static edu.wpi.first.math.util.Units.inchesToMeters;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 
@@ -20,7 +21,7 @@ import org.littletonrobotics.junction.Logger;
 public class VisionConstants {
   // AprilTag layout
   public static AprilTagFieldLayout aprilTagLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded); // .k2026RebuiltAndymark
+      AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField); // .k2026RebuiltAndymark
 
   // Camera names, must match names configured on coprocessor
   public static String camera0Name = "RobotRight";
@@ -83,10 +84,13 @@ public class VisionConstants {
   // Single-tag ambiguity above this is rejected (multi-tag is always trusted).
   // Lowered from 0.2 → 0.1 to reduce false-positive single-tag solves
   // that pick the wrong PnP solution.
-  public static double maxAmbiguity = 0.1;
+  public static double maxAmbiguity = 0.3;
 
   // Estimated pose Z (height) must be below this to be realistic
   public static double maxZError = 2;
+
+  // Not below the floor
+  public static double floorError = inchesToMeters(6);
 
   // Tags farther than this are unreliable — reject the observation entirely.
   // At long range, small pixel errors become large pose errors.
@@ -123,8 +127,8 @@ public class VisionConstants {
       new double[] {
         1.0, // Camera 0
         1.0, // Camera 1
-        2.0, // Camera 2
-        2.0 // Camera 3
+        1.0, // Camera 2
+        1.0 // Camera 3
       };
 
   // Multipliers to apply for MegaTag 2 observations
