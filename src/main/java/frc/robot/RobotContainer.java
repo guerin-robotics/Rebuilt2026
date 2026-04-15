@@ -400,8 +400,8 @@ public class RobotContainer {
     // Align for shoot when shoot button is pressed and we're in our alliance zone and hub is
     // active, or if tower shoot button is pressed
     (Triggers.getInstance().shootButton())
-        // .and(Triggers.getInstance().isShootClear))
-        // .or(Triggers.getInstance().shootFromTowerButton())
+        .and(Triggers.getInstance().isShootClear)
+        .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,

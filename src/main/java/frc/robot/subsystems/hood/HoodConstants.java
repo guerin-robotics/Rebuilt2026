@@ -36,7 +36,7 @@ public class HoodConstants {
      * <p>30T pulley on motor → belt → 20T pulley on output shaft. One motor rotation = 20/30 shaft
      * rotations → ratio = 30/20.
      */
-    public static double motorToShaftRatio = 5.0;
+    public static double motorToShaftRatio = 5.33;
   }
 
   public static class SoftwareConstants {
