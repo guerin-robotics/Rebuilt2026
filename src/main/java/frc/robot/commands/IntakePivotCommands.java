@@ -74,7 +74,8 @@ public class IntakePivotCommands {
   public static Command compressPivot(IntakePivot intakePivot) {
     return Commands.sequence(
             Commands.deadline(
-                new WaitCommand(1), IntakePivotCommands.setPivotVoltage(intakePivot, Volts.of(3))),
+                new WaitCommand(1), IntakePivotCommands.setPivotVoltage(intakePivot,
+    Volts.of(3))),
             new WaitCommand(0.3),
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos))
@@ -88,8 +89,15 @@ public class IntakePivotCommands {
                 intakePivot.setPivotPosition(
                     HardwareConstants.CompConstants.Positions.pivotDownPos);
               }
-            })
-        .withName("IntakePivotCompress");
+            });
+    // return Commands.sequence(
+    //         new WaitCommand(HardwareConstants.CompConstants.Waits.waitToCompressSeconds),
+    //         setPivotPosition(
+    //             intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleMiddlePos),
+    //         new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
+    //         setPivotPosition(
+    //             intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
+    //     .withName("IntakePivotCompress");
   }
 
   /** Zero the pivot encoder at the current position. */

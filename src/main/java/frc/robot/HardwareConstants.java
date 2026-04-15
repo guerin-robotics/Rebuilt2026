@@ -86,12 +86,14 @@ public class HardwareConstants {
       public static final Angle pivotUpPos = Rotations.of(0.3);
       public static final Angle pivotDownPos = Rotations.of(0.0);
       public static final Angle pivotJostleUpPos = Rotations.of(0.25);
+      public static final Angle pivotJostleMiddlePos = Rotations.of(0.125);
     }
 
     public static class Waits {
       public static final double flywheelSpinupSeconds = 0.3;
       public static final double passSpinUpSeconds = 0.75;
       public static final double waitToCompressSeconds = 1;
+      public static final double waitBetweenCompressSeconds = 0.5;
     }
 
     public static class Thresholds {
