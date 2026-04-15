@@ -78,8 +78,10 @@ public class VisionConstants {
 
   // ---- Filtering thresholds ----
 
-  // Single-tag ambiguity above this is rejected (multi-tag is always trusted)
-  public static double maxAmbiguity = 0.2;
+  // Single-tag ambiguity above this is rejected (multi-tag is always trusted).
+  // Lowered from 0.2 → 0.1 to reduce false-positive single-tag solves
+  // that pick the wrong PnP solution.
+  public static double maxAmbiguity = 0.1;
 
   // Estimated pose Z (height) must be below this to be realistic
   public static double maxZError = 0.75;
@@ -97,14 +99,21 @@ public class VisionConstants {
   // Large pitch/roll in the estimate means the solve is wrong.
   public static double maxPitchRollRadians = Math.toRadians(10.0);
 
+  // If a vision observation would move the estimated pose by more than this
+  // distance (meters), reject it as an outlier. Catches bad single-tag solves
+  // that pick the wrong PnP ambiguity solution.
+  public static double maxPoseJumpMeters = 0.5; // ~20 inches
+
   // ---- Standard deviation baselines ----
   // For 1 meter distance and 1 tag. Automatically scaled by distance² / tagCount.
   public static double linearStdDevBaseline = 0.01; // Meters
   public static double angularStdDevBaseline = 0.03; // Radians
 
-  // windham uses 0.01 for linear baseline and 0.01 for angular baseline.
-  // we could consider using these in a practice match.
-  // we should consider putting the shooter cameras back to a 10 std dev as well
+  // Extra multiplier applied to single-tag observations (tagCount == 1).
+  // Single-tag PnP is inherently less constrained than multi-tag, so we
+  // trust it less. This prevents a single ambiguous solve from yanking the
+  // pose estimator.
+  public static double singleTagStdDevMultiplier = 2.0;
 
   // Standard deviation multipliers for each camera
   // (Adjust to trust some cameras more than others)

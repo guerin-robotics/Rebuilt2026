@@ -125,18 +125,26 @@ public class Vision extends SubsystemBase {
         double pitch = Math.abs(observation.pose().getRotation().getY());
         double roll = Math.abs(observation.pose().getRotation().getX());
 
+        // Pose-jump filter: reject if the vision observation is too far from
+        // the current estimated pose. Catches bad single-tag PnP solutions.
+        Pose2d currentPose = RobotState.getInstance().getEstimatedPose();
+        double poseJump =
+            currentPose.getTranslation().getDistance(observation.pose().toPose2d().getTranslation());
+
         // Check whether to reject pose
         boolean rejectPose =
             robotSpinningTooFast // Robot spinning too fast — vision unreliable
                 || observation.tagCount() == 0 // Must have at least one tag
                 || (observation.tagCount() == 1
                     && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
-                || Math.abs(observation.pose().getZ())
+                || observation.pose().getZ() < -0.1 // Robot cannot be below the floor
+                || observation.pose().getZ()
                     > maxZError // Must have realistic Z coordinate
                 || observation.averageTagDistance()
                     > maxDistanceMeters // Tags too far away — pose error grows with distance
                 || pitch > maxPitchRollRadians // Pitch too large — robot is on flat ground
                 || roll > maxPitchRollRadians // Roll too large — robot is on flat ground
+                || poseJump > maxPoseJumpMeters // Vision would yank pose too far — likely bad solve
 
                 // Must be within the field boundaries
                 || observation.pose().getX() < 0.0
@@ -166,6 +174,10 @@ public class Vision extends SubsystemBase {
           linearStdDev *= linearStdDevMegatag2Factor;
           angularStdDev *= angularStdDevMegatag2Factor;
         }
+        if (observation.tagCount() == 1) {
+          linearStdDev *= singleTagStdDevMultiplier;
+          angularStdDev *= singleTagStdDevMultiplier;
+        }
         if (cameraIndex < cameraStdDevFactors.length) {
           linearStdDev *= cameraStdDevFactors[cameraIndex];
           angularStdDev *= cameraStdDevFactors[cameraIndex];
@@ -179,18 +191,13 @@ public class Vision extends SubsystemBase {
       }
 
       // Log camera metadata
-      Logger.recordOutput(
-          "Vision/Camera" + Integer.toString(cameraIndex) + "/TagPoses",
-          tagPoses.toArray(new Pose3d[0]));
-      Logger.recordOutput(
-          "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPoses",
-          robotPoses.toArray(new Pose3d[0]));
-      Logger.recordOutput(
-          "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPosesAccepted",
-          robotPosesAccepted.toArray(new Pose3d[0]));
-      Logger.recordOutput(
-          "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPosesRejected",
-          robotPosesRejected.toArray(new Pose3d[0]));
+      String cameraKey = "Vision/Camera" + Integer.toString(cameraIndex);
+      Logger.recordOutput(cameraKey + "/TagPoses", tagPoses.toArray(new Pose3d[0]));
+      Logger.recordOutput(cameraKey + "/RobotPoses", robotPoses.toArray(new Pose3d[0]));
+      Logger.recordOutput(cameraKey + "/RobotPosesAccepted", robotPosesAccepted.toArray(new Pose3d[0]));
+      Logger.recordOutput(cameraKey + "/RobotPosesRejected", robotPosesRejected.toArray(new Pose3d[0]));
+      Logger.recordOutput(cameraKey + "/TagCount", inputs[cameraIndex].tagIds.length);
+      Logger.recordOutput(cameraKey + "/IsMultiTag", inputs[cameraIndex].tagIds.length > 1);
       allTagPoses.addAll(tagPoses);
       allRobotPoses.addAll(robotPoses);
       allRobotPosesAccepted.addAll(robotPosesAccepted);

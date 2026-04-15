@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -81,9 +82,11 @@ public class VisionIOPhotonVision implements VisionIO {
       // estimateCoprocMultiTagPose() uses the coprocessor's multi-tag PnP solve when available.
       // estimateLowestAmbiguityPose() picks the single target with the lowest ambiguity.
       Optional<EstimatedRobotPose> estimatedPose = poseEstimator.estimateCoprocMultiTagPose(result);
+      boolean usedMultiTag = estimatedPose.isPresent();
       if (estimatedPose.isEmpty()) {
         estimatedPose = poseEstimator.estimateLowestAmbiguityPose(result);
       }
+      Logger.recordOutput("Vision/" + camera.getName() + "/UsedMultiTag", usedMultiTag);
 
       // If neither strategy produced a result, skip this frame
       if (estimatedPose.isEmpty()) {
@@ -111,6 +114,7 @@ public class VisionIOPhotonVision implements VisionIO {
           estimate.targetsUsed.size() > 1
               ? 0.0
               : (estimate.targetsUsed.isEmpty() ? 1.0 : estimate.targetsUsed.get(0).poseAmbiguity);
+      Logger.recordOutput("Vision/" + camera.getName() + "/Ambiguity", ambiguity);
 
       // Add the observation for downstream filtering and pose fusion
       poseObservations.add(
