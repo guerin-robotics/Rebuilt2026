@@ -37,7 +37,7 @@ public class VisionConstants {
   // yaw: -90
   public static final Transform3d robotToCamera0 =
       new Transform3d(
-          new Translation3d(Inches.of(1.0), Inches.of(-13.175), Inches.of(6.708-0.25)),
+          new Translation3d(Inches.of(1.0), Inches.of(-13.175), Inches.of(6.708 - 0.25)),
           new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(-90.0)));
 
   // Robot left camera (flipped to right):
@@ -49,7 +49,7 @@ public class VisionConstants {
   // yaw: 90
   public static final Transform3d robotToCamera1 =
       new Transform3d(
-          new Translation3d(Inches.of(1.0), Inches.of(13.425), Inches.of(6.708-0.25)),
+          new Translation3d(Inches.of(1.0), Inches.of(13.425), Inches.of(6.708 - 0.25)),
           new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(90.0)));
 
   // Shooter right (flipped to left):
@@ -61,7 +61,7 @@ public class VisionConstants {
   // yaw: 167.5
   public static final Transform3d robotToCamera2 =
       new Transform3d(
-          new Translation3d(Inches.of(-13.524), Inches.of(-6.175), Inches.of(12.684-0.25)),
+          new Translation3d(Inches.of(-13.524), Inches.of(-6.175), Inches.of(12.684 - 0.25)),
           new Rotation3d(Degrees.of(1.26), Degrees.of(-16.5), Degrees.of(167.5)));
 
   // Shooter left (flipped to right):
@@ -73,8 +73,8 @@ public class VisionConstants {
   // yaw: -192.5
   public static final Transform3d robotToCamera3 =
       new Transform3d(
-          new Translation3d(Inches.of(-13.512), Inches.of(5.272), Inches.of(12.59-0.25)),
-          new Rotation3d(Degrees.of(1.26), Degrees.of(-16.5), Degrees.of(-167.5)));
+          new Translation3d(Inches.of(-13.516), Inches.of(5.375), Inches.of(11.012 + 1.5)),
+          new Rotation3d(Degrees.of(0), Degrees.of(-15), Degrees.of(-180)));
 
   // ---- Filtering thresholds ----
 
