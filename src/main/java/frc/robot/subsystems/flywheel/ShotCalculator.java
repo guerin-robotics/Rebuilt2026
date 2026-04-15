@@ -1,6 +1,5 @@
 package frc.robot.subsystems.flywheel;
 
-import static edu.wpi.first.math.util.Units.inchesToMeters;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RevolutionsPerSecond;
@@ -10,7 +9,6 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import frc.robot.RobotState;
-import org.littletonrobotics.junction.Logger;
 
 /**
  * Calculates the required flywheel speed to hit a target on the field.
@@ -102,9 +100,6 @@ public class ShotCalculator {
     Translation2d targetPosition2d = target.toTranslation2d();
     double distanceMeters = robotPosition.getDistance(targetPosition2d);
 
-    Logger.recordOutput("Flywheel/ShotCalculator/TargetPosition", target);
-    Logger.recordOutput("Flywheel/ShotCalculator/RobotPosition", robotPosition);
-
     return getFlywheelSpeedForDistance(Meters.of(distanceMeters));
   }
 
@@ -126,9 +121,6 @@ public class ShotCalculator {
     double maxRPM = FlywheelConstants.Limits.MAX_SPEED.in(RevolutionsPerSecond) * 60.0;
     speedRPM = Math.max(minRPM, Math.min(maxRPM, speedRPM));
 
-    Logger.recordOutput("Flywheel/ShotCalculator/Distance_m", distanceMeters);
-    Logger.recordOutput("Flywheel/ShotCalculator/CalculatedSpeed_RPM", speedRPM);
-
     return RPM.of(speedRPM);
   }
 
@@ -143,66 +135,5 @@ public class ShotCalculator {
   public AngularVelocity getFlywheelSpeedForAllianceHub() {
     Translation3d hubTarget = RobotState.getInstance().getAllianceHubTarget();
     return getFlywheelSpeedForTarget(hubTarget);
-  }
-
-  /**
-   * Returns the 2D distance from the robot to a target.
-   *
-   * <p>Useful for logging and decision-making (e.g., "should we even try to shoot from here?")
-   *
-   * @param target The target position
-   * @return The horizontal distance to the target
-   */
-  public Distance getDistanceToTarget(Translation3d target) {
-    Translation2d robotPosition = RobotState.getInstance().getEstimatedPose().getTranslation();
-    Translation2d targetPosition2d = target.toTranslation2d();
-    double distanceMeters = robotPosition.getDistance(targetPosition2d);
-    return Meters.of(distanceMeters);
-  }
-
-  /**
-   * Checks if the robot is within effective shooting range of the alliance hub.
-   *
-   * <p>This can be used to provide driver feedback (LEDs, rumble) or to gate shooting commands.
-   *
-   * <p>The effective range is determined by the data points in the interpolation table - shooting
-   * from distances outside the characterized range may be inaccurate.
-   *
-   * @return true if the robot is within effective shooting range
-   */
-  public boolean isInShootingRange() {
-    Distance distance = RobotState.getInstance().getDistanceToAllianceHub();
-    double distanceMeters = distance.in(Meters);
-
-    // Check if within the characterized range
-    // The DISTANCE_TO_SPEED_MAP defines the range we've tested
-    boolean inRange = distanceMeters >= 0.5 && distanceMeters <= 15.0;
-
-    Logger.recordOutput("Flywheel/ShotCalculator/InShootingRange", inRange);
-    return inRange;
-  }
-
-  // Get minimum time of flight (m / ((rot/min) * (min/sec) * (m/rot)) = sec)
-  public double getMinTimeOfFlight() {
-    Distance minDistance = Meters.of(inchesToMeters(70));
-    double minTimeOfFlight =
-        (minDistance.magnitude() // m
-            / (getFlywheelSpeedForDistance(minDistance).magnitude() // rot/min
-                * (1 / 60) // min/sec
-                * FlywheelConstants.Mechanical.flywheelMetersPerRotation) // m/rot
-        );
-    return minTimeOfFlight;
-  }
-
-  // Get maximum time of flight (m / ((rot/min) * (min/sec) * (m/rot)) = sec)
-  public double getMaxTimeOfFlight() {
-    Distance maxDistance = Meters.of(inchesToMeters(205));
-    double maxTimeOfFlight =
-        (maxDistance.magnitude() // m
-            / (getFlywheelSpeedForDistance(maxDistance).magnitude() // rot/min
-                * (1 / 60) // min/sec
-                * FlywheelConstants.Mechanical.flywheelMetersPerRotation) // m/rot
-        );
-    return maxTimeOfFlight;
   }
 }
