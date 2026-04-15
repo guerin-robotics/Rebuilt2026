@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.2199757505266846,
-        "y": 5.674070894048454
+        "x": 3.3057136038448025,
+        "y": 5.512149260445926
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3529017805965404,
-        "y": 6.719441810507362
+        "x": 2.4386396339146583,
+        "y": 6.557520176904834
       },
       "isLocked": false,
       "linkedName": "Left-End-Pos"
@@ -112,12 +112,12 @@
     },
     {
       "anchor": {
-        "x": 3.2199757505266846,
-        "y": 5.674070894048454
+        "x": 3.3057136038448025,
+        "y": 5.512149260445926
       },
       "prevControl": {
-        "x": 4.804713833063744,
-        "y": 5.812952732357367
+        "x": 4.890451686381862,
+        "y": 5.651031098754839
       },
       "nextControl": null,
       "isLocked": false,
@@ -207,13 +207,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -51.89291163129033
+    "rotation": 130.0
   },
   "reversed": false,
   "folder": "Comp-Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -51.89291163129033
+    "rotation": 130.0
   },
   "useDefaultConstraints": true
 }

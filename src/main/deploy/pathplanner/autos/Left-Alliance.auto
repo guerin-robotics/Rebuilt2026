@@ -5,15 +5,9 @@
     "data": {
       "commands": [
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 3.0
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "Right-Delay-Path"
+            "pathName": "Left-Alliance-Path-1"
           }
         },
         {
@@ -29,7 +23,38 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 4.5
+                  "waitTime": 4.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopAll"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left-Half-Alliance-Path-2"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 4.0
                 }
               }
             ]
@@ -45,6 +70,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Other",
   "choreoAuto": false
 }

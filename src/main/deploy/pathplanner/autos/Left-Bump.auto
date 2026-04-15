@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Right-Comp-Path-1"
+            "pathName": "Left-Bump-Path-1"
           }
         },
         {
@@ -23,7 +23,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 4.375
+                  "waitTime": 4.0
                 }
               }
             ]
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Copy of Right-Comp-Path-2"
+            "pathName": "Left-Bump-Path-2"
           }
         },
         {
@@ -70,6 +70,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Other",
   "choreoAuto": false
 }

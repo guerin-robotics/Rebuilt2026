@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left-Disruptor-Path-1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Left-Disruptor-Path-2"
+            "pathName": "Left-Path"
           }
         },
         {
@@ -29,16 +23,22 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 6.0
+                  "waitTime": 4.5
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopAll"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Other",
   "choreoAuto": false
 }

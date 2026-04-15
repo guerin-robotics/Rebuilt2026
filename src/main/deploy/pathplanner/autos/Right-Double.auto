@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Ω-Left-Bump-Path-1"
+            "pathName": "Right-Path-1"
           }
         },
         {
@@ -38,38 +38,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Ω-Left-Bump-Path-2"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 4.0
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "stopAll"
+            "pathName": "Right-Path-2"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Other",
   "choreoAuto": false
 }

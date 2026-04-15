@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Speed-Test-1"
+            "pathName": "Left-Comp-Path-1"
           }
         },
         {
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Speed-Test-2"
+            "pathName": "Left-Depot-Path-1"
           }
         },
         {
@@ -70,6 +70,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Other",
   "choreoAuto": false
 }
