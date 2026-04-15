@@ -117,38 +117,38 @@ public class HubShiftUtil {
 
   /**
    * The fastest realistic time (seconds) for a fired ball to reach the hub and be detected.
-   * Combined with minFuelCountDelay this determines how early the robot must start shooting
-   * before a shift opens. Increase this value to start shooting sooner.
+   * Combined with minFuelCountDelay this determines how early the robot must start shooting before
+   * a shift opens. Increase this value to start shooting sooner.
    */
   private static final double minTimeOfFlight = 2.5;
 
   /**
    * The slowest realistic time (seconds) for a fired ball to reach the hub and be detected.
-   * Combined with maxFuelCountDelay this determines the latest moment a ball can leave the
-   * shooter and still be counted within the extended end window. Increase this value to stop
-   * shooting sooner (the window closes earlier to ensure late balls still make it).
+   * Combined with maxFuelCountDelay this determines the latest moment a ball can leave the shooter
+   * and still be counted within the extended end window. Increase this value to stop shooting
+   * sooner (the window closes earlier to ensure late balls still make it).
    */
   private static final double maxTimeOfFlight = 3.0;
 
   /**
-   * Shortest time (seconds) the field sensors need to register a scored ball after it arrives.
-   * Used together with minTimeOfFlight to compute the "approaching active" offset so the robot
-   * begins shooting early enough. Increase this value to start shooting sooner.
+   * Shortest time (seconds) the field sensors need to register a scored ball after it arrives. Used
+   * together with minTimeOfFlight to compute the "approaching active" offset so the robot begins
+   * shooting early enough. Increase this value to start shooting sooner.
    */
   private static final double minFuelCountDelay = 1.0;
 
   /**
    * Longest time (seconds) the field sensors may take to register a scored ball after it arrives.
    * Used together with maxTimeOfFlight to ensure that balls already in the air when an active
-   * window ends still have time to be counted. Increase this value to stop shooting sooner
-   * (the window end is pulled back so late-counted balls still fall inside it).
+   * window ends still have time to be counted. Increase this value to stop shooting sooner (the
+   * window end is pulled back so late-counted balls still fall inside it).
    */
   private static final double maxFuelCountDelay = 2.0;
 
   /**
-   * Extra seconds added PAST the official shift end so that balls already fired before the
-   * boundary can still be counted. Increase this value to keep shooting longer after a shift
-   * officially closes; decrease it to stop shooting sooner.
+   * Extra seconds added PAST the official shift end so that balls already fired before the boundary
+   * can still be counted. Increase this value to keep shooting longer after a shift officially
+   * closes; decrease it to stop shooting sooner.
    */
   private static final double shiftEndFuelCountExtension = 3.0;
 

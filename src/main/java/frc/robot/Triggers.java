@@ -1,6 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -164,27 +163,8 @@ public class Triggers {
   public final LoggedTrigger isShootClear =
       new LoggedTrigger("isShootClear", isShootSafeTime.and(isShootSafeZone));
 
-  // ── Intake safety sub-triggers (private, used only by isIntakeSafe) ──────────
-
-  // Returns true if the robot's estimated pose is NOT in a trench zone and NOT moving towards one
-  public LoggedTrigger isHoodSafe(Pose2d pose) {
-    return new LoggedTrigger(
-        "isHoodSafe",
-        () -> {
-          HardwareConstants.Zones.approachingZoneComposite currentSpecificZone =
-              RobotState.getInstance().getApproachingZone(pose);
-          HardwareConstants.Zones.broadZone currentBroadZone =
-              RobotState.getInstance().getBroadZone(pose);
-          boolean unsafe =
-              ((currentBroadZone == HardwareConstants.Zones.broadZone.ALLIANCE_TRENCH)
-                  || (currentBroadZone == HardwareConstants.Zones.broadZone.OPPOSING_TRENCH)
-                  || (currentSpecificZone
-                      == HardwareConstants.Zones.approachingZoneComposite
-                          .APPROACHING_ALLIANCE_TRENCH)
-                  || (currentSpecificZone
-                      == HardwareConstants.Zones.approachingZoneComposite
-                          .APPROACHING_OPPOSING_TRENCH));
-          return !unsafe;
-        });
-  }
+  // REMOVED: isHoodSafe(Pose2d) — was commented out at its only call site (Hood.java line 42).
+  // Also had a design flaw: created a NEW LoggedTrigger object every call, which means GC
+  // pressure every loop if it were ever re-enabled. The Pose2d parameter was also captured
+  // once rather than re-evaluated, so the trigger would never update.
 }

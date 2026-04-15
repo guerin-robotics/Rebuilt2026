@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -119,9 +120,13 @@ public class Robot extends LoggedRobot {
     // doesn't call DriverStation.getAlliance() (which creates an Optional) 20-30+ times per cycle.
     AllianceFlipUtil.refresh();
 
+    // CPU FIX: cache pose once — was calling getEstimatedPose() 4 separate times here,
+    // plus getBroadZone(pose) was called again inside getSpecificZone and getApproachingZone.
+    Pose2d currentPose = RobotState.getInstance().getEstimatedPose();
+
     // Update the robot's pose on the main field map dashboard widget every loop.
     // This must be in robotPeriodic() so it runs in ALL modes (disabled, teleop, auto, test).
-    fieldMap.setRobotPose(RobotState.getInstance().getEstimatedPose());
+    fieldMap.setRobotPose(currentPose);
 
     // Return to non-RT thread priority (do not modify the first argument)
     // Threads.setCurrentThreadPriority(false, 10);
@@ -137,15 +142,11 @@ public class Robot extends LoggedRobot {
       HardwareConstants.TuningConstants.TUNING_MODE = HardwareConstants.TuningConstants.isTuning;
     }
 
+    Logger.recordOutput("RobotState/broadZone", RobotState.getInstance().getBroadZone(currentPose));
     Logger.recordOutput(
-        "RobotState/broadZone",
-        RobotState.getInstance().getBroadZone(RobotState.getInstance().getEstimatedPose()));
+        "RobotState/specificZone", RobotState.getInstance().getSpecificZone(currentPose));
     Logger.recordOutput(
-        "RobotState/specificZone",
-        RobotState.getInstance().getSpecificZone(RobotState.getInstance().getEstimatedPose()));
-    Logger.recordOutput(
-        "RobotState/approachingZone",
-        RobotState.getInstance().getApproachingZone(RobotState.getInstance().getEstimatedPose()));
+        "RobotState/approachingZone", RobotState.getInstance().getApproachingZone(currentPose));
   }
 
   /** This function is called once when the robot is disabled. */
