@@ -254,7 +254,7 @@ public class RobotContainer {
     autoChooser = new LoggedDashboardChooser<>("Auto Choices");
     autoChooser.addDefaultOption("None", new AutoOption(Commands::none, List.of(), new Pose2d()));
     autoChooser.addOption("Score and Pickup", AutoPaths.scoreAndPickup(autoContext));
-    autoChooser.addOption("Two Piece", AutoPaths.leftAuto(autoContext));
+    autoChooser.addOption("Left Auto", AutoPaths.leftAuto(autoContext));
 
     // Publish the auto preview field to the dashboard so we can see the selected path
     SmartDashboard.putData("Auto Preview", autoPreviewField);
