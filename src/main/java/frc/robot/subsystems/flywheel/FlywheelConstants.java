@@ -68,9 +68,10 @@ public class FlywheelConstants {
     // With kV=0 and kP=0 the motor only applies static friction amps — it never
     // actually drives toward the velocity setpoint. Start with small values and
     // tune up from there.
-    public static double KS = 10.0; // 4.5
+    public static double KS = 8.0; // 10.0
     public static double KV = 0.12; // feedforward: Amps per rps — start ~0.12, tune to taste
-    public static double KP = 7.0; // feedback: Amps per rps of error — start ~2.0, tune to taste
+    public static double KP =
+        10.0; // 12.0 feedback: Amps per rps of error — start ~2.0, tune to taste
     public static double KD = 0; // 0
   }
 

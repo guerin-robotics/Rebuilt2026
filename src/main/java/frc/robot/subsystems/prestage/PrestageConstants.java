@@ -25,9 +25,9 @@ public class PrestageConstants {
 
   // Real robot PID gains for torque-current velocity control
   public static class PID {
-    public static final double KS = 9.0; // 8.0
+    public static final double KS = 8.0; // 8.0
     public static final double KV = 0.0; // 0.0
-    public static final double KP = 13.0; // 15.0
+    public static final double KP = 18.0; // 13.0
 
     public static final double KI = 0.0; // 0.0
 
