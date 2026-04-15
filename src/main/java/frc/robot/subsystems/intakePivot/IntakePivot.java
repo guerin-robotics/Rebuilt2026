@@ -55,11 +55,6 @@ public class IntakePivot extends SubsystemBase {
 
     // Update the visualizer every loop
     visualizer.update(currentRotations, goalRotations, atGoal);
-
-    // Log the currently running command for this subsystem
-    Logger.recordOutput(
-        "Intake Pivot/CurrentCommand",
-        getCurrentCommand() != null ? getCurrentCommand().getName() : "none");
   }
 
   public void setPivotVoltage(Voltage volts) {

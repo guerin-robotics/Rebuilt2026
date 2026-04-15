@@ -35,11 +35,6 @@ public class Prestage extends SubsystemBase {
         inputs.prestageRightSupplyAmps != null
             ? inputs.prestageRightSupplyAmps.in(Units.Amps)
             : 0.0);
-
-    // Log the currently running command for this subsystem
-    Logger.recordOutput(
-        "Prestage/CurrentCommand",
-        getCurrentCommand() != null ? getCurrentCommand().getName() : "none");
   }
 
   public void setPrestageVoltage(Voltage volts) {

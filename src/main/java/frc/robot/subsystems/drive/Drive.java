@@ -39,7 +39,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.lib.FieldConstants;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.Robot;
@@ -273,33 +272,6 @@ public class Drive extends SubsystemBase {
     }
     kinematics.resetHeadings(headings);
     stop();
-  }
-
-  /**
-   * For dynamic shooting, we'll want to give the drivetrain a heading to stick to in order to keep
-   * shooting at the hub. This function calculates that heading based on known quantities: robot
-   * odometry and hub position.
-   *
-   * @return A rotation2d that is the drivetrain's target heading.
-   */
-  public Rotation2d getHeadingForShootDynamic() {
-    Translation2d fuelToGroundVector =
-        new Translation2d(
-            (FieldConstants.Hub.topCenterPoint.getX()
-                - RobotState.getInstance().getEstimatedPose().getX()),
-            (FieldConstants.Hub.topCenterPoint.getY()
-                - RobotState.getInstance().getEstimatedPose().getY()));
-    Translation2d robotToGroundVector =
-        new Translation2d(
-            (RobotState.getInstance().getFieldRelativeVelocity().vxMetersPerSecond),
-            (RobotState.getInstance().getFieldRelativeVelocity().vyMetersPerSecond));
-    Translation2d fuelToRobotVector =
-        new Translation2d(
-            (fuelToGroundVector.getX() - robotToGroundVector.getX()),
-            (fuelToGroundVector.getY() - robotToGroundVector.getY()));
-    // This quantity is the angle to the goal
-    Rotation2d targetHeading = fuelToRobotVector.getAngle();
-    return targetHeading;
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */

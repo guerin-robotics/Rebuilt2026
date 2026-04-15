@@ -15,7 +15,6 @@ import frc.lib.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
 
 /**
  * Centralized robot state container that tracks the robot's position and velocity on the field.
@@ -357,7 +356,6 @@ public class RobotState {
             new Translation3d(Meters.of(3.135).magnitude(), Meters.of(6.129).magnitude(), 0);
       }
     }
-    Logger.recordOutput("Flywheel/passTarget", passTarget);
     return passTarget;
   }
 
