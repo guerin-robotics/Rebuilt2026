@@ -144,30 +144,30 @@ public class DriveCommands {
         .withName("JoystickDriveLimited");
   }
 
-  public static Command driveLucasProof(
-      Drive drive,
-      DoubleSupplier xSupplier,
-      DoubleSupplier ySupplier,
-      DoubleSupplier omegaSupplier,
-      Trigger override) {
-    return new ContinuousConditionalCommand(
-            joystickDrive(drive, xSupplier, ySupplier, omegaSupplier),
-            joystickDriveLimited(drive, xSupplier, ySupplier, omegaSupplier),
-            () -> {
-              boolean driveNormal =
-                  (Triggers.getInstance().isIntakeSafe.getAsBoolean() || override.getAsBoolean());
-              Logger.recordOutput(
-                  "RobotState/isIntakeSafe",
-                  Triggers.getInstance().isIntakeSafe.getAsBoolean()
-                      ? "intakeSafe"
-                      : "intakeUnsafe");
-              Logger.recordOutput(
-                  "RobotState/isOverrideActive",
-                  override.getAsBoolean() ? "override" : "noOverride");
-              return driveNormal;
-            })
-        .withName("DriveLucasProof");
-  }
+  // public static Command driveLucasProof(
+  //     Drive drive,
+  //     DoubleSupplier xSupplier,
+  //     DoubleSupplier ySupplier,
+  //     DoubleSupplier omegaSupplier,
+  //     Trigger override) {
+  //   return new ContinuousConditionalCommand(
+  //           joystickDrive(drive, xSupplier, ySupplier, omegaSupplier),
+  //           joystickDriveLimited(drive, xSupplier, ySupplier, omegaSupplier),
+  //           () -> {
+  //             boolean driveNormal =
+  //                 (Triggers.getInstance().isIntakeSafe.getAsBoolean() || override.getAsBoolean());
+  //             Logger.recordOutput(
+  //                 "RobotState/isIntakeSafe",
+  //                 Triggers.getInstance().isIntakeSafe.getAsBoolean()
+  //                     ? "intakeSafe"
+  //                     : "intakeUnsafe");
+  //             Logger.recordOutput(
+  //                 "RobotState/isOverrideActive",
+  //                 override.getAsBoolean() ? "override" : "noOverride");
+  //             return driveNormal;
+  //           })
+  //       .withName("DriveLucasProof");
+  // }
 
   /**
    * Field relative drive command using joystick for linear control and PID for angular control.

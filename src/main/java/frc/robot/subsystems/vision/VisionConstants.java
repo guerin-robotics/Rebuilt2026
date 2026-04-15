@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems.vision;
 
+import static edu.wpi.first.math.util.Units.inchesToMeters;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 
@@ -20,7 +21,7 @@ import org.littletonrobotics.junction.Logger;
 public class VisionConstants {
   // AprilTag layout
   public static AprilTagFieldLayout aprilTagLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded); // .k2026RebuiltAndymark
+      AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField); // .k2026RebuiltAndymark
 
   // Camera names, must match names configured on coprocessor
   public static String camera0Name = "RobotRight";
@@ -29,60 +30,67 @@ public class VisionConstants {
   public static String camera3Name = "ShooterLeft";
 
   // Robot right camera (flipped to left):
-  // x: -1.000
-  // y: -12.630
-  // z: 4.811 + belly to flooor (1.75) = 6.561
-  // roll: 0
-  // pitch: -15
-  // yaw: -90
+  // x: 1.000
+  // y: -13.175
+  // z: 6.708 - 0.25 = 6.458
+  // roll: 0.0
+  // pitch: 15.0 (positive = tilted upward in WPILib)
+  // yaw: -90.0
   public static final Transform3d robotToCamera0 =
       new Transform3d(
-          new Translation3d(Inches.of(1.0), Inches.of(-13.175), Inches.of(6.708 - 0.25)),
-          new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(-90.0)));
+          new Translation3d(Inches.of(1.0), Inches.of(-12.171), Inches.of(6.438)),
+          new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(270.0)));
 
   // Robot left camera (flipped to right):
-  // x: -1.000
-  // y: 12.880
-  // z: 4.811 + belly to flooor (1.75) = 6.561
-  // roll: 0
-  // pitch: -15
-  // yaw: 90
+  // x: 1.000
+  // y: 13.425
+  // z: 6.708 - 0.25 = 6.458
+  // roll: 0.0
+  // pitch: 15.0
+  // yaw: 90.0
   public static final Transform3d robotToCamera1 =
       new Transform3d(
-          new Translation3d(Inches.of(1.0), Inches.of(13.425), Inches.of(6.708 - 0.25)),
+          new Translation3d(Inches.of(1.0), Inches.of(12.421), Inches.of(6.438)),
           new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(90.0)));
 
   // Shooter right (flipped to left):
-  // x: -12.991
-  // y: -6.279
-  // z: 10.777 + belly to floor (1.75) = 12.527
-  // roll: 0
-  // pitch: -15
-  // yaw: 167.5
+  // x: -13.576
+  // y: -6.125
+  // z: 11.028 + 1.5 = 12.528
+  // roll: 0.0
+  // pitch: 15.0
+  // yaw: 180.0
   public static final Transform3d robotToCamera2 =
       new Transform3d(
-          new Translation3d(Inches.of(-13.524), Inches.of(-6.175), Inches.of(12.684 - 0.25)),
-          new Rotation3d(Degrees.of(1.26), Degrees.of(-16.5), Degrees.of(167.5)));
+          new Translation3d(
+              Inches.of(-12.572), Inches.of(-6.125), Inches.of(12.509)), // -11.028 - 1.5
+          new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(180)));
 
   // Shooter left (flipped to right):
-  // x: -12.979
-  // y: 5.394
-  // z: 10.690 + belly to floor (1.75) = 12.44
-  // roll: 0
-  // pitch: -15
-  // yaw: -192.5
+  // x: -13.576
+  // y: 5.375
+  // z: 11.028 + 1.5 = 12.528
+  // roll: 0.0
+  // pitch: 15.0
+  // yaw: 180.0
   public static final Transform3d robotToCamera3 =
       new Transform3d(
-          new Translation3d(Inches.of(-13.512), Inches.of(5.272), Inches.of(12.59 - 0.25)),
-          new Rotation3d(Degrees.of(1.26), Degrees.of(-16.5), Degrees.of(-167.5)));
+          new Translation3d(
+              Inches.of(-12.572), Inches.of(5.375), Inches.of(12.509)), // -11.028 - 1.5
+          new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(180)));
 
   // ---- Filtering thresholds ----
 
-  // Single-tag ambiguity above this is rejected (multi-tag is always trusted)
-  public static double maxAmbiguity = 0.2;
+  // Single-tag ambiguity above this is rejected (multi-tag is always trusted).
+  // Lowered from 0.2 → 0.1 to reduce false-positive single-tag solves
+  // that pick the wrong PnP solution.
+  public static double maxAmbiguity = 0.3;
 
   // Estimated pose Z (height) must be below this to be realistic
-  public static double maxZError = 0.75;
+  public static double maxZError = 2;
+
+  // Not below the floor
+  public static double floorError = inchesToMeters(6);
 
   // Tags farther than this are unreliable — reject the observation entirely.
   // At long range, small pixel errors become large pose errors.
@@ -97,14 +105,21 @@ public class VisionConstants {
   // Large pitch/roll in the estimate means the solve is wrong.
   public static double maxPitchRollRadians = Math.toRadians(10.0);
 
+  // If a vision observation would move the estimated pose by more than this
+  // distance (meters), reject it as an outlier. Catches bad single-tag solves
+  // that pick the wrong PnP ambiguity solution.
+  // public static double maxPoseJumpMeters = 10; // ~20 inches
+
   // ---- Standard deviation baselines ----
   // For 1 meter distance and 1 tag. Automatically scaled by distance² / tagCount.
   public static double linearStdDevBaseline = 0.01; // Meters
   public static double angularStdDevBaseline = 0.03; // Radians
 
-  // windham uses 0.01 for linear baseline and 0.01 for angular baseline.
-  // we could consider using these in a practice match.
-  // we should consider putting the shooter cameras back to a 10 std dev as well
+  // Extra multiplier applied to single-tag observations (tagCount == 1).
+  // Single-tag PnP is inherently less constrained than multi-tag, so we
+  // trust it less. This prevents a single ambiguous solve from yanking the
+  // pose estimator.
+  public static double singleTagStdDevMultiplier = 2.0;
 
   // Standard deviation multipliers for each camera
   // (Adjust to trust some cameras more than others)
@@ -112,8 +127,8 @@ public class VisionConstants {
       new double[] {
         1.0, // Camera 0
         1.0, // Camera 1
-        2.0, // Camera 2
-        2.0 // Camera 3
+        1.0, // Camera 2
+        1.0 // Camera 3
       };
 
   // Multipliers to apply for MegaTag 2 observations

@@ -18,6 +18,16 @@ import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
 
 public class HubShiftUtil {
+  /**
+   * Utility class used to determine which "hub shift" (active/inactive windows) are in effect
+   * during a match.
+   *
+   * <p>This file contains constants for scheduled periods during teleop, helper methods for
+   * converting DriverStation/FMS inputs into which alliance is "active first", and convenience
+   * Commands for toggling/testing the utility.
+   *
+   * <p>Comments are added to help students understand each value and method.
+   */
   public enum ShiftEnum {
     TRANSITION,
     SHIFT1,
@@ -29,53 +39,190 @@ public class HubShiftUtil {
     DISABLED;
   }
 
+  // When true, flips which alliance is considered the initial "winning" alliance
+  // for testing purposes. This is used to override the alliance selection logic
+  // (see `getFirstActiveAlliance`). Default false (no flip).
   public static boolean flipped = false;
 
+  // When true, disables hub-shift logic entirely. Used to temporarily ignore
+  // the schedule and treat all times as inactive for testing or disabling.
   public static boolean disabled = false;
 
+  /**
+   * Simple immutable struct that describes the currently applicable shift.
+   *
+   * <p>Fields: - currentShift: which ShiftEnum period we're in (AUTO, SHIFT1.., ENDGAME...) -
+   * elapsedTime: how many seconds have elapsed since the start of the current shift window
+   * (combined windows considered when appropriate) - remainingTime: how many seconds remain until
+   * the end of the current shift window (combined windows considered when appropriate) - active:
+   * whether this shift is an "active" hub period (true) or an "inactive" period (false)
+   */
   public record ShiftInfo(
       ShiftEnum currentShift, double elapsedTime, double remainingTime, boolean active) {}
 
+  // Internal timer used to track elapsed match time for hub shift calculations.
+  // This timer is started/restarted by `initialize()` at the beginning of
+  // teleop so that the utility can compute relative times.
   private static Timer shiftTimer = new Timer();
+
+  // Cached array of enum values so we can index into them using an index
+  // derived from the start/end time arrays.
   private static final ShiftEnum[] shiftsEnums = ShiftEnum.values();
 
+  // Official (baseline) teleop schedule windows. These arrays define the
+  // start and end seconds (relative to teleop start) of the named shifts.
+  // Index 0 -> SHIFT1 (0-10), index 1 -> SHIFT2 (10-35), etc.; the last window
+  // ends at 140 which is the full teleop duration used for indexing purposes.
   private static final double[] shiftStartTimes = {0.0, 10.0, 35.0, 60.0, 85.0, 110.0};
   private static final double[] shiftEndTimes = {10.0, 35.0, 60.0, 85.0, 110.0, 140.0};
 
+  // =========================================================================
+  // SHOOTING WINDOW TUNING CONSTANTS
+  // =========================================================================
+  // The official hub schedule has hard boundaries — for example, an active
+  // shift might start at exactly 60 s and end at exactly 85 s into teleop.
+  // In practice the robot cannot wait until t=60 s to fire its first ball,
+  // because the ball takes time to fly and the field sensors take more time
+  // to register the score.  These five constants let you "shift" each window
+  // boundary so the robot starts and stops shooting at the right moments.
+  //
+  // The two derived values below (approachingActiveFudge / endingActiveFudge)
+  // are what actually move the window boundaries; they are computed from the
+  // five raw constants listed here.
+  //
+  // ── HOW TO TUNE ──────────────────────────────────────────────────────────
+  //
+  // TO START SHOOTING SOONER  (robot begins firing earlier before a shift opens)
+  //   → Increase  minTimeOfFlight   (ball takes longer to travel)
+  //   → Increase  minFuelCountDelay (field takes longer to register the score)
+  //   Both make approachingActiveFudge more negative, so the "active" window
+  //   opens further ahead of the official shift start time.
+  //   Example: raising minTimeOfFlight from 2.5 → 3.0 starts the window 0.5 s
+  //   earlier.
+  //
+  // TO START SHOOTING LATER  (robot waits longer before firing near a shift)
+  //   → Decrease  minTimeOfFlight   or  minFuelCountDelay
+  //
+  // TO STOP SHOOTING LATER  (robot keeps firing longer after a shift closes)
+  //   → Increase  shiftEndFuelCountExtension
+  //   Example: raising it from 3.0 → 4.0 keeps the "active" window open 1 s
+  //   longer after the official shift end.
+  //
+  // TO STOP SHOOTING SOONER  (robot stops earlier before a shift closes)
+  //   → Decrease  shiftEndFuelCountExtension
+  //   → Increase  maxTimeOfFlight   or  maxFuelCountDelay
+  //   Both make endingActiveFudge more negative, pulling the end of the
+  //   active window further back before the official shift end.
+  // =========================================================================
+
+  /**
+   * The fastest realistic time (seconds) for a fired ball to reach the hub and be detected.
+   * Combined with minFuelCountDelay this determines how early the robot must start shooting
+   * before a shift opens. Increase this value to start shooting sooner.
+   */
+  private static final double minTimeOfFlight = 2.5;
+
+  /**
+   * The slowest realistic time (seconds) for a fired ball to reach the hub and be detected.
+   * Combined with maxFuelCountDelay this determines the latest moment a ball can leave the
+   * shooter and still be counted within the extended end window. Increase this value to stop
+   * shooting sooner (the window closes earlier to ensure late balls still make it).
+   */
+  private static final double maxTimeOfFlight = 3.0;
+
+  /**
+   * Shortest time (seconds) the field sensors need to register a scored ball after it arrives.
+   * Used together with minTimeOfFlight to compute the "approaching active" offset so the robot
+   * begins shooting early enough. Increase this value to start shooting sooner.
+   */
   private static final double minFuelCountDelay = 1.0;
+
+  /**
+   * Longest time (seconds) the field sensors may take to register a scored ball after it arrives.
+   * Used together with maxTimeOfFlight to ensure that balls already in the air when an active
+   * window ends still have time to be counted. Increase this value to stop shooting sooner
+   * (the window end is pulled back so late-counted balls still fall inside it).
+   */
   private static final double maxFuelCountDelay = 2.0;
+
+  /**
+   * Extra seconds added PAST the official shift end so that balls already fired before the
+   * boundary can still be counted. Increase this value to keep shooting longer after a shift
+   * officially closes; decrease it to stop shooting sooner.
+   */
   private static final double shiftEndFuelCountExtension = 3.0;
-  private static final double minTimeOfFlight =
-      2.5; // ShotCalculator.getInstance().getMinTimeOfFlight();
-  private static final double maxTimeOfFlight =
-      3.0; // ShotCalculator.getInstance().getMaxTimeOfFlight();
+
+  // ── DERIVED OFFSETS (computed from the constants above) ──────────────────
+  //
+  // approachingActiveFudge — applied to the START of an active window.
+  //   Formula:  -(minTimeOfFlight + minFuelCountDelay)
+  //   Example with current values: -(2.5 + 1.0) = -3.5 s
+  //   Effect: the robot treats an active window as opening earlier than the
+  //   official shift start, giving fired balls time to arrive and be counted.
+  //   NOTE: if you change minTimeOfFlight or minFuelCountDelay, update the
+  //   example value in this comment to match.
+  //   Change: adjust minTimeOfFlight or minFuelCountDelay (see tuning guide above).
   private static final double approachingActiveFudge = -1 * (minTimeOfFlight + minFuelCountDelay);
+
+  // endingActiveFudge — applied to the END of an active window.
+  //   Formula:  shiftEndFuelCountExtension - (maxTimeOfFlight + maxFuelCountDelay)
+  //   Example with current values: 3.0 - (3.0 + 2.0) = -2.0 s
+  //   Effect: the robot treats an active window as closing earlier than the
+  //   official shift end.  shiftEndFuelCountExtension extends the window past
+  //   the boundary, but we subtract flight + counting time so the last ball
+  //   shot still arrives within that extended window.
+  //   NOTE: if you change any of the three constants above, update the
+  //   example value in this comment to match.
+  //   Change: adjust shiftEndFuelCountExtension, maxTimeOfFlight, or
+  //   maxFuelCountDelay (see tuning guide above).
   private static final double endingActiveFudge =
       shiftEndFuelCountExtension + -1 * (maxTimeOfFlight + maxFuelCountDelay);
 
+  // Tracks whether the first-active alliance is flipped for testing. Not
+  // currently used directly (kept for compatibility with older code paths).
   private static boolean firstActiveAlliance = false;
+  // End of autonomous period (seconds) - used when in AUTO mode
   public static final double autoEndTime = 20.0;
+  // Total teleop duration used for scheduling math (seconds)
   public static final double teleopDuration = 140.0;
+  // Default schedule arrays indicating whether each scheduled window is
+  // considered "active" (true) or "inactive" (false) for the alliance that
+  // starts active.
   private static final boolean[] activeSchedule = {true, true, false, true, false, true};
   private static final boolean[] inactiveSchedule = {true, false, true, false, true, true};
+  // If the local timer and the field-supplied teleop clock differ by this
+  // many seconds or more, adjust the internal offset to re-sync (used when
+  // FMS is attached and teleop time is reported by DriverStation).
   private static final double timeResetThreshold = 3.0;
+  // Offset applied to the internal shiftTimer to keep it aligned with the
+  // field teleop clock when running on an actual field with FMS attached.
   private static double shiftTimerOffset = 0.0;
+  // Optional override supplier that can be set for tests to force which
+  // alliance is treated as the initial "winning" alliance. When present,
+  // the supplier should return Optional.of(true/false) to indicate flip.
   @Setter private static Supplier<Optional<Boolean>> allianceWinOverride = () -> Optional.empty();
 
   public static Optional<Boolean> getAllianceWinOverride() {
     return allianceWinOverride.get();
   }
 
+  /**
+   * Returns the optional override that may force which alliance is considered the "first active".
+   * This is useful for testing and flipping behavior without relying on FMS messages.
+   */
   public static Boolean isActiveFirst() {
     var alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
-
+    // Returns true if the current DriverStation alliance is the one that is
+    // considered the first active alliance according to `getFirstActiveAlliance()`.
     return alliance == getFirstActiveAlliance();
   }
 
   public static Alliance getFirstActiveAlliance() {
     var alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
-
-    // Return override value
+    // 1) If an explicit override is provided, use it. The override is a
+    //    boolean where `true` means we flip the original alliance (use the
+    //    opposite), and `false` means keep it as-is. The logic below returns
+    //    which alliance should be used as the one that is "first active".
     var winOverride = getAllianceWinOverride();
     if (!winOverride.isEmpty()) {
       return winOverride.get()
@@ -83,7 +230,10 @@ public class HubShiftUtil {
           : (alliance == Alliance.Blue ? Alliance.Blue : Alliance.Red);
     }
 
-    // Return FMS value
+    // 2) If there is an FMS Game Specific Message (GSM), interpret its first
+    //    character. Historically, this message encoded which side (R/B)
+    //    starts with the control of the hub. We invert intentionally because
+    //    of historical mapping between message characters and field sides.
     String message = DriverStation.getGameSpecificMessage();
     if (message.length() > 0) {
       char character = message.charAt(0);
@@ -94,12 +244,15 @@ public class HubShiftUtil {
       }
     }
 
-    // Return default value
+    // 3) If nothing else available, return the opposite alliance as the
+    //    default "first active" to provide a deterministic fallback.
     return alliance == Alliance.Blue ? Alliance.Red : Alliance.Blue;
   }
 
   /** Starts the timer at the begining of teleop. */
   public static void initialize() {
+    // Reset any offset adjustments and restart the internal timer. Call at
+    // the start of teleop so relative times are computed from zero.
     shiftTimerOffset = 0;
     shiftTimer.restart();
   }
@@ -114,6 +267,11 @@ public class HubShiftUtil {
     return currentSchedule;
   }
 
+  /**
+   * Returns the schedule to use based on which alliance is considered to start active. If the
+   * alliance that the DriverStation reports matches the alliance that `getFirstActiveAlliance()`
+   * returned, we use the `activeSchedule`, otherwise we use `inactiveSchedule`.
+   */
   private static ShiftInfo getShiftInfo(
       boolean[] currentSchedule, double[] shiftStartTimes, double[] shiftEndTimes) {
     double timerValue = shiftTimer.get();
@@ -174,10 +332,26 @@ public class HubShiftUtil {
     return shiftInfo;
   }
 
+  /**
+   * Core method that computes which shift window we're currently in and the elapsed/remaining times
+   * for it. The method takes a schedule and arrays of start/end times so it can be used for both
+   * the official schedule and a "shifted" schedule that applies fudge factors.
+   *
+   * <p>Behavior notes: - If the Robot is in Autonomous, returns AUTO with remaining time until
+   * `autoEndTime`. - If enabled in teleop, finds the matching index into the provided start/end
+   * arrays and computes elapsed/remaining times. If adjacent windows have the same active/inactive
+   * value, the elapsed/remaining times are combined across the boundary to present a single
+   * continuous active/inactive period. - If a significant discrepancy exists between the local
+   * timer and the FMS teleop clock, the offset is adjusted to re-sync (when FMS attached).
+   */
   public static ShiftInfo getOfficialShiftInfo() {
     return getShiftInfo(getSchedule(), shiftStartTimes, shiftEndTimes);
   }
 
+  /**
+   * Returns shift information computed from the official (baseline) schedule defined by
+   * `shiftStartTimes`/`shiftEndTimes` and the current schedule (active/inactive) for the match.
+   */
   public static ShiftInfo getShiftedShiftInfo() {
     boolean[] shiftSchedule = getSchedule();
     // Starting active
@@ -220,6 +394,12 @@ public class HubShiftUtil {
     // }
   }
 
+  /**
+   * Returns a shifted version of the shift info which applies the precomputed fudge factors
+   * (approachingActiveFudge / endingActiveFudge) to start/end times. The goal is to slightly
+   * advance or extend active windows to account for ball flight time and sensor delays so the robot
+   * doesn't prematurely cut off scoring actions.
+   */
   public static void changeFlipped() {
     if (flipped) {
       flipped = false;
@@ -230,15 +410,28 @@ public class HubShiftUtil {
     }
   }
 
+  /**
+   * Toggle the `flipped` test flag and set the `allianceWinOverride` so the rest of this utility
+   * will treat the alliance as flipped. Useful for operator testing when you want to pretend the
+   * other alliance started active.
+   */
   public static Command flipWinner() {
     return new InstantCommand(() -> changeFlipped());
   }
 
+  /**
+   * Returns a simple InstantCommand that flips which alliance is considered first-active. Can be
+   * bound to a button for quick operator testing.
+   */
   public static void toggleDisable() {
     disabled = !disabled;
     Logger.recordOutput("RobotState/disabled", disabled);
   }
 
+  /**
+   * Toggle the disabled flag for this utility and record it to the logger. When disabled is true,
+   * other code can choose to ignore hub shift state.
+   */
   public static Command disableHubShiftUtil() {
     return new InstantCommand(() -> toggleDisable());
   }
