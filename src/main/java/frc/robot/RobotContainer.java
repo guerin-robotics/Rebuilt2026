@@ -254,7 +254,8 @@ public class RobotContainer {
               () -> MathUtil.clamp(-getThrustY(), -1.0, 1.0),
               () -> MathUtil.clamp(-getThrustX(), -1.0, 1.0),
               () -> MathUtil.clamp(-getThrustRot(), -1.0, 1.0)));
-      thrustmaster.button(1)
+      thrustmaster
+          .button(1)
           .whileTrue(
               DriveCommands.joystickDriveAtAngle(
                   drive,
