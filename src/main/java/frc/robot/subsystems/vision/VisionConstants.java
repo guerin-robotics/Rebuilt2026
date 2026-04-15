@@ -84,7 +84,7 @@ public class VisionConstants {
   public static double maxAmbiguity = 0.1;
 
   // Estimated pose Z (height) must be below this to be realistic
-  public static double maxZError = 0.75;
+  public static double maxZError = 2;
 
   // Tags farther than this are unreliable — reject the observation entirely.
   // At long range, small pixel errors become large pose errors.
