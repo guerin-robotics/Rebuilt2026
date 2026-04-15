@@ -38,7 +38,7 @@ public class VisionConstants {
   public static final Transform3d robotToCamera0 =
       new Transform3d(
           new Translation3d(Inches.of(1.0), Inches.of(-13.175), Inches.of(6.708 - 0.25)),
-          new Rotation3d(Degrees.of(0.0), Degrees.of(15.0), Degrees.of(-90.0)));
+          new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(-90.0)));
 
   // Robot left camera (flipped to right):
   // x: 1.000
@@ -50,7 +50,7 @@ public class VisionConstants {
   public static final Transform3d robotToCamera1 =
       new Transform3d(
           new Translation3d(Inches.of(1.0), Inches.of(13.425), Inches.of(6.708 - 0.25)),
-          new Rotation3d(Degrees.of(0.0), Degrees.of(15.0), Degrees.of(90.0)));
+          new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(90.0)));
 
   // Shooter right (flipped to left):
   // x: -13.576
@@ -61,8 +61,8 @@ public class VisionConstants {
   // yaw: 180.0
   public static final Transform3d robotToCamera2 =
       new Transform3d(
-          new Translation3d(Inches.of(-13.576), Inches.of(-6.125), Inches.of(11.028 + 1.5)),
-          new Rotation3d(Degrees.of(0), Degrees.of(15), Degrees.of(180)));
+          new Translation3d(Inches.of(-13.576), Inches.of(-6.125), Inches.of(0.0)), // -11.028 - 1.5
+          new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(180)));
 
   // Shooter left (flipped to right):
   // x: -13.576
@@ -73,8 +73,8 @@ public class VisionConstants {
   // yaw: 180.0
   public static final Transform3d robotToCamera3 =
       new Transform3d(
-          new Translation3d(Inches.of(-13.576), Inches.of(5.375), Inches.of(11.028 + 1.5)),
-          new Rotation3d(Degrees.of(0), Degrees.of(15), Degrees.of(180)));
+          new Translation3d(Inches.of(-13.576), Inches.of(5.375), Inches.of(0.0)), // -11.028 - 1.5
+          new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(180)));
 
   // ---- Filtering thresholds ----
 
@@ -102,7 +102,7 @@ public class VisionConstants {
   // If a vision observation would move the estimated pose by more than this
   // distance (meters), reject it as an outlier. Catches bad single-tag solves
   // that pick the wrong PnP ambiguity solution.
-  public static double maxPoseJumpMeters = 0.5; // ~20 inches
+  // public static double maxPoseJumpMeters = 10; // ~20 inches
 
   // ---- Standard deviation baselines ----
   // For 1 meter distance and 1 tag. Automatically scaled by distance² / tagCount.

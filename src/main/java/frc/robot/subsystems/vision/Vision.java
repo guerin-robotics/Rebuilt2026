@@ -129,7 +129,9 @@ public class Vision extends SubsystemBase {
         // the current estimated pose. Catches bad single-tag PnP solutions.
         Pose2d currentPose = RobotState.getInstance().getEstimatedPose();
         double poseJump =
-            currentPose.getTranslation().getDistance(observation.pose().toPose2d().getTranslation());
+            currentPose
+                .getTranslation()
+                .getDistance(observation.pose().toPose2d().getTranslation());
 
         // Check whether to reject pose
         boolean rejectPose =
@@ -138,13 +140,13 @@ public class Vision extends SubsystemBase {
                 || (observation.tagCount() == 1
                     && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
                 || observation.pose().getZ() < -0.1 // Robot cannot be below the floor
-                || observation.pose().getZ()
-                    > maxZError // Must have realistic Z coordinate
+                || observation.pose().getZ() > maxZError // Must have realistic Z coordinate
                 || observation.averageTagDistance()
                     > maxDistanceMeters // Tags too far away — pose error grows with distance
                 || pitch > maxPitchRollRadians // Pitch too large — robot is on flat ground
                 || roll > maxPitchRollRadians // Roll too large — robot is on flat ground
-                || poseJump > maxPoseJumpMeters // Vision would yank pose too far — likely bad solve
+                // || poseJump > maxPoseJumpMeters // Vision would yank pose too far — likely bad
+                // solve
 
                 // Must be within the field boundaries
                 || observation.pose().getX() < 0.0
@@ -194,8 +196,10 @@ public class Vision extends SubsystemBase {
       String cameraKey = "Vision/Camera" + Integer.toString(cameraIndex);
       Logger.recordOutput(cameraKey + "/TagPoses", tagPoses.toArray(new Pose3d[0]));
       Logger.recordOutput(cameraKey + "/RobotPoses", robotPoses.toArray(new Pose3d[0]));
-      Logger.recordOutput(cameraKey + "/RobotPosesAccepted", robotPosesAccepted.toArray(new Pose3d[0]));
-      Logger.recordOutput(cameraKey + "/RobotPosesRejected", robotPosesRejected.toArray(new Pose3d[0]));
+      Logger.recordOutput(
+          cameraKey + "/RobotPosesAccepted", robotPosesAccepted.toArray(new Pose3d[0]));
+      Logger.recordOutput(
+          cameraKey + "/RobotPosesRejected", robotPosesRejected.toArray(new Pose3d[0]));
       Logger.recordOutput(cameraKey + "/TagCount", inputs[cameraIndex].tagIds.length);
       Logger.recordOutput(cameraKey + "/IsMultiTag", inputs[cameraIndex].tagIds.length > 1);
       allTagPoses.addAll(tagPoses);

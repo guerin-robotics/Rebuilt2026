@@ -19,14 +19,14 @@ import org.littletonrobotics.junction.Logger;
 
 public class HubShiftUtil {
   /**
-   * Utility class used to determine which "hub shift" (active/inactive windows)
-   * are in effect during a match.
+   * Utility class used to determine which "hub shift" (active/inactive windows) are in effect
+   * during a match.
    *
-   * This file contains constants for scheduled periods during teleop, helper
-   * methods for converting DriverStation/FMS inputs into which alliance is
-   * "active first", and convenience Commands for toggling/testing the utility.
+   * <p>This file contains constants for scheduled periods during teleop, helper methods for
+   * converting DriverStation/FMS inputs into which alliance is "active first", and convenience
+   * Commands for toggling/testing the utility.
    *
-   * Comments are added to help students understand each value and method.
+   * <p>Comments are added to help students understand each value and method.
    */
   public enum ShiftEnum {
     TRANSITION,
@@ -51,17 +51,14 @@ public class HubShiftUtil {
   /**
    * Simple immutable struct that describes the currently applicable shift.
    *
-   * Fields:
-   * - currentShift: which ShiftEnum period we're in (AUTO, SHIFT1.., ENDGAME...)
-   * - elapsedTime: how many seconds have elapsed since the start of the
-   *   current shift window (combined windows considered when appropriate)
-   * - remainingTime: how many seconds remain until the end of the current
-   *   shift window (combined windows considered when appropriate)
-   * - active: whether this shift is an "active" hub period (true) or an
-   *   "inactive" period (false)
+   * <p>Fields: - currentShift: which ShiftEnum period we're in (AUTO, SHIFT1.., ENDGAME...) -
+   * elapsedTime: how many seconds have elapsed since the start of the current shift window
+   * (combined windows considered when appropriate) - remainingTime: how many seconds remain until
+   * the end of the current shift window (combined windows considered when appropriate) - active:
+   * whether this shift is an "active" hub period (true) or an "inactive" period (false)
    */
   public record ShiftInfo(
-    ShiftEnum currentShift, double elapsedTime, double remainingTime, boolean active) {}
+      ShiftEnum currentShift, double elapsedTime, double remainingTime, boolean active) {}
 
   // Internal timer used to track elapsed match time for hub shift calculations.
   // This timer is started/restarted by `initialize()` at the beginning of
@@ -99,7 +96,7 @@ public class HubShiftUtil {
   // endingActiveFudge extends end windows to account for in-flight balls and
   // maximum counting delay, plus any explicit end extension.
   private static final double endingActiveFudge =
-    shiftEndFuelCountExtension + -1 * (maxTimeOfFlight + maxFuelCountDelay);
+      shiftEndFuelCountExtension + -1 * (maxTimeOfFlight + maxFuelCountDelay);
 
   // Tracks whether the first-active alliance is flipped for testing. Not
   // currently used directly (kept for compatibility with older code paths).
@@ -130,11 +127,9 @@ public class HubShiftUtil {
   }
 
   /**
-   * Returns the optional override that may force which alliance is considered
-   * the "first active". This is useful for testing and flipping behavior
-   * without relying on FMS messages.
+   * Returns the optional override that may force which alliance is considered the "first active".
+   * This is useful for testing and flipping behavior without relying on FMS messages.
    */
-
   public static Boolean isActiveFirst() {
     var alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
     // Returns true if the current DriverStation alliance is the one that is
@@ -193,12 +188,10 @@ public class HubShiftUtil {
   }
 
   /**
-   * Returns the schedule to use based on which alliance is considered to
-   * start active. If the alliance that the DriverStation reports matches the
-   * alliance that `getFirstActiveAlliance()` returned, we use the
-   * `activeSchedule`, otherwise we use `inactiveSchedule`.
+   * Returns the schedule to use based on which alliance is considered to start active. If the
+   * alliance that the DriverStation reports matches the alliance that `getFirstActiveAlliance()`
+   * returned, we use the `activeSchedule`, otherwise we use `inactiveSchedule`.
    */
-
   private static ShiftInfo getShiftInfo(
       boolean[] currentSchedule, double[] shiftStartTimes, double[] shiftEndTimes) {
     double timerValue = shiftTimer.get();
@@ -260,33 +253,25 @@ public class HubShiftUtil {
   }
 
   /**
-   * Core method that computes which shift window we're currently in and the
-   * elapsed/remaining times for it. The method takes a schedule and arrays of
-   * start/end times so it can be used for both the official schedule and a
-   * "shifted" schedule that applies fudge factors.
+   * Core method that computes which shift window we're currently in and the elapsed/remaining times
+   * for it. The method takes a schedule and arrays of start/end times so it can be used for both
+   * the official schedule and a "shifted" schedule that applies fudge factors.
    *
-   * Behavior notes:
-   * - If the Robot is in Autonomous, returns AUTO with remaining time until
-   *   `autoEndTime`.
-   * - If enabled in teleop, finds the matching index into the provided
-   *   start/end arrays and computes elapsed/remaining times. If adjacent
-   *   windows have the same active/inactive value, the elapsed/remaining
-   *   times are combined across the boundary to present a single continuous
-   *   active/inactive period.
-   * - If a significant discrepancy exists between the local timer and the
-   *   FMS teleop clock, the offset is adjusted to re-sync (when FMS attached).
+   * <p>Behavior notes: - If the Robot is in Autonomous, returns AUTO with remaining time until
+   * `autoEndTime`. - If enabled in teleop, finds the matching index into the provided start/end
+   * arrays and computes elapsed/remaining times. If adjacent windows have the same active/inactive
+   * value, the elapsed/remaining times are combined across the boundary to present a single
+   * continuous active/inactive period. - If a significant discrepancy exists between the local
+   * timer and the FMS teleop clock, the offset is adjusted to re-sync (when FMS attached).
    */
-
   public static ShiftInfo getOfficialShiftInfo() {
     return getShiftInfo(getSchedule(), shiftStartTimes, shiftEndTimes);
   }
 
   /**
-   * Returns shift information computed from the official (baseline) schedule
-   * defined by `shiftStartTimes`/`shiftEndTimes` and the current schedule
-   * (active/inactive) for the match.
+   * Returns shift information computed from the official (baseline) schedule defined by
+   * `shiftStartTimes`/`shiftEndTimes` and the current schedule (active/inactive) for the match.
    */
-
   public static ShiftInfo getShiftedShiftInfo() {
     boolean[] shiftSchedule = getSchedule();
     // Starting active
@@ -330,13 +315,11 @@ public class HubShiftUtil {
   }
 
   /**
-   * Returns a shifted version of the shift info which applies the precomputed
-   * fudge factors (approachingActiveFudge / endingActiveFudge) to start/end
-   * times. The goal is to slightly advance or extend active windows to
-   * account for ball flight time and sensor delays so the robot doesn't
-   * prematurely cut off scoring actions.
+   * Returns a shifted version of the shift info which applies the precomputed fudge factors
+   * (approachingActiveFudge / endingActiveFudge) to start/end times. The goal is to slightly
+   * advance or extend active windows to account for ball flight time and sensor delays so the robot
+   * doesn't prematurely cut off scoring actions.
    */
-
   public static void changeFlipped() {
     if (flipped) {
       flipped = false;
@@ -348,31 +331,27 @@ public class HubShiftUtil {
   }
 
   /**
-   * Toggle the `flipped` test flag and set the `allianceWinOverride` so the
-   * rest of this utility will treat the alliance as flipped. Useful for
-   * operator testing when you want to pretend the other alliance started
-   * active.
+   * Toggle the `flipped` test flag and set the `allianceWinOverride` so the rest of this utility
+   * will treat the alliance as flipped. Useful for operator testing when you want to pretend the
+   * other alliance started active.
    */
-
   public static Command flipWinner() {
     return new InstantCommand(() -> changeFlipped());
   }
 
   /**
-   * Returns a simple InstantCommand that flips which alliance is considered
-   * first-active. Can be bound to a button for quick operator testing.
+   * Returns a simple InstantCommand that flips which alliance is considered first-active. Can be
+   * bound to a button for quick operator testing.
    */
-
   public static void toggleDisable() {
     disabled = !disabled;
     Logger.recordOutput("RobotState/disabled", disabled);
   }
 
   /**
-   * Toggle the disabled flag for this utility and record it to the logger.
-   * When disabled is true, other code can choose to ignore hub shift state.
+   * Toggle the disabled flag for this utility and record it to the logger. When disabled is true,
+   * other code can choose to ignore hub shift state.
    */
-
   public static Command disableHubShiftUtil() {
     return new InstantCommand(() -> toggleDisable());
   }
