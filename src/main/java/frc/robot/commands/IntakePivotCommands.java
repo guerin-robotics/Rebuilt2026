@@ -72,14 +72,25 @@ public class IntakePivotCommands {
   }
 
   public static Command compressPivot(IntakePivot intakePivot) {
+    // When the robot shoots (or the manual compress button is held), this command runs a
+    // two-step raise sequence to tuck the intake out of the way:
+    //
+    //   1. Wait  → gives the shot time to clear before we start moving
+    //   2. Raise to pos1  → partial raise (intermediate position)
+    //   3. Wait  → brief pause so the pivot can settle at pos1
+    //   4. Raise to pos2  → final raised/compressed position
+    //
+    // All timing and position values are tunable constants in
+    // HardwareConstants.CompConstants.Waits / Positions.
     return Commands.sequence(
-            Commands.deadline(
-                new WaitCommand(1), IntakePivotCommands.setPivotVoltage(intakePivot,
-    Volts.of(3))),
-            new WaitCommand(0.3),
-            IntakePivotCommands.setPivotPosition(
-                intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos))
-        .repeatedly()
+            new WaitCommand(
+                HardwareConstants.CompConstants.Waits.waitBeforeCompressStep1Seconds),
+            setPivotPosition(
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotCompressPos1),
+            new WaitCommand(
+                HardwareConstants.CompConstants.Waits.waitBeforeCompressStep2Seconds),
+            setPivotPosition(
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotCompressPos2))
         .finallyDo(
             (interrupted) -> {
               // Only reset to down position if the command ended naturally (not interrupted).
@@ -89,15 +100,8 @@ public class IntakePivotCommands {
                 intakePivot.setPivotPosition(
                     HardwareConstants.CompConstants.Positions.pivotDownPos);
               }
-            });
-    // return Commands.sequence(
-    //         new WaitCommand(HardwareConstants.CompConstants.Waits.waitToCompressSeconds),
-    //         setPivotPosition(
-    //             intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleMiddlePos),
-    //         new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
-    //         setPivotPosition(
-    //             intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
-    //     .withName("IntakePivotCompress");
+            })
+        .withName("IntakePivotCompress");
   }
 
   /** Zero the pivot encoder at the current position. */

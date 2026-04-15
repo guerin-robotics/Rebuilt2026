@@ -565,14 +565,12 @@ public class RobotContainer {
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // INTAKE PIVOT
-    // Retract on retract button — also cancels compression for this shoot press
     Triggers.getInstance()
         .intakeInButton()
         .whileTrue(
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotUpPos));
 
-    // Deploy on deploy button — also cancels compression for this shoot press
     Triggers.getInstance()
         .intakeOutButton()
         .whileTrue(

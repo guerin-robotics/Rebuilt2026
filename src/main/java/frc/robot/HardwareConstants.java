@@ -87,6 +87,11 @@ public class HardwareConstants {
       public static final Angle pivotDownPos = Rotations.of(0.0);
       public static final Angle pivotJostleUpPos = Rotations.of(0.25);
       public static final Angle pivotJostleMiddlePos = Rotations.of(0.125);
+
+      // Intake compression positions when the robot shoots.
+      // pos1 is the first raise (partial), pos2 is the final raised position.
+      public static final Angle pivotCompressPos1 = Rotations.of(0.15);
+      public static final Angle pivotCompressPos2 = Rotations.of(0.30);
     }
 
     public static class Waits {
@@ -94,6 +99,11 @@ public class HardwareConstants {
       public static final double passSpinUpSeconds = 0.75;
       public static final double waitToCompressSeconds = 1;
       public static final double waitBetweenCompressSeconds = 0.5;
+
+      // How long to wait after the shoot button is pressed before moving to compress position 1.
+      public static final double waitBeforeCompressStep1Seconds = 0.5;
+      // How long to wait at compress position 1 before moving to compress position 2.
+      public static final double waitBeforeCompressStep2Seconds = 0.5;
     }
 
     public static class Thresholds {
