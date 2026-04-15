@@ -23,13 +23,10 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.AllianceFlipUtil;
-import frc.lib.ContinuousConditionalCommand;
 import frc.lib.FieldConstants;
 import frc.robot.HardwareConstants;
 import frc.robot.RobotState;
-import frc.robot.Triggers;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import java.text.DecimalFormat;
@@ -155,7 +152,8 @@ public class DriveCommands {
   //           joystickDriveLimited(drive, xSupplier, ySupplier, omegaSupplier),
   //           () -> {
   //             boolean driveNormal =
-  //                 (Triggers.getInstance().isIntakeSafe.getAsBoolean() || override.getAsBoolean());
+  //                 (Triggers.getInstance().isIntakeSafe.getAsBoolean() ||
+  // override.getAsBoolean());
   //             Logger.recordOutput(
   //                 "RobotState/isIntakeSafe",
   //                 Triggers.getInstance().isIntakeSafe.getAsBoolean()
