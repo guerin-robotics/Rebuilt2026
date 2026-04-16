@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Ω-Right-Comp-Path-1"
+            "pathName": "Right-Alliance-Path-1"
           }
         },
         {
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Ω-Right-Comp-Path-2"
+            "pathName": "Right-Half-Alliance-Path-2"
           }
         },
         {
@@ -70,6 +70,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Other",
   "choreoAuto": false
 }

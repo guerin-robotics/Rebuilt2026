@@ -1,23 +1,17 @@
 package frc.robot.subsystems.flywheel;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.FieldConstants;
 import frc.robot.HardwareConstants;
 import frc.robot.Robot;
-import frc.robot.RobotState;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.ShooterIOInputsAutoLogged;
 import java.util.function.Supplier;
@@ -105,11 +99,6 @@ public class Flywheel extends SubsystemBase {
 
     // Update trajectory visualization every loop
     visualizer.updateTrajectory(inputs.flywheelVelocity, hoodAngleSupplier.get());
-
-    // Log the currently running command for this subsystem
-    Logger.recordOutput(
-        "Flywheel/CurrentCommand",
-        getCurrentCommand() != null ? getCurrentCommand().getName() : "none");
   }
 
   public void setFlywheelVoltage(Voltage volts) {
@@ -146,41 +135,5 @@ public class Flywheel extends SubsystemBase {
   public void setTuningRPM() {
     AngularVelocity velocity = getTuningRPM();
     io.setFlywheelVelocity(velocity);
-  }
-
-  // Definitely getting ahead of ourselves but when we get to shooting on the move...
-  /**
-   * For dynamic shooting, we'll want to give the flywheel a velocity based not only on its distance
-   * from the hub (basic distance-based shooting), but also on the robot's movement. This function
-   * calculates that velocity based on known quantities: robot odometry and hub position.
-   *
-   * @param hoodRadians The angle, given in radians, at which the hood position causes the fuel to
-   *     shoot. Distinct from hood position, which is a 0.0-1.0 scale. Eventually, we'll want this
-   *     to update based on distance, but for now, it's fine to keep it fixed and handle trajectory
-   *     adjustments by RPM.
-   */
-  public void shootDynamic(double hoodRadians) {
-    Translation2d fuelToGroundVector =
-        new Translation2d(
-            (FieldConstants.Hub.topCenterPoint.getX()
-                - RobotState.getInstance().getEstimatedPose().getX()),
-            (FieldConstants.Hub.topCenterPoint.getY()
-                - RobotState.getInstance().getEstimatedPose().getY()));
-    Translation2d robotToGroundVector =
-        new Translation2d(
-            (RobotState.getInstance().getFieldRelativeVelocity().vxMetersPerSecond),
-            (RobotState.getInstance().getFieldRelativeVelocity().vyMetersPerSecond));
-    Translation2d fuelToRobotVector =
-        new Translation2d(
-            (fuelToGroundVector.getX() - robotToGroundVector.getX()),
-            (fuelToGroundVector.getY() - robotToGroundVector.getY()));
-    // Our fuelToRobotVector gave us a linear velocity (m/s) which we now convert to rps using
-    // flywheel rotations/meter
-    LinearVelocity fuelVelocity =
-        MetersPerSecond.of((fuelToRobotVector.getNorm() / Math.cos(hoodRadians)));
-    AngularVelocity targetVelocity =
-        RotationsPerSecond.of(
-            fuelVelocity.magnitude() * FlywheelConstants.Mechanical.flywheelRotationsPerMeter);
-    io.setFlywheelVelocity(targetVelocity);
   }
 }

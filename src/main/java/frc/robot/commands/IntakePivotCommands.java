@@ -88,8 +88,15 @@ public class IntakePivotCommands {
                 intakePivot.setPivotPosition(
                     HardwareConstants.CompConstants.Positions.pivotDownPos);
               }
-            })
-        .withName("IntakePivotCompress");
+            });
+    // return Commands.sequence(
+    //         new WaitCommand(HardwareConstants.CompConstants.Waits.waitToCompressSeconds),
+    //         setPivotPosition(
+    //             intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleMiddlePos),
+    //         new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
+    //         setPivotPosition(
+    //             intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
+    //     .withName("IntakePivotCompress");
   }
 
   /** Zero the pivot encoder at the current position. */

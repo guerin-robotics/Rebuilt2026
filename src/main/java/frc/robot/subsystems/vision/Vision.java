@@ -139,7 +139,7 @@ public class Vision extends SubsystemBase {
                 || observation.tagCount() == 0 // Must have at least one tag
                 || (observation.tagCount() == 1
                     && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
-                || observation.pose().getZ() < -0.1 // Robot cannot be below the floor
+                || observation.pose().getZ() < -floorError // Robot cannot be below the floor
                 || observation.pose().getZ() > maxZError // Must have realistic Z coordinate
                 || observation.averageTagDistance()
                     > maxDistanceMeters // Tags too far away — pose error grows with distance

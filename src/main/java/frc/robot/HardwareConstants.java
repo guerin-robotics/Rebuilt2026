@@ -64,8 +64,8 @@ public class HardwareConstants {
 
     // Subsystems that run at a constant velocity: prestage, feeder
     public static class Velocities {
-      public static final AngularVelocity prestageVelocity = RotationsPerSecond.of(50.0);
-      public static final AngularVelocity feederVelocity = RotationsPerSecond.of(-40.0);
+      public static final AngularVelocity prestageVelocity = RPM.of(5000.0);
+      public static final AngularVelocity feederVelocity = RPM.of(-3000.0);
       public static final AngularVelocity prestageIdleVelocity = RotationsPerSecond.of(18);
       public static final AngularVelocity flywheelIdleVelocity = RotationsPerSecond.of(10);
       public static final AngularVelocity prestageIdleVelocityHigh = RotationsPerSecond.of(20);
@@ -83,9 +83,10 @@ public class HardwareConstants {
     // Subsystems that run on position control: hood, pivot
     public static class Positions {
       public static final Angle hoodDownPos = Degrees.of(0);
-      public static final Angle pivotUpPos = Rotations.of(0.33);
+      public static final Angle pivotUpPos = Rotations.of(0.3);
       public static final Angle pivotDownPos = Rotations.of(0.0);
       public static final Angle pivotJostleUpPos = Rotations.of(0.25);
+      public static final Angle pivotJostleMiddlePos = Rotations.of(0.125);
     }
 
     public static class Waits {
@@ -95,6 +96,7 @@ public class HardwareConstants {
       // Maximum time to wait for heading alignment before shooting regardless.
       // After this many seconds, feeding starts even if the robot isn't facing the target.
       public static final double alignmentTimeoutSeconds = 1.5;
+      public static final double waitBetweenCompressSeconds = 0.5;
     }
 
     public static class Thresholds {
@@ -165,7 +167,7 @@ public class HardwareConstants {
   }
 
   public static class TowerConstants {
-    public static final AngularVelocity FlywheelTowerVelocity = RPM.of(2100);
+    public static final AngularVelocity FlywheelTowerVelocity = RPM.of(1650);
     public static final Angle hoodTowerPos = Degrees.of(198); // was 0.55 rot → 198°
   }
 
@@ -179,7 +181,7 @@ public class HardwareConstants {
     public static boolean isTuning = true;
     public static boolean atComp = false;
 
-    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(1550);
+    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(1675);
     public static final Angle HoodTuningPos = Degrees.of(0.1);
   }
 

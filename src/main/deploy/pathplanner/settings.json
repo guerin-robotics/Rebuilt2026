@@ -8,7 +8,9 @@
     "Comp-Paths",
     "Right-Paths"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "Other"
+  ],
   "defaultMaxVel": 4.0,
   "defaultMaxAccel": 3.2,
   "defaultMaxAngVel": 540.0,

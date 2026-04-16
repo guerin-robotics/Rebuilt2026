@@ -10,14 +10,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.DriverStation;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.util.HubShiftUtil;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
 
 /**
  * Centralized robot state container that tracks the robot's position and velocity on the field.
@@ -151,25 +148,6 @@ public class RobotState {
     return getEstimatedPose().getRotation();
   }
 
-  // Returns the robot's pose after a time interval
-  public Pose2d getFuturePose(double timeInterval) {
-    // Current position and rotation
-    double currentPoseX = getEstimatedPose().getX();
-    double currentPoseY = getEstimatedPose().getY();
-    double currentRadians = getEstimatedPose().getRotation().getRadians();
-    // Change in position and rotation (velocity)
-    double veloX = getFieldRelativeVelocity().vxMetersPerSecond;
-    double veloY = getFieldRelativeVelocity().vyMetersPerSecond;
-    double veloRad = getFieldRelativeVelocity().omegaRadiansPerSecond;
-    // Calculate pose after given time interval (accounting for velocity, but not acceleration)
-    Pose2d futurePose =
-        new Pose2d(
-            (currentPoseX + (veloX * timeInterval)),
-            (currentPoseY + (veloY * timeInterval)),
-            new Rotation2d((currentRadians + (veloRad * timeInterval))));
-    return futurePose;
-  }
-
   // ==================== VELOCITY GETTERS ====================
 
   /**
@@ -231,28 +209,14 @@ public class RobotState {
   @AutoLogOutput(key = "RobotState/DistanceToAllianceHub_m")
   public Distance getDistanceToAllianceHub() {
     Translation3d hubTarget = getAllianceHubTarget();
-    Distance distanceToAllianceHub = getDistanceToPoint(hubTarget.toTranslation2d());
-    Logger.recordOutput("RobotState/Distance to Alliance Hub", distanceToAllianceHub);
-    return distanceToAllianceHub;
-  }
-
-  /**
-   * Returns the 2D distance from the robot to the opposing alliance hub.
-   *
-   * <p>This automatically flips based on alliance color:
-   *
-   * <ul>
-   *   <li>Blue alliance → returns distance to red hub
-   *   <li>Red alliance → returns distance to blue hub
-   * </ul>
-   *
-   * @return Distance to the opposing hub as a Distance measure
-   */
-  @AutoLogOutput(key = "RobotState/DistanceToOpposingHub_m")
-  public Distance getDistanceToOpposingHub() {
-    Translation3d hubTarget = getOpposingHubTarget();
+    // CPU FIX: removed redundant Logger.recordOutput — @AutoLogOutput already logs the return value
     return getDistanceToPoint(hubTarget.toTranslation2d());
   }
+
+  // REMOVED: getDistanceToOpposingHub() — was never called from any other code and was
+  // annotated with @AutoLogOutput, meaning AdvantageKit called it every loop for nothing.
+  // That computed AllianceFlipUtil.apply + getEstimatedPose + getDistance every 20ms with no
+  // consumer.
 
   /**
    * Returns the 2D distance from the robot to an arbitrary point on the field.
@@ -279,18 +243,8 @@ public class RobotState {
     return AllianceFlipUtil.apply(FieldConstants.Hub.topCenterPoint);
   }
 
-  /**
-   * Returns the 3D position of the opposing alliance hub target.
-   *
-   * <p>Auto-flips based on alliance color.
-   *
-   * @return The opposing hub target position
-   */
-  public Translation3d getOpposingHubTarget() {
-    // oppTopCenterPoint is the opposing hub from blue perspective
-    // Flip it if we're on red alliance
-    return AllianceFlipUtil.apply(FieldConstants.Hub.oppTopCenterPoint);
-  }
+  // REMOVED: getOpposingHubTarget() — only caller was getDistanceToOpposingHub(), which was
+  // itself dead code. Ran AllianceFlipUtil.apply() every call for no consumer.
 
   /**
    * Returns the angle the robot should face to point at the alliance hub.
@@ -414,11 +368,16 @@ public class RobotState {
   }
 
   // Finds pass target based on position
+  // CPU FIX: replaced DriverStation.getAlliance() (creates Optional every call) with cached
+  // AllianceFlipUtil.shouldFlip(). Also replaced RobotState.getInstance() self-call with
+  // direct getEstimatedPose() since we're already inside the singleton.
   public Translation3d getPassTarget() {
     Translation3d passTarget;
-    if (DriverStation.getAlliance().isEmpty()
-        || DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-      if (RobotState.getInstance().getEstimatedPose().getY() > (FieldConstants.fieldWidth / 2)) {
+    double poseY = getEstimatedPose().getY();
+    // shouldFlip() returns true for Red alliance (cached per-loop in AllianceFlipUtil.refresh())
+    if (AllianceFlipUtil.shouldFlip()) {
+      // Red alliance
+      if (poseY > (FieldConstants.fieldWidth / 2)) {
         passTarget =
             new Translation3d(Meters.of(13.373).magnitude(), Meters.of(6.136).magnitude(), 0);
       } else {
@@ -426,7 +385,8 @@ public class RobotState {
             new Translation3d(Meters.of(12.950).magnitude(), Meters.of(2.293).magnitude(), 0);
       }
     } else {
-      if (RobotState.getInstance().getEstimatedPose().getY() < (FieldConstants.fieldWidth / 2)) {
+      // Blue alliance (or unknown — defaults to blue)
+      if (poseY < (FieldConstants.fieldWidth / 2)) {
         passTarget =
             new Translation3d(Meters.of(2.993).magnitude(), Meters.of(2.114).magnitude(), 0);
       } else {
@@ -434,44 +394,14 @@ public class RobotState {
             new Translation3d(Meters.of(3.135).magnitude(), Meters.of(6.129).magnitude(), 0);
       }
     }
-    Logger.recordOutput("Flywheel/passTarget", passTarget);
     return passTarget;
   }
 
-  // Returns angle to hub if shooting, returns angle to passing target if passing
-  // Includes time logic, both zone and time logic overrideable
-  // Returns current rotation if in alliance zone but hub inactive
-  public Rotation2d getShootAngleForZoneAndTime() {
-    if (!HubShiftUtil.disabled) {
-      if (Triggers.getInstance().isShootClear.getAsBoolean()) {
-        Logger.recordOutput("RobotState/zoneSafeToShoot", true);
-        return getAngleToAllianceHub();
-      } else {
-        if (Triggers.getInstance().isShootSafeZone.getAsBoolean()) {
-          return getEstimatedPose().getRotation();
-        } else {
-          Logger.recordOutput("RobotState/zoneSafeToShoot", false);
-          return getAngleToTarget(
-              new Translation2d(getPassTarget().getX(), getPassTarget().getY()));
-        }
-      }
-    } else {
-      Logger.recordOutput("RobotState/shootAngleOverriden", true);
-      return getAngleToAllianceHub();
-    }
-  }
-
-  // No time logic
-  public Rotation2d getShootAngleForZone() {
-    if (Triggers.getInstance().isShootSafeZone.getAsBoolean()) {
-      Logger.recordOutput("RobotState/zoneSafeToShoot", true);
-      return getInstance().getAngleToAllianceHub();
-    } else {
-      Logger.recordOutput("RobotState/zoneSafeToShoot", false);
-      return getInstance()
-          .getAngleToTarget(new Translation2d(getPassTarget().getX(), getPassTarget().getY()));
-    }
-  }
+  // REMOVED: getShootAngleForZoneAndTime() and getShootAngleForZone()
+  // Neither method was called from any other code. Both called getAngleToAllianceHub(),
+  // getPassTarget(), getAngleToTarget(), and Triggers.getInstance() — all expensive.
+  // getShootAngleForZoneAndTime() also called getPassTarget() twice on line 375 in the same
+  // expression: new Translation2d(getPassTarget().getX(), getPassTarget().getY()).
 
   // ZONE CALCULATIONS
 
@@ -497,12 +427,14 @@ public class RobotState {
   public HardwareConstants.Zones.specificZone getSpecificZone(Pose2d pose) {
     double poseX = AllianceFlipUtil.applyX(pose.getX());
     double poseY = AllianceFlipUtil.applyY(pose.getY());
-    if ((getBroadZone(pose) == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE)
+    // CPU FIX: cache getBroadZone result — was called up to 4 times for the same pose
+    HardwareConstants.Zones.broadZone broadZone = getBroadZone(pose);
+    if ((broadZone == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE)
         && (poseX < FieldConstants.Tower.frontFaceX)
         && (poseY < FieldConstants.Tower.leftUpright.getY())
         && poseY > FieldConstants.Tower.rightUpright.getY()) {
       return (HardwareConstants.Zones.specificZone.ALLIANCE_TOWER);
-    } else if (getBroadZone(pose) == HardwareConstants.Zones.broadZone.ALLIANCE_TRENCH) {
+    } else if (broadZone == HardwareConstants.Zones.broadZone.ALLIANCE_TRENCH) {
       if (poseY < FieldConstants.RightTrench.openingTopLeft.getY()) {
         return HardwareConstants.Zones.specificZone.ALLIANCE_TRENCH_NEAR;
       } else if (poseY < FieldConstants.RightBump.nearLeftCorner.getY()) {
@@ -514,7 +446,7 @@ public class RobotState {
       } else {
         return HardwareConstants.Zones.specificZone.ALLIANCE_TRENCH_FAR;
       }
-    } else if (getBroadZone(pose) == HardwareConstants.Zones.broadZone.OPPOSING_TRENCH) {
+    } else if (broadZone == HardwareConstants.Zones.broadZone.OPPOSING_TRENCH) {
       if (poseY < FieldConstants.RightTrench.openingTopLeft.getY()) {
         return HardwareConstants.Zones.specificZone.OPPOSING_TRENCH_NEAR;
       } else if (poseY < FieldConstants.RightBump.nearLeftCorner.getY()) {
@@ -526,7 +458,7 @@ public class RobotState {
       } else {
         return HardwareConstants.Zones.specificZone.OPPOSING_TRENCH_FAR;
       }
-    } else if ((getBroadZone(pose) == HardwareConstants.Zones.broadZone.OPPOSING_ZONE)
+    } else if ((broadZone == HardwareConstants.Zones.broadZone.OPPOSING_ZONE)
         && (poseX < FieldConstants.Tower.oppLeftUpright.getX())
         && (poseY < FieldConstants.Tower.oppLeftUpright.getY())
         && (poseY > FieldConstants.Tower.oppRightUpright.getY())) {
@@ -565,7 +497,9 @@ public class RobotState {
 
   public HardwareConstants.Zones.approachingZoneY getApproachingZoneY(Pose2d pose) {
     double poseY = AllianceFlipUtil.applyY(pose.getY());
-    if ((getBroadZone(pose) == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE)
+    // CPU FIX: cache getBroadZone result — was called up to 2 times for the same pose
+    HardwareConstants.Zones.broadZone broadZone = getBroadZone(pose);
+    if ((broadZone == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE)
         && ((poseY
                 > (FieldConstants.Tower.leftUpright.getY()
                     - HardwareConstants.Zones.approachingYOffset))
@@ -573,7 +507,7 @@ public class RobotState {
                 < (FieldConstants.Tower.rightUpright.getY()
                     + HardwareConstants.Zones.approachingYOffset)))) {
       return HardwareConstants.Zones.approachingZoneY.APPROACHING_ALLIANCE_TOWER;
-    } else if ((getBroadZone(pose) == HardwareConstants.Zones.broadZone.OPPOSING_ZONE)
+    } else if ((broadZone == HardwareConstants.Zones.broadZone.OPPOSING_ZONE)
         && ((poseY
                 > (FieldConstants.Tower.oppLeftUpright.getY()
                     - HardwareConstants.Zones.approachingYOffset))
@@ -593,33 +527,29 @@ public class RobotState {
   }
 
   public HardwareConstants.Zones.approachingZoneComposite getApproachingZone(Pose2d pose) {
-    if ((getApproachingZoneX(pose)
-            == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH)
-        && (getApproachingZoneY(pose)
-            == HardwareConstants.Zones.approachingZoneY.APPROACHING_TRENCH)) {
+    // CPU FIX: cache results — getApproachingZoneX was called up to 6 times
+    // and getApproachingZoneY up to 6 times for the same pose. Each call internally
+    // called getBroadZone() and AllianceFlipUtil.applyX/Y() again.
+    HardwareConstants.Zones.approachingZoneX zoneX = getApproachingZoneX(pose);
+    HardwareConstants.Zones.approachingZoneY zoneY = getApproachingZoneY(pose);
+
+    if ((zoneX == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH)
+        && (zoneY == HardwareConstants.Zones.approachingZoneY.APPROACHING_TRENCH)) {
       return HardwareConstants.Zones.approachingZoneComposite.APPROACHING_ALLIANCE_TRENCH;
-    } else if ((getApproachingZoneX(pose)
-            == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH)
-        && getApproachingZoneY(pose) == HardwareConstants.Zones.approachingZoneY.APPROACHING_BUMP) {
+    } else if ((zoneX == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH)
+        && zoneY == HardwareConstants.Zones.approachingZoneY.APPROACHING_BUMP) {
       return HardwareConstants.Zones.approachingZoneComposite.APPROACHING_ALLIANCE_BUMP;
-    } else if ((getApproachingZoneX(pose)
-            == HardwareConstants.Zones.approachingZoneX.APPROACHING_OPPOSING_TRENCH)
-        && getApproachingZoneY(pose)
-            == HardwareConstants.Zones.approachingZoneY.APPROACHING_TRENCH) {
+    } else if ((zoneX == HardwareConstants.Zones.approachingZoneX.APPROACHING_OPPOSING_TRENCH)
+        && zoneY == HardwareConstants.Zones.approachingZoneY.APPROACHING_TRENCH) {
       return HardwareConstants.Zones.approachingZoneComposite.APPROACHING_OPPOSING_TRENCH;
-    } else if ((getApproachingZoneX(pose)
-            == HardwareConstants.Zones.approachingZoneX.APPROACHING_OPPOSING_TRENCH)
-        && getApproachingZoneY(pose) == HardwareConstants.Zones.approachingZoneY.APPROACHING_BUMP) {
+    } else if ((zoneX == HardwareConstants.Zones.approachingZoneX.APPROACHING_OPPOSING_TRENCH)
+        && zoneY == HardwareConstants.Zones.approachingZoneY.APPROACHING_BUMP) {
       return HardwareConstants.Zones.approachingZoneComposite.APPROACHING_OPPOSING_BUMP;
-    } else if ((getApproachingZoneX(pose)
-            == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TOWER)
-        && (getApproachingZoneY(pose)
-            == HardwareConstants.Zones.approachingZoneY.APPROACHING_ALLIANCE_TOWER)) {
+    } else if ((zoneX == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TOWER)
+        && (zoneY == HardwareConstants.Zones.approachingZoneY.APPROACHING_ALLIANCE_TOWER)) {
       return HardwareConstants.Zones.approachingZoneComposite.APPROACHING_ALLIANCE_TOWER;
-    } else if ((getApproachingZoneX(pose)
-            == HardwareConstants.Zones.approachingZoneX.APPROACHING_OPPOSING_TOWER)
-        && (getApproachingZoneY(pose)
-            == HardwareConstants.Zones.approachingZoneY.APPROACHING_OPPOSING_TOWER)) {
+    } else if ((zoneX == HardwareConstants.Zones.approachingZoneX.APPROACHING_OPPOSING_TOWER)
+        && (zoneY == HardwareConstants.Zones.approachingZoneY.APPROACHING_OPPOSING_TOWER)) {
       return HardwareConstants.Zones.approachingZoneComposite.APPROACHING_OPPOSING_TOWER;
     } else {
       return null;

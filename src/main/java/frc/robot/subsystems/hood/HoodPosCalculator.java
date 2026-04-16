@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import frc.robot.RobotState;
-import org.littletonrobotics.junction.Logger;
 
 public class HoodPosCalculator {
 
@@ -30,8 +29,6 @@ public class HoodPosCalculator {
     double distanceMeters = distance.in(Meters);
     // Map returns degrees now
     double hoodPosDegrees = HoodConstants.HoodMap.ANGLE_MAP.get(distanceMeters);
-
-    Logger.recordOutput("Hood/HoodPosCalculator/HoodPosDegrees", hoodPosDegrees);
 
     Angle hoodAngle = Degrees.of(hoodPosDegrees);
 

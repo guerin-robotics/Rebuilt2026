@@ -29,11 +29,6 @@ public class Transport extends SubsystemBase {
         "Transport",
         false,
         inputs.TransportSupplyAmps != null ? inputs.TransportSupplyAmps.in(Units.Amps) : 0.0);
-
-    // Log the currently running command for this subsystem
-    Logger.recordOutput(
-        "Transport/CurrentCommand",
-        getCurrentCommand() != null ? getCurrentCommand().getName() : "none");
   }
 
   public void setTransportVoltage(Voltage volts) {

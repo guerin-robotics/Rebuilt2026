@@ -129,13 +129,6 @@ public class RobotContainer {
   private final CommandXboxController simController =
       new CommandXboxController(HardwareConstants.ControllerConstants.SimControllerPort);
 
-  // ── Compress Cancellation Latch ──────────────────────────────────────────────
-  // When the driver presses intake in/out while shooting, compression is cancelled.
-  // It stays cancelled until the shoot button is released and re-pressed.
-  // Separate flags for real and sim controllers since they use different triggers.
-  private boolean compressCancelledReal = false;
-  private boolean compressCancelledSim = false;
-
   public RobotContainer() {
     switch (Constants.currentMode) {
       case REAL:
@@ -584,7 +577,6 @@ public class RobotContainer {
     // Retract on retract button — also cancels compression for this shoot press
     Triggers.getInstance()
         .intakeInButton()
-        .onTrue(Commands.runOnce(() -> compressCancelledReal = true))
         .whileTrue(
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotUpPos));
@@ -592,16 +584,9 @@ public class RobotContainer {
     // Deploy on deploy button — also cancels compression for this shoot press
     Triggers.getInstance()
         .intakeOutButton()
-        .onTrue(Commands.runOnce(() -> compressCancelledReal = true))
         .whileTrue(
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
-
-    // Reset the cancellation latch when the shoot button is released so the next
-    // press starts a fresh compression cycle.
-    Triggers.getInstance()
-        .shootButton()
-        .onFalse(Commands.runOnce(() -> compressCancelledReal = false));
 
     // Compress on shoot button when:
     //   - neither intake deploy nor retract button is currently pressed
@@ -610,10 +595,12 @@ public class RobotContainer {
     (Triggers.getInstance()
             .shootButton()
             .and(() -> !Triggers.getInstance().intakeOutButton().getAsBoolean())
-            .and(() -> !Triggers.getInstance().intakeInButton().getAsBoolean())
-            .and(() -> !compressCancelledReal))
+            .and(() -> !Triggers.getInstance().intakeInButton().getAsBoolean()))
         .or(Triggers.getInstance().intakeCompressButton())
-        .whileTrue(IntakePivotCommands.compressPivot(intakePivot));
+        .whileTrue(IntakePivotCommands.compressPivot(intakePivot))
+        .onFalse(
+            IntakePivotCommands.setPivotPosition(
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
 
     // HOOD
     // Set pos for hub if shoot to hub button or shoot to tower button is pressed, and we're in our
@@ -883,7 +870,6 @@ public class RobotContainer {
     // Retract on retract button — also cancels compression for this shoot press
     Triggers.getInstance()
         .simIntakeInButton()
-        .onTrue(Commands.runOnce(() -> compressCancelledSim = true))
         .whileTrue(
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotUpPos));
@@ -891,16 +877,9 @@ public class RobotContainer {
     // Deploy on deploy button — also cancels compression for this shoot press
     Triggers.getInstance()
         .simIntakeOutButton()
-        .onTrue(Commands.runOnce(() -> compressCancelledSim = true))
         .whileTrue(
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
-
-    // Reset the cancellation latch when the shoot button is released so the next
-    // press starts a fresh compression cycle.
-    Triggers.getInstance()
-        .simShootButton()
-        .onFalse(Commands.runOnce(() -> compressCancelledSim = false));
 
     // Compress on shoot button when:
     //   - neither intake deploy nor retract button is currently pressed
@@ -909,8 +888,7 @@ public class RobotContainer {
     (Triggers.getInstance()
             .simShootButton()
             .and(() -> !Triggers.getInstance().simIntakeOutButton().getAsBoolean())
-            .and(() -> !Triggers.getInstance().simIntakeInButton().getAsBoolean())
-            .and(() -> !compressCancelledSim))
+            .and(() -> !Triggers.getInstance().simIntakeInButton().getAsBoolean()))
         .or(Triggers.getInstance().simIntakeCompressButton())
         .whileTrue(IntakePivotCommands.compressPivot(intakePivot));
 
