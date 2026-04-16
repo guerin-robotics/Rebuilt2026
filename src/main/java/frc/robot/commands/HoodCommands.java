@@ -38,7 +38,7 @@ public class HoodCommands {
    * command is active.
    */
   public static Command hoodIdle(Hood hood) {
-    return Commands.run(() -> hood.setHoodPos(Degrees.of(1)), hood).withName("HoodIdle");
+    return Commands.run(() -> hood.setHoodPos(Degrees.of(0.1)), hood).withName("HoodIdle");
   }
 
   public static Command incrementHoodPos(Hood hood) {
