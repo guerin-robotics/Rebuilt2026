@@ -66,6 +66,6 @@ public class Prestage extends SubsystemBase {
     if (inputs.prestageLeftClosedLoopReference.in(RPM) <= 0) return false;
     double leftErrorRPM = Math.abs(inputs.prestageLeftClosedLoopError.in(RPM));
     double rightErrorRPM = Math.abs(inputs.prestageRightClosedLoopError.in(RPM));
-    return leftErrorRPM < toleranceRPM && rightErrorRPM < toleranceRPM;
+    return leftErrorRPM <= toleranceRPM && rightErrorRPM <= toleranceRPM;
   }
 }

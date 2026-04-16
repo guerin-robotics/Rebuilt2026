@@ -79,7 +79,8 @@ public class ShootSequences {
                     prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
                 HoodCommands.setHoodPos(hood, HardwareConstants.TowerConstants.hoodTowerPos)),
             Commands.sequence(
-                // Wait until flywheel and prestage reach their setpoints before feeding.
+                // Tower velocity (~1650 RPM) is close to hub velocity (~1675 RPM), so
+                // hubFlywheelToleranceRPM is the appropriate tolerance here.
                 Commands.waitUntil(
                         () ->
                             flywheel.isFlywheelAtSetpoint(

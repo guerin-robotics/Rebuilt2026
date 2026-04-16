@@ -145,7 +145,7 @@ public class Flywheel extends SubsystemBase {
   public boolean isFlywheelAtSetpoint(double toleranceRPM) {
     // Guard: treat as not-ready if no velocity target has been commanded yet
     if (inputs.closedLoopReference.in(RPM) <= 0) return false;
-    return Math.abs(inputs.closedLoopError.in(RPM)) < toleranceRPM;
+    return Math.abs(inputs.closedLoopError.in(RPM)) <= toleranceRPM;
   }
 
   public AngularVelocity getTuningRPM() {

@@ -207,7 +207,8 @@ public class Triggers {
       new LoggedTrigger(
           "isReadyToShootHub",
           () -> {
-            if (flywheel == null || prestage == null) return true;
+            // Return false if configure() has not been called; the safety timeout will take over.
+            if (flywheel == null || prestage == null) return false;
             return flywheel.isFlywheelAtSetpoint(
                     HardwareConstants.CompConstants.Thresholds.hubFlywheelToleranceRPM)
                 && prestage.isPrestageAtSetpoint(
@@ -224,7 +225,8 @@ public class Triggers {
       new LoggedTrigger(
           "isReadyToPass",
           () -> {
-            if (flywheel == null || prestage == null) return true;
+            // Return false if configure() has not been called; the safety timeout will take over.
+            if (flywheel == null || prestage == null) return false;
             return flywheel.isFlywheelAtSetpoint(
                     HardwareConstants.CompConstants.Thresholds.passFlywheelToleranceRPM)
                 && prestage.isPrestageAtSetpoint(
