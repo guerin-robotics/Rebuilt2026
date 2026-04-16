@@ -125,14 +125,6 @@ public class Vision extends SubsystemBase {
         double pitch = Math.abs(observation.pose().getRotation().getY());
         double roll = Math.abs(observation.pose().getRotation().getX());
 
-        // Pose-jump filter: reject if the vision observation is too far from
-        // the current estimated pose. Catches bad single-tag PnP solutions.
-        Pose2d currentPose = RobotState.getInstance().getEstimatedPose();
-        double poseJump =
-            currentPose
-                .getTranslation()
-                .getDistance(observation.pose().toPose2d().getTranslation());
-
         // Check whether to reject pose
         boolean rejectPose =
             robotSpinningTooFast // Robot spinning too fast — vision unreliable
