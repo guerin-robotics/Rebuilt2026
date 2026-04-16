@@ -65,6 +65,12 @@
           "data": {
             "name": "stopAll"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right-Comp-Path-3"
+          }
         }
       ]
     }
