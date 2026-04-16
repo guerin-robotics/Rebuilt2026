@@ -1,7 +1,7 @@
 # CPU Optimization Review — Round 2
 
-**Date:** 2025-04-15  
-**Branch:** `cpu-optimization`  
+**Date:** 2025-04-15
+**Branch:** `cpu-optimization`
 **Build:** ✅ SUCCESSFUL
 
 ---

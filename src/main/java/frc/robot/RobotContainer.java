@@ -376,12 +376,12 @@ public class RobotContainer {
             () -> MathUtil.clamp(-getThrustY(), -1.0, 1.0),
             () -> MathUtil.clamp(-getThrustX(), -1.0, 1.0),
             () -> MathUtil.clamp(-getThrustRot(), -1.0, 1.0)));
-    // // Flywheel - idle
-    // flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
+    // Flywheel - idle
+    flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // // Prestage - idle
     // prestage.setDefaultCommand(PrestageCommands.prestageIdle(prestage));
     // Hood - stop motor when no command is running (prevents stale closed-loop reference)
-    // hood.setDefaultCommand(HoodCommands.hoodIdle(hood));
+    hood.setDefaultCommand(HoodCommands.hoodIdle(hood));
 
     // OVERRIDES
     // Flip alliance winner
