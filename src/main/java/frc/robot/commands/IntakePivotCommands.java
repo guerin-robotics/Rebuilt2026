@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.intakePivot.IntakePivot;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Command factories for the intake pivot subsystem.
@@ -72,31 +73,33 @@ public class IntakePivotCommands {
   }
 
   public static Command compressPivot(IntakePivot intakePivot) {
-    return Commands.sequence(
-            Commands.deadline(
-                new WaitCommand(1), IntakePivotCommands.setPivotVoltage(intakePivot, Volts.of(3))),
-            new WaitCommand(0.3),
-            IntakePivotCommands.setPivotPosition(
-                intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos))
-        .repeatedly()
-        .finallyDo(
-            (interrupted) -> {
-              // Only reset to down position if the command ended naturally (not interrupted).
-              // If interrupted by the driver pressing intake in/out, we don't want to
-              // override the position they just commanded.
-              if (!interrupted) {
-                intakePivot.setPivotPosition(
-                    HardwareConstants.CompConstants.Positions.pivotDownPos);
-              }
-            });
     // return Commands.sequence(
-    //         new WaitCommand(HardwareConstants.CompConstants.Waits.waitToCompressSeconds),
-    //         setPivotPosition(
-    //             intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleMiddlePos),
-    //         new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
-    //         setPivotPosition(
-    //             intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
-    //     .withName("IntakePivotCompress");
+    //         Commands.deadline(
+    //             new WaitCommand(1), IntakePivotCommands.setPivotVoltage(intakePivot,
+    // Volts.of(3))),
+    //         new WaitCommand(0.3),
+    //         IntakePivotCommands.setPivotPosition(
+    //             intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos))
+    //     .repeatedly()
+    //     .finallyDo(
+    //         (interrupted) -> {
+    //           // Only reset to down position if the command ended naturally (not interrupted).
+    //           // If interrupted by the driver pressing intake in/out, we don't want to
+    //           // override the position they just commanded.
+    //           if (!interrupted) {
+    //             intakePivot.setPivotPosition(
+    //                 HardwareConstants.CompConstants.Positions.pivotDownPos);
+    //           }
+    //         })
+    Logger.recordOutput("RobotState/IntakePivot", "JostleCalled");
+    return Commands.sequence(
+            new WaitCommand(HardwareConstants.CompConstants.Waits.waitToCompressSeconds),
+            setPivotPosition(
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleMiddlePos),
+            new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
+            setPivotPosition(
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
+        .withName("IntakePivotCompress");
   }
 
   /** Zero the pivot encoder at the current position. */
