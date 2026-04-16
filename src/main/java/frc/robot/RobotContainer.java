@@ -584,10 +584,12 @@ public class RobotContainer {
     (Triggers.getInstance()
             .shootButton()
             .and(() -> !Triggers.getInstance().intakeOutButton().getAsBoolean())
-            .and(() -> !Triggers.getInstance().intakeInButton().getAsBoolean())
-            )
+            .and(() -> !Triggers.getInstance().intakeInButton().getAsBoolean()))
         .or(Triggers.getInstance().intakeCompressButton())
-        .whileTrue(IntakePivotCommands.compressPivot(intakePivot));
+        .whileTrue(IntakePivotCommands.compressPivot(intakePivot))
+        .onFalse(
+            IntakePivotCommands.setPivotPosition(
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
 
     // HOOD
     // Set pos for hub if shoot to hub button or shoot to tower button is pressed, and we're in our

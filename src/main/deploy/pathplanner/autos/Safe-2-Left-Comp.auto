@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left-Epsilon-Path-1"
+            "pathName": "Safe-Left-Comp-Path-1"
           }
         },
         {
@@ -23,7 +23,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 4.0
+                  "waitTime": 3.0
                 }
               }
             ]
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left-Epsilon-Path-2"
+            "pathName": "Safe-Left-Comp-Path-2"
           }
         },
         {
@@ -54,7 +54,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 4.0
+                  "waitTime": 3.25
                 }
               }
             ]
@@ -70,6 +70,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Other",
+  "folder": null,
   "choreoAuto": false
 }

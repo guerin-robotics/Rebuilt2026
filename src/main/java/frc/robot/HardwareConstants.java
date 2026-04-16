@@ -169,7 +169,7 @@ public class HardwareConstants {
   }
 
   public static class TowerConstants {
-    public static final AngularVelocity FlywheelTowerVelocity = RPM.of(2100);
+    public static final AngularVelocity FlywheelTowerVelocity = RPM.of(1650);
     public static final Angle hoodTowerPos = Degrees.of(198); // was 0.55 rot → 198°
   }
 
@@ -183,7 +183,7 @@ public class HardwareConstants {
     public static boolean isTuning = true;
     public static boolean atComp = false;
 
-    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(1550);
+    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(1675);
     public static final Angle HoodTuningPos = Degrees.of(0.1);
   }
 
