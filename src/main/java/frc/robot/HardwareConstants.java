@@ -92,10 +92,11 @@ public class HardwareConstants {
     public static class Waits {
       public static final double flywheelSpinupSeconds = 0.75;
       public static final double passSpinUpSeconds = 0.75;
-      public static final double waitToCompressSeconds = 0.45;
+      // Maximum time to wait for heading alignment before shooting regardless.
+      // After this many seconds, feeding starts even if the robot isn't facing the target.
+      public static final double alignmentTimeoutSeconds = 1.5;
+      public static final double waitToCompressSeconds = 0.35;
       public static final double waitBetweenCompressSeconds = 0.75;
-      public static final double autoWaitToCompressSeconds = 0.75;
-      public static final double autoWaitBetweenCompressSeconds = 1.0;
     }
 
     public static class Thresholds {
