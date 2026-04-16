@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left-Comp-Path-1"
+            "pathName": "Right-Comp-Path-1"
           }
         },
         {
@@ -44,7 +44,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left-Comp-Path-2"
+            "pathName": "Right-Comp-Path-2"
           }
         },
         {
@@ -76,12 +76,6 @@
           "type": "named",
           "data": {
             "name": "DeployIntake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Left-Comp-Path-3"
           }
         }
       ]

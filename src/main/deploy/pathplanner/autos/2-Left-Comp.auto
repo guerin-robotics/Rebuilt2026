@@ -77,12 +77,6 @@
           "data": {
             "name": "DeployIntake"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Left-Comp-Path-3"
-          }
         }
       ]
     }
