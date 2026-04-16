@@ -98,6 +98,22 @@ public class HardwareConstants {
 
     public static class Thresholds {
       public static final double flywheelSpinupThreshold = 200;
+
+      /** RPM tolerance to consider the flywheel "at speed" for a hub shot before feeding starts. */
+      public static final double hubFlywheelToleranceRPM = 150.0;
+
+      /** RPM tolerance to consider the flywheel "at speed" for a pass shot before feeding starts. */
+      public static final double passFlywheelToleranceRPM = 200.0;
+
+      /** RPM tolerance to consider the prestage "at speed" before feeding starts. */
+      public static final double prestageToleranceRPM = 300.0;
+
+      /**
+       * Safety timeout (seconds): start feeding even if the flywheel/prestage have not reached
+       * their setpoints within this time. Prevents permanently blocking a shot if something goes
+       * wrong with the closed-loop sensors.
+       */
+      public static final double readyToShootTimeoutSeconds = 0.5;
     }
   }
 

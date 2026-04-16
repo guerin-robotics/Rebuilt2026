@@ -128,6 +128,26 @@ public class Flywheel extends SubsystemBase {
     io.setFlywheelVelocity(velocity);
   }
 
+  /**
+   * Returns true if the flywheel velocity is within {@code toleranceRPM} of its current
+   * closed-loop setpoint.
+   *
+   * <p>Returns {@code false} when no non-zero setpoint has been commanded (prevents a misleading
+   * "ready" signal while the flywheel is at rest and closed-loop error is zero by default).
+   *
+   * <p>Use the tunable constants in {@link
+   * frc.robot.HardwareConstants.CompConstants.Thresholds} (e.g. {@code hubFlywheelToleranceRPM},
+   * {@code passFlywheelToleranceRPM}) to control how tight the tolerance is for each shot type.
+   *
+   * @param toleranceRPM Acceptable RPM error between actual velocity and the setpoint
+   * @return true if the flywheel is within tolerance of its current setpoint
+   */
+  public boolean isFlywheelAtSetpoint(double toleranceRPM) {
+    // Guard: treat as not-ready if no velocity target has been commanded yet
+    if (inputs.closedLoopReference.in(RPM) <= 0) return false;
+    return Math.abs(inputs.closedLoopError.in(RPM)) < toleranceRPM;
+  }
+
   public AngularVelocity getTuningRPM() {
     return RPM.of(tuningRPM.get());
   }
