@@ -64,7 +64,7 @@ public class HardwareConstants {
 
     // Subsystems that run at a constant velocity: prestage, feeder
     public static class Velocities {
-      public static final AngularVelocity prestageVelocity = RPM.of(5000.0);
+      public static final AngularVelocity prestageVelocity = RPM.of(2600.0);
       public static final AngularVelocity feederVelocity = RPM.of(-3000.0);
       public static final AngularVelocity prestageIdleVelocity = RotationsPerSecond.of(18);
       public static final AngularVelocity flywheelIdleVelocity = RotationsPerSecond.of(5);
@@ -90,10 +90,12 @@ public class HardwareConstants {
     }
 
     public static class Waits {
-      public static final double flywheelSpinupSeconds = 0.3;
+      public static final double flywheelSpinupSeconds = 0.75;
       public static final double passSpinUpSeconds = 0.75;
-      public static final double waitToCompressSeconds = 0.35;
+      public static final double waitToCompressSeconds = 0.45;
       public static final double waitBetweenCompressSeconds = 0.75;
+      public static final double autoWaitToCompressSeconds = 0.75;
+      public static final double autoWaitBetweenCompressSeconds = 1.0;
     }
 
     public static class Thresholds {

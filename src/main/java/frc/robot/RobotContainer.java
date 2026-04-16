@@ -294,7 +294,7 @@ public class RobotContainer {
             .alongWith(
                 new WaitCommand(0.1)
                     .andThen(
-                        ShootSequences.shootToHub(
+                        ShootSequences.autoShootToHub(
                             flywheel,
                             prestage,
                             hood,
@@ -448,8 +448,25 @@ public class RobotContainer {
         .shootButton()
         .and(Triggers.getInstance().isShootClear)
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
-        .whileTrue(FlywheelCommands.setVelocityForHub(flywheel))
-        .onFalse(FlywheelCommands.stop(flywheel));
+        .whileTrue(
+            FlywheelCommands.setVelocityForHub(flywheel)
+                .alongWith(
+                    PrestageCommands.setPrestageVelocity(
+                        prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
+                .alongWith(
+                    FeederCommands.setUpperFeederVelocity(
+                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                .alongWith(
+                    FeederCommands.setLowerFeederVelocity(
+                        lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                .alongWith(
+                    TransportCommands.setTransportVelocity(
+                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
+        .onFalse(FlywheelCommands.stop(flywheel))
+        .onFalse(PrestageCommands.stop(prestage))
+        .onFalse(
+            FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)))
+        .onFalse(TransportCommands.stop(transport));
 
     // Set passing velocity if shoot button is pressed but we're not in our alliance zone and tuning
     // false,
@@ -459,27 +476,61 @@ public class RobotContainer {
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
             .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
         .or(Triggers.getInstance().passButton())
-        .whileTrue(FlywheelCommands.setPassVelocity(flywheel))
-        .onFalse(FlywheelCommands.stop(flywheel));
+        .whileTrue(
+            FlywheelCommands.setPassVelocity(flywheel)
+                .alongWith(
+                    PrestageCommands.setPrestageVelocity(
+                        prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
+                .alongWith(
+                    FeederCommands.setUpperFeederVelocity(
+                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                .alongWith(
+                    FeederCommands.setLowerFeederVelocity(
+                        lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                .alongWith(
+                    TransportCommands.setTransportVelocity(
+                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
+        .onFalse(FlywheelCommands.stop(flywheel))
+        .onFalse(PrestageCommands.stop(prestage))
+        .onFalse(
+            FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)))
+        .onFalse(TransportCommands.stop(transport));
 
     // Hard-coded tower shot
     Triggers.getInstance()
         .shootFromTowerButton()
         .whileTrue(
             FlywheelCommands.setFlywheelVelocity(
-                flywheel, HardwareConstants.TowerConstants.FlywheelTowerVelocity))
-        .onFalse(FlywheelCommands.stop(flywheel));
+                    flywheel, HardwareConstants.TowerConstants.FlywheelTowerVelocity)
+                .alongWith(
+                    PrestageCommands.setPrestageVelocity(
+                        prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
+                .alongWith(
+                    FeederCommands.setUpperFeederVelocity(
+                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                .alongWith(
+                    FeederCommands.setLowerFeederVelocity(
+                        lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                .alongWith(
+                    TransportCommands.setTransportVelocity(
+                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
+        .onFalse(FlywheelCommands.stop(flywheel))
+        .onFalse(PrestageCommands.stop(prestage))
+        .onFalse(
+            FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)))
+        .onFalse(TransportCommands.stop(transport));
 
     // Increase idle speed if hub active, shoot button is not pressed, and if tuning mode false
     // NOTE: No .onFalse(stop) here — when this trigger goes false because the shoot button
     // was pressed, we do NOT want to fire a stop command that would fight the incoming
     // shoot command for flywheel ownership (causing a momentary 0 RPM dip).
     // The whileTrue command is naturally interrupted when the trigger goes false.
-    Triggers.getInstance()
-        .isShootSafeTimeSure
-        .and(() -> !Triggers.getInstance().shootButton().getAsBoolean())
-        .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
-        .whileTrue(FlywheelCommands.flywheelHighIdle(flywheel));
+    // Triggers.getInstance()
+    //     .isShootSafeTimeSure
+    //     .and(() -> !Triggers.getInstance().shootButton().getAsBoolean())
+    //     .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
+    //     .and(DriverStation::isTeleopEnabled)
+    //     .whileTrue(FlywheelCommands.flywheelHighIdle(flywheel));
 
     // Distance map shot if tuning mode true
     Triggers.getInstance()
@@ -487,19 +538,36 @@ public class RobotContainer {
         .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
         .whileTrue(
             FlywheelCommands.setFlywheelVelocity(
-                flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity))
-        .onFalse(FlywheelCommands.stop(flywheel));
+                    flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity)
+                .alongWith(
+                    PrestageCommands.setPrestageVelocity(
+                        prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
+                .alongWith(
+                    FeederCommands.setUpperFeederVelocity(
+                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                .alongWith(
+                    FeederCommands.setLowerFeederVelocity(
+                        lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                .alongWith(
+                    TransportCommands.setTransportVelocity(
+                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
+        .onFalse(FlywheelCommands.stop(flywheel))
+        .onFalse(PrestageCommands.stop(prestage))
+        .onFalse(
+            FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)))
+        .onFalse(TransportCommands.stop(transport));
 
     // PRESTAGE
     // Set to velocity when any shooting sequence is started (shoot to hub, pass, shoot from tower)
-    Triggers.getInstance()
-        .shootButton()
-        .or(Triggers.getInstance().passButton())
-        .or(Triggers.getInstance().shootFromTowerButton())
-        .whileTrue(
-            PrestageCommands.setPrestageVelocity(
-                prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
-        .onFalse(PrestageCommands.stop(prestage));
+    // - DO NOT DELETE
+    // Triggers.getInstance()
+    //     .shootButton()
+    //     .or(Triggers.getInstance().passButton())
+    //     .or(Triggers.getInstance().shootFromTowerButton())
+    //     .whileTrue(
+    //         PrestageCommands.setPrestageVelocity(
+    //             prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
+    //     .onFalse(PrestageCommands.stop(prestage));
 
     // Increase idle speed if hub active
     // Triggers.getInstance()
@@ -511,38 +579,39 @@ public class RobotContainer {
 
     // FEEDER
     // Set to velocity (after a wait) when any shooting sequence is started (shoot to hub, pass,
-    // shoot from tower)
-    Triggers.getInstance()
-        .shootButton()
-        .or(Triggers.getInstance().passButton())
-        .or(Triggers.getInstance().shootFromTowerButton())
-        .whileTrue(
-            FeederCommands.setLowerVelocityAfterWait(
-                    lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
-                .alongWith(
-                    FeederCommands.setUpperVelocityAfterWait(
-                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)))
-        // FeederCommands.setLowerFeederVoltage(
-        //         lowerFeeder,
-        //         HardwareConstants.TestConstants.TestVoltages.LowerFeederTestVoltage)
-        //     .alongWith(
-        //         FeederCommands.setUpperFeederVoltage(
-        //             upperFeeder,
-        //             HardwareConstants.TestConstants.TestVoltages.FeederTestVoltage)))
-        .onFalse(
-            FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)));
+    // shoot from tower) - DO NOT DELETE
+    // Triggers.getInstance()
+    //     .shootButton()
+    //     .or(Triggers.getInstance().passButton())
+    //     .or(Triggers.getInstance().shootFromTowerButton())
+    //     .whileTrue(
+    //         FeederCommands.setLowerVelocityAfterWait(
+    //                 lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
+    //             .alongWith(
+    //                 FeederCommands.setUpperVelocityAfterWait(
+    //                     upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)))
+    //     // FeederCommands.setLowerFeederVoltage(
+    //     //         lowerFeeder,
+    //     //         HardwareConstants.TestConstants.TestVoltages.LowerFeederTestVoltage)
+    //     //     .alongWith(
+    //     //         FeederCommands.setUpperFeederVoltage(
+    //     //             upperFeeder,
+    //     //             HardwareConstants.TestConstants.TestVoltages.FeederTestVoltage)))
+    //     .onFalse(
+    //
+    // FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)));
 
     // TRANSPORT
     // Set to voltage (after a wait) when any shooting sequence is started (shoot to hub, pass,
-    // shoot from tower)
-    Triggers.getInstance()
-        .shootButton()
-        .or(Triggers.getInstance().passButton())
-        .or(Triggers.getInstance().shootFromTowerButton())
-        .whileTrue(
-            TransportCommands.setVelocityAfterWait(
-                transport, HardwareConstants.CompConstants.Velocities.transportVelocity))
-        .onFalse(TransportCommands.stop(transport));
+    // shoot from tower) - DO NOT DELETE
+    // Triggers.getInstance()
+    //     .shootButton()
+    //     .or(Triggers.getInstance().passButton())
+    //     .or(Triggers.getInstance().shootFromTowerButton())
+    //     .whileTrue(
+    //         TransportCommands.setVelocityAfterWait(
+    //             transport, HardwareConstants.CompConstants.Velocities.transportVelocity))
+    //     .onFalse(TransportCommands.stop(transport));
 
     // INTAKE ROLLER
     // Set to intaking voltage when intake button is pressed

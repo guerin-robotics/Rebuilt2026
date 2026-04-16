@@ -110,7 +110,40 @@ public class ShootSequences {
                     intakeRollerCommands.setRollerVoltage(
                         intakeRoller,
                         (HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage)))),
-            Commands.sequence(new WaitCommand(1.5), IntakePivotCommands.compressPivot(intakePivot)))
+            IntakePivotCommands.compressPivot(intakePivot))
+        // .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        .withName("ShootToHub");
+  }
+
+  public static Command autoShootToHub(
+      Flywheel flywheel,
+      Prestage prestage,
+      Hood hood,
+      UpperFeeder upperFeeder,
+      LowerFeeder lowerFeeder,
+      Transport transport,
+      intakeRoller intakeRoller,
+      IntakePivot intakePivot) {
+    return Commands.parallel(
+            Commands.runOnce(() -> Logger.recordOutput("RobotState/shooting", true)),
+            Commands.parallel(
+                FlywheelCommands.setVelocityForHub(flywheel),
+                PrestageCommands.setPrestageVelocity(
+                    prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
+                HoodCommands.setHoodPosForHub(hood)),
+            Commands.sequence(
+                new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
+                Commands.parallel(
+                    FeederCommands.setLowerFeederVelocity(
+                        lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
+                    FeederCommands.setUpperFeederVelocity(
+                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
+                    TransportCommands.setTransportVoltage(
+                        transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
+                    intakeRollerCommands.setRollerVoltage(
+                        intakeRoller,
+                        (HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage)))),
+            IntakePivotCommands.autoPivotCompress(intakePivot))
         // .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
         .withName("ShootToHub");
   }
