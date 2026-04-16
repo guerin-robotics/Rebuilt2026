@@ -3,6 +3,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.flywheel.Flywheel;
+import frc.robot.subsystems.prestage.Prestage;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.LoggedTrigger;
 
@@ -19,6 +21,25 @@ public class Triggers {
       instance = new Triggers();
     }
     return instance;
+  }
+
+  // ==================== SUBSYSTEM REFERENCES (for shoot-readiness) ====================
+  // Populated once by configure() before the robot starts operating.
+  private Flywheel flywheel;
+  private Prestage prestage;
+
+  /**
+   * Wires up the Flywheel and Prestage subsystem references that the shoot-readiness triggers
+   * depend on. Call this once from RobotContainer after both subsystems are created:
+   *
+   * <pre>Triggers.getInstance().configure(flywheel, prestage);</pre>
+   *
+   * @param flywheel The robot's flywheel subsystem
+   * @param prestage The robot's prestage subsystem
+   */
+  public void configure(Flywheel flywheel, Prestage prestage) {
+    this.flywheel = flywheel;
+    this.prestage = prestage;
   }
 
   // Controllers
@@ -167,4 +188,48 @@ public class Triggers {
   // Also had a design flaw: created a NEW LoggedTrigger object every call, which means GC
   // pressure every loop if it were ever re-enabled. The Pose2d parameter was also captured
   // once rather than re-evaluated, so the trigger would never update.
+
+  // ==================== SHOOT-READINESS TRIGGERS ====================
+  // These gates prevent the feeder and transport from starting until the flywheel and prestage
+  // are within an acceptable RPM tolerance of their closed-loop setpoints.
+  //
+  // Tolerances are tunable constants in HardwareConstants.CompConstants.Thresholds.
+  // A safety timeout (readyToShootTimeoutSeconds) is applied wherever these triggers are used
+  // with Commands.waitUntil() so that shooting is never permanently blocked.
+
+  /**
+   * True when the flywheel and prestage are within hub-shot tolerance of their setpoints.
+   *
+   * <p>Used to gate feeder/transport commands for hub shots. Defaults to {@code true} if {@link
+   * #configure} has not been called yet (fail-safe).
+   */
+  public final LoggedTrigger isReadyToShootHub =
+      new LoggedTrigger(
+          "isReadyToShootHub",
+          () -> {
+            // Return false if configure() has not been called; the safety timeout will take over.
+            if (flywheel == null || prestage == null) return false;
+            return flywheel.isFlywheelAtSetpoint(
+                    HardwareConstants.CompConstants.Thresholds.hubFlywheelToleranceRPM)
+                && prestage.isPrestageAtSetpoint(
+                    HardwareConstants.CompConstants.Thresholds.prestageToleranceRPM);
+          });
+
+  /**
+   * True when the flywheel and prestage are within pass-shot tolerance of their setpoints.
+   *
+   * <p>Used to gate feeder/transport commands for pass shots. Defaults to {@code true} if {@link
+   * #configure} has not been called yet (fail-safe).
+   */
+  public final LoggedTrigger isReadyToPass =
+      new LoggedTrigger(
+          "isReadyToPass",
+          () -> {
+            // Return false if configure() has not been called; the safety timeout will take over.
+            if (flywheel == null || prestage == null) return false;
+            return flywheel.isFlywheelAtSetpoint(
+                    HardwareConstants.CompConstants.Thresholds.passFlywheelToleranceRPM)
+                && prestage.isPrestageAtSetpoint(
+                    HardwareConstants.CompConstants.Thresholds.prestageToleranceRPM);
+          });
 }

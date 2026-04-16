@@ -38,7 +38,18 @@ public class ShootSequences {
                 HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos),
                 IntakePivotCommands.jostlePivotByPos(intakePivot)),
             Commands.sequence(
-                new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
+                // Wait until flywheel and prestage reach their setpoints before feeding,
+                // but start anyway after the safety timeout to avoid permanently blocking shots.
+                Commands.waitUntil(
+                        () ->
+                            flywheel.isFlywheelAtSetpoint(
+                                    HardwareConstants.CompConstants.Thresholds
+                                        .hubFlywheelToleranceRPM)
+                                && prestage.isPrestageAtSetpoint(
+                                    HardwareConstants.CompConstants.Thresholds
+                                        .prestageToleranceRPM))
+                    .withTimeout(
+                        HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
                 Commands.parallel(
                     FeederCommands.setLowerFeederVelocity(
                         lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
@@ -68,7 +79,18 @@ public class ShootSequences {
                     prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
                 HoodCommands.setHoodPos(hood, HardwareConstants.TowerConstants.hoodTowerPos)),
             Commands.sequence(
-                new WaitCommand(0.15),
+                // Tower velocity (~1650 RPM) is close to hub velocity (~1675 RPM), so
+                // hubFlywheelToleranceRPM is the appropriate tolerance here.
+                Commands.waitUntil(
+                        () ->
+                            flywheel.isFlywheelAtSetpoint(
+                                    HardwareConstants.CompConstants.Thresholds
+                                        .hubFlywheelToleranceRPM)
+                                && prestage.isPrestageAtSetpoint(
+                                    HardwareConstants.CompConstants.Thresholds
+                                        .prestageToleranceRPM))
+                    .withTimeout(
+                        HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
                 Commands.parallel(
                     FeederCommands.setLowerFeederVelocity(
                         lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
@@ -99,7 +121,18 @@ public class ShootSequences {
                     prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
                 HoodCommands.setHoodPosForHub(hood)),
             Commands.sequence(
-                new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
+                // Wait until flywheel and prestage reach their hub-shot setpoints before feeding.
+                // The safety timeout ensures we never permanently block a shot.
+                Commands.waitUntil(
+                        () ->
+                            flywheel.isFlywheelAtSetpoint(
+                                    HardwareConstants.CompConstants.Thresholds
+                                        .hubFlywheelToleranceRPM)
+                                && prestage.isPrestageAtSetpoint(
+                                    HardwareConstants.CompConstants.Thresholds
+                                        .prestageToleranceRPM))
+                    .withTimeout(
+                        HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
                 Commands.parallel(
                     FeederCommands.setLowerFeederVelocity(
                         lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
@@ -132,7 +165,18 @@ public class ShootSequences {
                     prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
                 HoodCommands.setHoodPos(hood, HardwareConstants.PassConstants.hoodPassPos)),
             Commands.sequence(
-                new WaitCommand(HardwareConstants.CompConstants.Waits.passSpinUpSeconds),
+                // Wait until flywheel and prestage reach their pass-shot setpoints before feeding.
+                // The safety timeout ensures we never permanently block a shot.
+                Commands.waitUntil(
+                        () ->
+                            flywheel.isFlywheelAtSetpoint(
+                                    HardwareConstants.CompConstants.Thresholds
+                                        .passFlywheelToleranceRPM)
+                                && prestage.isPrestageAtSetpoint(
+                                    HardwareConstants.CompConstants.Thresholds
+                                        .prestageToleranceRPM))
+                    .withTimeout(
+                        HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
                 Commands.parallel(
                     FeederCommands.setLowerFeederVelocity(
                         lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),

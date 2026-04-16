@@ -213,6 +213,10 @@ public class RobotContainer {
     // This keeps Flywheel and Hood decoupled — the supplier is the only link.
     flywheel.setHoodAngleSupplier(hood::getPosition);
 
+    // Wire Flywheel and Prestage references into the Triggers singleton so that the
+    // isReadyToShootHub / isReadyToPass triggers can check closed-loop setpoint errors.
+    Triggers.getInstance().configure(flywheel, prestage);
+
     // IMPORTANT: Register named commands and event triggers BEFORE building the auto chooser.
     // AutoBuilder.buildAutoChooser() parses the .auto files and resolves named commands at
     // build time. If commands aren't registered yet, they resolve to Commands.none().
@@ -510,18 +514,28 @@ public class RobotContainer {
     //     .onFalse(PrestageCommands.prestageIdle(prestage));
 
     // FEEDER
-    // Set to velocity (after a wait) when any shooting sequence is started (shoot to hub, pass,
-    // shoot from tower)
+    // Start feeders once the flywheel and prestage are at their setpoints (or after the safety
+    // timeout), when any shooting sequence is triggered (shoot to hub, pass, shoot from tower).
+    // Once feeding starts it continues until the button is released — the setpoint check only
+    // applies to the initial wait, not to keeping the feeders running.
     Triggers.getInstance()
         .shootButton()
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
-            FeederCommands.setLowerVelocityAfterWait(
-                    lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
-                .alongWith(
-                    FeederCommands.setUpperVelocityAfterWait(
-                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)))
+            Commands.sequence(
+                Commands.waitUntil(
+                        () ->
+                            Triggers.getInstance().isReadyToShootHub.getAsBoolean()
+                                || Triggers.getInstance().isReadyToPass.getAsBoolean())
+                    .withTimeout(
+                        HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
+                FeederCommands.setLowerFeederVelocity(
+                        lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
+                    .alongWith(
+                        FeederCommands.setUpperFeederVelocity(
+                            upperFeeder,
+                            HardwareConstants.CompConstants.Velocities.feederVelocity))))
         // FeederCommands.setLowerFeederVoltage(
         //         lowerFeeder,
         //         HardwareConstants.TestConstants.TestVoltages.LowerFeederTestVoltage)
@@ -533,15 +547,21 @@ public class RobotContainer {
             FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)));
 
     // TRANSPORT
-    // Set to voltage (after a wait) when any shooting sequence is started (shoot to hub, pass,
-    // shoot from tower)
+    // Start transport once flywheel and prestage are at setpoints (or safety timeout expires).
     Triggers.getInstance()
         .shootButton()
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
-            TransportCommands.setVelocityAfterWait(
-                transport, HardwareConstants.CompConstants.Velocities.transportVelocity))
+            Commands.sequence(
+                Commands.waitUntil(
+                        () ->
+                            Triggers.getInstance().isReadyToShootHub.getAsBoolean()
+                                || Triggers.getInstance().isReadyToPass.getAsBoolean())
+                    .withTimeout(
+                        HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
+                TransportCommands.setTransportVelocity(
+                    transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
         .onFalse(TransportCommands.stop(transport));
 
     // INTAKE ROLLER
@@ -553,15 +573,23 @@ public class RobotContainer {
                 intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage))
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
-    // Set to agitate voltage (after a wait) when any shooting sequence is started (shoot to hub,
-    // pass, shoot from tower)
+    // Set to agitate voltage once flywheel and prestage are at setpoints (or safety timeout)
+    // when any shooting sequence is started (shoot to hub, pass, shoot from tower)
     Triggers.getInstance()
         .shootButton()
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
-            intakeRollerCommands.setVoltageAfterWait(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))
+            Commands.sequence(
+                Commands.waitUntil(
+                        () ->
+                            Triggers.getInstance().isReadyToShootHub.getAsBoolean()
+                                || Triggers.getInstance().isReadyToPass.getAsBoolean())
+                    .withTimeout(
+                        HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
+                intakeRollerCommands.setRollerVoltage(
+                    intakeRoller,
+                    HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage)))
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // INTAKE PIVOT
@@ -802,31 +830,45 @@ public class RobotContainer {
         .onFalse(PrestageCommands.stop(prestage));
 
     // FEEDER
-    // Set to velocity (after a wait) when any shooting sequence is started (shoot to hub, pass,
-    // shoot from tower)
+    // Start feeders once the flywheel and prestage are at their setpoints (or safety timeout),
+    // when any shooting sequence is triggered (shoot to hub, pass, shoot from tower).
     Triggers.getInstance()
         .simShootButton()
         .or(Triggers.getInstance().simPassButton())
         .or(Triggers.getInstance().simShootFromTowerButton())
         .whileTrue(
-            FeederCommands.setLowerVelocityAfterWait(
-                    lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
-                .alongWith(
-                    FeederCommands.setUpperVelocityAfterWait(
-                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)))
+            Commands.sequence(
+                Commands.waitUntil(
+                        () ->
+                            Triggers.getInstance().isReadyToShootHub.getAsBoolean()
+                                || Triggers.getInstance().isReadyToPass.getAsBoolean())
+                    .withTimeout(
+                        HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
+                FeederCommands.setLowerFeederVelocity(
+                        lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
+                    .alongWith(
+                        FeederCommands.setUpperFeederVelocity(
+                            upperFeeder,
+                            HardwareConstants.CompConstants.Velocities.feederVelocity))))
         .onFalse(
             FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)));
 
     // TRANSPORT
-    // Set to velocity (after a wait) when any shooting sequence is started (shoot to hub, pass,
-    // shoot from tower)
+    // Start transport once flywheel and prestage are at setpoints (or safety timeout expires).
     Triggers.getInstance()
         .simShootButton()
         .or(Triggers.getInstance().simPassButton())
         .or(Triggers.getInstance().simShootFromTowerButton())
         .whileTrue(
-            TransportCommands.setVelocityAfterWait(
-                transport, HardwareConstants.CompConstants.Velocities.transportVelocity))
+            Commands.sequence(
+                Commands.waitUntil(
+                        () ->
+                            Triggers.getInstance().isReadyToShootHub.getAsBoolean()
+                                || Triggers.getInstance().isReadyToPass.getAsBoolean())
+                    .withTimeout(
+                        HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
+                TransportCommands.setTransportVelocity(
+                    transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
         .onFalse(TransportCommands.stop(transport));
 
     // INTAKE ROLLER
@@ -838,15 +880,23 @@ public class RobotContainer {
                 intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage))
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
-    // Set to agitate voltage (after a wait) when any shooting sequence is started (shoot to hub,
-    // pass, shoot from tower)
+    // Set to agitate voltage once flywheel and prestage are at setpoints (or safety timeout)
+    // when any shooting sequence is started (shoot to hub, pass, shoot from tower)
     Triggers.getInstance()
         .simShootButton()
         .or(Triggers.getInstance().simPassButton())
         .or(Triggers.getInstance().simShootFromTowerButton())
         .whileTrue(
-            intakeRollerCommands.setVoltageAfterWait(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))
+            Commands.sequence(
+                Commands.waitUntil(
+                        () ->
+                            Triggers.getInstance().isReadyToShootHub.getAsBoolean()
+                                || Triggers.getInstance().isReadyToPass.getAsBoolean())
+                    .withTimeout(
+                        HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
+                intakeRollerCommands.setRollerVoltage(
+                    intakeRoller,
+                    HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage)))
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // INTAKE PIVOT
