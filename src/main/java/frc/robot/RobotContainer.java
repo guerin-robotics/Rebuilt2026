@@ -478,8 +478,7 @@ public class RobotContainer {
     (Triggers.getInstance()
             .shootButton()
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
-            .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
-        )
+            .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
         .or(Triggers.getInstance().passButton())
         .whileTrue(
             FlywheelCommands.setPassVelocity(flywheel)
@@ -608,8 +607,10 @@ public class RobotContainer {
             .shootButton()
             .and(() -> !Triggers.getInstance().intakeOutButton().getAsBoolean())
             .and(() -> !Triggers.getInstance().intakeInButton().getAsBoolean())
-            .and(() -> !(Triggers.getInstance().isShootSafeZone.getAsBoolean() && 
-                !Triggers.getInstance().isShootSafeTimeSure.getAsBoolean())))
+            .and(
+                () ->
+                    !(Triggers.getInstance().isShootSafeZone.getAsBoolean()
+                        && !Triggers.getInstance().isShootSafeTimeSure.getAsBoolean())))
         .or(Triggers.getInstance().intakeCompressButton())
         .whileTrue(IntakePivotCommands.compressPivot(intakePivot))
         .onFalse(
@@ -786,14 +787,14 @@ public class RobotContainer {
         .or(Triggers.getInstance().simShootFromTowerButton())
         .whileTrue(
             FeederCommands.setLowerVelocityAfterWait(
-                        lowerFeeder,
+                    lowerFeeder,
+                    HardwareConstants.CompConstants.Velocities.feederVelocity,
+                    Triggers.getInstance().isAlignedForCurrentShot)
+                .alongWith(
+                    FeederCommands.setUpperVelocityAfterWait(
+                        upperFeeder,
                         HardwareConstants.CompConstants.Velocities.feederVelocity,
-                        Triggers.getInstance().isAlignedForCurrentShot)
-                    .alongWith(
-                        FeederCommands.setUpperVelocityAfterWait(
-                            upperFeeder,
-                            HardwareConstants.CompConstants.Velocities.feederVelocity,
-                            Triggers.getInstance().isAlignedForCurrentShot)))
+                        Triggers.getInstance().isAlignedForCurrentShot)))
         .onFalse(
             FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)));
 

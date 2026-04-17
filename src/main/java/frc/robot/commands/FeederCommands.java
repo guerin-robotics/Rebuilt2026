@@ -82,7 +82,8 @@ public class FeederCommands {
   }
 
   public static Command setLowerVelocityAfterWait(LowerFeeder feeder, AngularVelocity feederVelo) {
-    return setLowerVelocityAfterWait(feeder, feederVelo, () -> true).withName("LowerFeederVelocityAfterWaitNoAlign");
+    return setLowerVelocityAfterWait(feeder, feederVelo, () -> true)
+        .withName("LowerFeederVelocityAfterWaitNoAlign");
   }
 
   /**
@@ -110,8 +111,8 @@ public class FeederCommands {
         .withName("UpperFeederVelocityAfterWait");
   }
 
-    public static Command setUpperVelocityAfterWait(
-      UpperFeeder feeder, AngularVelocity feederVelo) {
-    return setUpperVelocityAfterWait(feeder, feederVelo, () -> true).withName("UpperFeederVelocityAfterWaitNoAlign");
-      }
+  public static Command setUpperVelocityAfterWait(UpperFeeder feeder, AngularVelocity feederVelo) {
+    return setUpperVelocityAfterWait(feeder, feederVelo, () -> true)
+        .withName("UpperFeederVelocityAfterWaitNoAlign");
+  }
 }

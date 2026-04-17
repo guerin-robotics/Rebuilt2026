@@ -59,8 +59,8 @@ public class TransportCommands {
         .withName("TransportVelocityAfterWait");
   }
 
-    public static Command setVelocityAfterWait(Transport transport, AngularVelocity transportVelo) {
-      return setVelocityAfterWait(transport, transportVelo, () -> true)
-          .withName("TransportVelocityAfterWaitNoAlign");
-    }
+  public static Command setVelocityAfterWait(Transport transport, AngularVelocity transportVelo) {
+    return setVelocityAfterWait(transport, transportVelo, () -> true)
+        .withName("TransportVelocityAfterWaitNoAlign");
+  }
 }
