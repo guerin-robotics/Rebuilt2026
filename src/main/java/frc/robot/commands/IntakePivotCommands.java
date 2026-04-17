@@ -9,8 +9,10 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.lib.ContinuousConditionalCommand;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.intakePivot.IntakePivot;
+import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -72,34 +74,60 @@ public class IntakePivotCommands {
         .withName("IntakePivotJostle");
   }
 
-  public static Command compressPivot(IntakePivot intakePivot) {
-    // return Commands.sequence(
-    //         Commands.deadline(
-    //             new WaitCommand(1), IntakePivotCommands.setPivotVoltage(intakePivot,
-    // Volts.of(3))),
-    //         new WaitCommand(0.3),
-    //         IntakePivotCommands.setPivotPosition(
-    //             intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos))
-    //     .repeatedly()
-    //     .finallyDo(
-    //         (interrupted) -> {
-    //           // Only reset to down position if the command ended naturally (not interrupted).
-    //           // If interrupted by the driver pressing intake in/out, we don't want to
-    //           // override the position they just commanded.
-    //           if (!interrupted) {
-    //             intakePivot.setPivotPosition(
-    //                 HardwareConstants.CompConstants.Positions.pivotDownPos);
-    //           }
-    //         })
+  /**
+   * Compress the pivot to jostle game pieces into position.
+   *
+   * <p>Uses a {@link BooleanSupplier} evaluated at schedule time (not creation time) so the
+   * correct branch is always chosen when the command actually runs.
+   * {@link ContinuousConditionalCommand} also re-evaluates the condition while running, so if the
+   * condition changes mid-execution the command will switch branches automatically.
+   *
+   * @param intakePivot The intake pivot subsystem
+   * @param skipFirstWait Supplier evaluated continuously: {@code true} = skip initial wait and
+   *     start compressing immediately (manual compress); {@code false} = wait before starting
+   *     (automatic compress during shooting).
+   */
+  public static Command compressPivot(IntakePivot intakePivot, BooleanSupplier skipFirstWait) {
     Logger.recordOutput("RobotState/IntakePivot", "JostleCalled");
-    return Commands.sequence(
-            new WaitCommand(HardwareConstants.CompConstants.Waits.waitToCompressSeconds),
-            setPivotPosition(
-                intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleMiddlePos),
-            new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
-            setPivotPosition(
-                intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
+
+    // Branch A: skip the initial wait — used for manual compress button presses
+    Command skipWaitBranch =
+        Commands.sequence(
+                setPivotPosition(
+                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleMiddlePos),
+                new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
+                setPivotPosition(
+                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
+            .withName("IntakePivotCompress_SkipWait");
+
+    // Branch B: include the initial wait — used for automatic compress during shooting
+    Command withWaitBranch =
+        Commands.sequence(
+                new WaitCommand(HardwareConstants.CompConstants.Waits.waitToCompressSeconds),
+                setPivotPosition(
+                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleMiddlePos),
+                new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
+                setPivotPosition(
+                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
+            .withName("IntakePivotCompress_WithWait");
+
+    // ContinuousConditionalCommand evaluates skipFirstWait each loop, so the right
+    // branch is always active — even if the condition changes while the command is running.
+    return new ContinuousConditionalCommand(skipWaitBranch, withWaitBranch, skipFirstWait)
         .withName("IntakePivotCompress");
+  }
+
+  /**
+   * Overload that accepts a plain {@code boolean} for call sites that always pass a literal.
+   * Wraps the value in a supplier so it still uses the {@link ContinuousConditionalCommand} path.
+   */
+  public static Command compressPivot(IntakePivot intakePivot, boolean skipFirstWait) {
+    return compressPivot(intakePivot, () -> skipFirstWait);
+  }
+
+  /** Overload that defaults to NOT skipping the first wait (backward-compatible). */
+  public static Command compressPivot(IntakePivot intakePivot) {
+    return compressPivot(intakePivot, false);
   }
 
   public static Command autoPivotCompress(IntakePivot intakePivot) {
