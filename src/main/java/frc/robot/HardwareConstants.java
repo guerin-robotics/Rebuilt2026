@@ -90,7 +90,7 @@ public class HardwareConstants {
     public static class Waits {
       public static final double flywheelSpinupSeconds = 0.5;
       public static final double passSpinUpSeconds = 0.75;
-      public static final double waitToCompressSeconds = 0.5;
+      public static final double waitToCompressSeconds = 1.0;
       public static final double waitBetweenCompressSeconds = 0.75;
       public static final double autoWaitToCompressSeconds = 0.75;
       public static final double autoWaitBetweenCompressSeconds = 1.0;

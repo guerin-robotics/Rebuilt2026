@@ -77,10 +77,10 @@ public class IntakePivotCommands {
   /**
    * Compress the pivot to jostle game pieces into position.
    *
-   * <p>Uses a {@link BooleanSupplier} evaluated at schedule time (not creation time) so the
-   * correct branch is always chosen when the command actually runs.
-   * {@link ContinuousConditionalCommand} also re-evaluates the condition while running, so if the
-   * condition changes mid-execution the command will switch branches automatically.
+   * <p>Uses a {@link BooleanSupplier} evaluated at schedule time (not creation time) so the correct
+   * branch is always chosen when the command actually runs. {@link ContinuousConditionalCommand}
+   * also re-evaluates the condition while running, so if the condition changes mid-execution the
+   * command will switch branches automatically.
    *
    * @param intakePivot The intake pivot subsystem
    * @param skipFirstWait Supplier evaluated continuously: {@code true} = skip initial wait and
@@ -118,8 +118,8 @@ public class IntakePivotCommands {
   }
 
   /**
-   * Overload that accepts a plain {@code boolean} for call sites that always pass a literal.
-   * Wraps the value in a supplier so it still uses the {@link ContinuousConditionalCommand} path.
+   * Overload that accepts a plain {@code boolean} for call sites that always pass a literal. Wraps
+   * the value in a supplier so it still uses the {@link ContinuousConditionalCommand} path.
    */
   public static Command compressPivot(IntakePivot intakePivot, boolean skipFirstWait) {
     return compressPivot(intakePivot, () -> skipFirstWait);

@@ -480,7 +480,7 @@ public class RobotContainer {
             .shootButton()
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
             .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
-            // .and(Triggers.getInstance().alignedToShoot)
+        // .and(Triggers.getInstance().alignedToShoot)
         )
         .or(Triggers.getInstance().passButton())
         .whileTrue(
