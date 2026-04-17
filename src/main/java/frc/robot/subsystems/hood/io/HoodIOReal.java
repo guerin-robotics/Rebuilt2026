@@ -24,9 +24,6 @@ import frc.robot.subsystems.hood.HoodConstants;
 
 public class HoodIOReal implements HoodIO {
 
-  // private final PWM hoodServo;
-  // private final PWM hoodLeftServo;
-
   private final TalonFX hoodMotor;
   private final CANcoder hoodEncoder;
 
@@ -154,8 +151,6 @@ public class HoodIOReal implements HoodIO {
 
   @Override
   public void updateInputs(HoodIOInputs inputs) {
-    // inputs.servoSpeed = hoodServo.getSpeed();
-    // inputs.servoPos = hoodServo.getPosition();
     BaseStatusSignal.refreshAll(
         velocity,
         motorVoltage,
@@ -183,8 +178,6 @@ public class HoodIOReal implements HoodIO {
 
   @Override
   public void setHoodPos(Angle position) {
-    // hoodServo.setPosition(position);
-    // hoodLeftServo.setPosition(position + HoodConstants.Mechanical.leftServoOffset);
     hoodMotor.setControl(positionRequest.withPosition(position));
   }
 }

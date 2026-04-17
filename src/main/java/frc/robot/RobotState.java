@@ -407,8 +407,8 @@ public class RobotState {
 
   // Returns a "broad" zone - alliance zone, alliance trench, neutral, opposing trench, opposing
   // zone
-  public HardwareConstants.Zones.broadZone getBroadZone(Pose2d pose) {
-    double poseX = AllianceFlipUtil.applyX(pose.getX());
+  public HardwareConstants.Zones.broadZone getBroadZone() {
+    double poseX = AllianceFlipUtil.applyX(getEstimatedPose().getX());
     if (poseX < FieldConstants.LinesVertical.allianceZone) {
       return HardwareConstants.Zones.broadZone.ALLIANCE_ZONE;
     } else if (poseX < FieldConstants.LinesVertical.neutralZoneNear) {
@@ -428,7 +428,7 @@ public class RobotState {
     double poseX = AllianceFlipUtil.applyX(pose.getX());
     double poseY = AllianceFlipUtil.applyY(pose.getY());
     // CPU FIX: cache getBroadZone result — was called up to 4 times for the same pose
-    HardwareConstants.Zones.broadZone broadZone = getBroadZone(pose);
+    HardwareConstants.Zones.broadZone broadZone = getBroadZone();
     if ((broadZone == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE)
         && (poseX < FieldConstants.Tower.frontFaceX)
         && (poseY < FieldConstants.Tower.leftUpright.getY())
@@ -498,7 +498,7 @@ public class RobotState {
   public HardwareConstants.Zones.approachingZoneY getApproachingZoneY(Pose2d pose) {
     double poseY = AllianceFlipUtil.applyY(pose.getY());
     // CPU FIX: cache getBroadZone result — was called up to 2 times for the same pose
-    HardwareConstants.Zones.broadZone broadZone = getBroadZone(pose);
+    HardwareConstants.Zones.broadZone broadZone = getBroadZone();
     if ((broadZone == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE)
         && ((poseY
                 > (FieldConstants.Tower.leftUpright.getY()

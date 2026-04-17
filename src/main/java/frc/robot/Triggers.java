@@ -143,7 +143,7 @@ public class Triggers {
           "isShootSafeZone",
           () -> {
             HardwareConstants.Zones.broadZone currentZone =
-                RobotState.getInstance().getBroadZone(RobotState.getInstance().getEstimatedPose());
+                RobotState.getInstance().getBroadZone();
             return (currentZone == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE);
           });
 
@@ -163,8 +163,13 @@ public class Triggers {
   public final LoggedTrigger isShootClear =
       new LoggedTrigger("isShootClear", isShootSafeTime.and(isShootSafeZone));
 
-  // REMOVED: isHoodSafe(Pose2d) — was commented out at its only call site (Hood.java line 42).
-  // Also had a design flaw: created a NEW LoggedTrigger object every call, which means GC
-  // pressure every loop if it were ever re-enabled. The Pose2d parameter was also captured
-  // once rather than re-evaluated, so the trigger would never update.
+  public final LoggedTrigger alignedToShoot =
+      new LoggedTrigger("alignedToShoot", () ->
+       {
+        if (RobotState.getInstance().getBroadZone() == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE) {
+          return RobotState.getInstance().isAlignedToHub();
+        } else {
+          return RobotState.getInstance().isAlignedToPass();
+        }
+       });
 }

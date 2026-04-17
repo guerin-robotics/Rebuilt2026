@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.4233978888693817,
-        "y": 2.508687072068118
+        "x": 3.179344401041667,
+        "y": 2.4959737413194443
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.3238426151052995,
-        "y": 2.2793647062470783
+        "x": 3.079789127277585,
+        "y": 2.266651375498405
       },
       "isLocked": false,
       "linkedName": "Right-End-Pos"
@@ -112,12 +112,12 @@
     },
     {
       "anchor": {
-        "x": 3.4233978888693817,
-        "y": 2.508687072068118
+        "x": 3.179344401041667,
+        "y": 2.4959737413194443
       },
       "prevControl": {
-        "x": 3.237385935733341,
-        "y": 2.675718665757801
+        "x": 2.9933324479056265,
+        "y": 2.6630053350091276
       },
       "nextControl": null,
       "isLocked": false,
@@ -204,15 +204,9 @@
       "command": null
     },
     {
-      "name": "DeployIntake",
-      "waypointRelativePos": 2.041848503740648,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
       "name": "RunIntake",
-      "waypointRelativePos": 2.2,
-      "endWaypointRelativePos": 5.8828612063591015,
+      "waypointRelativePos": 1.3472363599348538,
+      "endWaypointRelativePos": 5.372735138436481,
       "command": null
     }
   ],
@@ -226,13 +220,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -130.0
+    "rotation": -135.2212181266649
   },
   "reversed": false,
   "folder": "States-Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -130.0
+    "rotation": -135.2212181266649
   },
   "useDefaultConstraints": true
 }

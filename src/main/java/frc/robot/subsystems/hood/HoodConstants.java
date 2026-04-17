@@ -18,8 +18,6 @@ public class HoodConstants {
     public static final Angle hoodMaxPos = Degrees.of(234); // was 0.65 rotations
     public static final Angle hoodMinPos = Degrees.of(0);
 
-    public static double leftServoOffset = -0.02;
-
     /**
      * Gear ratio from the output shaft (where the CANcoder is) to the hood mechanism.
      *
@@ -72,13 +70,12 @@ public class HoodConstants {
     // Key is distance from center of hub (converted to meters)
     // Value is hood position in degrees (scaled to 5°..55°)
     static {
-      //
-      // ANGLE_MAP.put(inchesToMeters(126.0), 0.1);
-      // ANGLE_MAP.put(inchesToMeters(81.0), 0.1);
-      ANGLE_MAP.put(inchesToMeters(75.0), 0.1); // Auto shot 1
-      ANGLE_MAP.put(inchesToMeters(85.0), 0.1); // Auto shot 2
-      ANGLE_MAP.put(inchesToMeters(100.0), 0.1);
-      ANGLE_MAP.put(inchesToMeters(120.0), 0.1); // Tower shot
+      ANGLE_MAP.put(inchesToMeters(75.0), 1.0); // Auto shot 1
+      ANGLE_MAP.put(inchesToMeters(85.0), 1.5); // Auto shot 2
+      ANGLE_MAP.put(inchesToMeters(110.0), 2.5); // Tower shot
+      ANGLE_MAP.put(inchesToMeters(130.0), 3.5);
+      ANGLE_MAP.put(inchesToMeters(145.0), 5.25);
+      ANGLE_MAP.put(inchesToMeters(160.0), 11.0);
     }
   }
 }
