@@ -143,7 +143,7 @@
     },
     {
       "waypointRelativePos": 4.341028700313808,
-      "rotationDegrees": 49.17998334593022
+      "rotationDegrees": 49.179983345930225
     },
     {
       "waypointRelativePos": 5.766098980125526,
@@ -198,15 +198,15 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "DeployIntake",
-      "waypointRelativePos": 1.8403502961346634,
-      "endWaypointRelativePos": null,
+      "name": "RunIntake",
+      "waypointRelativePos": 1.3322730048859943,
+      "endWaypointRelativePos": 5.776895651496253,
       "command": null
     },
     {
-      "name": "RunIntake",
-      "waypointRelativePos": 2.505669420199501,
-      "endWaypointRelativePos": 5.776895651496253,
+      "name": "DeployIntake",
+      "waypointRelativePos": 1.8403502961346634,
+      "endWaypointRelativePos": null,
       "command": null
     }
   ],
