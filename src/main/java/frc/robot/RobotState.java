@@ -329,6 +329,44 @@ public class RobotState {
 
   // SHOOTING ALIGNMENT
 
+  /**
+   * Returns true if the robot's current heading is within the hub alignment tolerance.
+   *
+   * <p>Used as the "ready to fire" condition for hub shots. The tolerance is defined in {@code
+   * HardwareConstants.CompConstants.Thresholds.hubAlignmentToleranceDegrees} and can be tuned
+   * without changing any command logic.
+   *
+   * @return true when the robot is pointing at the hub within the allowed tolerance
+   */
+  @AutoLogOutput(key = "RobotState/IsAlignedToHub")
+  public boolean isAlignedToHub() {
+    // Calculate the error between our current heading and the desired hub-facing angle.
+    // Rotation2d.minus() handles wrap-around automatically (e.g., 179° - (-179°) = 2°, not 358°).
+    double errorDegrees =
+        Math.abs(
+            getAngleToAllianceHub().minus(getEstimatedPose().getRotation()).getDegrees());
+    return errorDegrees < HardwareConstants.CompConstants.Thresholds.hubAlignmentToleranceDegrees;
+  }
+
+  /**
+   * Returns true if the robot's current heading is within the pass alignment tolerance.
+   *
+   * <p>Used as the "ready to fire" condition for pass shots. The tolerance is defined in {@code
+   * HardwareConstants.CompConstants.Thresholds.passAlignmentToleranceDegrees} and can be tuned
+   * without changing any command logic.
+   *
+   * @return true when the robot is pointing at the pass target within the allowed tolerance
+   */
+  @AutoLogOutput(key = "RobotState/IsAlignedToPass")
+  public boolean isAlignedToPass() {
+    Translation2d passTarget2d =
+        new Translation2d(getPassTarget().getX(), getPassTarget().getY());
+    double errorDegrees =
+        Math.abs(
+            getAngleToTarget(passTarget2d).minus(getEstimatedPose().getRotation()).getDegrees());
+    return errorDegrees < HardwareConstants.CompConstants.Thresholds.passAlignmentToleranceDegrees;
+  }
+
   // Finds pass target based on position
   // CPU FIX: replaced DriverStation.getAlliance() (creates Optional every call) with cached
   // AllianceFlipUtil.shouldFlip(). Also replaced RobotState.getInstance() self-call with
@@ -369,8 +407,8 @@ public class RobotState {
 
   // Returns a "broad" zone - alliance zone, alliance trench, neutral, opposing trench, opposing
   // zone
-  public HardwareConstants.Zones.broadZone getBroadZone(Pose2d pose) {
-    double poseX = AllianceFlipUtil.applyX(pose.getX());
+  public HardwareConstants.Zones.broadZone getBroadZone() {
+    double poseX = AllianceFlipUtil.applyX(getEstimatedPose().getX());
     if (poseX < FieldConstants.LinesVertical.allianceZone) {
       return HardwareConstants.Zones.broadZone.ALLIANCE_ZONE;
     } else if (poseX < FieldConstants.LinesVertical.neutralZoneNear) {
@@ -390,7 +428,7 @@ public class RobotState {
     double poseX = AllianceFlipUtil.applyX(pose.getX());
     double poseY = AllianceFlipUtil.applyY(pose.getY());
     // CPU FIX: cache getBroadZone result — was called up to 4 times for the same pose
-    HardwareConstants.Zones.broadZone broadZone = getBroadZone(pose);
+    HardwareConstants.Zones.broadZone broadZone = getBroadZone();
     if ((broadZone == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE)
         && (poseX < FieldConstants.Tower.frontFaceX)
         && (poseY < FieldConstants.Tower.leftUpright.getY())
@@ -460,7 +498,7 @@ public class RobotState {
   public HardwareConstants.Zones.approachingZoneY getApproachingZoneY(Pose2d pose) {
     double poseY = AllianceFlipUtil.applyY(pose.getY());
     // CPU FIX: cache getBroadZone result — was called up to 2 times for the same pose
-    HardwareConstants.Zones.broadZone broadZone = getBroadZone(pose);
+    HardwareConstants.Zones.broadZone broadZone = getBroadZone();
     if ((broadZone == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE)
         && ((poseY
                 > (FieldConstants.Tower.leftUpright.getY()

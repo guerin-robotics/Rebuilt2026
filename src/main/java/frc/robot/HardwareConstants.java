@@ -98,6 +98,8 @@ public class HardwareConstants {
 
     public static class Thresholds {
       public static final double flywheelSpinupThreshold = 200;
+      public static final double hubAlignmentToleranceDegrees = 5.0;
+      public static final double passAlignmentToleranceDegrees = 7.0;
     }
   }
 

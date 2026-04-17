@@ -446,6 +446,7 @@ public class RobotContainer {
         .shootButton()
         .and(Triggers.getInstance().isShootClear)
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
+        // .and(Triggers.getInstance().alignedToShoot)
         .whileTrue(
             FlywheelCommands.setVelocityForHub(flywheel)
                 .alongWith(
@@ -472,7 +473,9 @@ public class RobotContainer {
     (Triggers.getInstance()
             .shootButton()
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
-            .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
+            .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
+            // .and(Triggers.getInstance().alignedToShoot)
+        )
         .or(Triggers.getInstance().passButton())
         .whileTrue(
             FlywheelCommands.setPassVelocity(flywheel)
