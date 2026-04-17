@@ -17,15 +17,13 @@ public class HardwareConstants {
 
   public static class CanIds {
     // Flywheel
-    public static int MAIN_FLYWHEEL_LEADER_ID = 30; // 30
-    public static int MAIN_FLYWHEEL_FOLLOWER1_ID = 31; // 31
-    public static int MAIN_FLYWHEEL_FOLLOWER2_ID = 32; // 32
+    public static int MAIN_FLYWHEEL_LEADER_ID = 30;
+    public static int MAIN_FLYWHEEL_FOLLOWER1_ID = 31;
+    public static int MAIN_FLYWHEEL_FOLLOWER2_ID = 32;
     public static int MAIN_FLYWHEEL_FOLLOWER3_ID = 33;
     public static int MAIN_FLYWHEEL_FOLLOWER4_ID = 34;
 
     // Hood
-    // public static int HOOD_SERVO_CHANNEL = 0;
-    // public static int HOOD_LEFT_SERVO_CHANNEL = 1;
     public static int HOOD_MOTOR = 35;
     public static int HOOD_ENCODER = 50;
 
@@ -66,12 +64,12 @@ public class HardwareConstants {
     public static class Velocities {
       public static final AngularVelocity prestageVelocity = RPM.of(2400.0);
       public static final AngularVelocity feederVelocity = RPM.of(-3000.0);
-      public static final AngularVelocity prestageIdleVelocity = RotationsPerSecond.of(18);
-      public static final AngularVelocity flywheelIdleVelocity = RotationsPerSecond.of(15);
-      public static final AngularVelocity prestageIdleVelocityHigh = RotationsPerSecond.of(20);
-      public static final AngularVelocity flywheelIdleVelocityHigh = RotationsPerSecond.of(10);
-      public static final AngularVelocity intakeRollerVelocity = RotationsPerSecond.of(40);
-      public static final AngularVelocity transportVelocity = RotationsPerSecond.of(-30);
+      public static final AngularVelocity prestageIdleVelocity = RPM.of(1080);
+      public static final AngularVelocity flywheelIdleVelocity = RPM.of(900);
+      public static final AngularVelocity prestageIdleVelocityHigh = RPM.of(1200);
+      public static final AngularVelocity flywheelIdleVelocityHigh = RPM.of(60);
+      public static final AngularVelocity intakeRollerVelocity = RPM.of(2400);
+      public static final AngularVelocity transportVelocity = RPM.of(-1800);
     }
 
     public static class SpitVelocities {
@@ -118,8 +116,8 @@ public class HardwareConstants {
     }
 
     public static class TestVelocities {
-      public static final AngularVelocity FlywheelVelocity = RPM.of(600); // rotations/s
-      public static final AngularVelocity flywheelIdleVelocity = RotationsPerSecond.of(5);
+      public static final AngularVelocity FlywheelVelocity = RPM.of(600.0);
+      public static final AngularVelocity flywheelIdleVelocity = RPM.of(30.0);
       public static final AngularVelocity feederVelocity = RotationsPerSecond.of(180.0);
       public static final AngularVelocity rollerVelocity = RotationsPerSecond.of(-50.0);
       public static final AngularVelocity rollerAgitateVelocity = RotationsPerSecond.of(-25);
@@ -172,8 +170,8 @@ public class HardwareConstants {
 
   public static class TuningConstants {
     public static boolean TUNING_MODE;
-    public static boolean isTuning = true;
-    public static boolean atComp = false;
+    public static boolean isTuning = false;
+    public static boolean atComp = true;
 
     public static final AngularVelocity FlywheelTuningVelocity = RPM.of(1625.0);
     public static final Angle HoodTuningPos = Degrees.of(2.5);

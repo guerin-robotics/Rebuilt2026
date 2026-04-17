@@ -124,8 +124,6 @@ public class RobotContainer {
       new CommandXboxController(HardwareConstants.ControllerConstants.XboxControllerPort);
   private final CommandJoystick thrustmaster =
       new CommandJoystick(HardwareConstants.ControllerConstants.JoystickControllerPort);
-  private final CommandJoystick buttonPanel =
-      new CommandJoystick(HardwareConstants.ControllerConstants.ButtonPanelPort);
   private final CommandXboxController simController =
       new CommandXboxController(HardwareConstants.ControllerConstants.SimControllerPort);
 
@@ -441,7 +439,7 @@ public class RobotContainer {
             DriveCommands.joystickDriveAlignForBump(
                 drive, () -> -thrustmaster.getY(), () -> -thrustmaster.getX()));
 
-    // FLYWHEEL
+    // SHOOTER
     // Set shooting velocity if shoot button pressed, we're in our alliance zone, hub is active, and
     // tuning false
     Triggers.getInstance()
@@ -520,18 +518,6 @@ public class RobotContainer {
             FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)))
         .onFalse(TransportCommands.stop(transport));
 
-    // Increase idle speed if hub active, shoot button is not pressed, and if tuning mode false
-    // NOTE: No .onFalse(stop) here — when this trigger goes false because the shoot button
-    // was pressed, we do NOT want to fire a stop command that would fight the incoming
-    // shoot command for flywheel ownership (causing a momentary 0 RPM dip).
-    // The whileTrue command is naturally interrupted when the trigger goes false.
-    // Triggers.getInstance()
-    //     .isShootSafeTimeSure
-    //     .and(() -> !Triggers.getInstance().shootButton().getAsBoolean())
-    //     .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
-    //     .and(DriverStation::isTeleopEnabled)
-    //     .whileTrue(FlywheelCommands.flywheelHighIdle(flywheel));
-
     // Distance map shot if tuning mode true
     Triggers.getInstance()
         .shootButton()
@@ -556,62 +542,6 @@ public class RobotContainer {
         .onFalse(
             FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)))
         .onFalse(TransportCommands.stop(transport));
-
-    // PRESTAGE
-    // Set to velocity when any shooting sequence is started (shoot to hub, pass, shoot from tower)
-    // - DO NOT DELETE
-    // Triggers.getInstance()
-    //     .shootButton()
-    //     .or(Triggers.getInstance().passButton())
-    //     .or(Triggers.getInstance().shootFromTowerButton())
-    //     .whileTrue(
-    //         PrestageCommands.setPrestageVelocity(
-    //             prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
-    //     .onFalse(PrestageCommands.stop(prestage));
-
-    // Increase idle speed if hub active
-    // Triggers.getInstance()
-    //     .isShootSafeTimeSure
-    //     .whileTrue(
-    //         PrestageCommands.setPrestageVelocity(
-    //             prestage, HardwareConstants.CompConstants.Velocities.prestageIdleVelocityHigh))
-    //     .onFalse(PrestageCommands.prestageIdle(prestage));
-
-    // FEEDER
-    // Set to velocity (after a wait) when any shooting sequence is started (shoot to hub, pass,
-    // shoot from tower) - DO NOT DELETE
-    // Triggers.getInstance()
-    //     .shootButton()
-    //     .or(Triggers.getInstance().passButton())
-    //     .or(Triggers.getInstance().shootFromTowerButton())
-    //     .whileTrue(
-    //         FeederCommands.setLowerVelocityAfterWait(
-    //                 lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
-    //             .alongWith(
-    //                 FeederCommands.setUpperVelocityAfterWait(
-    //                     upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)))
-    //     // FeederCommands.setLowerFeederVoltage(
-    //     //         lowerFeeder,
-    //     //         HardwareConstants.TestConstants.TestVoltages.LowerFeederTestVoltage)
-    //     //     .alongWith(
-    //     //         FeederCommands.setUpperFeederVoltage(
-    //     //             upperFeeder,
-    //     //             HardwareConstants.TestConstants.TestVoltages.FeederTestVoltage)))
-    //     .onFalse(
-    //
-    // FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)));
-
-    // TRANSPORT
-    // Set to voltage (after a wait) when any shooting sequence is started (shoot to hub, pass,
-    // shoot from tower) - DO NOT DELETE
-    // Triggers.getInstance()
-    //     .shootButton()
-    //     .or(Triggers.getInstance().passButton())
-    //     .or(Triggers.getInstance().shootFromTowerButton())
-    //     .whileTrue(
-    //         TransportCommands.setVelocityAfterWait(
-    //             transport, HardwareConstants.CompConstants.Velocities.transportVelocity))
-    //     .onFalse(TransportCommands.stop(transport));
 
     // INTAKE ROLLER
     // Set to intaking voltage when intake button is pressed
@@ -651,11 +581,14 @@ public class RobotContainer {
     // Compress on shoot button when:
     //   - neither intake deploy nor retract button is currently pressed
     //   - compression has not been cancelled by a prior intake override this shoot press
+    //   - we're not in our alliance zone with the hub inactive
     // Also starts on the dedicated compress button.
     (Triggers.getInstance()
             .shootButton()
             .and(() -> !Triggers.getInstance().intakeOutButton().getAsBoolean())
-            .and(() -> !Triggers.getInstance().intakeInButton().getAsBoolean()))
+            .and(() -> !Triggers.getInstance().intakeInButton().getAsBoolean())
+            .and(() -> !(Triggers.getInstance().isShootSafeZone.getAsBoolean() && 
+                !Triggers.getInstance().isShootSafeTimeSure.getAsBoolean())))
         .or(Triggers.getInstance().intakeCompressButton())
         .whileTrue(IntakePivotCommands.compressPivot(intakePivot))
         .onFalse(
@@ -679,58 +612,11 @@ public class RobotContainer {
         .or(Triggers.getInstance().passButton())
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.PassConstants.hoodPassPos));
 
+    // Set pos to defined tuning pos when shoot button is pressed and tuning mode is on
     Triggers.getInstance()
         .shootButton()
         .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos));
-
-    // Distance map shot if shoot button is pressed and tuning mode is true
-    // Triggers.getInstance()
-    //     .shootButton()
-    //     .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
-    //     .whileTrue(HoodCommands.setHoodPos(hood,
-    // HardwareConstants.TuningConstants.HoodTuningPos));
-
-    // Subsystem tuning controls
-    buttonPanel.button(1).onTrue(HoodCommands.stowHood(hood));
-    // buttonPanel
-    //     .button(1)
-    //     .whileTrue(
-    //         PrestageCommands.setPrestageVoltage(
-    //             prestage, HardwareConstants.CompConstants.Voltages.prestageVoltage))
-    //     .onFalse(PrestageCommands.stop(prestage));
-
-    buttonPanel.button(2).onTrue(HoodCommands.incrementHoodPos(hood));
-
-    // buttonPanel
-    //     .button(3)
-    //     .whileTrue(
-    //         FeederCommands.setUpperFeederVelocity(
-    //             upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity));
-
-    // buttonPanel
-    //     .button(4)
-    //     .whileTrue(
-    //         TransportCommands.setTransportVelocity(
-    //             transport, HardwareConstants.CompConstants.Velocities.transportVelocity));
-
-    // buttonPanel
-    //     .button(5)
-    //     .whileTrue(
-    //         intakeRollerCommands.setRollerVelocity(
-    //             intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity));
-
-    // buttonPanel.button(6).whileTrue(HoodCommands.setHoodPos(hood, Degrees.of(30)));
-
-    // buttonPanel.button(7).whileTrue(IntakePivotCommands.setPivotPosition(intakePivot,
-    // Rotations.of(0.25)));
-
-    // buttonPanel
-    //     .button(8)
-    //     .whileTrue(
-    //         FlywheelCommands.setFlywheelVelocity(
-    //             flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity));
-    // buttonPanel.button(8).whileTrue(FlywheelCommands.setFlywheelVoltage(flywheel, Volts.of(6)));
   }
 
   private void configureSimBindings() {

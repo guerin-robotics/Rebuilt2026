@@ -18,8 +18,6 @@ public class HoodConstants {
     public static final Angle hoodMaxPos = Degrees.of(234); // was 0.65 rotations
     public static final Angle hoodMinPos = Degrees.of(0);
 
-    public static double leftServoOffset = -0.02;
-
     /**
      * Gear ratio from the output shaft (where the CANcoder is) to the hood mechanism.
      *
