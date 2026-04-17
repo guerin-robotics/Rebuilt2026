@@ -95,6 +95,16 @@ public class Robot extends LoggedRobot {
 
     // Publish the robot pose Field2d to the dashboard so we can see where the robot is
     SmartDashboard.putData("Robot Pose Field Map", fieldMap);
+    SmartDashboard.putString("Battery Changed", "Battery Changed");
+    SmartDashboard.putString("Battery Secured", "Battery Secured");
+    SmartDashboard.putString("Auto Path Changed", "Auto Path Changed");
+    SmartDashboard.putString("Bumpers On", "Bumpers On");
+    SmartDashboard.putString("Code Deployed", "Code Deployed");
+
+    SmartDashboard.putString("Intake Pivot", "Intake Pivot");
+    SmartDashboard.putString("Intake Roller", "Intake Roller");
+    SmartDashboard.putString("Shoot Sequence", "Shoot Sequence");
+    SmartDashboard.putString("Movement", "Movement");
   }
 
   /** This function is called periodically during all modes. */
