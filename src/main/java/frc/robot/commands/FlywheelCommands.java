@@ -61,7 +61,7 @@ public class FlywheelCommands {
    * @return Command to run shooter at velocity, stops on end
    */
   public static Command setFlywheelVelocity(Flywheel flywheel, AngularVelocity velocity) {
-    return Commands.runOnce(() -> flywheel.setFlywheelVelocity(velocity), flywheel)
+    return Commands.run(() -> flywheel.setFlywheelVelocity(velocity), flywheel)
         .withName("FlywheelVelocity_" + velocity.in(RotationsPerSecond) + "rps");
   }
 

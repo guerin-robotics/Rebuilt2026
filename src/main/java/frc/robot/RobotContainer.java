@@ -454,13 +454,13 @@ public class RobotContainer {
                     PrestageCommands.setPrestageVelocity(
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
                 .alongWith(
-                    FeederCommands.setUpperFeederVelocity(
+                    FeederCommands.setUpperVelocityAfterWait(
                         upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
                 .alongWith(
-                    FeederCommands.setLowerFeederVelocity(
+                    FeederCommands.setLowerVelocityAfterWait(
                         lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
                 .alongWith(
-                    TransportCommands.setTransportVelocity(
+                    TransportCommands.setVelocityAfterWait(
                         transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
         .onFalse(FlywheelCommands.stop(flywheel))
         .onFalse(PrestageCommands.stop(prestage))
@@ -482,13 +482,13 @@ public class RobotContainer {
                     PrestageCommands.setPrestageVelocity(
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
                 .alongWith(
-                    FeederCommands.setUpperFeederVelocity(
+                    FeederCommands.setUpperVelocityAfterWait(
                         upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
                 .alongWith(
-                    FeederCommands.setLowerFeederVelocity(
+                    FeederCommands.setLowerVelocityAfterWait(
                         lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
                 .alongWith(
-                    TransportCommands.setTransportVelocity(
+                    TransportCommands.setVelocityAfterWait(
                         transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
         .onFalse(FlywheelCommands.stop(flywheel))
         .onFalse(PrestageCommands.stop(prestage))
@@ -506,13 +506,13 @@ public class RobotContainer {
                     PrestageCommands.setPrestageVelocity(
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
                 .alongWith(
-                    FeederCommands.setUpperFeederVelocity(
+                    FeederCommands.setUpperVelocityAfterWait(
                         upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
                 .alongWith(
-                    FeederCommands.setLowerFeederVelocity(
+                    FeederCommands.setLowerVelocityAfterWait(
                         lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
                 .alongWith(
-                    TransportCommands.setTransportVelocity(
+                    TransportCommands.setVelocityAfterWait(
                         transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
         .onFalse(FlywheelCommands.stop(flywheel))
         .onFalse(PrestageCommands.stop(prestage))
@@ -543,13 +543,13 @@ public class RobotContainer {
                     PrestageCommands.setPrestageVelocity(
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
                 .alongWith(
-                    FeederCommands.setUpperFeederVelocity(
+                    FeederCommands.setUpperVelocityAfterWait(
                         upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
                 .alongWith(
-                    FeederCommands.setLowerFeederVelocity(
+                    FeederCommands.setLowerVelocityAfterWait(
                         lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
                 .alongWith(
-                    TransportCommands.setTransportVelocity(
+                    TransportCommands.setVelocityAfterWait(
                         transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
         .onFalse(FlywheelCommands.stop(flywheel))
         .onFalse(PrestageCommands.stop(prestage))
@@ -844,11 +844,11 @@ public class RobotContainer {
     // was pressed, we do NOT want to fire a stop command that would fight the incoming
     // shoot command for flywheel ownership (causing a momentary 0 RPM dip).
     // The whileTrue command is naturally interrupted when the trigger goes false.
-    Triggers.getInstance()
-        .isShootSafeTimeSure
-        .and(() -> !Triggers.getInstance().simShootButton().getAsBoolean())
-        .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
-        .whileTrue(FlywheelCommands.flywheelHighIdle(flywheel));
+    // Triggers.getInstance()
+    //     .isShootSafeTimeSure
+    //     .and(() -> !Triggers.getInstance().simShootButton().getAsBoolean())
+    //     .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
+    //     .whileTrue(FlywheelCommands.flywheelHighIdle(flywheel));
 
     // Distance map shot if tuning mode true
     Triggers.getInstance()
