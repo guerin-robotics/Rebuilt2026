@@ -446,7 +446,6 @@ public class RobotContainer {
         .shootButton()
         .and(Triggers.getInstance().isShootClear)
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
-        // .and(Triggers.getInstance().alignedToShoot)
         .whileTrue(
             FlywheelCommands.setVelocityForHub(flywheel)
                 .alongWith(
@@ -454,13 +453,19 @@ public class RobotContainer {
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
                 .alongWith(
                     FeederCommands.setUpperVelocityAfterWait(
-                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                        upperFeeder,
+                        HardwareConstants.CompConstants.Velocities.feederVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot))
                 .alongWith(
                     FeederCommands.setLowerVelocityAfterWait(
-                        lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                        lowerFeeder,
+                        HardwareConstants.CompConstants.Velocities.feederVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot))
                 .alongWith(
                     TransportCommands.setVelocityAfterWait(
-                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
+                        transport,
+                        HardwareConstants.CompConstants.Velocities.transportVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot)))
         .onFalse(FlywheelCommands.stop(flywheel))
         .onFalse(PrestageCommands.stop(prestage))
         .onFalse(
@@ -474,7 +479,6 @@ public class RobotContainer {
             .shootButton()
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
             .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
-            // .and(Triggers.getInstance().alignedToShoot)
         )
         .or(Triggers.getInstance().passButton())
         .whileTrue(
@@ -484,13 +488,19 @@ public class RobotContainer {
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
                 .alongWith(
                     FeederCommands.setUpperVelocityAfterWait(
-                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                        upperFeeder,
+                        HardwareConstants.CompConstants.Velocities.feederVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot))
                 .alongWith(
                     FeederCommands.setLowerVelocityAfterWait(
-                        lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                        lowerFeeder,
+                        HardwareConstants.CompConstants.Velocities.feederVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot))
                 .alongWith(
                     TransportCommands.setVelocityAfterWait(
-                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
+                        transport,
+                        HardwareConstants.CompConstants.Velocities.transportVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot)))
         .onFalse(FlywheelCommands.stop(flywheel))
         .onFalse(PrestageCommands.stop(prestage))
         .onFalse(
@@ -508,13 +518,19 @@ public class RobotContainer {
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
                 .alongWith(
                     FeederCommands.setUpperVelocityAfterWait(
-                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                        upperFeeder,
+                        HardwareConstants.CompConstants.Velocities.feederVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot))
                 .alongWith(
                     FeederCommands.setLowerVelocityAfterWait(
-                        lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                        lowerFeeder,
+                        HardwareConstants.CompConstants.Velocities.feederVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot))
                 .alongWith(
                     TransportCommands.setVelocityAfterWait(
-                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
+                        transport,
+                        HardwareConstants.CompConstants.Velocities.transportVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot)))
         .onFalse(FlywheelCommands.stop(flywheel))
         .onFalse(PrestageCommands.stop(prestage))
         .onFalse(

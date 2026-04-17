@@ -81,6 +81,10 @@ public class FeederCommands {
         .withName("LowerFeederVelocityAfterWait");
   }
 
+  public static Command setLowerVelocityAfterWait(LowerFeeder feeder, AngularVelocity feederVelo) {
+    return setLowerVelocityAfterWait(feeder, feederVelo, () -> true).withName("LowerFeederVelocityAfterWaitNoAlign");
+  }
+
   /**
    * Runs the upper feeder at the given velocity, but only after:
    *
@@ -105,4 +109,9 @@ public class FeederCommands {
             setUpperFeederVelocity(feeder, feederVelo))
         .withName("UpperFeederVelocityAfterWait");
   }
+
+    public static Command setUpperVelocityAfterWait(
+      UpperFeeder feeder, AngularVelocity feederVelo) {
+    return setUpperVelocityAfterWait(feeder, feederVelo, () -> true).withName("UpperFeederVelocityAfterWaitNoAlign");
+      }
 }

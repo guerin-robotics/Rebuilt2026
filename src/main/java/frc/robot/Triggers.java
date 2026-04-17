@@ -163,8 +163,8 @@ public class Triggers {
   public final LoggedTrigger isShootClear =
       new LoggedTrigger("isShootClear", isShootSafeTime.and(isShootSafeZone));
 
-  public final LoggedTrigger alignedToShoot =
-      new LoggedTrigger("alignedToShoot", () ->
+  public final LoggedTrigger isAlignedForCurrentShot =
+      new LoggedTrigger("isAlignedForCurrentShot", () ->
        {
         if (RobotState.getInstance().getBroadZone() == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE) {
           return RobotState.getInstance().isAlignedToHub();
