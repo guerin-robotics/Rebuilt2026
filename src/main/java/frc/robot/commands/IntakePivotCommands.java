@@ -72,26 +72,25 @@ public class IntakePivotCommands {
         .withName("IntakePivotJostle");
   }
 
-  public static Command compressPivot(IntakePivot intakePivot) {
-    // return Commands.sequence(
-    //         Commands.deadline(
-    //             new WaitCommand(1), IntakePivotCommands.setPivotVoltage(intakePivot,
-    // Volts.of(3))),
-    //         new WaitCommand(0.3),
-    //         IntakePivotCommands.setPivotPosition(
-    //             intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos))
-    //     .repeatedly()
-    //     .finallyDo(
-    //         (interrupted) -> {
-    //           // Only reset to down position if the command ended naturally (not interrupted).
-    //           // If interrupted by the driver pressing intake in/out, we don't want to
-    //           // override the position they just commanded.
-    //           if (!interrupted) {
-    //             intakePivot.setPivotPosition(
-    //                 HardwareConstants.CompConstants.Positions.pivotDownPos);
-    //           }
-    //         })
+  /**
+   * Compress the pivot to jostle game pieces into position.
+   *
+   * @param intakePivot The intake pivot subsystem
+   * @param skipFirstWait If true, skip the initial wait and start compressing immediately (used for
+   *     manual compress button). If false, wait before starting (used for automatic compress during
+   *     shooting).
+   */
+  public static Command compressPivot(IntakePivot intakePivot, boolean skipFirstWait) {
     Logger.recordOutput("RobotState/IntakePivot", "JostleCalled");
+    if (skipFirstWait) {
+      return Commands.sequence(
+              setPivotPosition(
+                  intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleMiddlePos),
+              new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
+              setPivotPosition(
+                  intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
+          .withName("IntakePivotCompress");
+    }
     return Commands.sequence(
             new WaitCommand(HardwareConstants.CompConstants.Waits.waitToCompressSeconds),
             setPivotPosition(
@@ -100,6 +99,11 @@ public class IntakePivotCommands {
             setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
         .withName("IntakePivotCompress");
+  }
+
+  /** Overload that defaults to NOT skipping the first wait (backward-compatible). */
+  public static Command compressPivot(IntakePivot intakePivot) {
+    return compressPivot(intakePivot, false);
   }
 
   public static Command autoPivotCompress(IntakePivot intakePivot) {
