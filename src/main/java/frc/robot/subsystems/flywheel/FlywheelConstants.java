@@ -39,7 +39,7 @@ public class FlywheelConstants {
     public static final int SHOOTER_MAIN_SUPPLY_AMP = 40;
     public static final int SHOOTER_MAIN_SUPPLY_TRIGGER_AMP = 35;
     public static final Time SHOOTER_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
-    public static final int SHOOTER_MAIN_STATOR_AMP = 60;
+    public static final int SHOOTER_MAIN_STATOR_AMP = 45;
   }
 
   /**
@@ -124,12 +124,12 @@ public class FlywheelConstants {
     // Key is distance from center of hub (converted to meters)
     // Value is angular velocity (RPM)
     static {
-      SPEED_MAP.put(inchesToMeters(75.0), 1550.0); // Auto shot 1
-      SPEED_MAP.put(inchesToMeters(85.0), 1575.0); // Auto shot 2
-      SPEED_MAP.put(inchesToMeters(100.0), 1575.0);
-      SPEED_MAP.put(inchesToMeters(120.0), 1650.0); // Tower shot
-      // SPEED_MAP.put(inchesToMeters(126.0), 1600.0);
-      // SPEED_MAP.put(inchesToMeters(81.0), 1500.0);
+      SPEED_MAP.put(inchesToMeters(75.0), 1450.0); // Auto shot 1
+      SPEED_MAP.put(inchesToMeters(85.0), 1525.0); // Auto shot 2
+      SPEED_MAP.put(inchesToMeters(110.0), 1625.0); // Tower shot
+      SPEED_MAP.put(inchesToMeters(130.0), 1700.0);
+      SPEED_MAP.put(inchesToMeters(145.0), 1750.0);
+      SPEED_MAP.put(inchesToMeters(160.0), 2000.0);
     }
   }
 

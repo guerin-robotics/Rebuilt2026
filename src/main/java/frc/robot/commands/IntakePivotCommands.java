@@ -102,6 +102,17 @@ public class IntakePivotCommands {
         .withName("IntakePivotCompress");
   }
 
+  public static Command autoPivotCompress(IntakePivot intakePivot) {
+    return Commands.sequence(
+            new WaitCommand(HardwareConstants.CompConstants.Waits.autoWaitToCompressSeconds),
+            setPivotPosition(
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleMiddlePos),
+            new WaitCommand(HardwareConstants.CompConstants.Waits.autoWaitBetweenCompressSeconds),
+            setPivotPosition(
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
+        .withName("IntakePivotCompress");
+  }
+
   /** Zero the pivot encoder at the current position. */
   public static Command zeroPivot(IntakePivot intakePivot) {
     return Commands.runOnce(() -> intakePivot.zeroPivotEncoder()).withName("IntakePivotZero");

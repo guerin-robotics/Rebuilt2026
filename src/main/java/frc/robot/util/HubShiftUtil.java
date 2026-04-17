@@ -120,7 +120,7 @@ public class HubShiftUtil {
    * Combined with minFuelCountDelay this determines how early the robot must start shooting before
    * a shift opens. Increase this value to start shooting sooner.
    */
-  private static final double minTimeOfFlight = 2.5;
+  private static final double minTimeOfFlight = 1.5;
 
   /**
    * The slowest realistic time (seconds) for a fired ball to reach the hub and be detected.
