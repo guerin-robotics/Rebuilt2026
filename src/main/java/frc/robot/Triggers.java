@@ -71,7 +71,7 @@ public class Triggers {
   }
 
   public Trigger simShootButton() {
-    return simController.b();
+    return thrustmaster.button(1);
     // return controller.b();
   }
 
@@ -82,12 +82,12 @@ public class Triggers {
 
   public Trigger simIntakeInButton() {
     // return simController.button(3);
-    return simController.povLeft();
+    return thrustmaster.button(3);
   }
 
   public Trigger simIntakeOutButton() {
     // return simController.button(4);
-    return simController.povRight();
+    return thrustmaster.button(4);
   }
 
   public Trigger simIntakeRollerButton() {
