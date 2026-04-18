@@ -471,7 +471,8 @@ public class RobotContainer {
                     TransportCommands.setVelocityAfterWait(
                         transport,
                         HardwareConstants.CompConstants.Velocities.transportVelocity,
-                        Triggers.getInstance().isAlignedForCurrentShot)))
+                        Triggers.getInstance().isAlignedForCurrentShot))
+                .alongWith(DriveCommands.stopWithX(drive)))
         .onFalse(FlywheelCommands.stop(flywheel))
         .onFalse(PrestageCommands.stop(prestage))
         .onFalse(
@@ -536,7 +537,8 @@ public class RobotContainer {
                     TransportCommands.setVelocityAfterWait(
                         transport,
                         HardwareConstants.CompConstants.Velocities.transportVelocity,
-                        Triggers.getInstance().isAlignedForCurrentShot)))
+                        Triggers.getInstance().isAlignedForCurrentShot))
+                .alongWith(DriveCommands.stopWithX(drive)))
         .onFalse(FlywheelCommands.stop(flywheel))
         .onFalse(PrestageCommands.stop(prestage))
         .onFalse(
