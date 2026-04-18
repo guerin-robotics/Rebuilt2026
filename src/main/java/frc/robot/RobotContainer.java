@@ -107,6 +107,12 @@ public class RobotContainer {
   // Used during disabled/pre-match to verify the robot is placed correctly.
   public final Field2d autoPreviewField = new Field2d();
 
+  // ── Compress Cancellation Tracking ──────────────────────────────────────────
+  // When the driver overrides the automatic compress (by pressing intake in/out/compress),
+  // this flag is set to true so the auto-compress won't reschedule until the shoot button
+  // is released. Reset to false when the shoot button is released.
+  private boolean compressCancelled = false;
+
   // Stores the starting pose of the currently selected auto.
   // Updated when the auto chooser selection changes.
   private Pose2d autoStartPose = new Pose2d();
@@ -446,7 +452,6 @@ public class RobotContainer {
         .shootButton()
         .and(Triggers.getInstance().isShootClear)
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
-        // .and(Triggers.getInstance().alignedToShoot)
         .whileTrue(
             FlywheelCommands.setVelocityForHub(flywheel)
                 .alongWith(
@@ -454,13 +459,19 @@ public class RobotContainer {
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
                 .alongWith(
                     FeederCommands.setUpperVelocityAfterWait(
-                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                        upperFeeder,
+                        HardwareConstants.CompConstants.Velocities.feederVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot))
                 .alongWith(
                     FeederCommands.setLowerVelocityAfterWait(
-                        lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                        lowerFeeder,
+                        HardwareConstants.CompConstants.Velocities.feederVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot))
                 .alongWith(
                     TransportCommands.setVelocityAfterWait(
-                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
+                        transport,
+                        HardwareConstants.CompConstants.Velocities.transportVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot)))
         .onFalse(FlywheelCommands.stop(flywheel))
         .onFalse(PrestageCommands.stop(prestage))
         .onFalse(
@@ -473,24 +484,29 @@ public class RobotContainer {
     (Triggers.getInstance()
             .shootButton()
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
-            .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
-            // .and(Triggers.getInstance().alignedToShoot)
-        )
+            .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
         .or(Triggers.getInstance().passButton())
         .whileTrue(
-            FlywheelCommands.setPassVelocity(flywheel)
+            FlywheelCommands.setFlywheelVelocity(
+                    flywheel, HardwareConstants.PassConstants.FlywheelPassVelocity)
                 .alongWith(
                     PrestageCommands.setPrestageVelocity(
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
                 .alongWith(
                     FeederCommands.setUpperVelocityAfterWait(
-                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                        upperFeeder,
+                        HardwareConstants.CompConstants.Velocities.feederVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot))
                 .alongWith(
                     FeederCommands.setLowerVelocityAfterWait(
-                        lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                        lowerFeeder,
+                        HardwareConstants.CompConstants.Velocities.feederVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot))
                 .alongWith(
                     TransportCommands.setVelocityAfterWait(
-                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
+                        transport,
+                        HardwareConstants.CompConstants.Velocities.transportVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot)))
         .onFalse(FlywheelCommands.stop(flywheel))
         .onFalse(PrestageCommands.stop(prestage))
         .onFalse(
@@ -508,13 +524,19 @@ public class RobotContainer {
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
                 .alongWith(
                     FeederCommands.setUpperVelocityAfterWait(
-                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                        upperFeeder,
+                        HardwareConstants.CompConstants.Velocities.feederVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot))
                 .alongWith(
                     FeederCommands.setLowerVelocityAfterWait(
-                        lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                        lowerFeeder,
+                        HardwareConstants.CompConstants.Velocities.feederVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot))
                 .alongWith(
                     TransportCommands.setVelocityAfterWait(
-                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
+                        transport,
+                        HardwareConstants.CompConstants.Velocities.transportVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot)))
         .onFalse(FlywheelCommands.stop(flywheel))
         .onFalse(PrestageCommands.stop(prestage))
         .onFalse(
@@ -556,43 +578,60 @@ public class RobotContainer {
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // Set to agitate voltage (after a wait) when any shooting sequence is started (shoot to hub,
-    // pass, shoot from tower)
+    // pass, shoot from tower). Agitate is also delayed until aligned.
     Triggers.getInstance()
         .shootButton()
         .or(Triggers.getInstance().passButton())
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             intakeRollerCommands.setVoltageAfterWait(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))
+                intakeRoller,
+                HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage,
+                Triggers.getInstance().isAlignedForCurrentShot))
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // INTAKE PIVOT
-    // Retract on retract button — also cancels compression for this shoot press
+    // Retract on retract button — also cancels automatic compression for this shoot press
     Triggers.getInstance()
         .intakeInButton()
+        .onTrue(Commands.runOnce(() -> compressCancelled = true))
         .whileTrue(
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotUpPos));
 
-    // Deploy on deploy button — also cancels compression for this shoot press
+    // Deploy on deploy button — also cancels automatic compression for this shoot press
     Triggers.getInstance()
         .intakeOutButton()
+        .onTrue(Commands.runOnce(() -> compressCancelled = true))
         .whileTrue(
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
 
-    // Compress on shoot button when:
+    // Manual compress button — cancels auto-compress and runs compress with no initial wait
+    Triggers.getInstance()
+        .intakeCompressButton()
+        .onTrue(Commands.runOnce(() -> compressCancelled = true))
+        .whileTrue(IntakePivotCommands.compressPivot(intakePivot, true))
+        .onFalse(
+            IntakePivotCommands.setPivotPosition(
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
+
+    // Reset the cancellation flag when the shoot button is released so auto-compress
+    // can activate on the next shoot press
+    Triggers.getInstance().shootButton().onFalse(Commands.runOnce(() -> compressCancelled = false));
+
+    // Automatic compress on shoot button when:
     //   - neither intake deploy nor retract button is currently pressed
     //   - compression has not been cancelled by a prior intake override this shoot press
     //   - we're not in our alliance zone with the hub inactive
-    // Also starts on the dedicated compress button.
-    (Triggers.getInstance()
-            .shootButton()
-            .and(() -> !Triggers.getInstance().intakeOutButton().getAsBoolean())
-            .and(() -> !Triggers.getInstance().intakeInButton().getAsBoolean())
-            .and(() -> !(Triggers.getInstance().isShootSafeZone.getAsBoolean() && 
-                !Triggers.getInstance().isShootSafeTimeSure.getAsBoolean())))
-        .or(Triggers.getInstance().intakeCompressButton())
+    Triggers.getInstance()
+        .shootButton()
+        .and(() -> !compressCancelled)
+        .and(
+            () ->
+                !(Triggers.getInstance().isShootSafeZone.getAsBoolean()
+                    && !Triggers.getInstance().isShootSafeTimeSure.getAsBoolean()))
+        .and(Triggers.getInstance().isAlignedForCurrentShot)
         .whileTrue(IntakePivotCommands.compressPivot(intakePivot))
         .onFalse(
             IntakePivotCommands.setPivotPosition(
@@ -761,30 +800,36 @@ public class RobotContainer {
 
     // FEEDER
     // Set to velocity (after a wait) when any shooting sequence is started (shoot to hub, pass,
-    // shoot from tower)
+    // shoot from tower). Feeding is delayed until the robot is aligned to the target, or 1.5s max.
     Triggers.getInstance()
         .simShootButton()
         .or(Triggers.getInstance().simPassButton())
         .or(Triggers.getInstance().simShootFromTowerButton())
         .whileTrue(
             FeederCommands.setLowerVelocityAfterWait(
-                    lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
+                    lowerFeeder,
+                    HardwareConstants.CompConstants.Velocities.feederVelocity,
+                    Triggers.getInstance().isAlignedForCurrentShot)
                 .alongWith(
                     FeederCommands.setUpperVelocityAfterWait(
-                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)))
+                        upperFeeder,
+                        HardwareConstants.CompConstants.Velocities.feederVelocity,
+                        Triggers.getInstance().isAlignedForCurrentShot)))
         .onFalse(
             FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)));
 
     // TRANSPORT
     // Set to velocity (after a wait) when any shooting sequence is started (shoot to hub, pass,
-    // shoot from tower)
+    // shoot from tower). Transport is delayed until aligned, matching the feeder gate.
     Triggers.getInstance()
         .simShootButton()
         .or(Triggers.getInstance().simPassButton())
         .or(Triggers.getInstance().simShootFromTowerButton())
         .whileTrue(
             TransportCommands.setVelocityAfterWait(
-                transport, HardwareConstants.CompConstants.Velocities.transportVelocity))
+                transport,
+                HardwareConstants.CompConstants.Velocities.transportVelocity,
+                Triggers.getInstance().isAlignedForCurrentShot))
         .onFalse(TransportCommands.stop(transport));
 
     // INTAKE ROLLER
@@ -797,40 +842,54 @@ public class RobotContainer {
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // Set to agitate voltage (after a wait) when any shooting sequence is started (shoot to hub,
-    // pass, shoot from tower)
+    // pass, shoot from tower). Agitate is also delayed until aligned.
     Triggers.getInstance()
         .simShootButton()
         .or(Triggers.getInstance().simPassButton())
         .or(Triggers.getInstance().simShootFromTowerButton())
         .whileTrue(
             intakeRollerCommands.setVoltageAfterWait(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))
+                intakeRoller,
+                HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage,
+                Triggers.getInstance().isAlignedForCurrentShot))
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // INTAKE PIVOT
-    // Retract on retract button — also cancels compression for this shoot press
+    // Retract on retract button — also cancels automatic compression for this shoot press
     Triggers.getInstance()
         .simIntakeInButton()
+        .onTrue(Commands.runOnce(() -> compressCancelled = true))
         .whileTrue(
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotUpPos));
 
-    // Deploy on deploy button — also cancels compression for this shoot press
+    // Deploy on deploy button — also cancels automatic compression for this shoot press
     Triggers.getInstance()
         .simIntakeOutButton()
+        .onTrue(Commands.runOnce(() -> compressCancelled = true))
         .whileTrue(
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
 
-    // Compress on shoot button when:
+    // Manual compress button — cancels auto-compress and runs compress with no initial wait
+    Triggers.getInstance()
+        .simIntakeCompressButton()
+        .onTrue(Commands.runOnce(() -> compressCancelled = true))
+        .whileTrue(IntakePivotCommands.compressPivot(intakePivot, true));
+
+    // Reset the cancellation flag when the shoot button is released
+    Triggers.getInstance()
+        .simShootButton()
+        .onFalse(Commands.runOnce(() -> compressCancelled = false));
+
+    // Automatic compress on shoot button when:
     //   - neither intake deploy nor retract button is currently pressed
     //   - compression has not been cancelled by a prior intake override this shoot press
-    // Also starts on the dedicated compress button.
-    (Triggers.getInstance()
-            .simShootButton()
-            .and(() -> !Triggers.getInstance().simIntakeOutButton().getAsBoolean())
-            .and(() -> !Triggers.getInstance().simIntakeInButton().getAsBoolean()))
-        .or(Triggers.getInstance().simIntakeCompressButton())
+    Triggers.getInstance()
+        .simShootButton()
+        .and(() -> !Triggers.getInstance().simIntakeOutButton().getAsBoolean())
+        .and(() -> !Triggers.getInstance().simIntakeInButton().getAsBoolean())
+        .and(() -> !compressCancelled)
         .whileTrue(IntakePivotCommands.compressPivot(intakePivot));
 
     // HOOD

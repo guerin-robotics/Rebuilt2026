@@ -142,8 +142,7 @@ public class Triggers {
       new LoggedTrigger(
           "isShootSafeZone",
           () -> {
-            HardwareConstants.Zones.broadZone currentZone =
-                RobotState.getInstance().getBroadZone();
+            HardwareConstants.Zones.broadZone currentZone = RobotState.getInstance().getBroadZone();
             return (currentZone == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE);
           });
 
@@ -163,13 +162,15 @@ public class Triggers {
   public final LoggedTrigger isShootClear =
       new LoggedTrigger("isShootClear", isShootSafeTime.and(isShootSafeZone));
 
-  public final LoggedTrigger alignedToShoot =
-      new LoggedTrigger("alignedToShoot", () ->
-       {
-        if (RobotState.getInstance().getBroadZone() == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE) {
-          return RobotState.getInstance().isAlignedToHub();
-        } else {
-          return RobotState.getInstance().isAlignedToPass();
-        }
-       });
+  public final LoggedTrigger isAlignedForCurrentShot =
+      new LoggedTrigger(
+          "isAlignedForCurrentShot",
+          () -> {
+            if (RobotState.getInstance().getBroadZone()
+                == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE) {
+              return RobotState.getInstance().isAlignedToHub();
+            } else {
+              return RobotState.getInstance().isAlignedToPass();
+            }
+          });
 }

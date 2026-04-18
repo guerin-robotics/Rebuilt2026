@@ -90,15 +90,22 @@ public class HardwareConstants {
     public static class Waits {
       public static final double flywheelSpinupSeconds = 0.5;
       public static final double passSpinUpSeconds = 0.75;
-      public static final double waitToCompressSeconds = 0.5;
+      // Maximum time to wait for heading alignment before shooting regardless.
+      // After this many seconds, feeding starts even if the robot isn't facing the target.
+      public static final double alignmentTimeoutSeconds = 1.5;
+      public static final double waitToCompressSeconds = 0.75;
       public static final double waitBetweenCompressSeconds = 0.75;
-      public static final double autoWaitToCompressSeconds = 0.75;
+
+      public static final double autoWaitToCompressSeconds = 1.25;
       public static final double autoWaitBetweenCompressSeconds = 1.0;
     }
 
     public static class Thresholds {
       public static final double flywheelSpinupThreshold = 200;
+      // How close (in degrees) the robot's heading must be to the hub before we start feeding.
       public static final double hubAlignmentToleranceDegrees = 5.0;
+      // How close (in degrees) the robot's heading must be to the pass target before we start
+      // feeding. Slightly more lenient than hub since pass shots tolerate more error.
       public static final double passAlignmentToleranceDegrees = 7.0;
     }
   }
@@ -166,8 +173,8 @@ public class HardwareConstants {
   }
 
   public static class PassConstants {
-    public static final AngularVelocity FlywheelPassVelocity = RPM.of(2000);
-    public static final Angle hoodPassPos = Degrees.of(10.0);
+    public static final AngularVelocity FlywheelPassVelocity = RPM.of(2500);
+    public static final Angle hoodPassPos = Degrees.of(15.0);
   }
 
   public static class TuningConstants {

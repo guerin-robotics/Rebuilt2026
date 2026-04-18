@@ -343,8 +343,7 @@ public class RobotState {
     // Calculate the error between our current heading and the desired hub-facing angle.
     // Rotation2d.minus() handles wrap-around automatically (e.g., 179° - (-179°) = 2°, not 358°).
     double errorDegrees =
-        Math.abs(
-            getAngleToAllianceHub().minus(getEstimatedPose().getRotation()).getDegrees());
+        Math.abs(getAngleToAllianceHub().minus(getEstimatedPose().getRotation()).getDegrees());
     return errorDegrees < HardwareConstants.CompConstants.Thresholds.hubAlignmentToleranceDegrees;
   }
 
@@ -359,8 +358,7 @@ public class RobotState {
    */
   @AutoLogOutput(key = "RobotState/IsAlignedToPass")
   public boolean isAlignedToPass() {
-    Translation2d passTarget2d =
-        new Translation2d(getPassTarget().getX(), getPassTarget().getY());
+    Translation2d passTarget2d = new Translation2d(getPassTarget().getX(), getPassTarget().getY());
     double errorDegrees =
         Math.abs(
             getAngleToTarget(passTarget2d).minus(getEstimatedPose().getRotation()).getDegrees());

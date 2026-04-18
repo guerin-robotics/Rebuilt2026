@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.intakeRoller.intakeRoller;
+import java.util.function.BooleanSupplier;
 
 public class intakeRollerCommands {
 
@@ -32,9 +33,24 @@ public class intakeRollerCommands {
         .withName("IntakeRollerStop");
   }
 
-  public static Command setVoltageAfterWait(intakeRoller intakeRoller, Voltage voltage) {
+  /**
+   * Runs the intake roller at the given agitate voltage, but only after the robot is aligned (or
+   * timeout).
+   *
+   * <p>See {@link FeederCommands#setLowerVelocityAfterWait} for full details on the wait logic.
+   *
+   * @param intakeRoller The intake roller subsystem
+   * @param voltage The agitate voltage to apply once ready
+   * @param isAligned Supplier that returns true when the robot is facing its target
+   */
+  public static Command setVoltageAfterWait(
+      intakeRoller intakeRoller, Voltage voltage, BooleanSupplier isAligned) {
     return Commands.sequence(
             new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
+            Commands.waitUntil(isAligned)
+                .withTimeout(
+                    HardwareConstants.CompConstants.Waits.alignmentTimeoutSeconds
+                        - HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
             setRollerVoltage(intakeRoller, voltage))
         .withName("IntakeRollerVoltageAfterWait");
   }
