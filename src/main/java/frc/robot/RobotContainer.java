@@ -487,7 +487,8 @@ public class RobotContainer {
             .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
         .or(Triggers.getInstance().passButton())
         .whileTrue(
-            FlywheelCommands.setPassVelocity(flywheel)
+            FlywheelCommands.setFlywheelVelocity(
+                    flywheel, HardwareConstants.PassConstants.FlywheelPassVelocity)
                 .alongWith(
                     PrestageCommands.setPrestageVelocity(
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
@@ -625,13 +626,12 @@ public class RobotContainer {
     //   - we're not in our alliance zone with the hub inactive
     Triggers.getInstance()
         .shootButton()
-        .and(() -> !Triggers.getInstance().intakeOutButton().getAsBoolean())
-        .and(() -> !Triggers.getInstance().intakeInButton().getAsBoolean())
         .and(() -> !compressCancelled)
         .and(
             () ->
                 !(Triggers.getInstance().isShootSafeZone.getAsBoolean()
                     && !Triggers.getInstance().isShootSafeTimeSure.getAsBoolean()))
+        .and(Triggers.getInstance().isAlignedForCurrentShot)
         .whileTrue(IntakePivotCommands.compressPivot(intakePivot))
         .onFalse(
             IntakePivotCommands.setPivotPosition(

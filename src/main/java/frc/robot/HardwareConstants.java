@@ -93,10 +93,10 @@ public class HardwareConstants {
       // Maximum time to wait for heading alignment before shooting regardless.
       // After this many seconds, feeding starts even if the robot isn't facing the target.
       public static final double alignmentTimeoutSeconds = 1.5;
-      public static final double waitToCompressSeconds = 0.5;
+      public static final double waitToCompressSeconds = 0.75;
       public static final double waitBetweenCompressSeconds = 0.75;
 
-      public static final double autoWaitToCompressSeconds = 0.75;
+      public static final double autoWaitToCompressSeconds = 1.25;
       public static final double autoWaitBetweenCompressSeconds = 1.0;
     }
 
@@ -173,8 +173,8 @@ public class HardwareConstants {
   }
 
   public static class PassConstants {
-    public static final AngularVelocity FlywheelPassVelocity = RPM.of(2000);
-    public static final Angle hoodPassPos = Degrees.of(10.0);
+    public static final AngularVelocity FlywheelPassVelocity = RPM.of(2500);
+    public static final Angle hoodPassPos = Degrees.of(15.0);
   }
 
   public static class TuningConstants {
