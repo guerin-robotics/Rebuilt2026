@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.068336512293822,
-        "y": 0.44910314381781813
+        "x": 4.937039070321296,
+        "y": 0.5060072016343156
       },
       "isLocked": false,
       "linkedName": "Right-Start-Pos"
@@ -20,12 +20,12 @@
         "y": 0.6152887442942414
       },
       "prevControl": {
-        "x": 5.646359648177593,
-        "y": 0.3960699178113771
+        "x": 5.497377454105208,
+        "y": 0.4659549779022998
       },
       "nextControl": {
-        "x": 6.711986514141345,
-        "y": 0.8219952119965093
+        "x": 6.660050851252143,
+        "y": 0.7149002625454663
       },
       "isLocked": false,
       "linkedName": null
@@ -36,12 +36,12 @@
         "y": 0.9532076822916666
       },
       "prevControl": {
-        "x": 7.615486890715617,
-        "y": 0.5556142531793737
+        "x": 7.488807024175238,
+        "y": 0.5336114055977454
       },
       "nextControl": {
-        "x": 8.321846894596485,
-        "y": 1.5075216466354826
+        "x": 8.245953158520171,
+        "y": 1.2869573962359495
       },
       "isLocked": false,
       "linkedName": null
@@ -52,12 +52,12 @@
         "y": 2.5644055266203702
       },
       "prevControl": {
-        "x": 8.03966585235818,
-        "y": 2.384600439136173
+        "x": 8.059601993527464,
+        "y": 2.406270194363424
       },
       "nextControl": {
-        "x": 7.249672269828996,
-        "y": 3.2023813044205234
+        "x": 7.059775469784276,
+        "y": 3.222809731278016
       },
       "isLocked": false,
       "linkedName": null
@@ -68,24 +68,24 @@
         "y": 2.507044965765449
       },
       "prevControl": {
-        "x": 4.578716407848366,
-        "y": 2.531750095742873
+        "x": 4.5693140911211145,
+        "y": 2.579156597042079
       },
       "nextControl": {
-        "x": 3.1229206839133723,
-        "y": 2.3871799741796615
+        "x": 3.3929251766480615,
+        "y": 2.2247683883108333
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.179344401041667,
-        "y": 2.4959737413194443
+        "x": 3.0039657631954344,
+        "y": 2.4758915834522113
       },
       "prevControl": {
-        "x": 3.48114242887992,
-        "y": 2.7799132521700605
+        "x": 3.2784838504145535,
+        "y": 2.753265036782998
       },
       "nextControl": null,
       "isLocked": false,
@@ -130,8 +130,8 @@
     },
     {
       "name": "Bump-Zone-1",
-      "minWaypointRelativePos": 4.25,
-      "maxWaypointRelativePos": 4.65,
+      "minWaypointRelativePos": 3.660609613130135,
+      "maxWaypointRelativePos": 4.117819460726865,
       "constraints": {
         "maxVelocity": 3.75,
         "maxAcceleration": 3.2,
@@ -143,8 +143,8 @@
     },
     {
       "name": "Bump-Zone-2",
-      "minWaypointRelativePos": 4.1,
-      "maxWaypointRelativePos": 4.45,
+      "minWaypointRelativePos": 3.660609613130144,
+      "maxWaypointRelativePos": 3.918522860492397,
       "constraints": {
         "maxVelocity": 3.5,
         "maxAcceleration": 3.2,
@@ -159,14 +159,14 @@
   "eventMarkers": [
     {
       "name": "DeployIntake",
-      "waypointRelativePos": 0.5996532107231921,
+      "waypointRelativePos": 0.495310668229775,
       "endWaypointRelativePos": null,
       "command": null
     },
     {
       "name": "RunIntake",
       "waypointRelativePos": 1.8161432356608476,
-      "endWaypointRelativePos": 4.7380377182044935,
+      "endWaypointRelativePos": 3.5785463071512735,
       "command": null
     }
   ],
@@ -180,7 +180,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -135.2212181266649
+    "rotation": -138.12213046211568
   },
   "reversed": false,
   "folder": "States-Paths",
