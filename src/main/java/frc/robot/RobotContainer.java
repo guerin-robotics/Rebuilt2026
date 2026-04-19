@@ -492,9 +492,7 @@ public class RobotContainer {
         .onFalse(PrestageCommands.stop(prestage))
         .onFalse(
             FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)))
-        .onFalse(TransportCommands.stop(transport))
-        .onFalse(Commands.runOnce(() -> compressCancelled = false))
-        .onFalse(Commands.runOnce(() -> xCancelled = false));
+        .onFalse(TransportCommands.stop(transport));
 
     // Set passing velocity if shoot button is pressed but we're not in our alliance zone and tuning
     // false,
@@ -529,9 +527,7 @@ public class RobotContainer {
         .onFalse(PrestageCommands.stop(prestage))
         .onFalse(
             FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)))
-        .onFalse(TransportCommands.stop(transport))
-        .onFalse(Commands.runOnce(() -> compressCancelled = false))
-        .onFalse(Commands.runOnce(() -> xCancelled = false));
+        .onFalse(TransportCommands.stop(transport));
 
     // Hard-coded tower shot
     // At end, sets cancellation latches (auto-x and auto-compress) to false
@@ -562,9 +558,7 @@ public class RobotContainer {
         .onFalse(PrestageCommands.stop(prestage))
         .onFalse(
             FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)))
-        .onFalse(TransportCommands.stop(transport))
-        .onFalse(Commands.runOnce(() -> compressCancelled = false))
-        .onFalse(Commands.runOnce(() -> xCancelled = false));
+        .onFalse(TransportCommands.stop(transport));
 
     // Distance map shot if tuning mode true
     Triggers.getInstance()
@@ -678,6 +672,11 @@ public class RobotContainer {
         .shootButton()
         .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos));
+
+    // Auto-x and auto-compress cancellations
+    Triggers.getInstance().shootButton()
+        .onFalse(Commands.runOnce(() -> compressCancelled = false))
+        .onFalse(Commands.runOnce(() -> xCancelled = false));
   }
 
   private void configureSimBindings() {
