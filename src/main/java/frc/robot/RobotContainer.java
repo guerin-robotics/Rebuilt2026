@@ -1031,4 +1031,14 @@ public class RobotContainer {
     return ShootSequences.stopAll(
         flywheel, prestage, hood, upperFeeder, lowerFeeder, transport, intakeRoller);
   }
+
+  public Command getIntakeRollerCommand() {
+    return intakeRollerCommands.setRollerVoltage(
+        intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage);
+  }
+
+  public Command getIntakePivotCommand() {
+    return IntakePivotCommands.setPivotPosition(
+        intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos);
+  }
 }
