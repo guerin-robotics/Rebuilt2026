@@ -85,7 +85,7 @@ public class HardwareConstants {
       public static final Angle pivotDownPos = Rotations.of(0.0);
       public static final Angle pivotJostleUpPos = Rotations.of(0.25);
       public static final Angle pivotJostleFirstPos = Rotations.of(0.115); // 0.1
-      public static final Angle pivotJostleSecondPos = Rotations.of(0.14); // 0.13
+      public static final Angle pivotJostleSecondPos = Rotations.of(0.16); // 0.13
     }
 
     public static class Waits {

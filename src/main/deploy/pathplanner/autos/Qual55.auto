@@ -23,7 +23,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 2.8
+                  "waitTime": 2.6
                 }
               }
             ]
@@ -70,6 +70,12 @@
           "type": "named",
           "data": {
             "name": "stopAll"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DeployIntake"
           }
         }
       ]

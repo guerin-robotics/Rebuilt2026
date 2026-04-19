@@ -159,18 +159,20 @@ public class IntakePivotCommands {
   public static Command autoPivotCompress(IntakePivot intakePivot) {
     return Commands.sequence(
             new WaitCommand(HardwareConstants.CompConstants.Waits.autoWaitToCompressSeconds),
-            setPivotPosition(
-                intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleFirstPos),
+                setPivotPosition(
+                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleFirstPos),
             new WaitCommand((HardwareConstants.CompConstants.Waits.autoWaitToDropSeconds)),
-            setPivotPosition(intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
+                setPivotPosition(
+                    intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
             new WaitCommand(HardwareConstants.CompConstants.Waits.autoWaitBetweenCompressSeconds),
-            setPivotPosition(
-                intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleSecondPos),
+                setPivotPosition(
+                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleSecondPos),
             new WaitCommand((HardwareConstants.CompConstants.Waits.autoWaitToDropSeconds)),
-            setPivotPosition(intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
+                setPivotPosition(
+                    intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
             new WaitCommand(HardwareConstants.CompConstants.Waits.autoWaitForLastCompressSeconds),
-            setPivotPosition(
-                intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
+                setPivotPosition(
+                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
         .withName("IntakePivotCompress");
   }
 
