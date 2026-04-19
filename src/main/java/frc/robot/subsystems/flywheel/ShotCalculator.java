@@ -136,4 +136,19 @@ public class ShotCalculator {
     Translation3d hubTarget = RobotState.getInstance().getAllianceHubTarget();
     return getFlywheelSpeedForTarget(hubTarget);
   }
+
+  public AngularVelocity getFlywheelSpeedForPassTarget() {
+    Translation2d robotPosition = RobotState.getInstance().getEstimatedPose().getTranslation();
+
+    Translation2d passTarget2d = RobotState.getInstance().getPassTarget().toTranslation2d();
+    double distance = robotPosition.getDistance(passTarget2d);
+
+    double speedRPM = FlywheelConstants.DistanceMap.PASSING_SPEED_MAP.get(distance);
+
+    double minRPM = FlywheelConstants.Limits.MIN_SPEED.in(RevolutionsPerSecond) * 60.0;
+    double maxRPM = FlywheelConstants.Limits.MAX_SPEED.in(RevolutionsPerSecond) * 60.0;
+    speedRPM = Math.max(minRPM, Math.min(maxRPM, speedRPM));
+
+    return RPM.of(speedRPM);
+  }
 }

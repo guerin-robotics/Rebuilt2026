@@ -111,6 +111,10 @@ public class HardwareConstants {
       // feeding. Slightly more lenient than hub since pass shots tolerate more error.
       public static final double passAlignmentToleranceDegrees = 7.0;
     }
+
+    public static class Autos {
+      public static final String DefaultAutoName = "2.5-Left-Comp";
+    }
   }
 
   public static class TestConstants {

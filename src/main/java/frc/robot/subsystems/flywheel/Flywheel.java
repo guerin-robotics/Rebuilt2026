@@ -128,6 +128,11 @@ public class Flywheel extends SubsystemBase {
     io.setFlywheelVelocity(velocity);
   }
 
+  public void setSpeedForPassing() {
+    AngularVelocity velocity = ShotCalculator.getInstance().getFlywheelSpeedForPassTarget();
+    io.setFlywheelVelocity(velocity);
+  }
+
   public AngularVelocity getTuningRPM() {
     return RPM.of(tuningRPM.get());
   }

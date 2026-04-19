@@ -53,4 +53,23 @@ public class HoodPosCalculator {
     Translation3d hub3d = RobotState.getInstance().getAllianceHubTarget();
     return getHoodPosForTarget(hub3d);
   }
+
+  public Angle getHoodPosForPassing() {
+    Translation2d robotPosition = RobotState.getInstance().getEstimatedPose().getTranslation();
+
+    Translation2d passTarget2d = RobotState.getInstance().getPassTarget().toTranslation2d();
+    double distance = robotPosition.getDistance(passTarget2d);
+
+    double hoodDegrees = HoodConstants.HoodMap.PASSING_ANGLE_MAP.get(distance);
+
+    Angle hoodAngle = Degrees.of(hoodDegrees);
+
+    if (hoodAngle.gt(HoodConstants.Mechanical.hoodMaxPos)) {
+      hoodAngle = HoodConstants.Mechanical.hoodMaxPos;
+    } else if (hoodAngle.lt(HoodConstants.Mechanical.hoodMinPos)) {
+      hoodAngle = HoodConstants.Mechanical.hoodMinPos;
+    }
+
+    return hoodAngle;
+  }
 }

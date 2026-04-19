@@ -113,6 +113,11 @@ public class RobotContainer {
   // is released. Reset to false when the shoot button is released.
   private boolean compressCancelled = false;
 
+  // Similar cancellation flag for the auto-x
+  // Set to true when driver hits x-override button
+  // Resets to false when shoot button is pressed
+  private boolean xCancelled = false;
+
   // Stores the starting pose of the currently selected auto.
   // Updated when the auto chooser selection changes.
   private Pose2d autoStartPose = new Pose2d();
@@ -224,6 +229,8 @@ public class RobotContainer {
     registerEventTriggers();
 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    autoChooser.addDefaultOption(HardwareConstants.CompConstants.Autos.DefaultAutoName,
+        new PathPlannerAuto(HardwareConstants.CompConstants.Autos.DefaultAutoName));
 
     // Publish the auto preview field to the dashboard so we can see the selected path
     SmartDashboard.putData("Auto Preview", autoPreviewField);
@@ -392,6 +399,8 @@ public class RobotContainer {
     Triggers.getInstance().allianceWinFlipper().onTrue(HubShiftUtil.flipWinner());
     // Disable hub shift logic
     Triggers.getInstance().allianceWinDisabler().onTrue(HubShiftUtil.disableHubShiftUtil());
+    // Manually cancel auto-x
+    Triggers.getInstance().autoXOverride().onTrue(Commands.runOnce(() -> xCancelled = true));
 
     // DRIVETRAIN
     // Align for shoot when shoot button is pressed and we're in our alliance zone and hub is
@@ -424,8 +433,14 @@ public class RobotContainer {
                                 RobotState.getInstance().getPassTarget().getX(),
                                 RobotState.getInstance().getPassTarget().getY()))));
 
-    // X wheels when x button is pressed
-    Triggers.getInstance().xWheels().whileTrue(DriveCommands.stopWithX(drive));
+    // X wheels when shoot button is pressed and we're shooting and we're lined up and
+    // auto-x hasn't been manually overriden, or when x button is pressed
+    (Triggers.getInstance().shootButton()
+        .and(Triggers.getInstance().isShootClear)
+        .and(Triggers.getInstance().isAlignedForCurrentShot)
+        .and(() -> !xCancelled))
+    .or(Triggers.getInstance().xWheels())  
+        .whileTrue(DriveCommands.stopWithX(drive));
 
     // Align for trench when trench button pressed - zone logic temporarily disabled
     Triggers.getInstance()
@@ -448,6 +463,7 @@ public class RobotContainer {
     // SHOOTER
     // Set shooting velocity if shoot button pressed, we're in our alliance zone, hub is active, and
     // tuning false
+    // At end, sets cancellation latches (auto-x and auto-compress) to false
     Triggers.getInstance()
         .shootButton()
         .and(Triggers.getInstance().isShootClear)
@@ -481,14 +497,14 @@ public class RobotContainer {
     // Set passing velocity if shoot button is pressed but we're not in our alliance zone and tuning
     // false,
     // or if pass button is pressed
+    // At end, sets cancellation latches (auto-x and auto-compress) to false
     (Triggers.getInstance()
             .shootButton()
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
             .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
         .or(Triggers.getInstance().passButton())
         .whileTrue(
-            FlywheelCommands.setFlywheelVelocity(
-                    flywheel, HardwareConstants.PassConstants.FlywheelPassVelocity)
+            FlywheelCommands.setVelocityForPassing(flywheel)
                 .alongWith(
                     PrestageCommands.setPrestageVelocity(
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
@@ -514,6 +530,7 @@ public class RobotContainer {
         .onFalse(TransportCommands.stop(transport));
 
     // Hard-coded tower shot
+    // At end, sets cancellation latches (auto-x and auto-compress) to false
     Triggers.getInstance()
         .shootFromTowerButton()
         .whileTrue(
@@ -616,10 +633,6 @@ public class RobotContainer {
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
 
-    // Reset the cancellation flag when the shoot button is released so auto-compress
-    // can activate on the next shoot press
-    Triggers.getInstance().shootButton().onFalse(Commands.runOnce(() -> compressCancelled = false));
-
     // Automatic compress on shoot button when:
     //   - neither intake deploy nor retract button is currently pressed
     //   - compression has not been cancelled by a prior intake override this shoot press
@@ -652,13 +665,18 @@ public class RobotContainer {
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean()))
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .or(Triggers.getInstance().passButton())
-        .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.PassConstants.hoodPassPos));
+        .whileTrue(HoodCommands.setPosForPassing(hood));
 
     // Set pos to defined tuning pos when shoot button is pressed and tuning mode is on
     Triggers.getInstance()
         .shootButton()
         .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos));
+
+    // Auto-x and auto-compress cancellations
+    Triggers.getInstance().shootButton()
+        .onFalse(Commands.runOnce(() -> compressCancelled = false))
+        .onFalse(Commands.runOnce(() -> xCancelled = false));
   }
 
   private void configureSimBindings() {
@@ -1030,5 +1048,15 @@ public class RobotContainer {
   public Command getAutoStopCommand() {
     return ShootSequences.stopAll(
         flywheel, prestage, hood, upperFeeder, lowerFeeder, transport, intakeRoller);
+  }
+
+  public Command getIntakeRollerCommand() {
+    return intakeRollerCommands.setRollerVoltage(
+        intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage);
+  }
+
+  public Command getIntakePivotCommand() {
+    return IntakePivotCommands.setPivotPosition(
+        intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos);
   }
 }

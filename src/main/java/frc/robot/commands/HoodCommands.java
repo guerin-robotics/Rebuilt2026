@@ -5,9 +5,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.RobotState;
 import frc.robot.subsystems.hood.Hood;
-import frc.robot.subsystems.hood.HoodPosCalculator;
 
 public class HoodCommands {
 
@@ -29,12 +27,8 @@ public class HoodCommands {
         .withName("HoodPosForHub");
   }
 
-  public static Command setHoodPassPos(Hood hood) {
-    return Commands.runOnce(
-        () ->
-            hood.setHoodPos(
-                HoodPosCalculator.getInstance()
-                    .getHoodPosForTarget(RobotState.getInstance().getPassTarget())));
+  public static Command setPosForPassing(Hood hood) {
+    return Commands.run(() -> hood.setHoodPosForPass(), hood);
   }
 
   /** Stops the hood motor. */

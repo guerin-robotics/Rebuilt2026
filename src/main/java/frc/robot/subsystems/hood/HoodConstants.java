@@ -66,6 +66,7 @@ public class HoodConstants {
 
   public class HoodMap {
     public static final InterpolatingDoubleTreeMap ANGLE_MAP = new InterpolatingDoubleTreeMap();
+    public static final InterpolatingDoubleTreeMap PASSING_ANGLE_MAP = new InterpolatingDoubleTreeMap();
 
     // Key is distance from center of hub (converted to meters)
     // Value is hood position in degrees (scaled to 5°..55°)
@@ -76,6 +77,13 @@ public class HoodConstants {
       ANGLE_MAP.put(inchesToMeters(130.0), 3.5);
       ANGLE_MAP.put(inchesToMeters(145.0), 5.25);
       ANGLE_MAP.put(inchesToMeters(160.0), 11.0);
+    }
+
+    static {
+      // Passing numbers are guesses
+      PASSING_ANGLE_MAP.put(inchesToMeters(120.0),40.0);
+      PASSING_ANGLE_MAP.put(inchesToMeters(320.0), 50.0);
+      PASSING_ANGLE_MAP.put(inchesToMeters(450.0), 60.0);
     }
   }
 }

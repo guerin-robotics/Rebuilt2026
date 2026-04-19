@@ -133,6 +133,10 @@ public class Triggers {
     return controller.y();
   }
 
+  public Trigger autoXOverride() {
+    return thrustmaster.button(12);
+  }
+
   // ==================== STATE-BASED TRIGGERS (cached as final fields) ====================
   // These are constructed once and reused. The lambda inside each LoggedTrigger is evaluated
   // every 20ms by the scheduler — only the trigger *object* is cached, not the result.
