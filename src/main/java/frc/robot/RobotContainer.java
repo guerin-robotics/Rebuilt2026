@@ -229,6 +229,8 @@ public class RobotContainer {
     registerEventTriggers();
 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    autoChooser.addDefaultOption(HardwareConstants.CompConstants.Autos.DefaultAutoName,
+        new PathPlannerAuto(HardwareConstants.CompConstants.Autos.DefaultAutoName));
 
     // Publish the auto preview field to the dashboard so we can see the selected path
     SmartDashboard.putData("Auto Preview", autoPreviewField);
