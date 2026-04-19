@@ -93,40 +93,47 @@ public class IntakePivotCommands {
     // Branch A: skip the initial wait — used for manual compress button presses
     Command skipWaitBranch =
         Commands.sequence(
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleFirstPos),
-                new WaitCommand((HardwareConstants.CompConstants.Waits.waitToDropSeconds)),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
-                new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleSecondPos),
-                new WaitCommand((HardwareConstants.CompConstants.Waits.waitToDropSeconds)),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
-                new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
+                setPivotVelocity(intakePivot, HardwareConstants.CompConstants.Velocities.intakePivotCompressVelocity))
+
+            // Qual 55 sequence
+            //     setPivotPosition(
+            //         intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleFirstPos),
+            //     new WaitCommand((HardwareConstants.CompConstants.Waits.waitToDropSeconds)),
+            //     setPivotPosition(
+            //         intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
+            //     new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
+            //     setPivotPosition(
+            //         intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleSecondPos),
+            //     new WaitCommand((HardwareConstants.CompConstants.Waits.waitToDropSeconds)),
+            //     setPivotPosition(
+            //         intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
+            //     new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
+            //     setPivotPosition(
+            //         intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
             .withName("IntakePivotCompress_SkipWait");
 
     // Branch B: include the initial wait — used for automatic compress during shooting
     Command withWaitBranch =
         Commands.sequence(
-                new WaitCommand(HardwareConstants.CompConstants.Waits.waitToCompressSeconds),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleFirstPos),
-                new WaitCommand((HardwareConstants.CompConstants.Waits.waitToDropSeconds)),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
-                new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleSecondPos),
-                new WaitCommand((HardwareConstants.CompConstants.Waits.waitToDropSeconds)),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
-                new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
+                new WaitCommand(HardwareConstants.CompConstants.Waits.waitToCompressSeconds), 
+                setPivotVelocity(intakePivot, HardwareConstants.CompConstants.Velocities.intakePivotCompressVelocity))
+
+                // Qual 55 sequence
+                // setPivotPosition(
+                //     intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleFirstPos),
+                // new WaitCommand((HardwareConstants.CompConstants.Waits.waitToDropSeconds)),
+                // setPivotPosition(
+                //     intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
+                // new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
+                // setPivotPosition(
+                //     intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleSecondPos),
+                // new WaitCommand((HardwareConstants.CompConstants.Waits.waitToDropSeconds)),
+                // setPivotPosition(
+                //     intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
+                // new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
+                // setPivotPosition(
+                //     intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
+
             // Sequence used at Lafayette - revert to this (and adjust constants) if necessary
             //   new WaitCommand(HardwareConstants.CompConstants.Waits.waitToCompressSeconds),
             //   setPivotPosition(intakePivot,
