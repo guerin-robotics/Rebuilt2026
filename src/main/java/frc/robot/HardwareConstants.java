@@ -98,9 +98,10 @@ public class HardwareConstants {
       public static final double waitToDropSeconds = 0.5;
       public static final double waitBetweenCompressSeconds = 0.5;
 
-      public static final double autoWaitToCompressSeconds = 1.15;
+      public static final double autoWaitToCompressSeconds = 0.85;
       public static final double autoWaitToDropSeconds = 0.5;
       public static final double autoWaitBetweenCompressSeconds = 0.75;
+      public static final double autoWaitForLastCompressSeconds = 0.5;
     }
 
     public static class Thresholds {
@@ -180,8 +181,8 @@ public class HardwareConstants {
   }
 
   public static class PassConstants {
-    public static final AngularVelocity FlywheelPassVelocity = RPM.of(2300);
-    public static final Angle hoodPassPos = Degrees.of(25.0);
+    public static final AngularVelocity FlywheelPassVelocity = RPM.of(2000);
+    public static final Angle hoodPassPos = Degrees.of(30.0);
   }
 
   public static class TuningConstants {

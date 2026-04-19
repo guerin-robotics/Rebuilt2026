@@ -120,7 +120,8 @@ public class FlywheelConstants {
    */
   public static class DistanceMap {
     public static final InterpolatingDoubleTreeMap SPEED_MAP = new InterpolatingDoubleTreeMap();
-    public static final InterpolatingDoubleTreeMap PASSING_SPEED_MAP = new InterpolatingDoubleTreeMap();
+    public static final InterpolatingDoubleTreeMap PASSING_SPEED_MAP =
+        new InterpolatingDoubleTreeMap();
 
     // Key is distance from center of hub (converted to meters)
     // Value is angular velocity (RPM)

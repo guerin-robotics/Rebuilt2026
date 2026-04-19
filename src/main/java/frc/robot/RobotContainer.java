@@ -229,7 +229,8 @@ public class RobotContainer {
     registerEventTriggers();
 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-    autoChooser.addDefaultOption(HardwareConstants.CompConstants.Autos.DefaultAutoName,
+    autoChooser.addDefaultOption(
+        HardwareConstants.CompConstants.Autos.DefaultAutoName,
         new PathPlannerAuto(HardwareConstants.CompConstants.Autos.DefaultAutoName));
 
     // Publish the auto preview field to the dashboard so we can see the selected path
@@ -435,12 +436,13 @@ public class RobotContainer {
 
     // X wheels when shoot button is pressed and we're shooting and we're lined up and
     // auto-x hasn't been manually overriden, or when x button is pressed
-    (Triggers.getInstance().shootButton()
-        .and(Triggers.getInstance().isShootClear)
-        .and(Triggers.getInstance().isAlignedForCurrentShot)
-        .and(() -> !xCancelled))
-    .or(Triggers.getInstance().xWheels())  
-        .whileTrue(DriveCommands.stopWithX(drive));
+    // (Triggers.getInstance()
+    //         .shootButton()
+    //         .and(Triggers.getInstance().isShootClear)
+    //         .and(Triggers.getInstance().isAlignedForCurrentShot)
+    //         .and(() -> !xCancelled))
+    //     .or
+    (Triggers.getInstance().xWheels()).whileTrue(DriveCommands.stopWithX(drive));
 
     // Align for trench when trench button pressed - zone logic temporarily disabled
     Triggers.getInstance()
@@ -504,7 +506,9 @@ public class RobotContainer {
             .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
         .or(Triggers.getInstance().passButton())
         .whileTrue(
-            FlywheelCommands.setVelocityForPassing(flywheel)
+            // FlywheelCommands.setVelocityForPassing(flywheel)
+            FlywheelCommands.setFlywheelVelocity(
+                    flywheel, HardwareConstants.PassConstants.FlywheelPassVelocity)
                 .alongWith(
                     PrestageCommands.setPrestageVelocity(
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
@@ -665,7 +669,8 @@ public class RobotContainer {
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean()))
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .or(Triggers.getInstance().passButton())
-        .whileTrue(HoodCommands.setPosForPassing(hood));
+        // .whileTrue(HoodCommands.setPosForPassing(hood))
+        .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.PassConstants.hoodPassPos));
 
     // Set pos to defined tuning pos when shoot button is pressed and tuning mode is on
     Triggers.getInstance()
@@ -674,7 +679,8 @@ public class RobotContainer {
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos));
 
     // Auto-x and auto-compress cancellations
-    Triggers.getInstance().shootButton()
+    Triggers.getInstance()
+        .shootButton()
         .onFalse(Commands.runOnce(() -> compressCancelled = false))
         .onFalse(Commands.runOnce(() -> xCancelled = false));
   }

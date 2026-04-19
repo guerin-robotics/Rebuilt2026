@@ -145,8 +145,7 @@ public class FlywheelCommands {
   }
 
   public static Command setVelocityForPassing(Flywheel flywheel) {
-    return Commands.run(
-      () -> flywheel.setSpeedForPassing(), flywheel);
+    return Commands.run(() -> flywheel.setSpeedForPassing(), flywheel);
   }
 
   /**

@@ -168,7 +168,7 @@ public class IntakePivotCommands {
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleSecondPos),
             new WaitCommand((HardwareConstants.CompConstants.Waits.autoWaitToDropSeconds)),
             setPivotPosition(intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
-            new WaitCommand(HardwareConstants.CompConstants.Waits.autoWaitBetweenCompressSeconds),
+            new WaitCommand(HardwareConstants.CompConstants.Waits.autoWaitForLastCompressSeconds),
             setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
         .withName("IntakePivotCompress");
