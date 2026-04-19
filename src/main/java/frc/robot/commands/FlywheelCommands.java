@@ -144,6 +144,11 @@ public class FlywheelCommands {
         .withName("FlywheelVelocityForDistance");
   }
 
+  public static Command setVelocityForPassing(Flywheel flywheel) {
+    return Commands.run(
+      () -> flywheel.setSpeedForPassing(), flywheel);
+  }
+
   /**
    * Stops the shooter immediately.
    *

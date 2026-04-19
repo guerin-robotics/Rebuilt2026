@@ -471,7 +471,8 @@ public class RobotContainer {
                     TransportCommands.setVelocityAfterWait(
                         transport,
                         HardwareConstants.CompConstants.Velocities.transportVelocity,
-                        Triggers.getInstance().isAlignedForCurrentShot)))
+                        Triggers.getInstance().isAlignedForCurrentShot))
+                .alongWith(DriveCommands.stopWithX(drive)))
         .onFalse(FlywheelCommands.stop(flywheel))
         .onFalse(PrestageCommands.stop(prestage))
         .onFalse(
@@ -487,8 +488,7 @@ public class RobotContainer {
             .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
         .or(Triggers.getInstance().passButton())
         .whileTrue(
-            FlywheelCommands.setFlywheelVelocity(
-                    flywheel, HardwareConstants.PassConstants.FlywheelPassVelocity)
+            FlywheelCommands.setVelocityForPassing(flywheel)
                 .alongWith(
                     PrestageCommands.setPrestageVelocity(
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
@@ -536,7 +536,8 @@ public class RobotContainer {
                     TransportCommands.setVelocityAfterWait(
                         transport,
                         HardwareConstants.CompConstants.Velocities.transportVelocity,
-                        Triggers.getInstance().isAlignedForCurrentShot)))
+                        Triggers.getInstance().isAlignedForCurrentShot))
+                .alongWith(DriveCommands.stopWithX(drive)))
         .onFalse(FlywheelCommands.stop(flywheel))
         .onFalse(PrestageCommands.stop(prestage))
         .onFalse(
@@ -652,7 +653,7 @@ public class RobotContainer {
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean()))
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .or(Triggers.getInstance().passButton())
-        .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.PassConstants.hoodPassPos));
+        .whileTrue(HoodCommands.setPosForPassing(hood));
 
     // Set pos to defined tuning pos when shoot button is pressed and tuning mode is on
     Triggers.getInstance()

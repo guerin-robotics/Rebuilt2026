@@ -66,6 +66,11 @@ public class Hood extends SubsystemBase {
     io.setHoodPos(position);
   }
 
+  public void setHoodPosForPass() {
+    Angle angle = HoodPosCalculator.getInstance().getHoodPosForPassing();
+    io.setHoodPos(angle);
+  }
+
   public void stowHood() {
     io.setHoodPos(Degrees.of(0));
   }
