@@ -23,7 +23,7 @@ public class IntakePivotConstants {
     public static final int INTAKE_PIVOT_MAIN_SUPPLY_AMP = 40;
     public static final int INTAKE_PIVOT_MAIN_SUPPLY_TRIGGER_AMP = 35;
     public static final Time INTAKE_PIVOT_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
-    public static final int INTAKE_PIVOT_MAIN_STATOR_AMP = 70;
+    public static final int INTAKE_PIVOT_MAIN_STATOR_AMP = 40;
   }
 
   /** Software configuration: motor inversion, encoder direction, and soft limits. NEEDS TUNED */
