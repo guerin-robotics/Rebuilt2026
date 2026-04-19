@@ -113,6 +113,11 @@ public class RobotContainer {
   // is released. Reset to false when the shoot button is released.
   private boolean compressCancelled = false;
 
+  // Similar cancellation flag for the auto-x
+  // Set to true when driver hits x-override button
+  // Resets to false when shoot button is pressed
+  private boolean xCancelled = false;
+
   // Stores the starting pose of the currently selected auto.
   // Updated when the auto chooser selection changes.
   private Pose2d autoStartPose = new Pose2d();
@@ -392,6 +397,8 @@ public class RobotContainer {
     Triggers.getInstance().allianceWinFlipper().onTrue(HubShiftUtil.flipWinner());
     // Disable hub shift logic
     Triggers.getInstance().allianceWinDisabler().onTrue(HubShiftUtil.disableHubShiftUtil());
+    // Manually cancel auto-x
+    Triggers.getInstance().autoXOverride().onTrue(Commands.runOnce(() -> xCancelled = true));
 
     // DRIVETRAIN
     // Align for shoot when shoot button is pressed and we're in our alliance zone and hub is
@@ -424,8 +431,14 @@ public class RobotContainer {
                                 RobotState.getInstance().getPassTarget().getX(),
                                 RobotState.getInstance().getPassTarget().getY()))));
 
-    // X wheels when x button is pressed
-    Triggers.getInstance().xWheels().whileTrue(DriveCommands.stopWithX(drive));
+    // X wheels when shoot button is pressed and we're shooting and we're lined up and
+    // auto-x hasn't been manually overriden, or when x button is pressed
+    (Triggers.getInstance().shootButton()
+        .and(Triggers.getInstance().isShootClear)
+        .and(Triggers.getInstance().isAlignedForCurrentShot)
+        .and(() -> !xCancelled))
+    .or(Triggers.getInstance().xWheels())  
+        .whileTrue(DriveCommands.stopWithX(drive));
 
     // Align for trench when trench button pressed - zone logic temporarily disabled
     Triggers.getInstance()
@@ -448,6 +461,7 @@ public class RobotContainer {
     // SHOOTER
     // Set shooting velocity if shoot button pressed, we're in our alliance zone, hub is active, and
     // tuning false
+    // At end, sets cancellation latches (auto-x and auto-compress) to false
     Triggers.getInstance()
         .shootButton()
         .and(Triggers.getInstance().isShootClear)
@@ -471,17 +485,19 @@ public class RobotContainer {
                     TransportCommands.setVelocityAfterWait(
                         transport,
                         HardwareConstants.CompConstants.Velocities.transportVelocity,
-                        Triggers.getInstance().isAlignedForCurrentShot))
-                .alongWith(DriveCommands.stopWithX(drive)))
+                        Triggers.getInstance().isAlignedForCurrentShot)))
         .onFalse(FlywheelCommands.stop(flywheel))
         .onFalse(PrestageCommands.stop(prestage))
         .onFalse(
             FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)))
-        .onFalse(TransportCommands.stop(transport));
+        .onFalse(TransportCommands.stop(transport))
+        .onFalse(Commands.runOnce(() -> compressCancelled = false))
+        .onFalse(Commands.runOnce(() -> xCancelled = false));
 
     // Set passing velocity if shoot button is pressed but we're not in our alliance zone and tuning
     // false,
     // or if pass button is pressed
+    // At end, sets cancellation latches (auto-x and auto-compress) to false
     (Triggers.getInstance()
             .shootButton()
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
@@ -511,9 +527,12 @@ public class RobotContainer {
         .onFalse(PrestageCommands.stop(prestage))
         .onFalse(
             FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)))
-        .onFalse(TransportCommands.stop(transport));
+        .onFalse(TransportCommands.stop(transport))
+        .onFalse(Commands.runOnce(() -> compressCancelled = false))
+        .onFalse(Commands.runOnce(() -> xCancelled = false));
 
     // Hard-coded tower shot
+    // At end, sets cancellation latches (auto-x and auto-compress) to false
     Triggers.getInstance()
         .shootFromTowerButton()
         .whileTrue(
@@ -536,13 +555,14 @@ public class RobotContainer {
                     TransportCommands.setVelocityAfterWait(
                         transport,
                         HardwareConstants.CompConstants.Velocities.transportVelocity,
-                        Triggers.getInstance().isAlignedForCurrentShot))
-                .alongWith(DriveCommands.stopWithX(drive)))
+                        Triggers.getInstance().isAlignedForCurrentShot)))
         .onFalse(FlywheelCommands.stop(flywheel))
         .onFalse(PrestageCommands.stop(prestage))
         .onFalse(
             FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)))
-        .onFalse(TransportCommands.stop(transport));
+        .onFalse(TransportCommands.stop(transport))
+        .onFalse(Commands.runOnce(() -> compressCancelled = false))
+        .onFalse(Commands.runOnce(() -> xCancelled = false));
 
     // Distance map shot if tuning mode true
     Triggers.getInstance()
@@ -616,10 +636,6 @@ public class RobotContainer {
         .onFalse(
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
-
-    // Reset the cancellation flag when the shoot button is released so auto-compress
-    // can activate on the next shoot press
-    Triggers.getInstance().shootButton().onFalse(Commands.runOnce(() -> compressCancelled = false));
 
     // Automatic compress on shoot button when:
     //   - neither intake deploy nor retract button is currently pressed
