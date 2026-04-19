@@ -128,7 +128,7 @@ public class HubShiftUtil {
    * and still be counted within the extended end window. Increase this value to stop shooting
    * sooner (the window closes earlier to ensure late balls still make it).
    */
-  private static final double maxTimeOfFlight = 3.0;
+  private static final double maxTimeOfFlight = 1.0; // 3.0
 
   /**
    * Shortest time (seconds) the field sensors need to register a scored ball after it arrives. Used

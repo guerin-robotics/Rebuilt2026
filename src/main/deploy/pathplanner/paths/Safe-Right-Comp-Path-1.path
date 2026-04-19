@@ -96,12 +96,12 @@
     },
     {
       "anchor": {
-        "x": 3.179344401041667,
-        "y": 2.4959737413194443
+        "x": 3.0039657631954344,
+        "y": 2.4758915834522113
       },
       "prevControl": {
-        "x": 3.2467794743928935,
-        "y": 2.736707018790829
+        "x": 3.071400836546661,
+        "y": 2.716624860923596
       },
       "nextControl": null,
       "isLocked": false,
@@ -188,7 +188,7 @@
   "eventMarkers": [
     {
       "name": "DeployIntake",
-      "waypointRelativePos": 0.3399898690773066,
+      "waypointRelativePos": 0.36,
       "endWaypointRelativePos": null,
       "command": null
     },
@@ -209,7 +209,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -135.2212181266649
+    "rotation": -138.12213046211568
   },
   "reversed": false,
   "folder": "States-Paths",

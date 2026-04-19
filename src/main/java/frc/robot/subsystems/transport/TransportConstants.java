@@ -13,7 +13,7 @@ public class TransportConstants {
     public static final int TRANSPORT_MAIN_SUPPLY_AMP = 40;
     public static final int TRANSPORT_MAIN_SUPPLY_TRIGGER_AMP = 35;
     public static final Time TRANSPORT_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
-    public static final int TRANSPORT_MAIN_STATOR_AMP = 60;
+    public static final int TRANSPORT_MAIN_STATOR_AMP = 25;
   }
 
   public static class SoftwareConstants {

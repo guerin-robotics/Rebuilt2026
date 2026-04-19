@@ -12,7 +12,7 @@ public class PrestageConstants {
     public static final int PRESTAGE_MAIN_SUPPLY_AMP = 40;
     public static final int PRESTAGE_MAIN_SUPPLY_TRIGGER_AMP = 35;
     public static final Time PRESTAGE_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
-    public static final int PRESTAGE_MAIN_STATOR_AMP = 80;
+    public static final int PRESTAGE_MAIN_STATOR_AMP = 45;
   }
 
   public static class SoftwareConstants {

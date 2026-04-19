@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.00866564069936,
-        "y": 0.6416538625407231
+        "x": 4.937039070321296,
+        "y": 0.5060072016343156
       },
       "isLocked": false,
       "linkedName": "Right-Start-Pos"
@@ -20,28 +20,12 @@
         "y": 0.6152887442942414
       },
       "prevControl": {
-        "x": 5.427727843582572,
-        "y": 0.543172426409553
+        "x": 5.497377454105208,
+        "y": 0.4659549779022998
       },
       "nextControl": {
-        "x": 6.858684671393326,
-        "y": 0.6776994181427637
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 7.911572978844802,
-        "y": 0.8895702576369389
-      },
-      "prevControl": {
-        "x": 7.525955350925278,
-        "y": 0.4348078585870283
-      },
-      "nextControl": {
-        "x": 8.07325848937358,
-        "y": 1.0802474604826076
+        "x": 6.660050851252143,
+        "y": 0.7149002625454663
       },
       "isLocked": false,
       "linkedName": null
@@ -52,12 +36,12 @@
         "y": 2.895776312324439
       },
       "prevControl": {
-        "x": 8.47583523561721,
-        "y": 2.2292886298685946
+        "x": 7.488807024175238,
+        "y": 0.5336114055977454
       },
       "nextControl": {
-        "x": 7.519098680660335,
-        "y": 3.272167457127644
+        "x": 8.245953158520171,
+        "y": 1.2869573962359495
       },
       "isLocked": false,
       "linkedName": null
@@ -68,12 +52,12 @@
         "y": 2.635776147735253
       },
       "prevControl": {
-        "x": 7.084720835750929,
-        "y": 2.7647626301907624
+        "x": 8.059601993527464,
+        "y": 2.406270194363424
       },
       "nextControl": {
-        "x": 4.166473564712549,
-        "y": 2.4705676313658524
+        "x": 7.059775469784276,
+        "y": 3.222809731278016
       },
       "isLocked": false,
       "linkedName": null
@@ -84,24 +68,24 @@
         "y": 2.560338779406601
       },
       "prevControl": {
-        "x": 4.905941360218472,
-        "y": 2.556861626153391
+        "x": 4.5693140911211145,
+        "y": 2.579156597042079
       },
       "nextControl": {
-        "x": 2.710897451374615,
-        "y": 2.5857834116558056
+        "x": 3.3929251766480615,
+        "y": 2.2247683883108333
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.179344401041667,
-        "y": 2.4959737413194443
+        "x": 3.0039657631954344,
+        "y": 2.4758915834522113
       },
       "prevControl": {
-        "x": 3.7225947200086074,
-        "y": 2.754877225504347
+        "x": 3.2784838504145535,
+        "y": 2.753265036782998
       },
       "nextControl": null,
       "isLocked": false,
@@ -146,8 +130,8 @@
     },
     {
       "name": "Bump-Zone-1",
-      "minWaypointRelativePos": 5.25,
-      "maxWaypointRelativePos": 5.65,
+      "minWaypointRelativePos": 3.660609613130135,
+      "maxWaypointRelativePos": 4.117819460726865,
       "constraints": {
         "maxVelocity": 3.75,
         "maxAcceleration": 3.2,
@@ -159,8 +143,8 @@
     },
     {
       "name": "Bump-Zone-2",
-      "minWaypointRelativePos": 5.1,
-      "maxWaypointRelativePos": 5.45,
+      "minWaypointRelativePos": 3.660609613130144,
+      "maxWaypointRelativePos": 3.918522860492397,
       "constraints": {
         "maxVelocity": 3.5,
         "maxAcceleration": 3.2,
@@ -188,14 +172,14 @@
   "eventMarkers": [
     {
       "name": "DeployIntake",
-      "waypointRelativePos": 0.5819922849127181,
+      "waypointRelativePos": 0.495310668229775,
       "endWaypointRelativePos": null,
       "command": null
     },
     {
       "name": "RunIntake",
       "waypointRelativePos": 1.8161432356608476,
-      "endWaypointRelativePos": 4.7380377182044935,
+      "endWaypointRelativePos": 3.5785463071512735,
       "command": null
     }
   ],
@@ -209,7 +193,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -135.2212181266649
+    "rotation": -138.12213046211568
   },
   "reversed": false,
   "folder": "States-Paths",
