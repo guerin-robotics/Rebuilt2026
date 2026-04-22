@@ -53,6 +53,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+import frc.robot.HardwareConstants;
+
 public class Drive extends SubsystemBase {
   // TunerConstants doesn't include these constants, so they are declared locally
   static final double ODOMETRY_FREQUENCY = TunerConstants.kCANBus.isNetworkFD() ? 250.0 : 100.0;
@@ -104,7 +106,7 @@ public class Drive extends SubsystemBase {
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
   private final SwerveSetpointGenerator setpointGenerator;
   private SwerveSetpoint prevSetpoint;
-  
+
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
@@ -163,7 +165,8 @@ public class Drive extends SubsystemBase {
         new SwerveSetpointGenerator(PP_CONFIG, DriveConstants.maxModuleRotationSpeed);
 
     // Initialize previous setpoint using CURRENT module states
-    prevSetpoint = new SwerveSetpoint(new ChassisSpeeds(), getModuleStates(), DriveFeedforwards.zeros(4));
+    prevSetpoint =
+        new SwerveSetpoint(new ChassisSpeeds(), getModuleStates(), DriveFeedforwards.zeros(DriveConstants.numberOfSwerveModules));
   }
 
   @Override
@@ -185,6 +188,8 @@ public class Drive extends SubsystemBase {
 
     // Log empty setpoint states when disabled
     if (DriverStation.isDisabled()) {
+      prevSetpoint =
+          new SwerveSetpoint(new ChassisSpeeds(), getModuleStates(), DriveFeedforwards.zeros(DriveConstants.numberOfSwerveModules));
       Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
     }
@@ -242,9 +247,9 @@ public class Drive extends SubsystemBase {
    */
   public void runVelocity(ChassisSpeeds speeds) {
     // Calculate module setpoints
-    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, HardwareConstants.loopPeriodSeconds);
 
-    prevSetpoint = setpointGenerator.generateSetpoint(prevSetpoint, discreteSpeeds, .02);
+    prevSetpoint = setpointGenerator.generateSetpoint(prevSetpoint, discreteSpeeds, HardwareConstants.loopPeriodSeconds);
     SwerveModuleState[] setpointStates = prevSetpoint.moduleStates();
 
     // Log unoptimized setpoints and setpoint speeds

@@ -21,5 +21,6 @@ public class DriveConstants {
 
   public static double limitedVelo = 0.1;
 
-public static AngularVelocity maxModuleRotationSpeed = RadiansPerSecond.of(12);
-  }
+  public static AngularVelocity maxModuleRotationSpeed = RadiansPerSecond.of(12);
+  public static final int numberOfSwerveModules = 4;
+}
