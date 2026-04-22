@@ -25,17 +25,13 @@ public class DriveConstants {
   public static AngularVelocity maxModuleRotationSpeed = RadiansPerSecond.of(12);
   public static final int numberOfSwerveModules = 4;
 
-  // Precomputed headings for an 'X' braking formation: FL=45, FR=-45, BL=-45, BR=45
-  public static final Rotation2d[] xHeadings;
-
-  static {
-    xHeadings = new Rotation2d[numberOfSwerveModules];
-    // Pattern to create an X relative to each module's translation angle.
-    // FL/FR/BL/BR -> signs + - - + (matching earlier hardcoded values)
-    int[] signs = new int[] {1, -1, -1, 1};
-    for (int i = 0; i < numberOfSwerveModules; i++) {
-      Rotation2d base = moduleTranslations[i].getAngle();
-      xHeadings[i] = base.plus(Rotation2d.fromDegrees(45.0 * signs[i]));
-    }
-  }
+  // Precomputed headings for an 'X' braking formation in robot coordinates:
+  // FL=45, FR=-45, BL=-45, BR=45
+  public static final Rotation2d[] xHeadings =
+      new Rotation2d[] {
+        Rotation2d.fromDegrees(45.0), // Front Left
+        Rotation2d.fromDegrees(-45.0), // Front Right
+        Rotation2d.fromDegrees(-45.0), // Back Left
+        Rotation2d.fromDegrees(45.0) // Back Right
+      };
 }
