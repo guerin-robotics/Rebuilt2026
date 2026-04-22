@@ -1,8 +1,10 @@
 package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.math.util.Units.inchesToMeters;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 public class DriveConstants {
   public static double frontOffset = inchesToMeters(11);
@@ -18,4 +20,6 @@ public class DriveConstants {
       };
 
   public static double limitedVelo = 0.1;
-}
+
+public static AngularVelocity maxModuleRotationSpeed = RadiansPerSecond.of(12);
+  }
