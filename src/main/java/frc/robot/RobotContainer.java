@@ -436,12 +436,12 @@ public class RobotContainer {
 
     // X wheels when shoot button is pressed and we're shooting and we're lined up and
     // auto-x hasn't been manually overriden, or when x button is pressed
-    // (Triggers.getInstance()
-    //         .shootButton()
-    //         .and(Triggers.getInstance().isShootClear)
-    //         .and(Triggers.getInstance().isAlignedForCurrentShot)
-    //         .and(() -> !xCancelled))
-    //     .or
+    (Triggers.getInstance()
+            .shootButton()
+            .and(Triggers.getInstance().isShootClear)
+            .and(Triggers.getInstance().isAlignedForCurrentShot)
+            .and(() -> !xCancelled))
+        .or
     (Triggers.getInstance().xWheels()).whileTrue(DriveCommands.stopWithX(drive));
 
     // Align for trench when trench button pressed - zone logic temporarily disabled
@@ -465,7 +465,6 @@ public class RobotContainer {
     // SHOOTER
     // Set shooting velocity if shoot button pressed, we're in our alliance zone, hub is active, and
     // tuning false
-    // At end, sets cancellation latches (auto-x and auto-compress) to false
     Triggers.getInstance()
         .shootButton()
         .and(Triggers.getInstance().isShootClear)
@@ -499,16 +498,15 @@ public class RobotContainer {
     // Set passing velocity if shoot button is pressed but we're not in our alliance zone and tuning
     // false,
     // or if pass button is pressed
-    // At end, sets cancellation latches (auto-x and auto-compress) to false
     (Triggers.getInstance()
             .shootButton()
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
             .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
         .or(Triggers.getInstance().passButton())
         .whileTrue(
-            // FlywheelCommands.setVelocityForPassing(flywheel)
-            FlywheelCommands.setFlywheelVelocity(
-                    flywheel, HardwareConstants.PassConstants.FlywheelPassVelocity)
+            FlywheelCommands.setVelocityForPassing(flywheel)
+            // FlywheelCommands.setFlywheelVelocity(
+            //         flywheel, HardwareConstants.PassConstants.FlywheelPassVelocity)
                 .alongWith(
                     PrestageCommands.setPrestageVelocity(
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
@@ -534,7 +532,6 @@ public class RobotContainer {
         .onFalse(TransportCommands.stop(transport));
 
     // Hard-coded tower shot
-    // At end, sets cancellation latches (auto-x and auto-compress) to false
     Triggers.getInstance()
         .shootFromTowerButton()
         .whileTrue(
@@ -669,8 +666,9 @@ public class RobotContainer {
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean()))
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .or(Triggers.getInstance().passButton())
-        // .whileTrue(HoodCommands.setPosForPassing(hood))
-        .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.PassConstants.hoodPassPos));
+        .whileTrue(HoodCommands.setPosForPassing(hood))
+        // .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.PassConstants.hoodPassPos))
+        ;
 
     // Set pos to defined tuning pos when shoot button is pressed and tuning mode is on
     Triggers.getInstance()
