@@ -44,6 +44,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.HardwareConstants;
 import frc.robot.Robot;
 import frc.robot.RobotState;
 import frc.robot.generated.TunerConstants;
@@ -52,8 +53,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-
-import frc.robot.HardwareConstants;
 
 public class Drive extends SubsystemBase {
   // TunerConstants doesn't include these constants, so they are declared locally
@@ -166,7 +165,10 @@ public class Drive extends SubsystemBase {
 
     // Initialize previous setpoint using CURRENT module states
     prevSetpoint =
-        new SwerveSetpoint(new ChassisSpeeds(), getModuleStates(), DriveFeedforwards.zeros(DriveConstants.numberOfSwerveModules));
+        new SwerveSetpoint(
+            new ChassisSpeeds(),
+            getModuleStates(),
+            DriveFeedforwards.zeros(DriveConstants.numberOfSwerveModules));
   }
 
   @Override
@@ -189,7 +191,10 @@ public class Drive extends SubsystemBase {
     // Log empty setpoint states when disabled
     if (DriverStation.isDisabled()) {
       prevSetpoint =
-          new SwerveSetpoint(new ChassisSpeeds(), getModuleStates(), DriveFeedforwards.zeros(DriveConstants.numberOfSwerveModules));
+          new SwerveSetpoint(
+              new ChassisSpeeds(),
+              getModuleStates(),
+              DriveFeedforwards.zeros(DriveConstants.numberOfSwerveModules));
       Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
     }
@@ -247,9 +252,12 @@ public class Drive extends SubsystemBase {
    */
   public void runVelocity(ChassisSpeeds speeds) {
     // Calculate module setpoints
-    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, HardwareConstants.loopPeriodSeconds);
+    ChassisSpeeds discreteSpeeds =
+        ChassisSpeeds.discretize(speeds, HardwareConstants.loopPeriodSeconds);
 
-    prevSetpoint = setpointGenerator.generateSetpoint(prevSetpoint, discreteSpeeds, HardwareConstants.loopPeriodSeconds);
+    prevSetpoint =
+        setpointGenerator.generateSetpoint(
+            prevSetpoint, discreteSpeeds, HardwareConstants.loopPeriodSeconds);
     SwerveModuleState[] setpointStates = prevSetpoint.moduleStates();
 
     // Log unoptimized setpoints and setpoint speeds
@@ -282,12 +290,31 @@ public class Drive extends SubsystemBase {
    * return to their normal orientations the next time a nonzero velocity is requested.
    */
   public void stopWithX() {
-    Rotation2d[] headings = new Rotation2d[4];
+    // Command each module to an X formation to resist movement.
+    // Use the setpoint generator to produce zero chassis speeds but specified
+    // module headings (45 deg / -45 deg alternating) instead of resetting
+    // kinematics headings (which the setpoint generator bypasses).
+    // Use precomputed X headings from DriveConstants
+    Rotation2d[] xHeadings = DriveConstants.xHeadings;
+
+    // Create module states with zero wheel speed but desired angles
+    SwerveModuleState[] xStates = new SwerveModuleState[4];
     for (int i = 0; i < 4; i++) {
-      headings[i] = getModuleTranslations()[i].getAngle();
+      xStates[i] = new SwerveModuleState(0.0, xHeadings[i]);
     }
-    kinematics.resetHeadings(headings);
-    stop();
+
+    // Send setpoints directly to modules and update prevSetpoint so the
+    // setpoint generator continues from this state.
+    for (int i = 0; i < 4; i++) {
+      modules[i].runSetpoint(xStates[i]);
+    }
+
+    // Update prevSetpoint to reflect zero chassis speeds and these module states
+    prevSetpoint =
+        new SwerveSetpoint(
+            new ChassisSpeeds(),
+            xStates,
+            DriveFeedforwards.zeros(DriveConstants.numberOfSwerveModules));
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */
