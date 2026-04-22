@@ -46,6 +46,7 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
+import frc.robot.subsystems.flywheel.io.FlywheelIO.ShooterIOInputs;
 import frc.robot.subsystems.flywheel.io.FlywheelIOPhoenix6;
 import frc.robot.subsystems.flywheel.io.FlywheelIOSim;
 import frc.robot.subsystems.hood.Hood;
@@ -462,7 +463,7 @@ public class RobotContainer {
             DriveCommands.joystickDriveAlignForBump(
                 drive, () -> -thrustmaster.getY(), () -> -thrustmaster.getX()));
 
-    // SHOOTER
+    // UPPER SHOOTER
     // Set shooting velocity if shoot button pressed, we're in our alliance zone, hub is active, and
     // tuning false
     Triggers.getInstance()
@@ -473,27 +474,9 @@ public class RobotContainer {
             FlywheelCommands.setVelocityForHub(flywheel)
                 .alongWith(
                     PrestageCommands.setPrestageVelocity(
-                        prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
-                .alongWith(
-                    FeederCommands.setUpperVelocityAfterWait(
-                        upperFeeder,
-                        HardwareConstants.CompConstants.Velocities.feederVelocity,
-                        Triggers.getInstance().isAlignedForCurrentShot))
-                .alongWith(
-                    FeederCommands.setLowerVelocityAfterWait(
-                        lowerFeeder,
-                        HardwareConstants.CompConstants.Velocities.feederVelocity,
-                        Triggers.getInstance().isAlignedForCurrentShot))
-                .alongWith(
-                    TransportCommands.setVelocityAfterWait(
-                        transport,
-                        HardwareConstants.CompConstants.Velocities.transportVelocity,
-                        Triggers.getInstance().isAlignedForCurrentShot)))
+                        prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity)))
         .onFalse(FlywheelCommands.stop(flywheel))
-        .onFalse(PrestageCommands.stop(prestage))
-        .onFalse(
-            FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)))
-        .onFalse(TransportCommands.stop(transport));
+        .onFalse(PrestageCommands.stop(prestage));
 
     // Set passing velocity if shoot button is pressed but we're not in our alliance zone and tuning
     // false,
@@ -509,28 +492,50 @@ public class RobotContainer {
             //         flywheel, HardwareConstants.PassConstants.FlywheelPassVelocity)
                 .alongWith(
                     PrestageCommands.setPrestageVelocity(
-                        prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
-                .alongWith(
-                    FeederCommands.setUpperVelocityAfterWait(
-                        upperFeeder,
-                        HardwareConstants.CompConstants.Velocities.feederVelocity,
-                        Triggers.getInstance().isAlignedForCurrentShot))
-                .alongWith(
-                    FeederCommands.setLowerVelocityAfterWait(
-                        lowerFeeder,
-                        HardwareConstants.CompConstants.Velocities.feederVelocity,
-                        Triggers.getInstance().isAlignedForCurrentShot))
-                .alongWith(
-                    TransportCommands.setVelocityAfterWait(
-                        transport,
-                        HardwareConstants.CompConstants.Velocities.transportVelocity,
-                        Triggers.getInstance().isAlignedForCurrentShot)))
+                        prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity)))
         .onFalse(FlywheelCommands.stop(flywheel))
-        .onFalse(PrestageCommands.stop(prestage))
-        .onFalse(
-            FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)))
-        .onFalse(TransportCommands.stop(transport));
+        .onFalse(PrestageCommands.stop(prestage));
 
+    // LOWER SHOOTER
+    // Set shooting velocity if shoot button pressed, we're in our alliance zone, hub is active,
+    // tuning is false, flywheel is spun up, and we're aligned to shoot
+    Triggers.getInstance().shootButton()
+        .and(Triggers.getInstance().isShootClear)
+        .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
+        .and(Triggers.getInstance().isAlignedForCurrentShot)
+        .and(Triggers.getInstance().isFlywheelSpunUp)
+        .whileTrue(
+            FeederCommands.setUpperFeederVelocity(upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
+            .alongWith(FeederCommands.setLowerFeederVelocity(lowerFeeder,
+                HardwareConstants.CompConstants.Velocities.feederVelocity))
+            .alongWith(TransportCommands.setTransportVelocity(transport,
+                HardwareConstants.CompConstants.Velocities.transportVelocity))
+    )
+    .onFalse(FeederCommands.stopLower(lowerFeeder))
+    .onFalse(FeederCommands.stopUpper(upperFeeder))
+    .onFalse(TransportCommands.stop(transport));
+
+    // Set passing velocity if shoot button is pressed but we're not in our alliance zone and tuning
+    // false,
+    // or if pass button is pressed
+    Triggers.getInstance().shootButton()
+        .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
+        .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
+        .and(Triggers.getInstance().isAlignedForCurrentShot)
+        .and(Triggers.getInstance().isFlywheelSpunUp)
+        .whileTrue(
+            FeederCommands.setUpperFeederVelocity(upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
+            .alongWith(FeederCommands.setLowerFeederVelocity(lowerFeeder,
+                HardwareConstants.CompConstants.Velocities.feederVelocity))
+            .alongWith(TransportCommands.setTransportVelocity(transport,
+                HardwareConstants.CompConstants.Velocities.transportVelocity))
+    )
+    .onFalse(FeederCommands.stopLower(lowerFeeder))
+    .onFalse(FeederCommands.stopUpper(upperFeeder))
+    .onFalse(TransportCommands.stop(transport));
+
+    // FULL SHOOTER - hard-coded shots and tuning shots
+    // These use constant waits instead of waiting for alignment or spinup
     // Hard-coded tower shot
     Triggers.getInstance()
         .shootFromTowerButton()
@@ -540,25 +545,16 @@ public class RobotContainer {
                 .alongWith(
                     PrestageCommands.setPrestageVelocity(
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
-                .alongWith(
-                    FeederCommands.setUpperVelocityAfterWait(
-                        upperFeeder,
-                        HardwareConstants.CompConstants.Velocities.feederVelocity,
-                        Triggers.getInstance().isAlignedForCurrentShot))
-                .alongWith(
-                    FeederCommands.setLowerVelocityAfterWait(
-                        lowerFeeder,
-                        HardwareConstants.CompConstants.Velocities.feederVelocity,
-                        Triggers.getInstance().isAlignedForCurrentShot))
-                .alongWith(
-                    TransportCommands.setVelocityAfterWait(
-                        transport,
-                        HardwareConstants.CompConstants.Velocities.transportVelocity,
-                        Triggers.getInstance().isAlignedForCurrentShot)))
+                .alongWith(FeederCommands.setUpperVelocityAfterWait(
+                    upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                .alongWith(FeederCommands.setLowerVelocityAfterWait(
+                    lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                .alongWith(TransportCommands.setVelocityAfterWait(
+                    transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
         .onFalse(FlywheelCommands.stop(flywheel))
         .onFalse(PrestageCommands.stop(prestage))
-        .onFalse(
-            FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)))
+        .onFalse(FeederCommands.stopLower(lowerFeeder))
+        .onFalse(FeederCommands.stopUpper(upperFeeder))
         .onFalse(TransportCommands.stop(transport));
 
     // Distance map shot if tuning mode true
@@ -571,19 +567,16 @@ public class RobotContainer {
                 .alongWith(
                     PrestageCommands.setPrestageVelocity(
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
-                .alongWith(
-                    FeederCommands.setUpperVelocityAfterWait(
-                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
-                .alongWith(
-                    FeederCommands.setLowerVelocityAfterWait(
-                        lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
-                .alongWith(
-                    TransportCommands.setVelocityAfterWait(
-                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
+                .alongWith(FeederCommands.setUpperVelocityAfterWait(
+                    upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                .alongWith(FeederCommands.setLowerVelocityAfterWait(
+                    lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                .alongWith(TransportCommands.setVelocityAfterWait(
+                    transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
         .onFalse(FlywheelCommands.stop(flywheel))
         .onFalse(PrestageCommands.stop(prestage))
-        .onFalse(
-            FeederCommands.stopLower(lowerFeeder).alongWith(FeederCommands.stopUpper(upperFeeder)))
+        .onFalse(FeederCommands.stopLower(lowerFeeder))
+        .onFalse(FeederCommands.stopUpper(upperFeeder))
         .onFalse(TransportCommands.stop(transport));
 
     // INTAKE ROLLER
@@ -1062,5 +1055,10 @@ public class RobotContainer {
   public Command getIntakePivotCommand() {
     return IntakePivotCommands.setPivotPosition(
         intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos);
+  }
+  
+  public static double getFlywheelError() {
+    FlywheelIO.ShooterIOInputs inputs = new ShooterIOInputs();
+    return inputs.closedLoopError.magnitude();
   }
 }

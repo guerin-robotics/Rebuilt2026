@@ -177,4 +177,10 @@ public class Triggers {
               return RobotState.getInstance().isAlignedToPass();
             }
           });
+
+  public final LoggedTrigger isFlywheelSpunUp = new LoggedTrigger(
+    "isFlywheelSpunUp", 
+    () -> {
+      return (Math.abs(RobotContainer.getFlywheelError()) < HardwareConstants.CompConstants.Thresholds.flywheelSpinupThreshold);
+    });
 }
