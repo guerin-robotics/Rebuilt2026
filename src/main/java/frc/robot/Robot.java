@@ -95,8 +95,9 @@ public class Robot extends LoggedRobot {
 
     // Publish the robot pose Field2d to the dashboard so we can see where the robot is
     SmartDashboard.putData("Robot Pose Field Map", fieldMap);
-    SmartDashboard.putString("Pre-flight Checklist", 
-    """
+    SmartDashboard.putString(
+        "Pre-flight Checklist",
+        """
         Phoenix tuner: 29 devices
         Drive
         Intake in/out

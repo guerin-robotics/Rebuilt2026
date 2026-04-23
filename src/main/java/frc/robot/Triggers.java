@@ -178,9 +178,11 @@ public class Triggers {
             }
           });
 
-  public final LoggedTrigger isFlywheelSpunUp = new LoggedTrigger(
-    "isFlywheelSpunUp", 
-    () -> {
-      return (Math.abs(RobotContainer.getFlywheelError()) < HardwareConstants.CompConstants.Thresholds.flywheelSpinupThreshold);
-    });
+  public final LoggedTrigger isFlywheelSpunUp =
+      new LoggedTrigger(
+          "isFlywheelSpunUp",
+          () -> {
+            return (Math.abs(RobotContainer.getFlywheelError())
+                < HardwareConstants.CompConstants.Thresholds.flywheelSpinupThreshold);
+          });
 }

@@ -13,7 +13,7 @@ public class TransportConstants {
     public static final int TRANSPORT_MAIN_SUPPLY_AMP = 40;
     public static final int TRANSPORT_MAIN_SUPPLY_TRIGGER_AMP = 35;
     public static final Time TRANSPORT_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
-    public static final int TRANSPORT_MAIN_STATOR_AMP = 25;
+    public static final int TRANSPORT_MAIN_STATOR_AMP = 40;
   }
 
   public static class SoftwareConstants {
@@ -28,7 +28,7 @@ public class TransportConstants {
   public static class PID {
     public static final double KS = 5.0; // 14.0
     public static final double KV = 0.0; // 0.0
-    public static final double KP = 4.2; // 2.5
+    public static final double KP = 4.2; // 4.2
     public static final double KI = 0.0; // 0.0
     public static final double KD = 0.0; // 0.0
   }
