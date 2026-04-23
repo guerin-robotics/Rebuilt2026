@@ -94,6 +94,7 @@ public class HardwareConstants {
       // Maximum time to wait for heading alignment before shooting regardless.
       // After this many seconds, feeding starts even if the robot isn't facing the target.
       public static final double alignmentTimeoutSeconds = 1.5;
+      // Compress sequence waits
       public static final double waitToCompressSeconds = 0.65;
       public static final double waitToDropSeconds = 0.5;
       public static final double waitBetweenCompressSeconds = 0.65;
@@ -101,11 +102,11 @@ public class HardwareConstants {
       public static final double autoWaitToCompressSeconds = 0.85;
       public static final double autoWaitToDropSeconds = 0.5;
       public static final double autoWaitBetweenCompressSeconds = 0.75;
-      public static final double autoWaitForLastCompressSeconds = 0.5;
     }
 
     public static class Thresholds {
       public static final double flywheelSpinupThreshold = 200;
+      public static final double prestageSpinupThreshold = 200;
       // How close (in degrees) the robot's heading must be to the hub before we start feeding.
       public static final double hubAlignmentToleranceDegrees = 5.0;
       // How close (in degrees) the robot's heading must be to the pass target before we start

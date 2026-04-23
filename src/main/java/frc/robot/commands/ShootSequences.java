@@ -36,7 +36,7 @@ public class ShootSequences {
                 PrestageCommands.setPrestageVelocity(
                     prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
                 HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos),
-                IntakePivotCommands.jostlePivotByPos(intakePivot)),
+                IntakePivotCommands.compressPivot(intakePivot)),
             Commands.sequence(
                 new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
                 Commands.parallel(
