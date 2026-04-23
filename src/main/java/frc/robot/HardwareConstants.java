@@ -96,7 +96,7 @@ public class HardwareConstants {
       public static final double alignmentTimeoutSeconds = 1.5;
       public static final double waitToCompressSeconds = 0.65;
       public static final double waitToDropSeconds = 0.5;
-      public static final double waitBetweenCompressSeconds = 0.5;
+      public static final double waitBetweenCompressSeconds = 0.65;
 
       public static final double autoWaitToCompressSeconds = 0.85;
       public static final double autoWaitToDropSeconds = 0.5;
