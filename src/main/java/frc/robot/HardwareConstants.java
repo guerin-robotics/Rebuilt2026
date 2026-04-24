@@ -14,6 +14,7 @@ import frc.lib.AllianceFlipUtil;
 
 public class HardwareConstants {
   public static final int NUMBER_OF_CAMERAS = 4;
+  public static final double loopPeriodSeconds = 0.02;
 
   public static class CanIds {
     // Flywheel

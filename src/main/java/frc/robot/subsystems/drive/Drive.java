@@ -15,7 +15,10 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.Pathfinding;
+import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
+import com.pathplanner.lib.util.swerve.SwerveSetpoint;
+import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
@@ -41,6 +44,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.HardwareConstants;
 import frc.robot.Robot;
 import frc.robot.RobotState;
 import frc.robot.generated.TunerConstants;
@@ -63,8 +67,8 @@ public class Drive extends SubsystemBase {
               Math.hypot(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)));
 
   // PathPlanner config constants
-  private static final double ROBOT_MASS_KG = 74.088;
-  private static final double ROBOT_MOI = 6.883;
+  private static final double ROBOT_MASS_KG = 63.5029;
+  private static final double ROBOT_MOI = 5.162;
   private static final double WHEEL_COF = 1.2;
   private static final RobotConfig PP_CONFIG =
       new RobotConfig(
@@ -99,6 +103,8 @@ public class Drive extends SubsystemBase {
       };
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
+  private final SwerveSetpointGenerator setpointGenerator;
+  private SwerveSetpoint prevSetpoint;
 
   public Drive(
       GyroIO gyroIO,
@@ -154,6 +160,15 @@ public class Drive extends SubsystemBase {
     // This ensures there is only ONE SwerveDrivePoseEstimator — eliminating the dual-estimator
     // divergence bug where two independent estimators would drift apart.
     RobotState.getInstance().setPoseSupplier(this::getPose);
+    setpointGenerator =
+        new SwerveSetpointGenerator(PP_CONFIG, DriveConstants.maxModuleRotationSpeed);
+
+    // Initialize previous setpoint using CURRENT module states
+    prevSetpoint =
+        new SwerveSetpoint(
+            new ChassisSpeeds(),
+            getModuleStates(),
+            DriveFeedforwards.zeros(DriveConstants.numberOfSwerveModules));
   }
 
   @Override
@@ -175,6 +190,11 @@ public class Drive extends SubsystemBase {
 
     // Log empty setpoint states when disabled
     if (DriverStation.isDisabled()) {
+      prevSetpoint =
+          new SwerveSetpoint(
+              new ChassisSpeeds(),
+              getModuleStates(),
+              DriveFeedforwards.zeros(DriveConstants.numberOfSwerveModules));
       Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
     }
@@ -232,9 +252,13 @@ public class Drive extends SubsystemBase {
    */
   public void runVelocity(ChassisSpeeds speeds) {
     // Calculate module setpoints
-    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
-    SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, TunerConstants.kSpeedAt12Volts);
+    ChassisSpeeds discreteSpeeds =
+        ChassisSpeeds.discretize(speeds, HardwareConstants.loopPeriodSeconds);
+
+    prevSetpoint =
+        setpointGenerator.generateSetpoint(
+            prevSetpoint, discreteSpeeds, HardwareConstants.loopPeriodSeconds);
+    SwerveModuleState[] setpointStates = prevSetpoint.moduleStates();
 
     // Log unoptimized setpoints and setpoint speeds
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
@@ -266,12 +290,31 @@ public class Drive extends SubsystemBase {
    * return to their normal orientations the next time a nonzero velocity is requested.
    */
   public void stopWithX() {
-    Rotation2d[] headings = new Rotation2d[4];
+    // Command each module to an X formation to resist movement.
+    // Use the setpoint generator to produce zero chassis speeds but specified
+    // module headings (45 deg / -45 deg alternating) instead of resetting
+    // kinematics headings (which the setpoint generator bypasses).
+    // Use precomputed X headings from DriveConstants
+    Rotation2d[] xHeadings = DriveConstants.xHeadings;
+
+    // Create module states with zero wheel speed but desired angles
+    SwerveModuleState[] xStates = new SwerveModuleState[4];
     for (int i = 0; i < 4; i++) {
-      headings[i] = getModuleTranslations()[i].getAngle();
+      xStates[i] = new SwerveModuleState(0.0, xHeadings[i]);
     }
-    kinematics.resetHeadings(headings);
-    stop();
+
+    // Send setpoints directly to modules and update prevSetpoint so the
+    // setpoint generator continues from this state.
+    for (int i = 0; i < 4; i++) {
+      modules[i].runSetpoint(xStates[i]);
+    }
+
+    // Update prevSetpoint to reflect zero chassis speeds and these module states
+    prevSetpoint =
+        new SwerveSetpoint(
+            new ChassisSpeeds(),
+            xStates,
+            DriveFeedforwards.zeros(DriveConstants.numberOfSwerveModules));
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */

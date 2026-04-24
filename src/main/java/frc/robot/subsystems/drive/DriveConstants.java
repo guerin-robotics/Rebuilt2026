@@ -1,8 +1,11 @@
 package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.math.util.Units.inchesToMeters;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 public class DriveConstants {
   public static double frontOffset = inchesToMeters(11);
@@ -18,4 +21,17 @@ public class DriveConstants {
       };
 
   public static double limitedVelo = 0.1;
+
+  public static AngularVelocity maxModuleRotationSpeed = RadiansPerSecond.of(12);
+  public static final int numberOfSwerveModules = 4;
+
+  // Precomputed headings for an 'X' braking formation in robot coordinates:
+  // FL=45, FR=-45, BL=-45, BR=45
+  public static final Rotation2d[] xHeadings =
+      new Rotation2d[] {
+        Rotation2d.fromDegrees(45.0), // Front Left
+        Rotation2d.fromDegrees(-45.0), // Front Right
+        Rotation2d.fromDegrees(-45.0), // Back Left
+        Rotation2d.fromDegrees(45.0) // Back Right
+      };
 }
