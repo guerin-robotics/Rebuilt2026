@@ -376,20 +376,16 @@ public class RobotState {
     if (AllianceFlipUtil.shouldFlip()) {
       // Red alliance
       if (poseY > (FieldConstants.fieldWidth / 2)) {
-        passTarget =
-            new Translation3d(Meters.of(13.373).magnitude(), Meters.of(6.136).magnitude(), 0);
+        passTarget = new Translation3d(Meters.of(12).magnitude(), Meters.of(6.1).magnitude(), 0);
       } else {
-        passTarget =
-            new Translation3d(Meters.of(12.950).magnitude(), Meters.of(2.293).magnitude(), 0);
+        passTarget = new Translation3d(Meters.of(12).magnitude(), Meters.of(2.3).magnitude(), 0);
       }
     } else {
       // Blue alliance (or unknown — defaults to blue)
       if (poseY < (FieldConstants.fieldWidth / 2)) {
-        passTarget =
-            new Translation3d(Meters.of(2.993).magnitude(), Meters.of(2.114).magnitude(), 0);
+        passTarget = new Translation3d(Meters.of(4.5).magnitude(), Meters.of(2.3).magnitude(), 0);
       } else {
-        passTarget =
-            new Translation3d(Meters.of(3.135).magnitude(), Meters.of(6.129).magnitude(), 0);
+        passTarget = new Translation3d(Meters.of(4.5).magnitude(), Meters.of(6.1).magnitude(), 0);
       }
     }
     return passTarget;

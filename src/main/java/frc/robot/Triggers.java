@@ -177,23 +177,4 @@ public class Triggers {
               return RobotState.getInstance().isAlignedToPass();
             }
           });
-
-  public final LoggedTrigger isFlywheelSpunUp =
-      new LoggedTrigger(
-          "isFlywheelSpunUp",
-          () -> {
-            return (Math.abs(RobotContainer.getFlywheelError())
-                < HardwareConstants.CompConstants.Thresholds.flywheelSpinupThreshold);
-          });
-
-  public final LoggedTrigger isPrestageSpunUp = 
-      new LoggedTrigger(
-          "isPrestageSpunUp",
-          () -> {
-            return (Math.abs(RobotContainer.getPrestageError())
-                < HardwareConstants.CompConstants.Thresholds.prestageSpinupThreshold);
-          });
-
-  public final LoggedTrigger isUpperShooterSpunUp = new LoggedTrigger(
-    "isUpperShooterSpunUp", isFlywheelSpunUp.and(isPrestageSpunUp));
 }

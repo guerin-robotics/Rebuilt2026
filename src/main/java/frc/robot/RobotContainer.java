@@ -46,7 +46,6 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
-import frc.robot.subsystems.flywheel.io.FlywheelIO.ShooterIOInputs;
 import frc.robot.subsystems.flywheel.io.FlywheelIOPhoenix6;
 import frc.robot.subsystems.flywheel.io.FlywheelIOSim;
 import frc.robot.subsystems.hood.Hood;
@@ -67,7 +66,6 @@ import frc.robot.subsystems.lowerFeeder.io.LowerFeederIOReal;
 import frc.robot.subsystems.lowerFeeder.io.LowerFeederIOSim;
 import frc.robot.subsystems.prestage.Prestage;
 import frc.robot.subsystems.prestage.io.PrestageIO;
-import frc.robot.subsystems.prestage.io.PrestageIO.PrestageIOInputs;
 import frc.robot.subsystems.prestage.io.PrestageIOReal;
 import frc.robot.subsystems.prestage.io.PrestageIOSim;
 import frc.robot.subsystems.transport.Transport;
@@ -421,8 +419,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -thrustmaster.getY(),
-                () -> -thrustmaster.getX(),
+                () -> -thrustmaster.getY() * .5,
+                () -> -thrustmaster.getX() * .5,
                 () -> RobotState.getInstance().getAngleToAllianceHub()));
 
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
@@ -434,8 +432,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -thrustmaster.getY(),
-                () -> -thrustmaster.getX(),
+                () -> -thrustmaster.getY() * .5,
+                () -> -thrustmaster.getX() * .5,
                 () ->
                     RobotState.getInstance()
                         .getAngleToTarget(
@@ -495,9 +493,8 @@ public class RobotContainer {
             .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
         .or(Triggers.getInstance().passButton())
         .whileTrue(
+            // FlywheelCommands.setVelocityForPassing(flywheel)
             FlywheelCommands.setVelocityForPassing(flywheel)
-                // FlywheelCommands.setFlywheelVelocity(
-                //         flywheel, HardwareConstants.PassConstants.FlywheelPassVelocity)
                 .alongWith(
                     PrestageCommands.setPrestageVelocity(
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity)))
@@ -512,7 +509,7 @@ public class RobotContainer {
         .and(Triggers.getInstance().isShootClear)
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .and(Triggers.getInstance().isAlignedForCurrentShot)
-        .and(Triggers.getInstance().isUpperShooterSpunUp)
+        // .and(flywheel.isUpperShooterSpunUp)
         .whileTrue(
             FeederCommands.setUpperFeederVelocity(
                     upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
@@ -534,7 +531,7 @@ public class RobotContainer {
         .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .and(Triggers.getInstance().isAlignedForCurrentShot)
-        .and(Triggers.getInstance().isUpperShooterSpunUp)
+        // .and(flywheel.isUpperShooterSpunUp)
         .whileTrue(
             FeederCommands.setUpperFeederVelocity(
                     upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
@@ -659,8 +656,8 @@ public class RobotContainer {
                 !(Triggers.getInstance().isShootSafeZone.getAsBoolean()
                     && !Triggers.getInstance().isShootSafeTimeSure.getAsBoolean()))
         .and(Triggers.getInstance().isAlignedForCurrentShot)
-        .and(Triggers.getInstance().isUpperShooterSpunUp)
-        .whileTrue(IntakePivotCommands.compressPivot(intakePivot, () -> halfHopper))
+        // .and(flywheel.isUpperShooterSpunUp)
+        .whileTrue(IntakePivotCommands.compressPivot(intakePivot, () -> true))
         .onFalse(
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
@@ -677,11 +674,11 @@ public class RobotContainer {
     // if pass button is presssed
     (Triggers.getInstance()
             .shootButton()
-            .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean()))
-        .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
+            .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
+            .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
         .or(Triggers.getInstance().passButton())
-        .whileTrue(HoodCommands.setPosForPassing(hood))
-    // .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.PassConstants.hoodPassPos))
+        //    .whileTrue(HoodCommands.setPosForPassing(hood))
+        .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos));
     ;
 
     // Set pos to defined tuning pos when shoot button is pressed and tuning mode is on
@@ -829,7 +826,7 @@ public class RobotContainer {
         .and(Triggers.getInstance().isShootClear)
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .and(Triggers.getInstance().isAlignedForCurrentShot)
-        .and(Triggers.getInstance().isUpperShooterSpunUp)
+        // .and(flywheel.isUpperShooterSpunUp)
         .whileTrue(
             FeederCommands.setUpperFeederVelocity(
                     upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
@@ -851,7 +848,7 @@ public class RobotContainer {
         .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .and(Triggers.getInstance().isAlignedForCurrentShot)
-        .and(Triggers.getInstance().isUpperShooterSpunUp)
+        // .and(flywheel.isUpperShooterSpunUp)
         .whileTrue(
             FeederCommands.setUpperFeederVelocity(
                     upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
@@ -1114,13 +1111,7 @@ public class RobotContainer {
         intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos);
   }
 
-  public static double getFlywheelError() {
-    FlywheelIO.ShooterIOInputs inputs = new ShooterIOInputs();
-    return inputs.closedLoopError.magnitude();
-  }
-
-  public static double getPrestageError() {
-    PrestageIO.PrestageIOInputs inputs = new PrestageIOInputs();
-    return inputs.prestageLeftClosedLoopError.magnitude();
+  public boolean isFlywheelSpunUp() {
+    return flywheel.isSpunUp();
   }
 }

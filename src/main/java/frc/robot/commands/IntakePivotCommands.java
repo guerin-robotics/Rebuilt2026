@@ -62,7 +62,8 @@ public class IntakePivotCommands {
    * command will switch branches automatically.
    *
    * @param intakePivot The intake pivot subsystem
-   * @param halfHopper If the operator hits the half-hopper override button, the intake runs full compress immediately
+   * @param halfHopper If the operator hits the half-hopper override button, the intake runs full
+   *     compress immediately
    */
   public static Command compressPivot(IntakePivot intakePivot, BooleanSupplier halfHopper) {
     Logger.recordOutput("RobotState/IntakePivot", "JostleCalled");
@@ -102,15 +103,14 @@ public class IntakePivotCommands {
 
   public static Command manualPivotCompress(IntakePivot intakePivot) {
     return Commands.sequence(
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleFirstPos),
-                new WaitCommand((HardwareConstants.CompConstants.Waits.waitToDropSeconds)),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
-                new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
-            .withName("IntakePivotCompress_SkipWait");
+            setPivotPosition(
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleFirstPos),
+            new WaitCommand((HardwareConstants.CompConstants.Waits.waitToDropSeconds)),
+            setPivotPosition(intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
+            new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
+            setPivotPosition(
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
+        .withName("IntakePivotCompress_SkipWait");
   }
 
   public static Command autoPivotCompress(IntakePivot intakePivot) {
