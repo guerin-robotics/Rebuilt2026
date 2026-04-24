@@ -6,8 +6,9 @@
     "Center-Paths",
     "Comp-Paths",
     "Left-Paths",
-    "States-Paths",
-    "Right-Paths"
+    "Champs-Paths",
+    "Right-Paths",
+    "States-Paths"
   ],
   "autoFolders": [
     "Other"
