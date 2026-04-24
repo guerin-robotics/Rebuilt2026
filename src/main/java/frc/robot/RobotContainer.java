@@ -206,7 +206,13 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIO() {},
+                new VisionIO() {},
+                new VisionIO() {},
+                new VisionIO() {});
         flywheel = new Flywheel(new FlywheelIO() {});
         upperFeeder = new UpperFeeder(new UpperFeederIO() {});
         lowerFeeder = new LowerFeeder(new LowerFeederIO() {});

@@ -98,6 +98,17 @@ public class Vision extends SubsystemBase {
     List<Pose3d> allRobotPosesAccepted = new ArrayList<>();
     List<Pose3d> allRobotPosesRejected = new ArrayList<>();
 
+    // Summary per-reason lists — aggregated across all cameras
+    List<Pose3d> allRejectedSpinningTooFast = new ArrayList<>();
+    List<Pose3d> allRejectedNoTags = new ArrayList<>();
+    List<Pose3d> allRejectedHighAmbiguity = new ArrayList<>();
+    List<Pose3d> allRejectedBelowFloor = new ArrayList<>();
+    List<Pose3d> allRejectedBadZ = new ArrayList<>();
+    List<Pose3d> allRejectedTagTooFar = new ArrayList<>();
+    List<Pose3d> allRejectedBadPitch = new ArrayList<>();
+    List<Pose3d> allRejectedBadRoll = new ArrayList<>();
+    List<Pose3d> allRejectedOutOfField = new ArrayList<>();
+
     // Loop over cameras
     for (int cameraIndex = 0; cameraIndex < io.length; cameraIndex++) {
       // Update disconnected alert
@@ -246,6 +257,15 @@ public class Vision extends SubsystemBase {
       allRobotPoses.addAll(robotPoses);
       allRobotPosesAccepted.addAll(robotPosesAccepted);
       allRobotPosesRejected.addAll(robotPosesRejected);
+      allRejectedSpinningTooFast.addAll(rejectedSpinningTooFast);
+      allRejectedNoTags.addAll(rejectedNoTags);
+      allRejectedHighAmbiguity.addAll(rejectedHighAmbiguity);
+      allRejectedBelowFloor.addAll(rejectedBelowFloor);
+      allRejectedBadZ.addAll(rejectedBadZ);
+      allRejectedTagTooFar.addAll(rejectedTagTooFar);
+      allRejectedBadPitch.addAll(rejectedBadPitch);
+      allRejectedBadRoll.addAll(rejectedBadRoll);
+      allRejectedOutOfField.addAll(rejectedOutOfField);
     }
 
     // Log summary data
@@ -255,6 +275,27 @@ public class Vision extends SubsystemBase {
         "Vision/Summary/RobotPosesAccepted", allRobotPosesAccepted.toArray(new Pose3d[0]));
     Logger.recordOutput(
         "Vision/Summary/RobotPosesRejected", allRobotPosesRejected.toArray(new Pose3d[0]));
+
+    // Per-rejection-reason summary across all cameras
+    Logger.recordOutput(
+        "Vision/Summary/RejectedBy/SpinningTooFast",
+        allRejectedSpinningTooFast.toArray(new Pose3d[0]));
+    Logger.recordOutput(
+        "Vision/Summary/RejectedBy/NoTags", allRejectedNoTags.toArray(new Pose3d[0]));
+    Logger.recordOutput(
+        "Vision/Summary/RejectedBy/HighAmbiguity", allRejectedHighAmbiguity.toArray(new Pose3d[0]));
+    Logger.recordOutput(
+        "Vision/Summary/RejectedBy/BelowFloor", allRejectedBelowFloor.toArray(new Pose3d[0]));
+    Logger.recordOutput(
+        "Vision/Summary/RejectedBy/BadZCoordinate", allRejectedBadZ.toArray(new Pose3d[0]));
+    Logger.recordOutput(
+        "Vision/Summary/RejectedBy/TagTooFar", allRejectedTagTooFar.toArray(new Pose3d[0]));
+    Logger.recordOutput(
+        "Vision/Summary/RejectedBy/BadPitch", allRejectedBadPitch.toArray(new Pose3d[0]));
+    Logger.recordOutput(
+        "Vision/Summary/RejectedBy/BadRoll", allRejectedBadRoll.toArray(new Pose3d[0]));
+    Logger.recordOutput(
+        "Vision/Summary/RejectedBy/OutOfField", allRejectedOutOfField.toArray(new Pose3d[0]));
   }
 
   @FunctionalInterface
