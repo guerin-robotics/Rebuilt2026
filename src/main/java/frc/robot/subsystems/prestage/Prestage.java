@@ -7,9 +7,11 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.HardwareConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.prestage.io.PrestageIO;
 import frc.robot.subsystems.prestage.io.PrestageIOInputsAutoLogged;
+import frc.robot.util.LoggedTrigger;
 import org.littletonrobotics.junction.Logger;
 
 public class Prestage extends SubsystemBase {
@@ -24,6 +26,19 @@ public class Prestage extends SubsystemBase {
    * that {@link #isPrestageAtSetpoint} returns {@code false} when voltage control is active.
    */
   private AngularVelocity targetVelocity = RotationsPerSecond.of(0);
+
+  /**
+   * True when both prestage motors are within tolerance of the commanded velocity setpoint.
+   *
+   * <p>Automatically logged to AdvantageKit under {@code "Prestage/isAtSetpoint"}. Use this in
+   * command compositions that gate feeding on the prestage being ready to shoot.
+   */
+  public final LoggedTrigger isAtSetpoint =
+      new LoggedTrigger(
+          "Prestage/isAtSetpoint",
+          () ->
+              isPrestageAtSetpoint(
+                  HardwareConstants.CompConstants.Thresholds.prestageToleranceRPM));
 
   public Prestage(PrestageIO io) {
     this.io = io;

@@ -250,23 +250,6 @@ public class RobotContainer {
     return MathUtil.applyDeadband(value, HardwareConstants.ControllerConstants.DEADBAND);
   }
 
-  /**
-   * Returns true when both the flywheel and prestage are within their respective hub-shot
-   * tolerances of the most-recently commanded velocity setpoints.
-   *
-   * <p>Used as the condition in {@link edu.wpi.first.wpilibj2.command.Commands#waitUntil} for the
-   * feeder, transport, and agitator bindings so that feeding only starts once the system is ready.
-   * A safety timeout ({@link
-   * frc.robot.HardwareConstants.CompConstants.Thresholds#readyToShootTimeoutSeconds}) is always
-   * applied at the call site so shots are never permanently blocked.
-   */
-  private boolean isShooterReady() {
-    return flywheel.isFlywheelAtSetpoint(
-            HardwareConstants.CompConstants.Thresholds.hubFlywheelToleranceRPM)
-        && prestage.isPrestageAtSetpoint(
-            HardwareConstants.CompConstants.Thresholds.prestageToleranceRPM);
-  }
-
   private double getThrustX() {
     return thrustmaster.getRawAxis(0); // strafe
   }
@@ -537,7 +520,7 @@ public class RobotContainer {
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             Commands.sequence(
-                Commands.waitUntil(this::isShooterReady)
+                Commands.waitUntil(flywheel.isAtHubSetpoint.and(prestage.isAtSetpoint))
                     .withTimeout(
                         HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
                 FeederCommands.setLowerFeederVelocity(
@@ -564,7 +547,7 @@ public class RobotContainer {
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             Commands.sequence(
-                Commands.waitUntil(this::isShooterReady)
+                Commands.waitUntil(flywheel.isAtHubSetpoint.and(prestage.isAtSetpoint))
                     .withTimeout(
                         HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
                 TransportCommands.setTransportVelocity(
@@ -588,7 +571,7 @@ public class RobotContainer {
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             Commands.sequence(
-                Commands.waitUntil(this::isShooterReady)
+                Commands.waitUntil(flywheel.isAtHubSetpoint.and(prestage.isAtSetpoint))
                     .withTimeout(
                         HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
                 intakeRollerCommands.setRollerVoltage(
@@ -842,7 +825,7 @@ public class RobotContainer {
         .or(Triggers.getInstance().simShootFromTowerButton())
         .whileTrue(
             Commands.sequence(
-                Commands.waitUntil(this::isShooterReady)
+                Commands.waitUntil(flywheel.isAtHubSetpoint.and(prestage.isAtSetpoint))
                     .withTimeout(
                         HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
                 FeederCommands.setLowerFeederVelocity(
@@ -862,7 +845,7 @@ public class RobotContainer {
         .or(Triggers.getInstance().simShootFromTowerButton())
         .whileTrue(
             Commands.sequence(
-                Commands.waitUntil(this::isShooterReady)
+                Commands.waitUntil(flywheel.isAtHubSetpoint.and(prestage.isAtSetpoint))
                     .withTimeout(
                         HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
                 TransportCommands.setTransportVelocity(
@@ -886,7 +869,7 @@ public class RobotContainer {
         .or(Triggers.getInstance().simShootFromTowerButton())
         .whileTrue(
             Commands.sequence(
-                Commands.waitUntil(this::isShooterReady)
+                Commands.waitUntil(flywheel.isAtHubSetpoint.and(prestage.isAtSetpoint))
                     .withTimeout(
                         HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
                 intakeRollerCommands.setRollerVoltage(

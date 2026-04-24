@@ -40,14 +40,7 @@ public class ShootSequences {
             Commands.sequence(
                 // Wait until flywheel and prestage reach their setpoints before feeding,
                 // but start anyway after the safety timeout to avoid permanently blocking shots.
-                Commands.waitUntil(
-                        () ->
-                            flywheel.isFlywheelAtSetpoint(
-                                    HardwareConstants.CompConstants.Thresholds
-                                        .hubFlywheelToleranceRPM)
-                                && prestage.isPrestageAtSetpoint(
-                                    HardwareConstants.CompConstants.Thresholds
-                                        .prestageToleranceRPM))
+                Commands.waitUntil(flywheel.isAtHubSetpoint.and(prestage.isAtSetpoint))
                     .withTimeout(
                         HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
                 Commands.parallel(
@@ -81,14 +74,7 @@ public class ShootSequences {
             Commands.sequence(
                 // Tower velocity (~1650 RPM) is close to hub velocity (~1675 RPM), so
                 // hubFlywheelToleranceRPM is the appropriate tolerance here.
-                Commands.waitUntil(
-                        () ->
-                            flywheel.isFlywheelAtSetpoint(
-                                    HardwareConstants.CompConstants.Thresholds
-                                        .hubFlywheelToleranceRPM)
-                                && prestage.isPrestageAtSetpoint(
-                                    HardwareConstants.CompConstants.Thresholds
-                                        .prestageToleranceRPM))
+                Commands.waitUntil(flywheel.isAtHubSetpoint.and(prestage.isAtSetpoint))
                     .withTimeout(
                         HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
                 Commands.parallel(
@@ -123,14 +109,7 @@ public class ShootSequences {
             Commands.sequence(
                 // Wait until flywheel and prestage reach their hub-shot setpoints before feeding.
                 // The safety timeout ensures we never permanently block a shot.
-                Commands.waitUntil(
-                        () ->
-                            flywheel.isFlywheelAtSetpoint(
-                                    HardwareConstants.CompConstants.Thresholds
-                                        .hubFlywheelToleranceRPM)
-                                && prestage.isPrestageAtSetpoint(
-                                    HardwareConstants.CompConstants.Thresholds
-                                        .prestageToleranceRPM))
+                Commands.waitUntil(flywheel.isAtHubSetpoint.and(prestage.isAtSetpoint))
                     .withTimeout(
                         HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
                 Commands.parallel(
@@ -167,14 +146,7 @@ public class ShootSequences {
             Commands.sequence(
                 // Wait until flywheel and prestage reach their pass-shot setpoints before feeding.
                 // The safety timeout ensures we never permanently block a shot.
-                Commands.waitUntil(
-                        () ->
-                            flywheel.isFlywheelAtSetpoint(
-                                    HardwareConstants.CompConstants.Thresholds
-                                        .passFlywheelToleranceRPM)
-                                && prestage.isPrestageAtSetpoint(
-                                    HardwareConstants.CompConstants.Thresholds
-                                        .prestageToleranceRPM))
+                Commands.waitUntil(flywheel.isAtPassSetpoint.and(prestage.isAtSetpoint))
                     .withTimeout(
                         HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
                 Commands.parallel(

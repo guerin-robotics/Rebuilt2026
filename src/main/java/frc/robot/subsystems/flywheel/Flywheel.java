@@ -15,6 +15,7 @@ import frc.robot.HardwareConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.ShooterIOInputsAutoLogged;
+import frc.robot.util.LoggedTrigger;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -44,6 +45,32 @@ public class Flywheel extends SubsystemBase {
    * control is active (no meaningful velocity target exists in that mode).
    */
   private AngularVelocity targetVelocity = RotationsPerSecond.of(0);
+
+  /**
+   * True when the flywheel is within hub-shot tolerance of its commanded velocity setpoint.
+   *
+   * <p>Automatically logged to AdvantageKit under {@code "Flywheel/isAtHubSetpoint"}. Use this in
+   * command compositions that gate feeding on the flywheel being ready for a hub or tower shot.
+   */
+  public final LoggedTrigger isAtHubSetpoint =
+      new LoggedTrigger(
+          "Flywheel/isAtHubSetpoint",
+          () ->
+              isFlywheelAtSetpoint(
+                  HardwareConstants.CompConstants.Thresholds.hubFlywheelToleranceRPM));
+
+  /**
+   * True when the flywheel is within pass-shot tolerance of its commanded velocity setpoint.
+   *
+   * <p>Automatically logged to AdvantageKit under {@code "Flywheel/isAtPassSetpoint"}. Use this in
+   * command compositions that gate feeding on the flywheel being ready for a pass shot.
+   */
+  public final LoggedTrigger isAtPassSetpoint =
+      new LoggedTrigger(
+          "Flywheel/isAtPassSetpoint",
+          () ->
+              isFlywheelAtSetpoint(
+                  HardwareConstants.CompConstants.Thresholds.passFlywheelToleranceRPM));
 
   /**
    * Creates a new Shooter subsystem.
