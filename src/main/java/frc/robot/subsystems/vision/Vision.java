@@ -110,6 +110,18 @@ public class Vision extends SubsystemBase {
           new ArrayList<>(inputs[cameraIndex].poseObservations.length);
       List<Pose3d> robotPosesRejected = new ArrayList<>();
 
+      // Per-reason rejection lists — each becomes its own AdvantageScope overlay so
+      // you can immediately see which filter is dropping a given pose estimate.
+      List<Pose3d> rejectedSpinningTooFast = new ArrayList<>();
+      List<Pose3d> rejectedNoTags = new ArrayList<>();
+      List<Pose3d> rejectedHighAmbiguity = new ArrayList<>();
+      List<Pose3d> rejectedBelowFloor = new ArrayList<>();
+      List<Pose3d> rejectedBadZ = new ArrayList<>();
+      List<Pose3d> rejectedTagTooFar = new ArrayList<>();
+      List<Pose3d> rejectedBadPitch = new ArrayList<>();
+      List<Pose3d> rejectedBadRoll = new ArrayList<>();
+      List<Pose3d> rejectedOutOfField = new ArrayList<>();
+
       // Add tag poses
       for (int tagId : inputs[cameraIndex].tagIds) {
         var tagPose = aprilTagLayout.getTagPose(tagId);
@@ -125,31 +137,52 @@ public class Vision extends SubsystemBase {
         double pitch = Math.abs(observation.pose().getRotation().getY());
         double roll = Math.abs(observation.pose().getRotation().getX());
 
-        // Check whether to reject pose
-        boolean rejectPose =
-            robotSpinningTooFast // Robot spinning too fast — vision unreliable
-                || observation.tagCount() == 0 // Must have at least one tag
-                || (observation.tagCount() == 1
-                    && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
-                || observation.pose().getZ() < -floorError // Robot cannot be below the floor
-                || observation.pose().getZ() > maxZError // Must have realistic Z coordinate
-                || observation.averageTagDistance()
-                    > maxDistanceMeters // Tags too far away — pose error grows with distance
-                || pitch > maxPitchRollRadians // Pitch too large — robot is on flat ground
-                || roll > maxPitchRollRadians // Roll too large — robot is on flat ground
-                // || poseJump > maxPoseJumpMeters // Vision would yank pose too far — likely bad
-                // solve
-
-                // Must be within the field boundaries
-                || observation.pose().getX() < 0.0
+        // Evaluate every rejection criterion individually.
+        // Using separate booleans lets us log the *specific* reason a pose was
+        // dropped so it shows up as its own overlay in AdvantageScope.
+        boolean rejectSpinningTooFast = robotSpinningTooFast;
+        boolean rejectNoTags = observation.tagCount() == 0;
+        boolean rejectHighAmbiguity =
+            observation.tagCount() == 1 && observation.ambiguity() > maxAmbiguity;
+        boolean rejectBelowFloor = observation.pose().getZ() < -floorError;
+        boolean rejectBadZ = observation.pose().getZ() > maxZError;
+        boolean rejectTagTooFar = observation.averageTagDistance() > maxDistanceMeters;
+        boolean rejectBadPitch = pitch > maxPitchRollRadians;
+        boolean rejectBadRoll = roll > maxPitchRollRadians;
+        boolean rejectOutOfField =
+            observation.pose().getX() < 0.0
                 || observation.pose().getX() > aprilTagLayout.getFieldLength()
                 || observation.pose().getY() < 0.0
                 || observation.pose().getY() > aprilTagLayout.getFieldWidth();
+
+        // A pose is rejected if ANY individual criterion fired.
+        boolean rejectPose =
+            rejectSpinningTooFast
+                || rejectNoTags
+                || rejectHighAmbiguity
+                || rejectBelowFloor
+                || rejectBadZ
+                || rejectTagTooFar
+                || rejectBadPitch
+                || rejectBadRoll
+                || rejectOutOfField;
 
         // Add pose to log
         robotPoses.add(observation.pose());
         if (rejectPose) {
           robotPosesRejected.add(observation.pose());
+
+          // Record which specific criterion(a) caused the rejection so each
+          // reason is its own Pose3d[] array visible in AdvantageScope.
+          if (rejectSpinningTooFast) rejectedSpinningTooFast.add(observation.pose());
+          if (rejectNoTags) rejectedNoTags.add(observation.pose());
+          if (rejectHighAmbiguity) rejectedHighAmbiguity.add(observation.pose());
+          if (rejectBelowFloor) rejectedBelowFloor.add(observation.pose());
+          if (rejectBadZ) rejectedBadZ.add(observation.pose());
+          if (rejectTagTooFar) rejectedTagTooFar.add(observation.pose());
+          if (rejectBadPitch) rejectedBadPitch.add(observation.pose());
+          if (rejectBadRoll) rejectedBadRoll.add(observation.pose());
+          if (rejectOutOfField) rejectedOutOfField.add(observation.pose());
         } else {
           robotPosesAccepted.add(observation.pose());
         }
@@ -192,6 +225,21 @@ public class Vision extends SubsystemBase {
           cameraKey + "/RobotPosesAccepted", robotPosesAccepted.toArray(new Pose3d[0]));
       Logger.recordOutput(
           cameraKey + "/RobotPosesRejected", robotPosesRejected.toArray(new Pose3d[0]));
+
+      // Per-rejection-reason logs — open these as separate 3D pose overlays in
+      // AdvantageScope to see exactly which filter is dropping each estimate.
+      String rejKey = cameraKey + "/RejectedBy";
+      Logger.recordOutput(
+          rejKey + "/SpinningTooFast", rejectedSpinningTooFast.toArray(new Pose3d[0]));
+      Logger.recordOutput(rejKey + "/NoTags", rejectedNoTags.toArray(new Pose3d[0]));
+      Logger.recordOutput(rejKey + "/HighAmbiguity", rejectedHighAmbiguity.toArray(new Pose3d[0]));
+      Logger.recordOutput(rejKey + "/BelowFloor", rejectedBelowFloor.toArray(new Pose3d[0]));
+      Logger.recordOutput(rejKey + "/BadZCoordinate", rejectedBadZ.toArray(new Pose3d[0]));
+      Logger.recordOutput(rejKey + "/TagTooFar", rejectedTagTooFar.toArray(new Pose3d[0]));
+      Logger.recordOutput(rejKey + "/BadPitch", rejectedBadPitch.toArray(new Pose3d[0]));
+      Logger.recordOutput(rejKey + "/BadRoll", rejectedBadRoll.toArray(new Pose3d[0]));
+      Logger.recordOutput(rejKey + "/OutOfField", rejectedOutOfField.toArray(new Pose3d[0]));
+
       Logger.recordOutput(cameraKey + "/TagCount", inputs[cameraIndex].tagIds.length);
       Logger.recordOutput(cameraKey + "/IsMultiTag", inputs[cameraIndex].tagIds.length > 1);
       allTagPoses.addAll(tagPoses);
