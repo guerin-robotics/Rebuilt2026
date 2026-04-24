@@ -126,6 +126,8 @@ public class RobotContainer {
   // Stores the starting pose of the currently selected auto.
   // Updated when the auto chooser selection changes.
   private Pose2d autoStartPose = new Pose2d();
+  private final double defaultAutoDelay = 0.0;
+  private final String autoDelayKey = "Auto Delay";
 
   // ── Starting Pose Tolerances ────────────────────────────────────────────────
   // How close (in inches) the robot needs to be to the auto's starting position
@@ -240,6 +242,7 @@ public class RobotContainer {
 
     // Publish the auto preview field to the dashboard so we can see the selected path
     SmartDashboard.putData("Auto Preview", autoPreviewField);
+    SmartDashboard.putNumber(autoDelayKey, defaultAutoDelay);
 
     // autoChooser.addOption(
     //     "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
@@ -972,7 +975,8 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    double delay = SmartDashboard.getNumber(autoDelayKey, defaultAutoDelay);
+    return Commands.sequence(Commands.waitSeconds(delay), autoChooser.get());
   }
 
   // ==================== AUTO PREVIEW & STARTING POSE CHECK ====================
