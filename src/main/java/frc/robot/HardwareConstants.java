@@ -9,7 +9,6 @@ import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import frc.lib.AllianceFlipUtil;
 
@@ -102,8 +101,6 @@ public class HardwareConstants {
       public static final double waitBetweenCompressSeconds = 0.15;
 
       public static final double autoWaitToCompressSeconds = 0.85;
-      public static final double autoWaitToDropSeconds = 0.5;
-      public static final double autoWaitBetweenCompressSeconds = 0.75;
     }
 
     public static class Thresholds {

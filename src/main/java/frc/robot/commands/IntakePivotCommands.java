@@ -65,21 +65,20 @@ public class IntakePivotCommands {
    * @param halfHopper If the operator hits the half-hopper override button, the intake runs full
    *     compress immediately
    */
-  public static Command compressPivot(IntakePivot intakePivot, BooleanSupplier halfHopper) {
+  public static Command compressPivot(IntakePivot intakePivot, BooleanSupplier oneCompress) {
     Logger.recordOutput("RobotState/IntakePivot", "JostleCalled");
 
-    // Branch A: run full compress after initial wait
-    Command halfHopperBranch =
+    // Branch A: single compress
+    Command oneCompressBranch =
         Commands.sequence(
                 new WaitCommand(HardwareConstants.CompConstants.Waits.waitToCompressSeconds),
                 setPivotPosition(
                     intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
             .withName("IntakePivotCompress_HalfHopper");
 
-    // Branch B: initial wait, then half compress, then full compress
-    Command fullHopperBranch =
+    // Branch B: double compress (more conservative, can be manually defaulted to)
+    Command twoCompressBranch =
         Commands.sequence(
-                new WaitCommand(HardwareConstants.CompConstants.Waits.waitToCompressSeconds),
                 setPivotPosition(
                     intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleFirstPos),
                 new WaitCommand((HardwareConstants.CompConstants.Waits.waitToDropSeconds)),
@@ -92,27 +91,21 @@ public class IntakePivotCommands {
 
     // ContinuousConditionalCommand evaluates halfHopper each loop, so the right
     // branch is always active — even if the condition changes while the command is running.
-    return new ContinuousConditionalCommand(halfHopperBranch, fullHopperBranch, halfHopper)
+    return new ContinuousConditionalCommand(oneCompressBranch, twoCompressBranch, oneCompress)
         .withName("IntakePivotCompress");
   }
 
-  // If no boolean given, defaults to full hopper
+  // Compress w/ shoot - single compress
   public static Command compressPivot(IntakePivot intakePivot) {
+    return compressPivot(intakePivot, () -> true);
+  }
+
+  // Manual compress - double compress
+  public static Command manualPivotCompress(IntakePivot intakePivot) {
     return compressPivot(intakePivot, () -> false);
   }
 
-  public static Command manualPivotCompress(IntakePivot intakePivot) {
-    return Commands.sequence(
-            setPivotPosition(
-                intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleFirstPos),
-            new WaitCommand((HardwareConstants.CompConstants.Waits.waitToDropSeconds)),
-            setPivotPosition(intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
-            new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
-            setPivotPosition(
-                intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
-        .withName("IntakePivotCompress_SkipWait");
-  }
-
+  // Auto compress - single compress after custom wait
   public static Command autoPivotCompress(IntakePivot intakePivot) {
     return Commands.sequence(
             new WaitCommand(HardwareConstants.CompConstants.Waits.autoWaitToCompressSeconds),

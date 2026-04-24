@@ -3,10 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.lib.ContinuousConditionalCommand;
 import frc.robot.HardwareConstants;
-import frc.robot.Triggers;
-import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.intakePivot.IntakePivot;
@@ -15,7 +12,6 @@ import frc.robot.subsystems.lowerFeeder.LowerFeeder;
 import frc.robot.subsystems.prestage.Prestage;
 import frc.robot.subsystems.transport.Transport;
 import frc.robot.subsystems.upperFeeder.UpperFeeder;
-import frc.robot.util.HubShiftUtil;
 import org.littletonrobotics.junction.Logger;
 
 public class ShootSequences {
@@ -48,8 +44,8 @@ public class ShootSequences {
                         transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
                     intakeRollerCommands.setRollerVoltage(
                         intakeRoller,
-                        (HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage)))),
-            IntakePivotCommands.autoPivotCompress(intakePivot))
+                        HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage),
+                    IntakePivotCommands.autoPivotCompress(intakePivot))))
         // .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
         .withName("ShootToHub");
   }
