@@ -29,7 +29,7 @@ public class Flywheel extends SubsystemBase {
   private final ShooterIOInputsAutoLogged inputs;
   private final FlywheelVisualizer visualizer;
   private LoggedNetworkNumber tuningRPM;
-  private double currentRPMTarget;
+  private double currentRPMTarget = 0;
 
   /**
    * Supplier for the current hood angle. Set via {@link #setHoodAngleSupplier} after construction
@@ -101,6 +101,8 @@ public class Flywheel extends SubsystemBase {
 
     // Update trajectory visualization every loop
     visualizer.updateTrajectory(inputs.flywheelVelocity, hoodAngleSupplier.get());
+
+    Logger.recordOutput("Flywheel/targetRPM", currentRPMTarget);
   }
 
   public void setFlywheelVoltage(Voltage volts) {
@@ -108,7 +110,7 @@ public class Flywheel extends SubsystemBase {
   }
 
   public void setFlywheelVelocity(AngularVelocity velocity) {
-    currentRPMTarget = velocity.magnitude();
+    currentRPMTarget = velocity.in(RPM);
     io.setFlywheelVelocity(velocity);
   }
 
@@ -146,7 +148,8 @@ public class Flywheel extends SubsystemBase {
   }
 
   public boolean isSpunUp() {
-    return (Math.abs(currentRPMTarget - inputs.leaderVelocity.magnitude())
+    Logger.recordOutput("Flywheel/currentRPMTarget", currentRPMTarget);
+    return (Math.abs(currentRPMTarget - inputs.leaderVelocity.in(RPM))
         < HardwareConstants.CompConstants.Thresholds.flywheelSpinupThreshold);
   }
 

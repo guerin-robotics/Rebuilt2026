@@ -109,8 +109,8 @@ public class IntakePivotCommands {
   public static Command autoPivotCompress(IntakePivot intakePivot) {
     return Commands.sequence(
             new WaitCommand(HardwareConstants.CompConstants.Waits.autoWaitToCompressSeconds),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleFirstPos))
+            setPivotPosition(
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleFirstPos))
         .withName("IntakePivotCompress");
   }
 

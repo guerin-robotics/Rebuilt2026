@@ -408,7 +408,9 @@ public class RobotContainer {
     // Manually cancel auto-x
     Triggers.getInstance().autoXOverride().onTrue(Commands.runOnce(() -> xCancelled = true));
     // Compress for half hopper
-    Triggers.getInstance().doubleCompressOverride().onTrue(Commands.runOnce(() -> doubleCompress = true));
+    Triggers.getInstance()
+        .doubleCompressOverride()
+        .onTrue(Commands.runOnce(() -> doubleCompress = true));
 
     // DRIVETRAIN
     // Align for shoot when shoot button is pressed and we're in our alliance zone and hub is
@@ -519,14 +521,15 @@ public class RobotContainer {
             Commands.sequence(
                 Commands.waitUntil(flywheel.isFlywheelSpunUp.and(prestage.isPrestageSpunUp))
                     .withTimeout(HardwareConstants.CompConstants.Waits.spinUpTimeOut),
-            FeederCommands.setUpperFeederVelocity( 
-                    upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
-                .alongWith(
-                    FeederCommands.setLowerFeederVelocity(
-                        lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
-                .alongWith(
-                    TransportCommands.setTransportVelocity(
-                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity))))
+                FeederCommands.setUpperFeederVelocity(
+                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
+                    .alongWith(
+                        FeederCommands.setLowerFeederVelocity(
+                            lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                    .alongWith(
+                        TransportCommands.setTransportVelocity(
+                            transport,
+                            HardwareConstants.CompConstants.Velocities.transportVelocity))))
         .onFalse(FeederCommands.stopLower(lowerFeeder))
         .onFalse(FeederCommands.stopUpper(upperFeeder))
         .onFalse(TransportCommands.stop(transport));
@@ -648,8 +651,7 @@ public class RobotContainer {
             Commands.sequence(
                 Commands.waitUntil(flywheel.isFlywheelSpunUp.and(prestage.isPrestageSpunUp))
                     .withTimeout(HardwareConstants.CompConstants.Waits.spinUpTimeOut),
-                IntakePivotCommands.compressPivot(intakePivot, () -> doubleCompress))
-        )
+                IntakePivotCommands.compressPivot(intakePivot, () -> doubleCompress)))
         .onFalse(
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));

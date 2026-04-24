@@ -43,8 +43,9 @@ public class HoodCommands {
    * command is active.
    */
   public static Command hoodIdle(Hood hood) {
-    return Commands.run(() -> hood.setHoodPos(
-      HardwareConstants.CompConstants.Positions.hoodDownPos), hood).withName("HoodIdle");
+    return Commands.run(
+            () -> hood.setHoodPos(HardwareConstants.CompConstants.Positions.hoodDownPos), hood)
+        .withName("HoodIdle");
   }
 
   public static Command incrementHoodPos(Hood hood) {
