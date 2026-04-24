@@ -4,15 +4,18 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.HardwareConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.prestage.io.PrestageIO;
 import frc.robot.subsystems.prestage.io.PrestageIOInputsAutoLogged;
+import frc.robot.util.LoggedTrigger;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Prestage extends SubsystemBase {
   private final PrestageIO io;
-
   private final PrestageIOInputsAutoLogged inputs;
+  private double currentRPMTarget;
 
   public Prestage(PrestageIO io) {
     this.io = io;
@@ -42,6 +45,19 @@ public class Prestage extends SubsystemBase {
   }
 
   public void setPrestageVelocity(AngularVelocity prestageVelo) {
+    currentRPMTarget = prestageVelo.magnitude();
     io.setPrestageVelocity(prestageVelo);
   }
+
+    public boolean isSpunUp() {
+    return (Math.abs(currentRPMTarget - inputs.prestageLeftVelocity.magnitude())
+        < HardwareConstants.CompConstants.Thresholds.flywheelSpinupThreshold);
+  }
+
+  public LoggedTrigger isPrestageSpunUp =
+      new LoggedTrigger(
+          "isUpperShooterSpunUp",
+          () -> {
+            return isSpunUp();
+          });
 }

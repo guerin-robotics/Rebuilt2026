@@ -14,6 +14,7 @@ import frc.robot.HardwareConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.ShooterIOInputsAutoLogged;
+import frc.robot.util.LoggedTrigger;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -28,6 +29,7 @@ public class Flywheel extends SubsystemBase {
   private final ShooterIOInputsAutoLogged inputs;
   private final FlywheelVisualizer visualizer;
   private LoggedNetworkNumber tuningRPM;
+  private double currentRPMTarget;
 
   /**
    * Supplier for the current hood angle. Set via {@link #setHoodAngleSupplier} after construction
@@ -106,6 +108,7 @@ public class Flywheel extends SubsystemBase {
   }
 
   public void setFlywheelVelocity(AngularVelocity velocity) {
+    currentRPMTarget = velocity.magnitude();
     io.setFlywheelVelocity(velocity);
   }
 
@@ -141,4 +144,16 @@ public class Flywheel extends SubsystemBase {
     AngularVelocity velocity = getTuningRPM();
     io.setFlywheelVelocity(velocity);
   }
+
+  public boolean isSpunUp() {
+    return (Math.abs(currentRPMTarget - inputs.leaderVelocity.magnitude())
+        < HardwareConstants.CompConstants.Thresholds.flywheelSpinupThreshold);
+  }
+
+  public LoggedTrigger isFlywheelSpunUp =
+      new LoggedTrigger(
+          "isUpperShooterSpunUp",
+          () -> {
+            return isSpunUp();
+          });
 }

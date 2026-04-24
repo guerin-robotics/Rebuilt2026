@@ -53,27 +53,6 @@ public class IntakePivotCommands {
         .withName("IntakePivotSetPos_" + position);
   }
 
-  public static Command jostlePivotByPos(IntakePivot intakePivot) {
-    return Commands.sequence(
-            setPivotPosition(
-                intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos),
-            new WaitCommand(0.25),
-            setPivotPosition(intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
-            new WaitCommand(0.25))
-        .repeatedly()
-        .finallyDo(
-            (interrupted) -> {
-              // Only reset to down position if the command ended naturally (not interrupted).
-              // If interrupted by the driver pressing intake in/out, we don't want to
-              // override the position they just commanded.
-              if (!interrupted) {
-                intakePivot.setPivotPosition(
-                    HardwareConstants.CompConstants.Positions.pivotDownPos);
-              }
-            })
-        .withName("IntakePivotJostle");
-  }
-
   /**
    * Compress the pivot to jostle game pieces into position.
    *
@@ -83,96 +62,55 @@ public class IntakePivotCommands {
    * command will switch branches automatically.
    *
    * @param intakePivot The intake pivot subsystem
-   * @param skipFirstWait Supplier evaluated continuously: {@code true} = skip initial wait and
-   *     start compressing immediately (manual compress); {@code false} = wait before starting
-   *     (automatic compress during shooting).
+   * @param halfHopper If the operator hits the half-hopper override button, the intake runs full
+   *     compress immediately
    */
-  public static Command compressPivot(IntakePivot intakePivot, BooleanSupplier skipFirstWait) {
+  public static Command compressPivot(IntakePivot intakePivot, BooleanSupplier oneCompress) {
     Logger.recordOutput("RobotState/IntakePivot", "JostleCalled");
 
-    // Branch A: skip the initial wait — used for manual compress button presses
-    Command skipWaitBranch =
-        Commands.sequence(
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleFirstPos),
-                new WaitCommand((HardwareConstants.CompConstants.Waits.waitToDropSeconds)),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
-                new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleSecondPos),
-                new WaitCommand((HardwareConstants.CompConstants.Waits.waitToDropSeconds)),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
-                new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
-            .withName("IntakePivotCompress_SkipWait");
-
-    // Branch B: include the initial wait — used for automatic compress during shooting
-    Command withWaitBranch =
+    // Branch A: single compress
+    Command oneCompressBranch =
         Commands.sequence(
                 new WaitCommand(HardwareConstants.CompConstants.Waits.waitToCompressSeconds),
                 setPivotPosition(
+                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
+            .withName("IntakePivotCompress_HalfHopper");
+
+    // Branch B: double compress (more conservative, can be manually defaulted to)
+    Command twoCompressBranch =
+        Commands.sequence(
+                setPivotPosition(
                     intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleFirstPos),
                 new WaitCommand((HardwareConstants.CompConstants.Waits.waitToDropSeconds)),
                 setPivotPosition(
                     intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
                 new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
                 setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleSecondPos),
-                new WaitCommand((HardwareConstants.CompConstants.Waits.waitToDropSeconds)),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
-                new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
-                setPivotPosition(
                     intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
-            // Sequence used at Lafayette - revert to this (and adjust constants) if necessary
-            //   new WaitCommand(HardwareConstants.CompConstants.Waits.waitToCompressSeconds),
-            //   setPivotPosition(intakePivot,
-            // HardwareConstants.CompConstants.Positions.pivotJostleMiddlePos),
-            //   new WaitCommand(HardwareConstants.CompConstants.Waits.waitBetweenCompressSeconds),
-            //   setPivotPosition(intakePivot,
-            // HardwareConstants.CompConstants.Positions.pivotDownPos)
-            // ).repeatedly()
-            .withName("IntakePivotCompress_WithWait");
+            .withName("IntakePivotCompress_FullHopper");
 
-    // ContinuousConditionalCommand evaluates skipFirstWait each loop, so the right
+    // ContinuousConditionalCommand evaluates halfHopper each loop, so the right
     // branch is always active — even if the condition changes while the command is running.
-    return new ContinuousConditionalCommand(skipWaitBranch, withWaitBranch, skipFirstWait)
+    return new ContinuousConditionalCommand(oneCompressBranch, twoCompressBranch, oneCompress)
         .withName("IntakePivotCompress");
   }
 
-  /**
-   * Overload that accepts a plain {@code boolean} for call sites that always pass a literal. Wraps
-   * the value in a supplier so it still uses the {@link ContinuousConditionalCommand} path.
-   */
-  public static Command compressPivot(IntakePivot intakePivot, boolean skipFirstWait) {
-    return compressPivot(intakePivot, () -> skipFirstWait);
-  }
-
-  /** Overload that defaults to NOT skipping the first wait (backward-compatible). */
+  // Compress w/ shoot - single compress
   public static Command compressPivot(IntakePivot intakePivot) {
-    return compressPivot(intakePivot, false);
+    return compressPivot(intakePivot, () -> true);
   }
 
+  // Manual compress - double compress
+  public static Command manualPivotCompress(IntakePivot intakePivot) {
+    return compressPivot(intakePivot, () -> false);
+  }
+
+  // Auto compress - single compress after custom wait
   public static Command autoPivotCompress(IntakePivot intakePivot) {
     return Commands.sequence(
             new WaitCommand(HardwareConstants.CompConstants.Waits.autoWaitToCompressSeconds),
                 setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleFirstPos),
-            new WaitCommand((HardwareConstants.CompConstants.Waits.autoWaitToDropSeconds)),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
-            new WaitCommand(HardwareConstants.CompConstants.Waits.autoWaitBetweenCompressSeconds),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleSecondPos),
-            new WaitCommand((HardwareConstants.CompConstants.Waits.autoWaitToDropSeconds)),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
-            new WaitCommand(HardwareConstants.CompConstants.Waits.autoWaitForLastCompressSeconds),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
+                    intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleFirstPos))
         .withName("IntakePivotCompress");
   }
 

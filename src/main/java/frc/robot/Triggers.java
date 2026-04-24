@@ -71,37 +71,30 @@ public class Triggers {
   }
 
   public Trigger simShootButton() {
-    return thrustmaster.button(1);
-    // return controller.b();
+    return simController.b();
   }
 
   public Trigger simTrenchAlignButton() {
-    // return simController.button(2);
-    return controller.a(); // not using this button right now
+    return simController.button(10);
   }
 
   public Trigger simIntakeInButton() {
-    // return simController.button(3);
-    return thrustmaster.button(3);
+    return simController.button(11);
   }
 
   public Trigger simIntakeOutButton() {
-    // return simController.button(4);
-    return thrustmaster.button(4);
+    return simController.button(12);
   }
 
   public Trigger simIntakeRollerButton() {
-    // return simController.button(5);
     return simController.povUp();
   }
 
   public Trigger simIntakeCompressButton() {
-    // return simController.button(6);
     return simController.povDown();
   }
 
   public Trigger simBumpAlignButton() {
-    // return simController.button(7);
     return controller.y(); // not using this button right now
   }
 
@@ -111,13 +104,16 @@ public class Triggers {
   }
 
   public Trigger simPassButton() {
-    // return simController.button(9);
-    return controller.b(); // not using this button right now
+    return simController.button(9);
   }
 
   public Trigger simXWheels() {
     // return simController.button(0);
     return controller.y(); // not using this button right now
+  }
+
+  public Trigger simAllianceWinFlipper() {
+    return simController.a();
   }
 
   public Trigger tuningButton() {
@@ -135,6 +131,10 @@ public class Triggers {
 
   public Trigger autoXOverride() {
     return thrustmaster.button(12);
+  }
+
+  public Trigger doubleCompressOverride() {
+    return controller.b();
   }
 
   // ==================== STATE-BASED TRIGGERS (cached as final fields) ====================

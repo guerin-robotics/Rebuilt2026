@@ -84,7 +84,7 @@ public class VisionConstants {
   // Single-tag ambiguity above this is rejected (multi-tag is always trusted).
   // Lowered from 0.2 → 0.1 to reduce false-positive single-tag solves
   // that pick the wrong PnP solution.
-  public static double maxAmbiguity = 0.3;
+  public static double maxAmbiguity = 0.4; // 0.3
 
   // Estimated pose Z (height) must be below this to be realistic
   public static double maxZError = 2;
@@ -94,16 +94,16 @@ public class VisionConstants {
 
   // Tags farther than this are unreliable — reject the observation entirely.
   // At long range, small pixel errors become large pose errors.
-  public static double maxDistanceMeters = 4.0;
+  public static double maxDistanceMeters = 6.0; // 4.0
 
   // If the robot is spinning faster than this (rad/s), vision is unreliable
   // because motion blur and timestamp misalignment degrade the estimate.
-  public static double maxAngularVelocityRadPerSec = 2.0;
+  public static double maxAngularVelocityRadPerSec = 4.0; // 2.0
 
   // Maximum pitch or roll (radians) allowed in an estimated pose.
   // A real robot on flat carpet should never be tilted more than ~10°.
   // Large pitch/roll in the estimate means the solve is wrong.
-  public static double maxPitchRollRadians = Math.toRadians(10.0);
+  public static double maxPitchRollRadians = Math.toRadians(20.0); // 10.0
 
   // If a vision observation would move the estimated pose by more than this
   // distance (meters), reject it as an outlier. Catches bad single-tag solves

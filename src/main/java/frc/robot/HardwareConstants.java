@@ -62,7 +62,7 @@ public class HardwareConstants {
 
     // Subsystems that run at a constant velocity: prestage, feeder
     public static class Velocities {
-      public static final AngularVelocity prestageVelocity = RPM.of(2400.0);
+      public static final AngularVelocity prestageVelocity = RPM.of(3000.0);
       public static final AngularVelocity feederVelocity = RPM.of(-3000.0);
       public static final AngularVelocity prestageIdleVelocity = RPM.of(1080);
       public static final AngularVelocity flywheelIdleVelocity = RPM.of(1200);
@@ -94,18 +94,18 @@ public class HardwareConstants {
       // Maximum time to wait for heading alignment before shooting regardless.
       // After this many seconds, feeding starts even if the robot isn't facing the target.
       public static final double alignmentTimeoutSeconds = 1.5;
+      public static final double spinUpTimeOut = 1.0;
+      // Compress sequence waits
       public static final double waitToCompressSeconds = 0.65;
       public static final double waitToDropSeconds = 0.5;
-      public static final double waitBetweenCompressSeconds = 0.5;
+      public static final double waitBetweenCompressSeconds = 0.15;
 
       public static final double autoWaitToCompressSeconds = 0.85;
-      public static final double autoWaitToDropSeconds = 0.5;
-      public static final double autoWaitBetweenCompressSeconds = 0.75;
-      public static final double autoWaitForLastCompressSeconds = 0.5;
     }
 
     public static class Thresholds {
-      public static final double flywheelSpinupThreshold = 200;
+      public static final double flywheelSpinupThreshold = 500;
+      public static final double prestageSpinupThreshold = 500;
       // How close (in degrees) the robot's heading must be to the hub before we start feeding.
       public static final double hubAlignmentToleranceDegrees = 5.0;
       // How close (in degrees) the robot's heading must be to the pass target before we start
@@ -181,17 +181,17 @@ public class HardwareConstants {
   }
 
   public static class PassConstants {
-    public static final AngularVelocity FlywheelPassVelocity = RPM.of(2000);
-    public static final Angle hoodPassPos = Degrees.of(30.0);
+    public static final AngularVelocity FlywheelPassVelocity = RPM.of(2700);
+    public static final Angle hoodPassPos = Degrees.of(35.0);
   }
 
   public static class TuningConstants {
     public static boolean TUNING_MODE;
     public static boolean isTuning = false;
-    public static boolean atComp = true;
+    public static boolean atComp = false;
 
-    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(1625.0);
-    public static final Angle HoodTuningPos = Degrees.of(2.5);
+    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(2050.0);
+    public static final Angle HoodTuningPos = Degrees.of(28.0);
   }
 
   public static class ControllerConstants {

@@ -82,9 +82,10 @@ public class HoodConstants {
 
     static {
       // Passing numbers are guesses
-      PASSING_ANGLE_MAP.put(inchesToMeters(120.0), 40.0);
-      PASSING_ANGLE_MAP.put(inchesToMeters(320.0), 50.0);
-      PASSING_ANGLE_MAP.put(inchesToMeters(450.0), 60.0);
+      PASSING_ANGLE_MAP.put(inchesToMeters(70.0), 20.0);
+      PASSING_ANGLE_MAP.put(inchesToMeters(140.0), 25.0);
+      PASSING_ANGLE_MAP.put(inchesToMeters(225.0), 28.0);
+      PASSING_ANGLE_MAP.put(inchesToMeters(410.0), 35.0);
     }
   }
 }
