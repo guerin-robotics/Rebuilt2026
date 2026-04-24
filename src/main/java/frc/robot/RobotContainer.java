@@ -493,7 +493,6 @@ public class RobotContainer {
             .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
         .or(Triggers.getInstance().passButton())
         .whileTrue(
-            // FlywheelCommands.setVelocityForPassing(flywheel)
             FlywheelCommands.setVelocityForPassing(flywheel)
                 .alongWith(
                     PrestageCommands.setPrestageVelocity(
@@ -509,16 +508,18 @@ public class RobotContainer {
         .and(Triggers.getInstance().isShootClear)
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .and(Triggers.getInstance().isAlignedForCurrentShot)
-        // .and(flywheel.isUpperShooterSpunUp)
         .whileTrue(
-            FeederCommands.setUpperFeederVelocity(
+            Commands.sequence(
+                Commands.waitUntil(flywheel.isFlywheelSpunUp.and(prestage.isPrestageSpunUp))
+                    .withTimeout(HardwareConstants.CompConstants.Waits.spinUpTimeOut),
+            FeederCommands.setUpperFeederVelocity( 
                     upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
                 .alongWith(
                     FeederCommands.setLowerFeederVelocity(
                         lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
                 .alongWith(
                     TransportCommands.setTransportVelocity(
-                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
+                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity))))
         .onFalse(FeederCommands.stopLower(lowerFeeder))
         .onFalse(FeederCommands.stopUpper(upperFeeder))
         .onFalse(TransportCommands.stop(transport));
@@ -531,8 +532,9 @@ public class RobotContainer {
         .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .and(Triggers.getInstance().isAlignedForCurrentShot)
-        // .and(flywheel.isUpperShooterSpunUp)
         .whileTrue(
+            Commands.sequence(Commands.waitUntil(flywheel.isFlywheelSpunUp.and(prestage.isPrestageSpunUp))
+                .withTimeout(HardwareConstants.CompConstants.Waits.spinUpTimeOut),
             FeederCommands.setUpperFeederVelocity(
                     upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
                 .alongWith(
@@ -540,7 +542,7 @@ public class RobotContainer {
                         lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
                 .alongWith(
                     TransportCommands.setTransportVelocity(
-                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
+                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity))))
         .onFalse(FeederCommands.stopLower(lowerFeeder))
         .onFalse(FeederCommands.stopUpper(upperFeeder))
         .onFalse(TransportCommands.stop(transport));
@@ -677,8 +679,7 @@ public class RobotContainer {
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
             .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
         .or(Triggers.getInstance().passButton())
-        //    .whileTrue(HoodCommands.setPosForPassing(hood))
-        .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos));
+        .whileTrue(HoodCommands.setPosForPassing(hood))
     ;
 
     // Set pos to defined tuning pos when shoot button is pressed and tuning mode is on

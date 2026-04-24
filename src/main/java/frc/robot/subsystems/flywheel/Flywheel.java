@@ -29,7 +29,7 @@ public class Flywheel extends SubsystemBase {
   private final ShooterIOInputsAutoLogged inputs;
   private final FlywheelVisualizer visualizer;
   private LoggedNetworkNumber tuningRPM;
-  public double currentRPMTarget;
+  private double currentRPMTarget;
 
   /**
    * Supplier for the current hood angle. Set via {@link #setHoodAngleSupplier} after construction
@@ -150,7 +150,7 @@ public class Flywheel extends SubsystemBase {
         < HardwareConstants.CompConstants.Thresholds.flywheelSpinupThreshold);
   }
 
-  public LoggedTrigger isUpperShooterSpunUp =
+  public LoggedTrigger isFlywheelSpunUp =
       new LoggedTrigger(
           "isUpperShooterSpunUp",
           () -> {
