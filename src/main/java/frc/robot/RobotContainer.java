@@ -118,10 +118,10 @@ public class RobotContainer {
   // Resets to false when shoot button is released
   private boolean xCancelled = false;
 
-  // Similar latch for half hopper
-  // Sets to true when driver hits half hopper override
+  // Similar latch for double compress
+  // Sets to true when driver hits double compress override
   // Resets to false when shoot button is released
-  private boolean halfHopper = false;
+  private boolean doubleCompress = false;
 
   // Stores the starting pose of the currently selected auto.
   // Updated when the auto chooser selection changes.
@@ -408,7 +408,7 @@ public class RobotContainer {
     // Manually cancel auto-x
     Triggers.getInstance().autoXOverride().onTrue(Commands.runOnce(() -> xCancelled = true));
     // Compress for half hopper
-    Triggers.getInstance().halfHopperOverride().onTrue(Commands.runOnce(() -> halfHopper = true));
+    Triggers.getInstance().doubleCompressOverride().onTrue(Commands.runOnce(() -> doubleCompress = true));
 
     // DRIVETRAIN
     // Align for shoot when shoot button is pressed and we're in our alliance zone and hub is
@@ -493,7 +493,6 @@ public class RobotContainer {
             .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
         .or(Triggers.getInstance().passButton())
         .whileTrue(
-            // FlywheelCommands.setVelocityForPassing(flywheel)
             FlywheelCommands.setVelocityForPassing(flywheel)
                 .alongWith(
                     PrestageCommands.setPrestageVelocity(
@@ -502,45 +501,32 @@ public class RobotContainer {
         .onFalse(PrestageCommands.stop(prestage));
 
     // LOWER SHOOTER
-    // Set shooting velocity if shoot button pressed, we're in our alliance zone, hub is active,
-    // tuning is false, flywheel is spun up, and we're aligned to shoot
+    // Set shooting velocity if:
+    //   - shoot button is pressed
+    //   - tuning is false
+    //   - drivetrain is aligned
+    //   - robot is not in our alliance zone with the hub inactive
+    //   - upper shooter is spun up
     Triggers.getInstance()
         .shootButton()
-        .and(Triggers.getInstance().isShootClear)
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .and(Triggers.getInstance().isAlignedForCurrentShot)
-        // .and(flywheel.isUpperShooterSpunUp)
+        .and(
+            () ->
+                !(Triggers.getInstance().isShootSafeZone.getAsBoolean()
+                    && !Triggers.getInstance().isShootSafeTimeSure.getAsBoolean()))
         .whileTrue(
-            FeederCommands.setUpperFeederVelocity(
+            Commands.sequence(
+                Commands.waitUntil(flywheel.isFlywheelSpunUp.and(prestage.isPrestageSpunUp))
+                    .withTimeout(HardwareConstants.CompConstants.Waits.spinUpTimeOut),
+            FeederCommands.setUpperFeederVelocity( 
                     upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
                 .alongWith(
                     FeederCommands.setLowerFeederVelocity(
                         lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
                 .alongWith(
                     TransportCommands.setTransportVelocity(
-                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
-        .onFalse(FeederCommands.stopLower(lowerFeeder))
-        .onFalse(FeederCommands.stopUpper(upperFeeder))
-        .onFalse(TransportCommands.stop(transport));
-
-    // Set passing velocity if shoot button is pressed but we're not in our alliance zone and tuning
-    // false,
-    // or if pass button is pressed
-    Triggers.getInstance()
-        .shootButton()
-        .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
-        .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
-        .and(Triggers.getInstance().isAlignedForCurrentShot)
-        // .and(flywheel.isUpperShooterSpunUp)
-        .whileTrue(
-            FeederCommands.setUpperFeederVelocity(
-                    upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
-                .alongWith(
-                    FeederCommands.setLowerFeederVelocity(
-                        lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
-                .alongWith(
-                    TransportCommands.setTransportVelocity(
-                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
+                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity))))
         .onFalse(FeederCommands.stopLower(lowerFeeder))
         .onFalse(FeederCommands.stopUpper(upperFeeder))
         .onFalse(TransportCommands.stop(transport));
@@ -636,10 +622,11 @@ public class RobotContainer {
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
 
     // Manual compress button — cancels auto-compress and runs compress with no initial wait
+    // Runs single or double compress based on override - subject to change
     Triggers.getInstance()
         .intakeCompressButton()
         .onTrue(Commands.runOnce(() -> compressCancelled = true))
-        .whileTrue(IntakePivotCommands.manualPivotCompress(intakePivot))
+        .whileTrue(IntakePivotCommands.compressPivot(intakePivot, () -> doubleCompress))
         .onFalse(
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
@@ -648,6 +635,7 @@ public class RobotContainer {
     //   - neither intake deploy nor retract button is currently pressed
     //   - compression has not been cancelled by a prior intake override this shoot press
     //   - we're not in our alliance zone with the hub inactive
+    // Runs double compress if operator has activated override, otherwise single
     Triggers.getInstance()
         .shootButton()
         .and(() -> !compressCancelled)
@@ -656,8 +644,12 @@ public class RobotContainer {
                 !(Triggers.getInstance().isShootSafeZone.getAsBoolean()
                     && !Triggers.getInstance().isShootSafeTimeSure.getAsBoolean()))
         .and(Triggers.getInstance().isAlignedForCurrentShot)
-        // .and(flywheel.isUpperShooterSpunUp)
-        .whileTrue(IntakePivotCommands.compressPivot(intakePivot, () -> true))
+        .whileTrue(
+            Commands.sequence(
+                Commands.waitUntil(flywheel.isFlywheelSpunUp.and(prestage.isPrestageSpunUp))
+                    .withTimeout(HardwareConstants.CompConstants.Waits.spinUpTimeOut),
+                IntakePivotCommands.compressPivot(intakePivot, () -> doubleCompress))
+        )
         .onFalse(
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
@@ -677,9 +669,7 @@ public class RobotContainer {
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
             .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
         .or(Triggers.getInstance().passButton())
-        //    .whileTrue(HoodCommands.setPosForPassing(hood))
-        .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos));
-    ;
+        .whileTrue(HoodCommands.setPosForPassing(hood));
 
     // Set pos to defined tuning pos when shoot button is pressed and tuning mode is on
     Triggers.getInstance()
@@ -687,12 +677,12 @@ public class RobotContainer {
         .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos));
 
-    // Auto-x, auto-compress, and half-hopper cancellations
+    // Auto-compress, auto-x, and double compress cancellations
     Triggers.getInstance()
         .shootButton()
         .onFalse(Commands.runOnce(() -> compressCancelled = false))
         .onFalse(Commands.runOnce(() -> xCancelled = false))
-        .onFalse(Commands.runOnce(() -> halfHopper = false));
+        .onFalse(Commands.runOnce(() -> doubleCompress = false));
   }
 
   private void configureSimBindings() {

@@ -133,7 +133,7 @@ public class Triggers {
     return thrustmaster.button(12);
   }
 
-  public Trigger halfHopperOverride() {
+  public Trigger doubleCompressOverride() {
     return controller.b();
   }
 

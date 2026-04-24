@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.HardwareConstants;
 import frc.robot.subsystems.hood.Hood;
 
 public class HoodCommands {
@@ -42,7 +43,8 @@ public class HoodCommands {
    * command is active.
    */
   public static Command hoodIdle(Hood hood) {
-    return Commands.run(() -> hood.setHoodPos(Degrees.of(0.1)), hood).withName("HoodIdle");
+    return Commands.run(() -> hood.setHoodPos(
+      HardwareConstants.CompConstants.Positions.hoodDownPos), hood).withName("HoodIdle");
   }
 
   public static Command incrementHoodPos(Hood hood) {
