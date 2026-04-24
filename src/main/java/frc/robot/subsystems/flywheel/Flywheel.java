@@ -115,27 +115,27 @@ public class Flywheel extends SubsystemBase {
   }
 
   public void setFlywheelIdle() {
-    io.setFlywheelVelocity(HardwareConstants.CompConstants.Velocities.flywheelIdleVelocity);
+    setFlywheelVelocity(HardwareConstants.CompConstants.Velocities.flywheelIdleVelocity);
   }
 
   public void setSpeedForHub() {
     AngularVelocity velocity = ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub();
-    io.setFlywheelVelocity(velocity);
+    setFlywheelVelocity(velocity);
   }
 
   public void setSpeedForTarget(Translation3d target) {
     AngularVelocity velocity = ShotCalculator.getInstance().getFlywheelSpeedForTarget(target);
-    io.setFlywheelVelocity(velocity);
+    setFlywheelVelocity(velocity);
   }
 
   public void setSpeedForDistance(Distance distance) {
     AngularVelocity velocity = ShotCalculator.getInstance().getFlywheelSpeedForDistance(distance);
-    io.setFlywheelVelocity(velocity);
+    setFlywheelVelocity(velocity);
   }
 
   public void setSpeedForPassing() {
     AngularVelocity velocity = ShotCalculator.getInstance().getFlywheelSpeedForPassTarget();
-    io.setFlywheelVelocity(velocity);
+    setFlywheelVelocity(velocity);
   }
 
   public AngularVelocity getTuningRPM() {
@@ -144,7 +144,7 @@ public class Flywheel extends SubsystemBase {
 
   public void setTuningRPM() {
     AngularVelocity velocity = getTuningRPM();
-    io.setFlywheelVelocity(velocity);
+    setFlywheelVelocity(velocity);
   }
 
   public boolean isSpunUp() {

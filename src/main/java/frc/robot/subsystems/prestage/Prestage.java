@@ -51,7 +51,7 @@ public class Prestage extends SubsystemBase {
   }
 
   public boolean isSpunUp() {
-    Logger.recordOutput("Prestage/currentRPMTarget", currentRPMTarget);
+    Logger.recordOutput("RobotState/currentRPMTarget", currentRPMTarget);
     return (Math.abs(currentRPMTarget - inputs.prestageLeftVelocity.in(RPM))
         < HardwareConstants.CompConstants.Thresholds.flywheelSpinupThreshold);
   }
