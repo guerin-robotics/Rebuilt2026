@@ -2,6 +2,7 @@ package frc.robot.subsystems.flywheel;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.Units;
@@ -34,6 +35,15 @@ public class Flywheel extends SubsystemBase {
    * so the Flywheel doesn't depend directly on the Hood subsystem. Defaults to 0° if not set.
    */
   private Supplier<Angle> hoodAngleSupplier = () -> Degrees.of(0);
+
+  /**
+   * The final velocity setpoint most recently commanded via a velocity control call.
+   *
+   * <p>Updated by every {@code setFlywheelVelocity*} method. Reset to zero by {@link
+   * #setFlywheelVoltage} so that {@link #isFlywheelAtSetpoint} returns {@code false} when voltage
+   * control is active (no meaningful velocity target exists in that mode).
+   */
+  private AngularVelocity targetVelocity = RotationsPerSecond.of(0);
 
   /**
    * Creates a new Shooter subsystem.
@@ -102,50 +112,64 @@ public class Flywheel extends SubsystemBase {
   }
 
   public void setFlywheelVoltage(Voltage volts) {
+    // Voltage control has no velocity target — reset so isFlywheelAtSetpoint returns false.
+    targetVelocity = RotationsPerSecond.of(0);
     io.setFlywheelVoltage(volts);
   }
 
   public void setFlywheelVelocity(AngularVelocity velocity) {
+    targetVelocity = velocity;
     io.setFlywheelVelocity(velocity);
   }
 
   public void setFlywheelIdle() {
-    io.setFlywheelVelocity(HardwareConstants.CompConstants.Velocities.flywheelIdleVelocity);
+    AngularVelocity velocity = HardwareConstants.CompConstants.Velocities.flywheelIdleVelocity;
+    targetVelocity = velocity;
+    io.setFlywheelVelocity(velocity);
   }
 
   public void setSpeedForHub() {
     AngularVelocity velocity = ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub();
+    targetVelocity = velocity;
     io.setFlywheelVelocity(velocity);
   }
 
   public void setSpeedForTarget(Translation3d target) {
     AngularVelocity velocity = ShotCalculator.getInstance().getFlywheelSpeedForTarget(target);
+    targetVelocity = velocity;
     io.setFlywheelVelocity(velocity);
   }
 
   public void setSpeedForDistance(Distance distance) {
     AngularVelocity velocity = ShotCalculator.getInstance().getFlywheelSpeedForDistance(distance);
+    targetVelocity = velocity;
     io.setFlywheelVelocity(velocity);
   }
 
   /**
-   * Returns true if the flywheel velocity is within {@code toleranceRPM} of its current
-   * closed-loop setpoint.
+   * Returns true if the flywheel velocity is within {@code toleranceRPM} of the most recently
+   * commanded velocity setpoint.
    *
-   * <p>Returns {@code false} when no non-zero setpoint has been commanded (prevents a misleading
-   * "ready" signal while the flywheel is at rest and closed-loop error is zero by default).
+   * <p>Compares the measured flywheel velocity against the last {@code setFlywheelVelocity*} call,
+   * <em>not</em> the motion-profile's current closed-loop reference. This ensures the check only
+   * passes once the motor has fully reached the final target, even when Motion Magic acceleration
+   * ramps the internal reference up gradually.
    *
-   * <p>Use the tunable constants in {@link
-   * frc.robot.HardwareConstants.CompConstants.Thresholds} (e.g. {@code hubFlywheelToleranceRPM},
-   * {@code passFlywheelToleranceRPM}) to control how tight the tolerance is for each shot type.
+   * <p>Returns {@code false} when no velocity has been commanded (e.g. after voltage control), so
+   * the safety timeout in the shoot sequence will always kick in as a fallback.
    *
-   * @param toleranceRPM Acceptable RPM error between actual velocity and the setpoint
-   * @return true if the flywheel is within tolerance of its current setpoint
+   * <p>Tolerance constants live in {@link
+   * frc.robot.HardwareConstants.CompConstants.Thresholds}: {@code hubFlywheelToleranceRPM} and
+   * {@code passFlywheelToleranceRPM}.
+   *
+   * @param toleranceRPM Acceptable RPM error between measured and commanded velocity
+   * @return true if the flywheel is within tolerance of the commanded setpoint
    */
   public boolean isFlywheelAtSetpoint(double toleranceRPM) {
-    // Guard: treat as not-ready if no velocity target has been commanded yet
-    if (inputs.closedLoopReference.in(RPM) <= 0) return false;
-    return Math.abs(inputs.closedLoopError.in(RPM)) <= toleranceRPM;
+    // Guard: not ready if no velocity target has been commanded yet
+    if (targetVelocity.in(RPM) <= 0) return false;
+    double errorRPM = Math.abs(inputs.flywheelVelocity.in(RPM) - targetVelocity.in(RPM));
+    return errorRPM <= toleranceRPM;
   }
 
   public AngularVelocity getTuningRPM() {
@@ -154,6 +178,7 @@ public class Flywheel extends SubsystemBase {
 
   public void setTuningRPM() {
     AngularVelocity velocity = getTuningRPM();
+    targetVelocity = velocity;
     io.setFlywheelVelocity(velocity);
   }
 }

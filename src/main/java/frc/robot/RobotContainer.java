@@ -213,10 +213,6 @@ public class RobotContainer {
     // This keeps Flywheel and Hood decoupled — the supplier is the only link.
     flywheel.setHoodAngleSupplier(hood::getPosition);
 
-    // Wire Flywheel and Prestage references into the Triggers singleton so that the
-    // isReadyToShootHub / isReadyToPass triggers can check closed-loop setpoint errors.
-    Triggers.getInstance().configure(flywheel, prestage);
-
     // IMPORTANT: Register named commands and event triggers BEFORE building the auto chooser.
     // AutoBuilder.buildAutoChooser() parses the .auto files and resolves named commands at
     // build time. If commands aren't registered yet, they resolve to Commands.none().
@@ -526,8 +522,12 @@ public class RobotContainer {
             Commands.sequence(
                 Commands.waitUntil(
                         () ->
-                            Triggers.getInstance().isReadyToShootHub.getAsBoolean()
-                                || Triggers.getInstance().isReadyToPass.getAsBoolean())
+                            flywheel.isFlywheelAtSetpoint(
+                                    HardwareConstants.CompConstants.Thresholds
+                                        .hubFlywheelToleranceRPM)
+                                && prestage.isPrestageAtSetpoint(
+                                    HardwareConstants.CompConstants.Thresholds
+                                        .prestageToleranceRPM))
                     .withTimeout(
                         HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
                 FeederCommands.setLowerFeederVelocity(
@@ -556,8 +556,12 @@ public class RobotContainer {
             Commands.sequence(
                 Commands.waitUntil(
                         () ->
-                            Triggers.getInstance().isReadyToShootHub.getAsBoolean()
-                                || Triggers.getInstance().isReadyToPass.getAsBoolean())
+                            flywheel.isFlywheelAtSetpoint(
+                                    HardwareConstants.CompConstants.Thresholds
+                                        .hubFlywheelToleranceRPM)
+                                && prestage.isPrestageAtSetpoint(
+                                    HardwareConstants.CompConstants.Thresholds
+                                        .prestageToleranceRPM))
                     .withTimeout(
                         HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
                 TransportCommands.setTransportVelocity(
@@ -583,8 +587,12 @@ public class RobotContainer {
             Commands.sequence(
                 Commands.waitUntil(
                         () ->
-                            Triggers.getInstance().isReadyToShootHub.getAsBoolean()
-                                || Triggers.getInstance().isReadyToPass.getAsBoolean())
+                            flywheel.isFlywheelAtSetpoint(
+                                    HardwareConstants.CompConstants.Thresholds
+                                        .hubFlywheelToleranceRPM)
+                                && prestage.isPrestageAtSetpoint(
+                                    HardwareConstants.CompConstants.Thresholds
+                                        .prestageToleranceRPM))
                     .withTimeout(
                         HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
                 intakeRollerCommands.setRollerVoltage(
@@ -840,8 +848,12 @@ public class RobotContainer {
             Commands.sequence(
                 Commands.waitUntil(
                         () ->
-                            Triggers.getInstance().isReadyToShootHub.getAsBoolean()
-                                || Triggers.getInstance().isReadyToPass.getAsBoolean())
+                            flywheel.isFlywheelAtSetpoint(
+                                    HardwareConstants.CompConstants.Thresholds
+                                        .hubFlywheelToleranceRPM)
+                                && prestage.isPrestageAtSetpoint(
+                                    HardwareConstants.CompConstants.Thresholds
+                                        .prestageToleranceRPM))
                     .withTimeout(
                         HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
                 FeederCommands.setLowerFeederVelocity(
@@ -863,8 +875,12 @@ public class RobotContainer {
             Commands.sequence(
                 Commands.waitUntil(
                         () ->
-                            Triggers.getInstance().isReadyToShootHub.getAsBoolean()
-                                || Triggers.getInstance().isReadyToPass.getAsBoolean())
+                            flywheel.isFlywheelAtSetpoint(
+                                    HardwareConstants.CompConstants.Thresholds
+                                        .hubFlywheelToleranceRPM)
+                                && prestage.isPrestageAtSetpoint(
+                                    HardwareConstants.CompConstants.Thresholds
+                                        .prestageToleranceRPM))
                     .withTimeout(
                         HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
                 TransportCommands.setTransportVelocity(
@@ -890,8 +906,12 @@ public class RobotContainer {
             Commands.sequence(
                 Commands.waitUntil(
                         () ->
-                            Triggers.getInstance().isReadyToShootHub.getAsBoolean()
-                                || Triggers.getInstance().isReadyToPass.getAsBoolean())
+                            flywheel.isFlywheelAtSetpoint(
+                                    HardwareConstants.CompConstants.Thresholds
+                                        .hubFlywheelToleranceRPM)
+                                && prestage.isPrestageAtSetpoint(
+                                    HardwareConstants.CompConstants.Thresholds
+                                        .prestageToleranceRPM))
                     .withTimeout(
                         HardwareConstants.CompConstants.Thresholds.readyToShootTimeoutSeconds),
                 intakeRollerCommands.setRollerVoltage(
