@@ -29,6 +29,14 @@ public class TunerConstants {
           ? ALPHA_TunerConstants.kSpeedAt12Volts
           : isComp ? COMP_TunerConstants.kSpeedAt12Volts : ALPHA_TunerConstants.kSpeedAt12Volts;
 
+  // Max angular speed configuration (rad/s)
+  public static final double kMaxAngularSpeedRadPerSec =
+      isAlpha
+          ? ALPHA_TunerConstants.kMaxAngularSpeedRadPerSec
+          : isComp
+              ? COMP_TunerConstants.kMaxAngularSpeedRadPerSec
+              : ALPHA_TunerConstants.kMaxAngularSpeedRadPerSec;
+
   // Drivetrain constants
   public static final SwerveDrivetrainConstants DrivetrainConstants =
       isAlpha

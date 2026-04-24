@@ -50,6 +50,16 @@ public class DriveCommands {
 
   private DriveCommands() {}
 
+  // Slew rate limiters for smoothing commanded velocities (physical units).
+  // Limiters are constructed from accelerations (m/s^2 and rad/s^2) so they operate on
+  // linear velocities (m/s) and angular velocity (rad/s).
+  private static final SlewRateLimiter xVelSlew =
+      new SlewRateLimiter(DriveConstants.SLEW_LINEAR_ACCEL_MPS2);
+  private static final SlewRateLimiter yVelSlew =
+      new SlewRateLimiter(DriveConstants.SLEW_LINEAR_ACCEL_MPS2);
+  private static final SlewRateLimiter rotVelSlew =
+      new SlewRateLimiter(DriveConstants.SLEW_ANG_ACCEL_RADS2);
+
   private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
     // Apply deadband
     double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), DEADBAND);
@@ -74,22 +84,30 @@ public class DriveCommands {
       DoubleSupplier omegaSupplier) {
     return Commands.run(
             () -> {
-              // Get linear velocity
-              Translation2d linearVelocity =
-                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+              // Get raw joystick inputs
+              double rawX = xSupplier.getAsDouble();
+              double rawY = ySupplier.getAsDouble();
 
-              // Apply rotation deadband
-              double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+              // Compute desired linear velocity from raw joystick inputs (no slew yet)
+              Translation2d linearVelocityUnclamped = getLinearVelocityFromJoysticks(rawX, rawY);
+              double desiredVx =
+                  linearVelocityUnclamped.getX() * drive.getMaxLinearSpeedMetersPerSec();
+              double desiredVy =
+                  linearVelocityUnclamped.getY() * drive.getMaxLinearSpeedMetersPerSec();
 
-              // Square rotation value for more precise control
-              omega = Math.copySign(omega * omega, omega);
+              // Compute desired angular velocity (apply joystick deadband & squaring first)
+              double rawOmega = omegaSupplier.getAsDouble();
+              double omegaDb = MathUtil.applyDeadband(rawOmega, DEADBAND);
+              double omegaSquared = Math.copySign(omegaDb * omegaDb, omegaDb);
+              double desiredOmega = omegaSquared * drive.getMaxAngularSpeedRadPerSec();
+
+              // Apply velocity slew limiters (physical units)
+              double limitedVx = xVelSlew.calculate(desiredVx);
+              double limitedVy = yVelSlew.calculate(desiredVy);
+              double limitedOmega = rotVelSlew.calculate(desiredOmega);
 
               // Convert to field relative speeds & send command
-              ChassisSpeeds speeds =
-                  new ChassisSpeeds(
-                      linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                      linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                      omega * drive.getMaxAngularSpeedRadPerSec());
+              ChassisSpeeds speeds = new ChassisSpeeds(limitedVx, limitedVy, limitedOmega);
               boolean isFlipped =
                   DriverStation.getAlliance().isPresent()
                       && DriverStation.getAlliance().get() == Alliance.Red;
@@ -103,69 +121,6 @@ public class DriveCommands {
             drive)
         .withName("JoystickDrive");
   }
-
-  public static Command joystickDriveLimited(
-      Drive drive,
-      DoubleSupplier xSupplier,
-      DoubleSupplier ySupplier,
-      DoubleSupplier omegaSupplier) {
-    return Commands.run(
-            () -> {
-              // Get linear velocity
-              Translation2d linearVelocity =
-                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
-
-              // Apply rotation deadband
-              double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
-
-              // Square rotation value for more precise control
-              omega = Math.copySign(omega * omega, omega);
-
-              // Convert to field relative speeds & send command
-              ChassisSpeeds speeds =
-                  new ChassisSpeeds(
-                      linearVelocity.getX() * DriveConstants.limitedVelo,
-                      linearVelocity.getY() * DriveConstants.limitedVelo,
-                      omega * drive.getMaxAngularSpeedRadPerSec());
-              boolean isFlipped =
-                  DriverStation.getAlliance().isPresent()
-                      && DriverStation.getAlliance().get() == Alliance.Red;
-              drive.runVelocity(
-                  ChassisSpeeds.fromFieldRelativeSpeeds(
-                      speeds,
-                      isFlipped
-                          ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                          : drive.getRotation()));
-            },
-            drive)
-        .withName("JoystickDriveLimited");
-  }
-
-  // public static Command driveLucasProof(
-  //     Drive drive,
-  //     DoubleSupplier xSupplier,
-  //     DoubleSupplier ySupplier,
-  //     DoubleSupplier omegaSupplier,
-  //     Trigger override) {
-  //   return new ContinuousConditionalCommand(
-  //           joystickDrive(drive, xSupplier, ySupplier, omegaSupplier),
-  //           joystickDriveLimited(drive, xSupplier, ySupplier, omegaSupplier),
-  //           () -> {
-  //             boolean driveNormal =
-  //                 (Triggers.getInstance().isIntakeSafe.getAsBoolean() ||
-  // override.getAsBoolean());
-  //             Logger.recordOutput(
-  //                 "RobotState/isIntakeSafe",
-  //                 Triggers.getInstance().isIntakeSafe.getAsBoolean()
-  //                     ? "intakeSafe"
-  //                     : "intakeUnsafe");
-  //             Logger.recordOutput(
-  //                 "RobotState/isOverrideActive",
-  //                 override.getAsBoolean() ? "override" : "noOverride");
-  //             return driveNormal;
-  //           })
-  //       .withName("DriveLucasProof");
-  // }
 
   /**
    * Field relative drive command using joystick for linear control and PID for angular control.
@@ -190,9 +145,14 @@ public class DriveCommands {
     // Construct command
     return Commands.run(
             () -> {
-              // Get linear velocity
-              Translation2d linearVelocity =
-                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+              // Get raw joystick inputs and compute desired physical velocities
+              double rawX = xSupplier.getAsDouble();
+              double rawY = ySupplier.getAsDouble();
+              Translation2d linearVelocityUnclamped = getLinearVelocityFromJoysticks(rawX, rawY);
+              double desiredVx =
+                  linearVelocityUnclamped.getX() * drive.getMaxLinearSpeedMetersPerSec();
+              double desiredVy =
+                  linearVelocityUnclamped.getY() * drive.getMaxLinearSpeedMetersPerSec();
 
               // Calculate angular speed
               double omega =
@@ -204,12 +164,12 @@ public class DriveCommands {
               Logger.recordOutput("AutoAim/CurrentAngle", drive.getRotation());
               Logger.recordOutput("AutoAim/AngleErrorRad", angleController.getPositionError());
 
+              // Apply velocity slew limiters (physical units)
+              double limitedVx = xVelSlew.calculate(desiredVx);
+              double limitedVy = yVelSlew.calculate(desiredVy);
+
               // Convert to field relative speeds & send command
-              ChassisSpeeds speeds =
-                  new ChassisSpeeds(
-                      linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                      linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                      omega);
+              ChassisSpeeds speeds = new ChassisSpeeds(limitedVx, limitedVy, omega);
               boolean isFlipped =
                   DriverStation.getAlliance().isPresent()
                       && DriverStation.getAlliance().get() == Alliance.Red;
