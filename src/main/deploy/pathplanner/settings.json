@@ -25,7 +25,7 @@
   "driveGearing": 7.031,
   "maxDriveSpeed": 4.12,
   "driveMotorType": "krakenX60FOC",
-  "driveCurrentLimit": 60.0,
+  "driveCurrentLimit": 80.0,
   "wheelCOF": 2.255,
   "flModuleX": 0.273,
   "flModuleY": 0.273,

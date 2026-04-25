@@ -347,6 +347,15 @@ public class RobotState {
     return errorDegrees < HardwareConstants.CompConstants.Thresholds.hubAlignmentToleranceDegrees;
   }
 
+  // Uses a different tolerance. Helpful for quitting aligned while shooting - we can have a looser
+  // threshold.
+  public boolean isAlignedToHubLoose() {
+    double errorDegrees =
+        Math.abs(getAngleToAllianceHub().minus(getEstimatedPose().getRotation()).getDegrees());
+    return errorDegrees
+        < HardwareConstants.CompConstants.Thresholds.hubLooseAlignmentToleranceDegrees;
+  }
+
   /**
    * Returns true if the robot's current heading is within the pass alignment tolerance.
    *
@@ -363,6 +372,15 @@ public class RobotState {
         Math.abs(
             getAngleToTarget(passTarget2d).minus(getEstimatedPose().getRotation()).getDegrees());
     return errorDegrees < HardwareConstants.CompConstants.Thresholds.passAlignmentToleranceDegrees;
+  }
+
+  public boolean isAlignedToPassLoose() {
+    Translation2d passTarget2d = new Translation2d(getPassTarget().getX(), getPassTarget().getY());
+    double errorDegrees =
+        Math.abs(
+            getAngleToTarget(passTarget2d).minus(getEstimatedPose().getRotation()).getDegrees());
+    return errorDegrees
+        < HardwareConstants.CompConstants.Thresholds.passLooseAlignmentToleranceDegrees;
   }
 
   // Finds pass target based on position

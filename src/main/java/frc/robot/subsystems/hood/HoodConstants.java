@@ -78,6 +78,7 @@ public class HoodConstants {
       ANGLE_MAP.put(inchesToMeters(130.0), 3.5);
       ANGLE_MAP.put(inchesToMeters(145.0), 5.25);
       ANGLE_MAP.put(inchesToMeters(160.0), 11.0);
+      ANGLE_MAP.put(inchesToMeters(190.0), 12.0);
     }
 
     static {

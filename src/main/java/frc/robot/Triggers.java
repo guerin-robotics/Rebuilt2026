@@ -177,4 +177,16 @@ public class Triggers {
               return RobotState.getInstance().isAlignedToPass();
             }
           });
+
+  public final LoggedTrigger isAlignedLooser =
+      new LoggedTrigger(
+          "isAlignedLooser",
+          () -> {
+            if (RobotState.getInstance().getBroadZone()
+                == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE) {
+              return RobotState.getInstance().isAlignedToHubLoose();
+            } else {
+              return RobotState.getInstance().isAlignedToPassLoose();
+            }
+          });
 }

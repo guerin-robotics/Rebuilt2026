@@ -515,14 +515,18 @@ public class RobotContainer {
     Triggers.getInstance()
         .shootButton()
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
-        .and(Triggers.getInstance().isAlignedForCurrentShot)
         .and(
             () ->
                 !(Triggers.getInstance().isShootSafeZone.getAsBoolean()
                     && !Triggers.getInstance().isShootSafeTimeSure.getAsBoolean()))
+        .and(Triggers.getInstance().isAlignedLooser)
         .whileTrue(
             Commands.sequence(
-                Commands.waitUntil(flywheel.isFlywheelSpunUp.and(prestage.isPrestageSpunUp))
+                Commands.waitUntil(
+                        flywheel
+                            .isFlywheelSpunUp
+                            .and(prestage.isPrestageSpunUp)
+                            .and(Triggers.getInstance().isAlignedForCurrentShot))
                     .withTimeout(HardwareConstants.CompConstants.Waits.spinUpTimeOut),
                 FeederCommands.setUpperFeederVelocity(
                         upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
@@ -595,19 +599,6 @@ public class RobotContainer {
         .whileTrue(
             intakeRollerCommands.setRollerVoltage(
                 intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage))
-        .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
-
-    // Set to agitate voltage (after a wait) when any shooting sequence is started (shoot to hub,
-    // pass, shoot from tower). Agitate is also delayed until aligned.
-    Triggers.getInstance()
-        .shootButton()
-        .or(Triggers.getInstance().passButton())
-        .or(Triggers.getInstance().shootFromTowerButton())
-        .whileTrue(
-            intakeRollerCommands.setVoltageAfterWait(
-                intakeRoller,
-                HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage,
-                Triggers.getInstance().isAlignedForCurrentShot))
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // INTAKE PIVOT
@@ -976,7 +967,7 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     double delay = SmartDashboard.getNumber(autoDelayKey, defaultAutoDelay);
-    return Commands.sequence(Commands.waitSeconds(delay), autoChooser.get());
+    return Commands.sequence(Commands.waitSeconds(delay), autoChooser.get().asProxy());
   }
 
   // ==================== AUTO PREVIEW & STARTING POSE CHECK ====================

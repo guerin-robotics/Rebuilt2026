@@ -110,7 +110,7 @@ public class IntakePivotCommands {
     return Commands.sequence(
             new WaitCommand(HardwareConstants.CompConstants.Waits.autoWaitToCompressSeconds),
             setPivotPosition(
-                intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleFirstPos))
+                intakePivot, HardwareConstants.CompConstants.Positions.pivotJostleUpPos))
         .withName("IntakePivotCompress");
   }
 
