@@ -123,7 +123,7 @@ public class HardwareConstants {
   public static class TuningConstants {
     public static boolean TUNING_MODE;
     public static boolean isTuning = false;
-    public static boolean atComp = false;
+    public static boolean atComp = true;
 
     public static final AngularVelocity FlywheelTuningVelocity = RPM.of(2000.0);
     public static final Angle HoodTuningPos = Degrees.of(12.25);

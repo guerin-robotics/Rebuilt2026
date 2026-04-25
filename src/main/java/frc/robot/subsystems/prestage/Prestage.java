@@ -58,7 +58,7 @@ public class Prestage extends SubsystemBase {
 
   public LoggedTrigger isPrestageSpunUp =
       new LoggedTrigger(
-          "isUpperShooterSpunUp",
+          "isPrestageSpunUp",
           () -> {
             return isSpunUp();
           });

@@ -155,7 +155,7 @@ public class Flywheel extends SubsystemBase {
 
   public LoggedTrigger isFlywheelSpunUp =
       new LoggedTrigger(
-          "isUpperShooterSpunUp",
+          "isFlywheelSpunUp",
           () -> {
             return isSpunUp();
           });

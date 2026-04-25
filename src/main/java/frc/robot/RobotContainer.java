@@ -813,7 +813,6 @@ public class RobotContainer {
         .and(Triggers.getInstance().isShootClear)
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .and(Triggers.getInstance().isAlignedForCurrentShot)
-        // .and(flywheel.isUpperShooterSpunUp)
         .whileTrue(
             FeederCommands.setUpperFeederVelocity(
                     upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
@@ -835,7 +834,6 @@ public class RobotContainer {
         .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .and(Triggers.getInstance().isAlignedForCurrentShot)
-        // .and(flywheel.isUpperShooterSpunUp)
         .whileTrue(
             FeederCommands.setUpperFeederVelocity(
                     upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
