@@ -420,9 +420,7 @@ public class RobotContainer {
     // active, or if tower shoot button is pressed
     (Triggers.getInstance()
             .shootButton()
-            .and(
-                (Triggers.getInstance().isShootClear)
-                    .or(() -> HardwareConstants.TuningConstants.TUNING_MODE)))
+            .and(Triggers.getInstance().isShootSafeZone))
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
@@ -451,6 +449,7 @@ public class RobotContainer {
 
     // X wheels when shoot button is pressed and we're shooting and we're lined up and
     // auto-x hasn't been manually overriden, or when x button is pressed
+    // Changed stop with x to turn to x
     (Triggers.getInstance()
             .shootButton()
             .and(Triggers.getInstance().isShootClear)
@@ -528,7 +527,6 @@ public class RobotContainer {
                 Commands.waitUntil(
                         flywheel
                             .isFlywheelSpunUp
-                            .and(prestage.isPrestageSpunUp)
                             .and(Triggers.getInstance().isAlignedLooser))
                     .withTimeout(HardwareConstants.CompConstants.Waits.spinUpTimeOut),
                 FeederCommands.setUpperFeederVelocity(
