@@ -521,7 +521,7 @@ public class RobotContainer {
         .and(
             () ->
                 !(Triggers.getInstance().isShootSafeZone.getAsBoolean()
-                    && !Triggers.getInstance().isShootSafeTimeSure.getAsBoolean()))
+                    && !Triggers.getInstance().isShootSafeTime.getAsBoolean()))
         .and(Triggers.getInstance().isAlignedLooser)
         .whileTrue(
             Commands.sequence(
@@ -642,7 +642,7 @@ public class RobotContainer {
         .and(
             () ->
                 !(Triggers.getInstance().isShootSafeZone.getAsBoolean()
-                    && !Triggers.getInstance().isShootSafeTimeSure.getAsBoolean()))
+                    && !Triggers.getInstance().isShootSafeTime.getAsBoolean()))
         .and(Triggers.getInstance().isAlignedLooser)
         .whileTrue(
             Commands.sequence(
@@ -935,7 +935,7 @@ public class RobotContainer {
         .and(
             () ->
                 !(Triggers.getInstance().isShootSafeZone.getAsBoolean()
-                    && !Triggers.getInstance().isShootSafeTimeSure.getAsBoolean()))
+                    && !Triggers.getInstance().isShootSafeTime.getAsBoolean()))
         .and(Triggers.getInstance().isAlignedForCurrentShot)
         .whileTrue(IntakePivotCommands.compressPivot(intakePivot))
         .onFalse(

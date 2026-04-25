@@ -105,7 +105,7 @@ public class HardwareConstants {
 
     public static class Thresholds {
       public static final double flywheelSpinupThreshold = 200;
-      public static final double prestageSpinupThreshold = 200;
+      public static final double prestageSpinupThreshold = 500;
       // How close (in degrees) the robot's heading must be to the hub before we start feeding.
       public static final double hubAlignmentToleranceDegrees = 0.75;
       public static final double hubLooseAlignmentToleranceDegrees = 3.0;

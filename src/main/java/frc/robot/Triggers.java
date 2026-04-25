@@ -157,10 +157,11 @@ public class Triggers {
           "isShootSafeTime",
           () -> HubShiftUtil.getShiftedShiftInfo().active() || HubShiftUtil.disabled);
 
-  // Returns true if time is safe, but NOT if timer is disabled (used for smart idle speeds)
-  // BUG FIX (issue 2): value is now read inside the lambda every cycle instead of captured once
-  public final LoggedTrigger isShootSafeTimeSure =
-      new LoggedTrigger("isShootSafeTimeSure", () -> HubShiftUtil.getShiftedShiftInfo().active());
+  // // Returns true if time is safe, but NOT if timer is disabled (used for smart idle speeds)
+  // // BUG FIX (issue 2): value is now read inside the lambda every cycle instead of captured once
+  // public final LoggedTrigger isShootSafeTimeSure =
+  //     new LoggedTrigger("isShootSafeTimeSure", () ->
+  // HubShiftUtil.getShiftedShiftInfo().active());
 
   // Composite checker for time and zone — true when both time and zone are safe to shoot
   public final LoggedTrigger isShootClear =

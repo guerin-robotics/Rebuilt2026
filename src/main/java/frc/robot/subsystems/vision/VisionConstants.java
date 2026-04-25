@@ -21,7 +21,7 @@ import org.littletonrobotics.junction.Logger;
 public class VisionConstants {
   // AprilTag layout
   public static AprilTagFieldLayout aprilTagLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField); // .k2026RebuiltAndymark
+      AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded); // .k2026RebuiltAndymark
 
   // Camera names, must match names configured on coprocessor
   public static String camera0Name = "RobotRight";
@@ -103,7 +103,7 @@ public class VisionConstants {
   // Maximum pitch or roll (radians) allowed in an estimated pose.
   // A real robot on flat carpet should never be tilted more than ~10°.
   // Large pitch/roll in the estimate means the solve is wrong.
-  public static double maxPitchRollRadians = Math.toRadians(20.0); // 10.0
+  public static double maxPitchRollRadians = Math.toRadians(25.0); // 10.0
 
   // If a vision observation would move the estimated pose by more than this
   // distance (meters), reject it as an outlier. Catches bad single-tag solves
