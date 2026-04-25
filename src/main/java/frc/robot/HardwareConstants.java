@@ -104,11 +104,11 @@ public class HardwareConstants {
     }
 
     public static class Thresholds {
-      public static final double flywheelSpinupThreshold = 500;
-      public static final double prestageSpinupThreshold = 500;
+      public static final double flywheelSpinupThreshold = 200;
+      public static final double prestageSpinupThreshold = 200;
       // How close (in degrees) the robot's heading must be to the hub before we start feeding.
-      public static final double hubAlignmentToleranceDegrees = 3.0;
-      public static final double hubLooseAlignmentToleranceDegrees = 5.0;
+      public static final double hubAlignmentToleranceDegrees = 0.75;
+      public static final double hubLooseAlignmentToleranceDegrees = 3.0;
       // How close (in degrees) the robot's heading must be to the pass target before we start
       // feeding. Slightly more lenient than hub since pass shots tolerate more error.
       public static final double passAlignmentToleranceDegrees = 7.0;
@@ -118,6 +118,15 @@ public class HardwareConstants {
     public static class Autos {
       public static final String DefaultAutoName = "2.5-Left-Comp";
     }
+  }
+
+  public static class TuningConstants {
+    public static boolean TUNING_MODE;
+    public static boolean isTuning = false;
+    public static boolean atComp = false;
+
+    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(2000.0);
+    public static final Angle HoodTuningPos = Degrees.of(12.25);
   }
 
   public static class TestConstants {
@@ -185,15 +194,6 @@ public class HardwareConstants {
   public static class PassConstants {
     public static final AngularVelocity FlywheelPassVelocity = RPM.of(2700);
     public static final Angle hoodPassPos = Degrees.of(35.0);
-  }
-
-  public static class TuningConstants {
-    public static boolean TUNING_MODE;
-    public static boolean isTuning = false;
-    public static boolean atComp = false;
-
-    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(2000.0);
-    public static final Angle HoodTuningPos = Degrees.of(12.0);
   }
 
   public static class ControllerConstants {

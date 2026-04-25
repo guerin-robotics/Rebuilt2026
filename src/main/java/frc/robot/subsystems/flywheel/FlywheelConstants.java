@@ -131,8 +131,10 @@ public class FlywheelConstants {
       SPEED_MAP.put(inchesToMeters(110.0), 1625.0); // Tower shot
       SPEED_MAP.put(inchesToMeters(130.0), 1700.0);
       SPEED_MAP.put(inchesToMeters(145.0), 1750.0);
-      SPEED_MAP.put(inchesToMeters(160.0), 1950.0);
-      SPEED_MAP.put(inchesToMeters(190.0), 2000.0);
+      SPEED_MAP.put(inchesToMeters(160.0), 1875.0);
+      SPEED_MAP.put(inchesToMeters(175.0), 1925.0);
+      SPEED_MAP.put(inchesToMeters(180.0), 1950.0);
+      SPEED_MAP.put(inchesToMeters(190.0), 1975.0);
     }
 
     static {

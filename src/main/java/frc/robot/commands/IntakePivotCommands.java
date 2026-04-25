@@ -65,7 +65,7 @@ public class IntakePivotCommands {
    * @param halfHopper If the operator hits the half-hopper override button, the intake runs full
    *     compress immediately
    */
-  public static Command compressPivot(IntakePivot intakePivot, BooleanSupplier oneCompress) {
+  public static Command compressPivot(IntakePivot intakePivot, BooleanSupplier doubleCompress) {
     Logger.recordOutput("RobotState/IntakePivot", "JostleCalled");
 
     // Branch A: single compress
@@ -91,18 +91,18 @@ public class IntakePivotCommands {
 
     // ContinuousConditionalCommand evaluates halfHopper each loop, so the right
     // branch is always active — even if the condition changes while the command is running.
-    return new ContinuousConditionalCommand(oneCompressBranch, twoCompressBranch, oneCompress)
+    return new ContinuousConditionalCommand(twoCompressBranch, oneCompressBranch, doubleCompress)
         .withName("IntakePivotCompress");
   }
 
   // Compress w/ shoot - single compress
   public static Command compressPivot(IntakePivot intakePivot) {
-    return compressPivot(intakePivot, () -> true);
+    return compressPivot(intakePivot, () -> false);
   }
 
   // Manual compress - double compress
   public static Command manualPivotCompress(IntakePivot intakePivot) {
-    return compressPivot(intakePivot, () -> false);
+    return compressPivot(intakePivot, () -> true);
   }
 
   // Auto compress - single compress after custom wait

@@ -143,6 +143,8 @@ public class Robot extends LoggedRobot {
     // Return to non-RT thread priority (do not modify the first argument)
     // Threads.setCurrentThreadPriority(false, 10);
 
+    Logger.recordOutput("doubleCompress", robotContainer.doubleCompress);
+
     // Set tuning mode to false if connected to FMS
     if (HardwareConstants.TuningConstants.atComp) {
       if (DriverStation.isFMSAttached()) {

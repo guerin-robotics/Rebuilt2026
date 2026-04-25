@@ -121,7 +121,7 @@ public class RobotContainer {
   // Similar latch for double compress
   // Sets to true when driver hits double compress override
   // Resets to false when shoot button is released
-  private boolean doubleCompress = false;
+  public boolean doubleCompress = false;
 
   // Stores the starting pose of the currently selected auto.
   // Updated when the auto chooser selection changes.
@@ -413,13 +413,16 @@ public class RobotContainer {
     // Compress for half hopper
     Triggers.getInstance()
         .doubleCompressOverride()
-        .onTrue(Commands.runOnce(() -> doubleCompress = true));
+        .onTrue(Commands.runOnce(() -> doubleCompress = !doubleCompress));
 
     // DRIVETRAIN
     // Align for shoot when shoot button is pressed and we're in our alliance zone and hub is
     // active, or if tower shoot button is pressed
-    (Triggers.getInstance().shootButton())
-        .and(Triggers.getInstance().isShootClear)
+    (Triggers.getInstance()
+            .shootButton()
+            .and(
+                (Triggers.getInstance().isShootClear)
+                    .or(() -> HardwareConstants.TuningConstants.TUNING_MODE)))
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
@@ -526,7 +529,7 @@ public class RobotContainer {
                         flywheel
                             .isFlywheelSpunUp
                             .and(prestage.isPrestageSpunUp)
-                            .and(Triggers.getInstance().isAlignedForCurrentShot))
+                            .and(Triggers.getInstance().isAlignedLooser))
                     .withTimeout(HardwareConstants.CompConstants.Waits.spinUpTimeOut),
                 FeederCommands.setUpperFeederVelocity(
                         upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
@@ -640,7 +643,7 @@ public class RobotContainer {
             () ->
                 !(Triggers.getInstance().isShootSafeZone.getAsBoolean()
                     && !Triggers.getInstance().isShootSafeTimeSure.getAsBoolean()))
-        .and(Triggers.getInstance().isAlignedForCurrentShot)
+        .and(Triggers.getInstance().isAlignedLooser)
         .whileTrue(
             Commands.sequence(
                 Commands.waitUntil(flywheel.isFlywheelSpunUp.and(prestage.isPrestageSpunUp))
