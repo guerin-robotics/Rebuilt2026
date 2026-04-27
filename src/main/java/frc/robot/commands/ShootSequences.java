@@ -33,15 +33,15 @@ public class ShootSequences {
                     prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
                 HoodCommands.setHoodPosForHub(hood)),
             Commands.sequence(
-                Commands.waitUntil(flywheel.isFlywheelSpunUp.and(prestage.isPrestageSpunUp))
+                Commands.waitUntil(flywheel.isFlywheelSpunUp)
                     .withTimeout(HardwareConstants.CompConstants.Waits.spinUpTimeOut),
                 Commands.parallel(
                     FeederCommands.setLowerFeederVelocity(
                         lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
                     FeederCommands.setUpperFeederVelocity(
                         upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
-                    TransportCommands.setTransportVoltage(
-                        transport, HardwareConstants.CompConstants.Voltages.transportVoltage),
+                    TransportCommands.setTransportVelocity(
+                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity),
                     intakeRollerCommands.setRollerVoltage(
                         intakeRoller,
                         HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage),

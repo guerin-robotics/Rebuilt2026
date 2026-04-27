@@ -74,6 +74,7 @@ public class DriveCommands {
       DoubleSupplier omegaSupplier) {
     return Commands.run(
             () -> {
+              drive.areWheelsXed = false;
               // Get linear velocity
               Translation2d linearVelocity =
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
@@ -111,6 +112,7 @@ public class DriveCommands {
       DoubleSupplier omegaSupplier) {
     return Commands.run(
             () -> {
+              drive.areWheelsXed = false;
               // Get linear velocity
               Translation2d linearVelocity =
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
@@ -190,6 +192,7 @@ public class DriveCommands {
     // Construct command
     return Commands.run(
             () -> {
+              drive.areWheelsXed = false;
               // Get linear velocity
               Translation2d linearVelocity =
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
@@ -402,18 +405,13 @@ public class DriveCommands {
   public static Command stopWithX(Drive drive) {
     return Commands.run(
             () -> {
+              drive.areWheelsXed = true;
               Logger.recordOutput("RobotState/Drive", "Stopping with X");
               drive.stopWithX();
             },
             drive)
         .withName("StopWithX");
   }
-
-  public static Command stopWithXAfterWait(Drive drive) {
-    return Commands.sequence(new WaitCommand(2), Commands.runOnce(() -> drive.stopWithX(), drive))
-        .withName("StopWithXAfterWait");
-  }
-
   /**
    * Measures the velocity feedforward constants for the drive motors.
    *

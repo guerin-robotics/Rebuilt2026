@@ -94,7 +94,7 @@ public class HardwareConstants {
       // Maximum time to wait for heading alignment before shooting regardless.
       // After this many seconds, feeding starts even if the robot isn't facing the target.
       public static final double alignmentTimeoutSeconds = 1.5;
-      public static final double spinUpTimeOut = 1.0;
+      public static final double spinUpTimeOut = 0.5;
       // Compress sequence waits
       public static final double waitToCompressSeconds = 0.50; // 65
       public static final double waitToDropSeconds = 0.5;

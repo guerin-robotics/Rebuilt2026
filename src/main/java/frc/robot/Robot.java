@@ -222,6 +222,10 @@ public class Robot extends LoggedRobot {
     // Displays the match time
     SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
 
+    SmartDashboard.putBoolean("Aligned To Shoot?", Triggers.getInstance().isAlignedForCurrentShot.getAsBoolean());
+    SmartDashboard.putBoolean("Spun Up To Shoot?", robotContainer.isFlywheelSpunUp());
+    SmartDashboard.putBoolean("Wheels X-ed?", robotContainer.isDriveXed());
+
     Logger.recordOutput("RobotState/HubShift", HubShiftUtil.getShiftedShiftInfo().active());
     Logger.recordOutput("RobotState/firstActiveAlliancer", HubShiftUtil.getFirstActiveAlliance());
     Logger.recordOutput(

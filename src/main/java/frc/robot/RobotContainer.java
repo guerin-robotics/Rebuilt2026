@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.AllianceFlipUtil;
@@ -312,17 +311,15 @@ public class RobotContainer {
         DriveCommands.joystickDriveAtAngle(
                 drive, () -> 0, () -> 0, () -> RobotState.getInstance().getAngleToAllianceHub())
             .alongWith(
-                new WaitCommand(0.1)
-                    .andThen(
-                        ShootSequences.autoShootToHub(
-                            flywheel,
-                            prestage,
-                            hood,
-                            upperFeeder,
-                            lowerFeeder,
-                            transport,
-                            intakeRoller,
-                            intakePivot))));
+                ShootSequences.autoShootToHub(
+                    flywheel,
+                    prestage,
+                    hood,
+                    upperFeeder,
+                    lowerFeeder,
+                    transport,
+                    intakeRoller,
+                    intakePivot)));
 
     // Stop all subsystems after shooting
     NamedCommands.registerCommand(
@@ -418,9 +415,7 @@ public class RobotContainer {
     // DRIVETRAIN
     // Align for shoot when shoot button is pressed and we're in our alliance zone and hub is
     // active, or if tower shoot button is pressed
-    (Triggers.getInstance()
-            .shootButton()
-            .and(Triggers.getInstance().isShootSafeZone))
+    (Triggers.getInstance().shootButton().and(Triggers.getInstance().isShootSafeZone))
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
@@ -525,9 +520,7 @@ public class RobotContainer {
         .whileTrue(
             Commands.sequence(
                 Commands.waitUntil(
-                        flywheel
-                            .isFlywheelSpunUp
-                            .and(Triggers.getInstance().isAlignedLooser))
+                        flywheel.isFlywheelSpunUp.and(Triggers.getInstance().isAlignedLooser))
                     .withTimeout(HardwareConstants.CompConstants.Waits.spinUpTimeOut),
                 FeederCommands.setUpperFeederVelocity(
                         upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
@@ -644,7 +637,7 @@ public class RobotContainer {
         .and(Triggers.getInstance().isAlignedLooser)
         .whileTrue(
             Commands.sequence(
-                Commands.waitUntil(flywheel.isFlywheelSpunUp.and(prestage.isPrestageSpunUp))
+                Commands.waitUntil(flywheel.isFlywheelSpunUp)
                     .withTimeout(HardwareConstants.CompConstants.Waits.spinUpTimeOut),
                 IntakePivotCommands.compressPivot(intakePivot, () -> doubleCompress)))
         .onFalse(
@@ -1099,5 +1092,9 @@ public class RobotContainer {
 
   public boolean isFlywheelSpunUp() {
     return flywheel.isSpunUp();
+  }
+
+  public boolean isDriveXed() {
+    return drive.areWheelsXed;
   }
 }
