@@ -418,9 +418,7 @@ public class RobotContainer {
     // DRIVETRAIN
     // Align for shoot when shoot button is pressed and we're in our alliance zone and hub is
     // active, or if tower shoot button is pressed
-    (Triggers.getInstance()
-            .shootButton()
-            .and(Triggers.getInstance().isShootSafeZone))
+    (Triggers.getInstance().shootButton().and(Triggers.getInstance().isShootSafeZone))
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
@@ -525,9 +523,7 @@ public class RobotContainer {
         .whileTrue(
             Commands.sequence(
                 Commands.waitUntil(
-                        flywheel
-                            .isFlywheelSpunUp
-                            .and(Triggers.getInstance().isAlignedLooser))
+                        flywheel.isFlywheelSpunUp.and(Triggers.getInstance().isAlignedLooser))
                     .withTimeout(HardwareConstants.CompConstants.Waits.spinUpTimeOut),
                 FeederCommands.setUpperFeederVelocity(
                         upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity)
