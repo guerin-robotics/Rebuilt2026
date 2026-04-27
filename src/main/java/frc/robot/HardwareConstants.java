@@ -108,7 +108,7 @@ public class HardwareConstants {
       public static final double prestageSpinupThreshold = 500;
       // How close (in degrees) the robot's heading must be to the hub before we start feeding.
       public static final double hubAlignmentToleranceDegrees = 0.75;
-      public static final double hubLooseAlignmentToleranceDegrees = 4.0;
+      public static final double hubLooseAlignmentToleranceDegrees = 10.0;
       // How close (in degrees) the robot's heading must be to the pass target before we start
       // feeding. Slightly more lenient than hub since pass shots tolerate more error.
       public static final double passAlignmentToleranceDegrees = 7.0;
