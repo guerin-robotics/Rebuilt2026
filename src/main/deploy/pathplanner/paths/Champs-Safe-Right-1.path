@@ -64,16 +64,16 @@
     },
     {
       "anchor": {
-        "x": 7.784931750351124,
-        "y": 3.489223577949438
+        "x": 7.817126986042837,
+        "y": 3.0727754674332868
       },
       "prevControl": {
-        "x": 8.232780759119015,
-        "y": 3.253715687191117
+        "x": 8.264975994810728,
+        "y": 2.8372675766749658
       },
       "nextControl": {
-        "x": 7.023384151953209,
-        "y": 3.889694417673259
+        "x": 7.055579387644922,
+        "y": 3.473246307157108
       },
       "isLocked": false,
       "linkedName": null
@@ -161,14 +161,14 @@
   "eventMarkers": [
     {
       "name": "DeployIntake",
-      "waypointRelativePos": 0.29064637748756184,
+      "waypointRelativePos": 1.0,
       "endWaypointRelativePos": null,
       "command": null
     },
     {
       "name": "RunIntake",
-      "waypointRelativePos": 0.8275905628109443,
-      "endWaypointRelativePos": 4.795155083955227,
+      "waypointRelativePos": 2.0,
+      "endWaypointRelativePos": 2.401663557213931,
       "command": null
     }
   ],
