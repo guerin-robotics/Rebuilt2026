@@ -37,7 +37,7 @@
       },
       "prevControl": {
         "x": 5.321063592442034,
-        "y": 0.27911616724032723
+        "y": 0.2791161672403273
       },
       "nextControl": {
         "x": 7.107206613594347,
@@ -149,7 +149,7 @@
   "eventMarkers": [
     {
       "name": "DeployIntake",
-      "waypointRelativePos": 0.9457789179104477,
+      "waypointRelativePos": 0.9,
       "endWaypointRelativePos": null,
       "command": null
     },
