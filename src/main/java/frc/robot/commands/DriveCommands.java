@@ -23,9 +23,11 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.AllianceFlipUtil;
+import frc.lib.ContinuousConditionalCommand;
 import frc.lib.FieldConstants;
 import frc.robot.HardwareConstants;
 import frc.robot.RobotState;
+import frc.robot.Triggers;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import java.text.DecimalFormat;
@@ -167,6 +169,17 @@ public class DriveCommands {
   //           })
   //       .withName("DriveLucasProof");
   // }
+
+  public static Command alignOrXForShoot(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      Supplier<Rotation2d> rotationSupplier) {
+    return new ContinuousConditionalCommand(
+        stopWithX(drive),
+        joystickDriveAtAngle(drive, xSupplier, ySupplier, rotationSupplier),
+        Triggers.getInstance().isAlignedForCurrentShot);
+  }
 
   /**
    * Field relative drive command using joystick for linear control and PID for angular control.

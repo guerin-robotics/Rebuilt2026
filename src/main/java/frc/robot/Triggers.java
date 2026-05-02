@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -169,15 +170,16 @@ public class Triggers {
 
   public final LoggedTrigger isAlignedForCurrentShot =
       new LoggedTrigger(
-          "isAlignedForCurrentShot",
-          () -> {
-            if (RobotState.getInstance().getBroadZone()
-                == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE) {
-              return RobotState.getInstance().isAlignedToHub();
-            } else {
-              return RobotState.getInstance().isAlignedToPass();
-            }
-          });
+              "isAlignedForCurrentShot",
+              () -> {
+                if (RobotState.getInstance().getBroadZone()
+                    == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE) {
+                  return RobotState.getInstance().isAlignedToHub();
+                } else {
+                  return RobotState.getInstance().isAlignedToPass();
+                }
+              })
+          .debounce(0.3, DebounceType.kRising);
 
   public final LoggedTrigger isAlignedLooser =
       new LoggedTrigger(

@@ -415,10 +415,11 @@ public class RobotContainer {
     // DRIVETRAIN
     // Align for shoot when shoot button is pressed and we're in our alliance zone and hub is
     // active, or if tower shoot button is pressed
+    // X while aligned
     (Triggers.getInstance().shootButton().and(Triggers.getInstance().isShootSafeZone))
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
+            DriveCommands.alignOrXForShoot(
                 drive,
                 () -> -thrustmaster.getY() * .5,
                 () -> -thrustmaster.getX() * .5,
@@ -442,16 +443,17 @@ public class RobotContainer {
                                 RobotState.getInstance().getPassTarget().getX(),
                                 RobotState.getInstance().getPassTarget().getY()))));
 
-    // X wheels when shoot button is pressed and we're shooting and we're lined up and
-    // auto-x hasn't been manually overriden, or when x button is pressed
-    // Changed stop with x to turn to x
-    (Triggers.getInstance()
-            .shootButton()
-            .and(Triggers.getInstance().isShootClear)
-            .and(Triggers.getInstance().isAlignedForCurrentShot)
-            .and(() -> !xCancelled))
-        .or(Triggers.getInstance().xWheels())
-        .whileTrue(DriveCommands.stopWithX(drive));
+    // Now handled in alignment command
+    // // X wheels when shoot button is pressed and we're shooting and we're lined up and
+    // // auto-x hasn't been manually overriden, or when x button is pressed
+    // // Changed stop with x to turn to x
+    // (Triggers.getInstance()
+    //         .shootButton()
+    //         .and(Triggers.getInstance().isShootClear)
+    //         .and(Triggers.getInstance().isAlignedForCurrentShot)
+    //         .and(() -> !xCancelled))
+    //     .or(Triggers.getInstance().xWheels())
+    //     .whileTrue(DriveCommands.stopWithX(drive));
 
     // Align for trench when trench button pressed - zone logic temporarily disabled
     Triggers.getInstance()
@@ -676,6 +678,28 @@ public class RobotContainer {
   }
 
   private void configureSimBindings() {
+
+    // Drivetrain - joystick drive
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive,
+            () -> MathUtil.clamp(-getThrustY(), -1.0, 1.0),
+            () -> MathUtil.clamp(-getThrustX(), -1.0, 1.0),
+            () -> MathUtil.clamp(-getThrustRot(), -1.0, 1.0)));
+
+    // DRIVETRAIN
+    // Align for shoot when shoot button is pressed and we're in our alliance zone and hub is
+    // active, or if tower shoot button is pressed
+    // X while aligned
+    (Triggers.getInstance().shootButton().and(Triggers.getInstance().isShootSafeZone))
+        .or(Triggers.getInstance().shootFromTowerButton())
+        .whileTrue(
+            DriveCommands.alignOrXForShoot(
+                drive,
+                () -> -thrustmaster.getY() * .5,
+                () -> -thrustmaster.getX() * .5,
+                () -> RobotState.getInstance().getAngleToAllianceHub()));
+
     // In sim there is no FMS game-specific message, so the hub shift schedule defaults
     // to "inactive" after the first 10-second TRANSITION window.  Disabling the hub
     // shift logic lets isShootSafeTime always return true so the hood (and other
