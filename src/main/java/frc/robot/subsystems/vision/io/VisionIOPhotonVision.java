@@ -20,6 +20,7 @@ import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 /**
  * IO implementation for real PhotonVision hardware.
@@ -54,6 +55,14 @@ public class VisionIOPhotonVision implements VisionIO {
     this.poseEstimator = new PhotonPoseEstimator(aprilTagLayout, robotToCamera);
   }
 
+  /**
+   * Returns the latest unread pipeline results. Subclasses may override to provide results from a
+   * background thread, keeping {@link #updateInputs} free of blocking network reads.
+   */
+  protected List<PhotonPipelineResult> getAllResults() {
+    return camera.getAllUnreadResults();
+  }
+
   @Override
   public void updateInputs(VisionIOInputs inputs) {
     inputs.connected = camera.isConnected();
@@ -61,7 +70,7 @@ public class VisionIOPhotonVision implements VisionIO {
     // Read new camera observations
     Set<Short> tagIds = new HashSet<>();
     List<PoseObservation> poseObservations = new LinkedList<>();
-    for (var result : camera.getAllUnreadResults()) {
+    for (var result : getAllResults()) {
       // Update latest target observation (used for simple target-tracking, not pose estimation)
       if (result.hasTargets()) {
         inputs.latestTargetObservation =

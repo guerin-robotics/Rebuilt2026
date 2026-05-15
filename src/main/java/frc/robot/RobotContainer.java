@@ -78,8 +78,8 @@ import frc.robot.subsystems.upperFeeder.io.UpperFeederIOSim;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.io.VisionIO;
-import frc.robot.subsystems.vision.io.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVisionSim;
+import frc.robot.subsystems.vision.io.VisionIOPhotonVisionThread;
 import frc.robot.util.HubShiftUtil;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
@@ -157,13 +157,13 @@ public class RobotContainer {
         vision =
             new Vision(
                 drive::addVisionMeasurement,
-                new VisionIOPhotonVision(
+                new VisionIOPhotonVisionThread(
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0),
-                new VisionIOPhotonVision(
+                new VisionIOPhotonVisionThread(
                     VisionConstants.camera1Name, VisionConstants.robotToCamera1),
-                new VisionIOPhotonVision(
+                new VisionIOPhotonVisionThread(
                     VisionConstants.camera2Name, VisionConstants.robotToCamera2),
-                new VisionIOPhotonVision(
+                new VisionIOPhotonVisionThread(
                     VisionConstants.camera3Name, VisionConstants.robotToCamera3));
         flywheel = new Flywheel(new FlywheelIOPhoenix6());
         upperFeeder = new UpperFeeder(new UpperFeederIOReal());
