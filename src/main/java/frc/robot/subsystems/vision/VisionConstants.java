@@ -84,7 +84,7 @@ public class VisionConstants {
   // Single-tag ambiguity above this is rejected (multi-tag is always trusted).
   // Lowered from 0.2 → 0.1 to reduce false-positive single-tag solves
   // that pick the wrong PnP solution.
-  public static double maxAmbiguity = 0.4; // 0.3
+  public static double maxAmbiguity = 0.2; // was 0.4 — at 0.4 the wrong PnP solution is 40% as plausible, causing far-off single-tag poses
 
   // Estimated pose Z (height) must be below this to be realistic
   public static double maxZError = 2;
@@ -112,14 +112,14 @@ public class VisionConstants {
 
   // ---- Standard deviation baselines ----
   // For 1 meter distance and 1 tag. Automatically scaled by distance² / tagCount.
-  public static double linearStdDevBaseline = 0.01; // Meters
+  public static double linearStdDevBaseline = 0.03; // Meters — was 0.01, which was too trusting (2cm std dev at 1m single-tag caused pose yanking)
   public static double angularStdDevBaseline = 0.03; // Radians
 
   // Extra multiplier applied to single-tag observations (tagCount == 1).
   // Single-tag PnP is inherently less constrained than multi-tag, so we
   // trust it less. This prevents a single ambiguous solve from yanking the
   // pose estimator.
-  public static double singleTagStdDevMultiplier = 2.0;
+  public static double singleTagStdDevMultiplier = 4.0; // was 2.0 — single-tag PnP ambiguity warrants much lower trust than 2×
 
   // Standard deviation multipliers for each camera
   // (Adjust to trust some cameras more than others)
