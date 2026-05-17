@@ -111,3 +111,31 @@ Always:
 - Keep changes localized
 - Preserve existing naming conventions
 - Verify imports and APIs
+
+
+# Code Review Requirements
+
+All generated code must pass CodeRabbit review standards.
+
+Prioritize:
+- deterministic robot behavior
+- scheduler correctness
+- low allocation periodic loops
+- AdvantageKit compatibility
+- replay compatibility
+- CAN efficiency
+- safe command ownership
+
+Avoid:
+- blocking calls
+- fake APIs
+- unnecessary abstraction
+- duplicated subsystem ownership
+- excessive logging
+- unsafe static state
+
+All changes should:
+- preserve architecture
+- preserve logging
+- preserve autonomous behavior
+- preserve simulation support

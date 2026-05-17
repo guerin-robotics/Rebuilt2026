@@ -1,0 +1,105 @@
+language: "en-US"
+
+reviews:
+  profile: "assertive"
+
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+
+  auto_review:
+    enabled: true
+
+    drafts: false
+
+    base_branches:
+      - main
+      - master
+
+  path_filters:
+    - "!**/*.wpilog"
+    - "!**/*.hoot"
+    - "!**/build/**"
+    - "!**/.gradle/**"
+    - "!**/*.json"
+
+chat:
+  auto_reply: true
+
+knowledge_base:
+  opt_out: false
+
+tone_instructions: |
+  This repository is an FRC WPILib Java robot codebase.
+
+  Prioritize:
+  - scheduler correctness
+  - deterministic robot behavior
+  - loop timing stability
+  - CAN bus efficiency
+  - AdvantageKit compatibility
+  - replay compatibility
+  - autonomous robustness
+  - path following reliability
+  - vision pose estimation correctness
+  - real-time safety
+
+  Watch for:
+  - blocking calls
+  - Thread.sleep
+  - unnecessary allocations in periodic loops
+  - unsafe command scheduling
+  - duplicated subsystem ownership
+  - incorrect command requirements
+  - stale sensor values
+  - incorrect units
+  - expensive logging
+  - CAN bus spam
+  - excessive NetworkTables usage
+  - unsafe static state
+  - race conditions
+  - command interruptions
+  - improper odometry resets
+  - vision pose jumps
+
+  Treat this as real-time robotics software, not enterprise Java.
+
+  Prefer minimal, safe, maintainable changes.
+
+path_instructions:
+  - path: "src/main/java/frc/robot/subsystems/**"
+    instructions: |
+      Review for:
+      - hardware abstraction quality
+      - periodic performance
+      - safe motor controller usage
+      - current limiting correctness
+      - deterministic state handling
+
+  - path: "src/main/java/frc/robot/commands/**"
+    instructions: |
+      Review for:
+      - proper command requirements
+      - scheduler safety
+      - interruption behavior
+      - race conditions
+      - command composition correctness
+
+  - path: "src/main/java/frc/robot/vision/**"
+    instructions: |
+      Review for:
+      - latency handling
+      - pose estimation correctness
+      - ambiguity handling
+      - measurement rejection
+      - timestamp correctness
+
+  - path: "src/main/java/frc/robot/autos/**"
+    instructions: |
+      Review for:
+      - deterministic autonomous behavior
+      - timing safety
+      - path following reliability
+      - event marker correctness
+      - pose reset correctness
