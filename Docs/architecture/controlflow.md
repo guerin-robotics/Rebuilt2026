@@ -34,7 +34,7 @@ Robot.java: autonomousInit()
 ```
 
 `.asProxy()` wraps the auto in a `ProxyCommand` so it runs in a separate
-composition scope. This prevents the auto group from canceling commands that
+composition scope. This prevents the auto group from cancelling commands that
 were already running (e.g., default commands) during its own initialization.
 
 ### Phase 3: Auto execution (PathPlanner)

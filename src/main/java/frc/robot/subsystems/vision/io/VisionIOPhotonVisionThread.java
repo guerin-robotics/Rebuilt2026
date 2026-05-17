@@ -40,9 +40,12 @@ public class VisionIOPhotonVisionThread extends VisionIOPhotonVision {
     while (!Thread.currentThread().isInterrupted()) {
       try {
         for (PhotonPipelineResult result : camera.getAllUnreadResults()) {
-          // offer() drops the frame if the queue is full rather than blocking, so a slow
-          // main thread cannot cause this thread to fall arbitrarily far behind.
-          resultQueue.offer(result);
+          // If queue is full, remove oldest frame and retry to ensure we always keep the
+          // freshest frames. This prevents a slow main thread from getting stale vision data.
+          if (!resultQueue.offer(result)) {
+            resultQueue.poll(); // Remove oldest
+            resultQueue.offer(result); // Add newest (guaranteed to succeed now)
+          }
         }
         Thread.sleep(20); // 50 Hz — fast enough to not miss 25–30 fps camera frames
       } catch (InterruptedException e) {

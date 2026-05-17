@@ -579,7 +579,7 @@ All mechanisms use **supply current limiting** (limits CAN/battery draw) plus **
 The "supply trigger" pattern (supply → lower limit after time) is used by most mechanisms to allow brief overcurrent during spin-up while preventing sustained high draw.
 
 ### Brownout Risk Assessment
-FRC circuit breaker trips at 120 A (40 A main breaker = typical 120 A trip for robot) and PDP/PDH fuses at 40 A per port.
+FRC circuit breaker trips at 120 A (main breaker typically rated 120 A = typical 120 A trip for robot) and PDP/PDH fuses at 40 A per port.
 
 A full-intensity scenario (drive sprinting + flywheel spin-up + intake lowering):
 - Drive: 4 × 70 A = 280 A supply

@@ -208,7 +208,7 @@ Used for defensive scenarios or clearing jams.
 ## Command Binding (RobotContainer.java)
 
 Commands are bound to triggers in `RobotContainer.configureButtonBindings()`.
-Key bindings (see `docs/hardware.md` for button assignments):
+Key bindings (see `Docs/hardware.md` for button assignments):
 
 ```java
 // Shoot: align drive + spinup flywheel + compress intake

@@ -193,12 +193,6 @@ observations are both visible, making filter debugging straightforward.
 | Key | Content | Location |
 |-----|---------|---------|
 | `"Flywheel/targetRPM"` | `currentRPMTarget` | `periodic()` |
-| `"Flywheel/currentRPMTarget"` | `currentRPMTarget` | inside `isSpunUp()` |
-
-**Note:** `currentRPMTarget` is logged twice: once in `periodic()` and once
-inside `isSpunUp()`. Since `isSpunUp()` is called from the `isFlywheelSpunUp`
-`LoggedTrigger` every cycle (via the scheduler's Trigger polling), this
-produces a duplicate log entry under a different key each cycle.
 
 **LoggedNetworkNumber:** `"Tune/flywheel/tuningRPM"` — default 20 RPM.
 
@@ -422,27 +416,19 @@ subsystem prefix). In AdvantageScope, this appears at the top of the signal
 tree rather than under `Flywheel/`. Minor, but inconsistent with the rest of
 the logging hierarchy.
 
-### 5. currentRPMTarget logged under two keys
+### 5. ~~currentRPMTarget logged under two keys~~ (Fixed)
 
-`"Flywheel/targetRPM"` (in `periodic()`) and `"Flywheel/currentRPMTarget"`
-(inside `isSpunUp()`) log the same field every cycle. Neither key is wrong,
-but having both creates confusion about which is canonical.
+`"Flywheel/targetRPM"` is logged once per cycle in `periodic()` as the
+canonical source for the flywheel target RPM.
 
 ---
 
 ## Excessive / Redundant Logs
 
-### isSpunUp() side-effect logging
+### ~~isSpunUp() side-effect logging~~ (Fixed)
 
-`Flywheel.isSpunUp()` (called as a getter) calls `Logger.recordOutput()` as a
-side effect (Flywheel.java:151). Getters with side effects are a code smell.
-`isSpunUp()` is called from:
-- `isFlywheelSpunUp` LoggedTrigger (every cycle via scheduler polling)
-- `ShootSequences.autoShootToHub()` waitUntil condition (every cycle during auto)
-- Potentially other command conditions
-
-Each call logs `"Flywheel/currentRPMTarget"` again. The value doesn't change
-between calls in the same cycle, so this is redundant writes per cycle.
+`Flywheel.isSpunUp()` no longer has logging side effects. The target RPM is
+logged once per cycle in `periodic()` under `"Flywheel/targetRPM"`.
 
 ### Summary vision keys duplicate per-camera keys
 

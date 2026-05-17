@@ -148,7 +148,6 @@ public class Flywheel extends SubsystemBase {
   }
 
   public boolean isSpunUp() {
-    Logger.recordOutput("Flywheel/currentRPMTarget", currentRPMTarget);
     return (Math.abs(currentRPMTarget - inputs.leaderVelocity.in(RPM))
         < HardwareConstants.CompConstants.Thresholds.flywheelSpinupThreshold);
   }
