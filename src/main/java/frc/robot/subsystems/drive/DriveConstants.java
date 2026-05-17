@@ -16,6 +16,11 @@ public class DriveConstants {
         new Translation2d(-frontOffset, leftOffset), // Back Left
         new Translation2d(-frontOffset, -leftOffset) // Back Right
       };
-
-  public static double limitedVelo = 0.1;
+  // Slew rate limits (physical units) used when limiting commanded velocities.
+  // These represent maximum allowed accelerations and should be expressed as:
+  // - SLEW_LINEAR_ACCEL_MPS2: meters per second squared (m/s^2)
+  // - SLEW_ANG_ACCEL_RADS2: radians per second squared (rad/s^2)
+  // Aggressive starting defaults (drivers who want snappier response):
+  public static final double SLEW_LINEAR_ACCEL_MPS2 = 5.0; // m/s^2
+  public static final double SLEW_ANG_ACCEL_RADS2 = 10.0; // rad/s^2
 }

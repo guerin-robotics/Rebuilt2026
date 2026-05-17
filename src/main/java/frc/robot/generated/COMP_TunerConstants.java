@@ -83,7 +83,10 @@ public class COMP_TunerConstants {
 
   // Theoretical free speed (m/s) at 12 V applied output;
   // This needs to be tuned to your individual robot
-  public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(4.39);
+  public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(4);
+
+  // Maximum angular speed (rad/s) for the robot. Tune as needed.
+  public static final double kMaxAngularSpeedRadPerSec = 8.0;
 
   // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
   // This may need to be tuned to your individual robot
