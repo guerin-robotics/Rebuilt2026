@@ -332,6 +332,7 @@ public class RobotContainer {
         "HoodDownNamed",
         HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
   }
+
   // EventTriggers
   //
   // IMPORTANT: Event trigger commands must NOT declare subsystem requirements that overlap
