@@ -1,0 +1,275 @@
+language: "en-US"
+
+tone_instructions: >
+  You are reviewing code for a high school FRC robotics competition team.
+  Be educational and explain the *why* behind every issue, not just the what.
+  Prioritize correctness and robot safety over style. When a student likely
+  misunderstood a WPILib or Phoenix 6 concept, explain the correct mental model
+  rather than just citing the fix. Keep suggestions actionable and concise.
+
+reviews:
+  profile: "assertive"
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+      - rj-claude
+
+  # Exclude auto-generated and build output files from review
+  path_filters:
+    - "!**/build/**"
+    - "!**/.wpilib/**"
+    - "!**/vendordeps/**"
+    - "!src/main/java/frc/robot/BuildConstants.java"
+    - "!src/main/java/frc/robot/generated/TunerConstants.java"
+    - "!src/main/java/frc/robot/generated/COMP_TunerConstants.java"
+    - "!src/main/java/frc/robot/generated/ALPHA_TunerConstants.java"
+    - "!src/main/deploy/pathplanner/**"
+    - "!**/*.wpilog"
+    - "!**/*.json"
+
+  path_instructions:
+    # -------------------------------------------------------------------------
+    # Commands — behavioral correctness is the top priority
+    # -------------------------------------------------------------------------
+    - path: "src/main/java/frc/robot/commands/*.java"
+      instructions: |
+        Focus on behavioral correctness. Do NOT flag style or formatting issues.
+
+        SUBSYSTEM REQUIREMENTS
+        - Commands using subsystem factory methods (subsystem.run(), runOnce(),
+          startEnd()) automatically declare requirements — do not flag these.
+        - Custom Command subclasses MUST call addRequirements() in the constructor
+          for every subsystem they control hardware on.
+        - A command that calls io-backed subsystem methods without requiring the
+          subsystem is a critical bug — the CommandScheduler cannot prevent conflicts.
+
+        RACE CONDITIONS IN PARALLEL GROUPS
+        - Inspect Commands.parallel(), Commands.race(), deadlineWith(), alongWith().
+        - Two commands in the same group that write to the same subsystem or shared
+          mutable state (RobotState, a shared flag) create a race condition.
+        - This robot has 9 mechanism subsystems (Drive, Flywheel, Hood, IntakePivot,
+          IntakeRoller, Transport, Prestage, UpperFeeder, LowerFeeder). Check all of
+          them when reviewing ShootSequences.java and SpitSequences.java.
+
+        COMMAND LIFECYCLE
+        - initialize(): one-time setup only (reset encoder, set initial output).
+        - execute(): repeated actions every 20 ms.
+        - Logic that should run once placed in execute() is a common student error.
+        - isFinished(): must eventually return true for non-perpetual commands.
+
+        END BEHAVIOR
+        - Motors must be stopped in end(boolean interrupted).
+        - A motor left running after a command is interrupted is a safety hazard.
+        - Verify ShootSequences and SpitSequences stop all rollers/feeders on end.
+
+        CTRE OBJECT ALLOCATION
+        - Phoenix 6 control request objects (VelocityTorqueCurrentFOC,
+          MotionMagicTorqueCurrentFOC, etc.) must be stored as class-level fields,
+          not allocated with 'new' inside execute(). On RoboRIO 2.0, per-cycle
+          allocation stresses the JVM and can cause GC pauses mid-match.
+
+        TIMING LOGIC
+        - Commands.waitSeconds() durations should cross-reference HardwareConstants:
+          spinupTimeout = 0.5 s, alignmentTimeout = 1.5 s, compressDelay = 0.5 s.
+        - A hardcoded literal that differs from HardwareConstants is a maintenance risk.
+
+    # -------------------------------------------------------------------------
+    # Subsystems — IO pattern and AdvantageKit compliance
+    # -------------------------------------------------------------------------
+    - path: "src/main/java/frc/robot/subsystems/**/*.java"
+      instructions: |
+        For subsystem classes (e.g., Flywheel.java, Hood.java):
+
+        IO PATTERN — CRITICAL
+        - The subsystem Java class MUST only call methods on its IO interface.
+        - It must NEVER import CTRE, REV, PhotonVision, or any hardware vendor class.
+        - Vendor code belongs exclusively in IO implementations (*IOReal, *IOPhoenix6,
+          *IOSim). A subsystem importing TalonFX or StatusSignal is a pattern violation.
+
+        ADVANTAGEKIT LOGGING ORDER — CRITICAL FOR REPLAY
+        - periodic() must follow this exact order:
+            1. io.updateInputs(inputs)
+            2. Logger.processInputs("SubsystemName", inputs)
+            3. All logic that reads from inputs
+        - If logic runs before processInputs(), AKit replay will see wrong values.
+        - Derived/computed values exposed to logs use @AutoLogOutput on a method.
+
+        For IO implementation classes (*IOReal.java, *IOPhoenix6.java):
+
+        STATUS SIGNAL REGISTRATION
+        - Signals read every cycle must be registered at construction with
+          setUpdateFrequency() or BaseStatusSignal.setUpdateFrequencyForAll().
+        - Signals used for high-frequency odometry (drive position/velocity) must be
+          registered with PhoenixOdometryThread.registerSignal(), not polled in periodic().
+        - Use BaseStatusSignal.refreshAll() to refresh multiple signals in one CAN call.
+
+        CONTROL REQUEST OBJECTS
+        - Store control requests (VelocityTorqueCurrentFOC, PositionTorqueCurrentFOC,
+          MotionMagicTorqueCurrentFOC, VoltageOut) as final fields, not local variables.
+
+        CURRENT LIMIT PATTERNS
+        - All mechanism motors use supply + stator limiting via CurrentLimitsConfigs.
+        - Drive motors use supply limiting only (70 A). Steer motors add stator (40 A).
+        - Flywheel uses the supply trigger pattern (40 A → 35 A after 1 s) to allow
+          brief spin-up overcurrent. This is intentional — do not flag as a concern.
+
+        THREAD SAFETY (Drive subsystem only)
+        - PhoenixOdometryThread runs at 250 Hz, separate from the 50 Hz main loop.
+        - All odometry data shared between threads must be protected by odometryLock.
+        - Flag any Drive or Module field written by the odometry thread and read in
+          periodic() without lock acquisition.
+
+    # -------------------------------------------------------------------------
+    # Triggers — highest bug density in FRC codebases
+    # -------------------------------------------------------------------------
+    - path: "src/main/java/frc/robot/Triggers.java"
+      instructions: |
+        Review every trigger definition. This file has the highest bug frequency
+        in FRC code because of lambda capture semantics.
+
+        THE MOST COMMON BUG — CAPTURED VARIABLE (not re-evaluated each cycle):
+          // WRONG: 'active' is read once when the trigger is created
+          boolean active = HubShiftUtil.getShiftedShiftInfo().active();
+          return new LoggedTrigger("name", () -> active);
+
+          // CORRECT: method call inside lambda, evaluated every 20 ms
+          return new LoggedTrigger("name", () -> HubShiftUtil.getShiftedShiftInfo().active());
+
+        For every trigger method, verify:
+        1. All values used in the lambda are method calls or field reads evaluated
+           at invocation time — not local variables captured at construction.
+        2. Boolean logic (.and(), .or(), .negate()) matches the intended condition.
+           Draw out a truth table mentally if the logic is nested.
+        3. The trigger is actually returned or bound. A trigger that is constructed
+           but neither returned nor bound to a command is dead code.
+        4. The name string (first argument to LoggedTrigger) is unique and descriptive
+           — duplicate names produce duplicate log keys and confuse AdvantageScope analysis.
+
+    # -------------------------------------------------------------------------
+    # RobotContainer — button bindings and scheduling
+    # -------------------------------------------------------------------------
+    - path: "src/main/java/frc/robot/RobotContainer.java"
+      instructions: |
+        Review for binding correctness and scheduling safety.
+
+        BINDING TYPE SEMANTICS
+        - whileTrue(cmd): schedules cmd on rising edge, cancels on falling edge.
+          Use for commands that should run only while a button is held.
+        - onTrue(cmd): schedules cmd on rising edge only; does NOT cancel when released.
+          Use for fire-and-forget actions (toggle intake, run once).
+        - toggleOnTrue(cmd): toggles on each rising edge.
+        The most common mistake: using onTrue() for a command that should stop when
+        the button is released (should be whileTrue()).
+
+        SCHEDULING CONFLICTS
+        - Two triggers that can be simultaneously true and both schedule commands
+          requiring the same subsystem will cause one command to interrupt the other.
+        - Check pairs of triggers on Flywheel (hub shot vs tower shot vs pass shot),
+          IntakePivot (deploy vs retract), and Transport during intake vs shoot sequences.
+
+        DEFAULT COMMANDS
+        - Drive must have a default command (joystick-driven swerve).
+        - IntakePivot should have a default command to hold position.
+        - Subsystems without defaults that should have them will drift or act unpredictably.
+
+        PATHPLANNER NAMED COMMANDS
+        - NamedCommands.registerCommand(name, cmd) names must match path event markers
+          exactly (case-sensitive). A mismatch causes silent no-ops during autonomous.
+        - Registered commands must declare correct subsystem requirements, because
+          PathPlanner schedules them alongside the drive path command.
+
+        AUTO START POSITION CHECK
+        - The disabledPeriodic pose check compares robot pose to auto start pose.
+        - Verify the distance and rotation tolerances reference HardwareConstants values,
+          not hardcoded literals.
+
+    # -------------------------------------------------------------------------
+    # RobotState — singleton thread safety and coordinate math
+    # -------------------------------------------------------------------------
+    - path: "src/main/java/frc/robot/RobotState.java"
+      instructions: |
+        THREAD SAFETY
+        - RobotState is a singleton accessed from the main 50 Hz loop. The poseSupplier
+          is a Supplier<Pose2d> set once at init — safe. Any mutable field written by
+          one thread and read by another needs synchronization.
+        - Flag fields that accumulate state (lists, averages) if they are accessed
+          without synchronization.
+
+        ALLIANCE FLIP CORRECTNESS
+        - All field-relative coordinates (hub positions, tower positions, pass targets)
+          must be flipped based on alliance color using AllianceFlipUtil.apply().
+        - Verify each target coordinate is flipped exactly once. Double-flipping cancels
+          out and produces wrong coordinates. Zero flips produces wrong coordinates on Red.
+        - HubShiftUtil selects the active hub target. Ensure the selected hub target
+          is then alliance-flipped before being used in distance/angle calculations.
+
+        UNIT CONSISTENCY
+        - WPILib geometry uses meters and radians.
+        - CTRE Phoenix 6 position signals are in rotations; velocity in RPS.
+        - HardwareConstants mixing RPM, RPS, and degrees for different constants is
+          intentional — but verify conversions are applied when values cross boundaries.
+        - Flag any distance calculation that appears to use inches instead of meters.
+
+        STALE DATA RISK
+        - Methods that cache a computed value between cycles must be updated in periodic().
+        - A cached "distance to hub" that is only updated on certain triggers, but queried
+          every cycle in the flywheel command, will use stale targeting data.
+
+    # -------------------------------------------------------------------------
+    # Robot.java — AdvantageKit setup and mode transitions
+    # -------------------------------------------------------------------------
+    - path: "src/main/java/frc/robot/Robot.java"
+      instructions: |
+        ADVANTAGEKIT INITIALIZATION ORDER (robotInit)
+        The required order is:
+          1. Logger.addDataReceiver(...)   — register receivers (WPILOGWriter, NT4Publisher)
+          2. Logger.start()               — begin logging
+          3. new RobotContainer()         — instantiate subsystems and commands
+        Calling Logger.start() after RobotContainer construction means the first
+        periodic cycle's inputs are dropped. Instantiating subsystems before
+        addDataReceiver means their construction-time log entries are unrecorded.
+
+        MODE TRANSITIONS
+        - autonomousInit() and teleopInit() must cancel any commands leftover from
+          the previous mode if they hold subsystem requirements that conflict with
+          the new mode's default commands.
+        - Verify that auto-specific state (e.g., shot counters, path completion flags)
+          is reset in autonomousInit() so stale values don't affect the next auto run.
+
+        SCHEDULER INVOCATION
+        - CommandScheduler.getInstance().run() must appear exactly once in robotPeriodic().
+        - It must run after all subsystem periodic() calls? No — actually the scheduler
+          calls subsystem periodic() internally. Do not call subsystem.periodic() manually
+          in Robot.java if the subsystem is registered with the scheduler.
+
+    # -------------------------------------------------------------------------
+    # HardwareConstants — CAN IDs and unit cross-checks
+    # -------------------------------------------------------------------------
+    - path: "src/main/java/frc/robot/HardwareConstants.java"
+      instructions: |
+        CAN ID RANGES — COMP robot
+        - CANivore bus ("Canivore"): Pigeon 2 at ID 0, drive motors/encoders IDs 1-12.
+        - RIO CAN bus ("rio"): mechanism motors IDs 30-50, encoders IDs 44 and 50.
+        - Any mechanism CAN ID in 0-12 range will conflict with drivetrain devices.
+        - Any duplicate CAN ID on the same bus causes silent communication failures.
+
+        TIMING CONSTANTS SANITY
+        - spinupTimeout (0.5 s) should be >= measured flywheel spin-up time from idle RPM.
+        - alignmentTimeout (1.5 s) should be >= worst-case heading correction time.
+        - If these are shortened, auto sequences may feed before the mechanism is ready.
+
+        UNIT CLARITY
+        - Constants mixing RPM and RPS for the same mechanism risk unit mismatch bugs.
+          (e.g., prestageShootVelocity = 3000 RPM but ShotCalculator may expect RPS.)
+        - Flag any constant whose unit is ambiguous from its name alone.
+
+chat:
+  auto_reply: true

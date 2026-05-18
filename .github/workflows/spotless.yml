@@ -1,0 +1,41 @@
+name: Spotless
+
+on:
+  push:
+    branches:
+      - rj-claude
+  pull_request:
+    branches:
+      - rj-claude
+
+jobs:
+  spotless:
+    name: Check Code Formatting
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: temurin
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-spotless-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-spotless-
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Check formatting
+        run: ./gradlew spotlessCheck --no-daemon
+        env:
+          GRADLE_OPTS: "-Dorg.gradle.daemon=false"
