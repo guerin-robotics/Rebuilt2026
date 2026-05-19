@@ -11,12 +11,14 @@ import static edu.wpi.first.math.util.Units.metersToInches;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.hardware.jni.HardwareJNI;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
@@ -427,10 +429,12 @@ public class RobotContainer {
 
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
     // button is pressed
+    // Requires demo mode to be false
     (Triggers.getInstance()
             .shootButton()
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean()))
         .or(Triggers.getInstance().passButton())
+        .and(() -> !HardwareConstants.TuningConstants.demo)
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
@@ -537,7 +541,7 @@ public class RobotContainer {
         .onFalse(FeederCommands.stopUpper(upperFeeder))
         .onFalse(TransportCommands.stop(transport));
 
-    // FULL SHOOTER - hard-coded shots and tuning shots
+    // FULL SHOOTER - hard-coded shots, tuning shots, demo shots
     // These use constant waits instead of waiting for alignment or spinup
     // Hard-coded tower shot
     Triggers.getInstance()
@@ -567,6 +571,31 @@ public class RobotContainer {
     Triggers.getInstance()
         .shootButton()
         .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
+        .whileTrue(
+            FlywheelCommands.setFlywheelVelocity(
+                    flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity)
+                .alongWith(
+                    PrestageCommands.setPrestageVelocity(
+                        prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
+                .alongWith(
+                    FeederCommands.setUpperVelocityAfterWait(
+                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                .alongWith(
+                    FeederCommands.setLowerVelocityAfterWait(
+                        lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                .alongWith(
+                    TransportCommands.setVelocityAfterWait(
+                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
+        .onFalse(FlywheelCommands.stop(flywheel))
+        .onFalse(PrestageCommands.stop(prestage))
+        .onFalse(FeederCommands.stopLower(lowerFeeder))
+        .onFalse(FeederCommands.stopUpper(upperFeeder))
+        .onFalse(TransportCommands.stop(transport));
+
+    // Demo shot if demo mode true and demo shoot button pressed
+    Triggers.getInstance()
+        .demoDistanceShot()
+        .and(() -> HardwareConstants.TuningConstants.demo)
         .whileTrue(
             FlywheelCommands.setFlywheelVelocity(
                     flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity)
@@ -669,6 +698,11 @@ public class RobotContainer {
         .and(() -> HardwareConstants.TuningConstants.TUNING_MODE)
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos));
 
+    // Set pos to demo pose when demo button is pressed and demo mode is on
+    Triggers.getInstance().demoDistanceShot().and(() -> HardwareConstants.TuningConstants.demo)
+        .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodDemoPos));
+
+    // CANCELLATIONS
     // Auto-compress, auto-x, and double compress cancellations
     Triggers.getInstance()
         .shootButton()

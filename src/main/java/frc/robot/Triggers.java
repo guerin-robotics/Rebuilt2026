@@ -67,6 +67,10 @@ public class Triggers {
     return thrustmaster.button(11);
   }
 
+  public Trigger demoDistanceShot() {
+    return thrustmaster.button(7);
+  }
+
   public Trigger xWheels() {
     return controller.x();
   }
@@ -151,18 +155,13 @@ public class Triggers {
             return (currentZone == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE);
           });
 
-  // Returns true if robot is able to score fuel at the current match time, or if timer is disabled
+  // Returns true if robot is able to score fuel at the current match time, or if timer is disabled, or if demo mode is on
   // BUG FIX (issue 1): values are now read inside the lambda every cycle instead of captured once
   public final LoggedTrigger isShootSafeTime =
       new LoggedTrigger(
           "isShootSafeTime",
-          () -> HubShiftUtil.getShiftedShiftInfo().active() || HubShiftUtil.disabled);
-
-  // // Returns true if time is safe, but NOT if timer is disabled (used for smart idle speeds)
-  // // BUG FIX (issue 2): value is now read inside the lambda every cycle instead of captured once
-  // public final LoggedTrigger isShootSafeTimeSure =
-  //     new LoggedTrigger("isShootSafeTimeSure", () ->
-  // HubShiftUtil.getShiftedShiftInfo().active());
+          () -> HubShiftUtil.getShiftedShiftInfo().active() || HubShiftUtil.disabled
+            || HardwareConstants.TuningConstants.demo);
 
   // Composite checker for time and zone — true when both time and zone are safe to shoot
   public final LoggedTrigger isShootClear =
