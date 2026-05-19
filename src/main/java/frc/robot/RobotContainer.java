@@ -16,8 +16,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -265,22 +265,6 @@ public class RobotContainer {
     }
   }
 
-  private double deadband(double value) {
-    return MathUtil.applyDeadband(value, HardwareConstants.ControllerConstants.DEADBAND);
-  }
-
-  private double getThrustX() {
-    return thrustmaster.getRawAxis(0); // strafe
-  }
-
-  private double getThrustY() {
-    return thrustmaster.getRawAxis(1); // forward
-  }
-
-  private double getThrustRot() {
-    return thrustmaster.getRawAxis(2); // twist
-  }
-
   // NamedCommands
   private void registerNamedCommands() {
     // Auto deploy intake command
@@ -390,9 +374,9 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> MathUtil.clamp(-getThrustY(), -1.0, 1.0),
-            () -> MathUtil.clamp(-getThrustX(), -1.0, 1.0),
-            () -> MathUtil.clamp(-getThrustRot(), -1.0, 1.0)));
+            () -> -thrustmaster.getRawAxis(1),
+            () -> -thrustmaster.getRawAxis(0),
+            () -> -thrustmaster.getRawAxis(2)));
     // Flywheel - idle
     flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // // Prestage - idle
@@ -474,6 +458,45 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAlignForBump(
                 drive, () -> -thrustmaster.getY(), () -> -thrustmaster.getX()));
+
+    // POV heading snap — hold a D-pad direction to lock the robot's heading while
+    // keeping translational control from the thrustmaster.
+    // Angles are alliance-flipped so "up" always means toward the opponent's end.
+    thrustmaster
+        .pov(0)
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                drive,
+                () -> -thrustmaster.getRawAxis(1),
+                () -> -thrustmaster.getRawAxis(0),
+                () -> AllianceFlipUtil.apply(Rotation2d.kZero)));
+
+    thrustmaster
+        .pov(180)
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                drive,
+                () -> -thrustmaster.getRawAxis(1),
+                () -> -thrustmaster.getRawAxis(0),
+                () -> AllianceFlipUtil.apply(Rotation2d.kPi)));
+
+    thrustmaster
+        .pov(90)
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                drive,
+                () -> -thrustmaster.getRawAxis(1),
+                () -> -thrustmaster.getRawAxis(0),
+                () -> AllianceFlipUtil.apply(Rotation2d.fromDegrees(-90))));
+
+    thrustmaster
+        .pov(270)
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                drive,
+                () -> -thrustmaster.getRawAxis(1),
+                () -> -thrustmaster.getRawAxis(0),
+                () -> AllianceFlipUtil.apply(Rotation2d.fromDegrees(90))));
 
     // UPPER SHOOTER
     // Set shooting velocity if shoot button pressed, we're in our alliance zone, hub is active, and
@@ -697,7 +720,9 @@ public class RobotContainer {
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos));
 
     // Set pos to demo pose when demo button is pressed and demo mode is on
-    Triggers.getInstance().demoDistanceShot().and(() -> HardwareConstants.TuningConstants.DEMO_MODE)
+    Triggers.getInstance()
+        .demoDistanceShot()
+        .and(() -> HardwareConstants.TuningConstants.DEMO_MODE)
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodDemoPos));
 
     // CANCELLATIONS
@@ -715,9 +740,9 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> MathUtil.clamp(-getThrustY(), -1.0, 1.0),
-            () -> MathUtil.clamp(-getThrustX(), -1.0, 1.0),
-            () -> MathUtil.clamp(-getThrustRot(), -1.0, 1.0)));
+            () -> -thrustmaster.getRawAxis(1),
+            () -> -thrustmaster.getRawAxis(0),
+            () -> -thrustmaster.getRawAxis(2)));
 
     // DRIVETRAIN
     // Align for shoot when shoot button is pressed and we're in our alliance zone and hub is
@@ -744,9 +769,9 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> MathUtil.clamp(-simController.getLeftY(), -1.0, 1.0),
-            () -> MathUtil.clamp(-simController.getLeftX(), -1.0, 1.0),
-            () -> MathUtil.clamp(-simController.getLeftTriggerAxis(), -1.0, 1.0)));
+            () -> -simController.getLeftY(),
+            () -> -simController.getLeftX(),
+            () -> -simController.getLeftTriggerAxis()));
     // Flywheel - idle
     flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // // Prestage - idle

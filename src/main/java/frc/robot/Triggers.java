@@ -155,13 +155,16 @@ public class Triggers {
             return (currentZone == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE);
           });
 
-  // Returns true if robot is able to score fuel at the current match time, or if timer is disabled, or if demo mode is on
+  // Returns true if robot is able to score fuel at the current match time, or if timer is disabled,
+  // or if demo mode is on
   // BUG FIX (issue 1): values are now read inside the lambda every cycle instead of captured once
   public final LoggedTrigger isShootSafeTime =
       new LoggedTrigger(
           "isShootSafeTime",
-          () -> HubShiftUtil.getShiftedShiftInfo().active() || HubShiftUtil.disabled
-            || HardwareConstants.TuningConstants.DEMO_MODE);
+          () ->
+              HubShiftUtil.getShiftedShiftInfo().active()
+                  || HubShiftUtil.disabled
+                  || HardwareConstants.TuningConstants.DEMO_MODE);
 
   // Composite checker for time and zone — true when both time and zone are safe to shoot
   public final LoggedTrigger isShootClear =
