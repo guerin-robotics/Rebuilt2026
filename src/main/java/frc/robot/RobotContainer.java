@@ -11,14 +11,12 @@ import static edu.wpi.first.math.util.Units.metersToInches;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Volts;
 
-import com.ctre.phoenix6.hardware.jni.HardwareJNI;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
@@ -434,7 +432,7 @@ public class RobotContainer {
             .shootButton()
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean()))
         .or(Triggers.getInstance().passButton())
-        .and(() -> !HardwareConstants.TuningConstants.demo)
+        .and(() -> !HardwareConstants.TuningConstants.DEMO_MODE)
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
@@ -595,7 +593,7 @@ public class RobotContainer {
     // Demo shot if demo mode true and demo shoot button pressed
     Triggers.getInstance()
         .demoDistanceShot()
-        .and(() -> HardwareConstants.TuningConstants.demo)
+        .and(() -> HardwareConstants.TuningConstants.DEMO_MODE)
         .whileTrue(
             FlywheelCommands.setFlywheelVelocity(
                     flywheel, HardwareConstants.TuningConstants.FlywheelTuningVelocity)
@@ -699,7 +697,7 @@ public class RobotContainer {
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos));
 
     // Set pos to demo pose when demo button is pressed and demo mode is on
-    Triggers.getInstance().demoDistanceShot().and(() -> HardwareConstants.TuningConstants.demo)
+    Triggers.getInstance().demoDistanceShot().and(() -> HardwareConstants.TuningConstants.DEMO_MODE)
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodDemoPos));
 
     // CANCELLATIONS

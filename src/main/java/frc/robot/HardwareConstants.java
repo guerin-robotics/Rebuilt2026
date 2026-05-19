@@ -124,6 +124,7 @@ public class HardwareConstants {
     public static boolean TUNING_MODE;
     public static boolean isTuning = false;
     public static boolean atComp = false;
+    public static boolean DEMO_MODE;
     public static boolean demo = true;
 
     public static final AngularVelocity FlywheelTuningVelocity = RPM.of(2000.0);

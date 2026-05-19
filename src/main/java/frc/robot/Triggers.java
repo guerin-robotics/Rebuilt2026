@@ -161,7 +161,7 @@ public class Triggers {
       new LoggedTrigger(
           "isShootSafeTime",
           () -> HubShiftUtil.getShiftedShiftInfo().active() || HubShiftUtil.disabled
-            || HardwareConstants.TuningConstants.demo);
+            || HardwareConstants.TuningConstants.DEMO_MODE);
 
   // Composite checker for time and zone — true when both time and zone are safe to shoot
   public final LoggedTrigger isShootClear =
