@@ -147,11 +147,14 @@ public class Robot extends LoggedRobot {
     if (HardwareConstants.TuningConstants.atComp) {
       if (DriverStation.isFMSAttached()) {
         HardwareConstants.TuningConstants.TUNING_MODE = false;
+        HardwareConstants.TuningConstants.DEMO_MODE = false;
       } else {
         HardwareConstants.TuningConstants.TUNING_MODE = HardwareConstants.TuningConstants.isTuning;
+        HardwareConstants.TuningConstants.DEMO_MODE = HardwareConstants.TuningConstants.demo;
       }
     } else {
       HardwareConstants.TuningConstants.TUNING_MODE = HardwareConstants.TuningConstants.isTuning;
+      HardwareConstants.TuningConstants.DEMO_MODE = HardwareConstants.TuningConstants.demo;
     }
   }
 
