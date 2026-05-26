@@ -29,6 +29,8 @@ public class Triggers {
       new CommandJoystick(HardwareConstants.ControllerConstants.JoystickControllerPort);
   private final CommandXboxController simController =
       new CommandXboxController(HardwareConstants.ControllerConstants.SimControllerPort);
+  private final CommandJoystick simKeyboardController =
+      new CommandJoystick(HardwareConstants.ControllerConstants.SimKeyboardControllerPort);
 
   // Button mapping triggers
   public Trigger shootButton() {
@@ -76,27 +78,33 @@ public class Triggers {
   }
 
   public Trigger simShootButton() {
-    return simController.b();
+    // return simController.b();
+    return simKeyboardController.button(1);
   }
 
   public Trigger simTrenchAlignButton() {
-    return simController.button(10);
+    // return simController.button(10);
+    return simKeyboardController.button(2);
   }
 
   public Trigger simIntakeInButton() {
-    return simController.button(11);
+    // return simController.button(11);
+    return simKeyboardController.button(3);
   }
 
   public Trigger simIntakeOutButton() {
-    return simController.button(12);
+    // return simController.button(12);
+    return simKeyboardController.button(4);
   }
 
   public Trigger simIntakeRollerButton() {
-    return simController.povUp();
+    // return simController.povUp();
+    return simKeyboardController.button(5);
   }
 
   public Trigger simIntakeCompressButton() {
-    return simController.povDown();
+    // return simController.povDown();
+    return simKeyboardController.button(6);
   }
 
   public Trigger simBumpAlignButton() {
@@ -109,7 +117,8 @@ public class Triggers {
   }
 
   public Trigger simPassButton() {
-    return simController.button(9);
+    // return simController.button(9);
+    return simKeyboardController.button(7);
   }
 
   public Trigger simXWheels() {
@@ -118,7 +127,20 @@ public class Triggers {
   }
 
   public Trigger simAllianceWinFlipper() {
-    return simController.a();
+    // return simController.a();
+    return simKeyboardController.button(8);
+  }
+
+  public double simXSupplier() {
+    return simKeyboardController.getRawAxis(0);
+  }
+
+  public double simYSupplier() {
+    return simKeyboardController.getRawAxis(1);
+  }
+
+  public double simRotationSupplier() {
+    return simKeyboardController.getRawAxis(2);
   }
 
   public Trigger tuningButton() {
@@ -155,13 +177,16 @@ public class Triggers {
             return (currentZone == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE);
           });
 
-  // Returns true if robot is able to score fuel at the current match time, or if timer is disabled, or if demo mode is on
+  // Returns true if robot is able to score fuel at the current match time, or if timer is disabled,
+  // or if demo mode is on
   // BUG FIX (issue 1): values are now read inside the lambda every cycle instead of captured once
   public final LoggedTrigger isShootSafeTime =
       new LoggedTrigger(
           "isShootSafeTime",
-          () -> HubShiftUtil.getShiftedShiftInfo().active() || HubShiftUtil.disabled
-            || HardwareConstants.TuningConstants.DEMO_MODE);
+          () ->
+              HubShiftUtil.getShiftedShiftInfo().active()
+                  || HubShiftUtil.disabled
+                  || HardwareConstants.TuningConstants.DEMO_MODE);
 
   // Composite checker for time and zone — true when both time and zone are safe to shoot
   public final LoggedTrigger isShootClear =

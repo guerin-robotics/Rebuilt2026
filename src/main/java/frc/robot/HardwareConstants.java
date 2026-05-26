@@ -205,6 +205,7 @@ public class HardwareConstants {
     public static final int ButtonPanelPort = 0;
     public static final double DEADBAND = 0.08;
     public static final int SimControllerPort = 5;
+    public static final int SimKeyboardControllerPort = 3;
   }
 
   public static class Zones {

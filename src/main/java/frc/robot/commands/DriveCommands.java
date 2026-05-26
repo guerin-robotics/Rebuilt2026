@@ -170,6 +170,7 @@ public class DriveCommands {
   //       .withName("DriveLucasProof");
   // }
 
+  // Align to shoot, stopping with x once aligned
   public static Command alignOrXForShoot(
       Drive drive,
       DoubleSupplier xSupplier,
@@ -179,6 +180,10 @@ public class DriveCommands {
         stopWithX(drive),
         joystickDriveAtAngle(drive, xSupplier, ySupplier, rotationSupplier),
         Triggers.getInstance().isAlignedForCurrentShot);
+  }
+
+  public static Command alignForDefenseShot(Drive drive) {
+    return drive.alignForDefenseShot();
   }
 
   /**
@@ -289,12 +294,14 @@ public class DriveCommands {
 
           double currentY = RobotState.getInstance().getEstimatedPose().getY();
 
-          // If the robot's y-position is less than the center line, it should snap to -90;
-          // otherwise, to 90
+          // If the robot's y-position is less than the center line, it should snap to 90;
+          // otherwise, to -90
+          // Flipped after shooter rebuild so that fuel trajectory is toward hub as passing through
+          // trench
           if (currentY < FieldConstants.LinesHorizontal.center) {
-            return Rotation2d.kCCW_90deg; // Snap to -90°
-          } else {
             return Rotation2d.kCW_90deg; // Snap to 90°
+          } else {
+            return Rotation2d.kCCW_90deg; // Snap to -90°
           }
         });
   }
