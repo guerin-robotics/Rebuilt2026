@@ -125,7 +125,7 @@ public class HardwareConstants {
     public static boolean isTuning = false;
     public static boolean atComp = false;
     public static boolean DEMO_MODE;
-    public static boolean demo = true;
+    public static boolean demo = false;
 
     public static final AngularVelocity FlywheelTuningVelocity = RPM.of(2000.0);
     public static final Angle HoodTuningPos = Degrees.of(12.25);
@@ -237,7 +237,8 @@ public class HardwareConstants {
       APPROACHING_ALLIANCE_TOWER,
       APPROACHING_ALLIANCE_TRENCH,
       APPROACHING_OPPOSING_TRENCH,
-      APPROACHING_OPPOSING_TOWER
+      APPROACHING_OPPOSING_TOWER,
+      NEUTRAL
     }
 
     public enum approachingZoneY {
@@ -260,7 +261,7 @@ public class HardwareConstants {
     public static final double zoneOffset = AllianceFlipUtil.applyX(0.5);
     public static final double timeInterval = 0.05;
 
-    public static final double approachingXOffset = AllianceFlipUtil.applyX(0.5);
+    public static final double approachingXOffset = AllianceFlipUtil.applyX(2);
     public static final double approachingYOffset = AllianceFlipUtil.applyY(0.5);
   }
 

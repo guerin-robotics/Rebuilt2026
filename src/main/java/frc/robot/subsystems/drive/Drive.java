@@ -14,10 +14,7 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.Waypoint;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
@@ -44,14 +41,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.AllianceFlipUtil;
-import frc.lib.FieldConstants;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.Robot;
 import frc.robot.RobotState;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.LocalADStarAK;
-import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -60,6 +55,8 @@ import org.littletonrobotics.junction.Logger;
 public class Drive extends SubsystemBase {
 
   public boolean areWheelsXed = false;
+
+  public boolean aligningDefensively = false;
   // TunerConstants doesn't include these constants, so they are declared locally
   static final double ODOMETRY_FREQUENCY = TunerConstants.kCANBus.isNetworkFD() ? 250.0 : 100.0;
   public static final double DRIVE_BASE_RADIUS =
@@ -284,33 +281,17 @@ public class Drive extends SubsystemBase {
   }
 
   public Command alignForDefenseShot() {
-    Pose2d initialPose =
-        new Pose2d(
-            RobotState.getInstance().getEstimatedPose().getX(),
-            RobotState.getInstance().getEstimatedPose().getY(),
-            RobotState.getInstance().getAngleToAllianceHub());
-    double targetx = AllianceFlipUtil.applyX(3.5);
+    double targetx = AllianceFlipUtil.applyX(2.5);
     double targety;
-    if (RobotState.getInstance().getEstimatedPose().getY()
-        >= FieldConstants.LinesHorizontal.center) {
+    if (RobotState.getInstance().getEstimatedPose().getY() >= AllianceFlipUtil.applyY(4.0)) {
       targety = AllianceFlipUtil.applyY(6.5);
     } else {
       targety = AllianceFlipUtil.applyY(1.5);
     }
     Pose2d targetPose =
         new Pose2d(targetx, targety, RobotState.getInstance().getAngleToAllianceHub());
-    List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(initialPose, targetPose);
-    PathPlannerPath path =
-        new PathPlannerPath(
-            waypoints,
-            new PathConstraints(
-                MetersPerSecond.of(4.0),
-                MetersPerSecondPerSecond.of(5.0),
-                DegreesPerSecond.of(540.0),
-                DegreesPerSecondPerSecond.of(1020.0)),
-            null,
-            new GoalEndState(0.0, RobotState.getInstance().getAngleToAllianceHub()));
-    Command followCommand = AutoBuilder.followPath(path);
+    Command followCommand =
+        AutoBuilder.pathfindToPose(targetPose, PathConstraints.unlimitedConstraints(12));
     return followCommand;
   }
 

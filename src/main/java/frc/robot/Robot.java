@@ -148,6 +148,7 @@ public class Robot extends LoggedRobot {
         "RobotState/SpecificZone", RobotState.getInstance().getSpecificZone(currentPose));
     Logger.recordOutput(
         "RobotState/ApproachingZone", RobotState.getInstance().getApproachingZoneX(currentPose));
+    Logger.recordOutput("RobotState/AligningDefensively", robotContainer.aligningDefensively());
 
     // Set tuning mode to false if connected to FMS
     if (HardwareConstants.TuningConstants.atComp) {

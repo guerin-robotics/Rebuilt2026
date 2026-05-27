@@ -503,7 +503,7 @@ public class RobotState {
         > FieldConstants.Tower.oppLeftUpright.getX() - HardwareConstants.Zones.approachingXOffset) {
       return HardwareConstants.Zones.approachingZoneX.APPROACHING_OPPOSING_TOWER;
     } else {
-      return null;
+      return HardwareConstants.Zones.approachingZoneX.NEUTRAL;
     }
   }
 

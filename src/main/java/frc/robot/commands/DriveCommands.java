@@ -76,6 +76,7 @@ public class DriveCommands {
     return Commands.run(
             () -> {
               drive.areWheelsXed = false;
+              drive.aligningDefensively = false;
               // Get linear velocity
               Translation2d linearVelocity =
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
@@ -114,6 +115,7 @@ public class DriveCommands {
     return Commands.run(
             () -> {
               drive.areWheelsXed = false;
+              drive.aligningDefensively = false;
               // Get linear velocity
               Translation2d linearVelocity =
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
@@ -183,6 +185,7 @@ public class DriveCommands {
   }
 
   public static Command alignForDefenseShot(Drive drive) {
+    drive.aligningDefensively = true;
     return drive.alignForDefenseShot();
   }
 
@@ -210,6 +213,7 @@ public class DriveCommands {
     return Commands.run(
             () -> {
               drive.areWheelsXed = false;
+              drive.aligningDefensively = false;
               // Get linear velocity
               Translation2d linearVelocity =
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
@@ -431,6 +435,7 @@ public class DriveCommands {
     return Commands.run(
             () -> {
               drive.areWheelsXed = true;
+              drive.aligningDefensively = false;
               Logger.recordOutput("RobotState/Drive", "Stopping with X");
               drive.stopWithX();
             },

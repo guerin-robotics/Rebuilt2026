@@ -1148,4 +1148,8 @@ public class RobotContainer {
   public boolean isDriveXed() {
     return drive.areWheelsXed;
   }
+
+  public boolean aligningDefensively() {
+    return drive.aligningDefensively;
+  }
 }
