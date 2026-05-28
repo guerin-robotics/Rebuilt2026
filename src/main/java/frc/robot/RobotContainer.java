@@ -758,7 +758,7 @@ public class RobotContainer {
 
     Triggers.getInstance()
         .simShootButton()
-        .and(Triggers.getInstance().isShootSafeZone)
+        .and(Triggers.getInstance().isShootClear)
         .and(
             () ->
                 frc.robot.RobotState.getInstance()

@@ -281,15 +281,18 @@ public class Drive extends SubsystemBase {
   }
 
   public Command alignForDefenseShot() {
-    double targetx = AllianceFlipUtil.applyX(2.5);
+    double targetx = AllianceFlipUtil.applyX(3.5);
     double targety;
-    if (RobotState.getInstance().getEstimatedPose().getY() >= AllianceFlipUtil.applyY(4.0)) {
-      targety = AllianceFlipUtil.applyY(6.5);
+    if (RobotState.getInstance().getEstimatedPose().getY() >= 4.0) {
+      targety = 6.5;
     } else {
-      targety = AllianceFlipUtil.applyY(1.5);
+      targety = 1.5;
     }
     Pose2d targetPose =
-        new Pose2d(targetx, targety, RobotState.getInstance().getAngleToAllianceHub());
+        new Pose2d(
+            targetx,
+            AllianceFlipUtil.applyY(targety),
+            RobotState.getInstance().getAngleToAllianceHub());
     Command followCommand =
         AutoBuilder.pathfindToPose(targetPose, PathConstraints.unlimitedConstraints(12));
     return followCommand;

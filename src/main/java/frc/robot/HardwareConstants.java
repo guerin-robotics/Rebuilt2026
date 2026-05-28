@@ -230,7 +230,8 @@ public class HardwareConstants {
       OPPOSING_HUB,
       OPPOSING_BUMP_FAR,
       OPPOSING_TRENCH_FAR,
-      OPPOSING_TOWER
+      OPPOSING_TOWER,
+      NEUTRAL
     }
 
     public enum approachingZoneX {
@@ -261,7 +262,7 @@ public class HardwareConstants {
     public static final double zoneOffset = AllianceFlipUtil.applyX(0.5);
     public static final double timeInterval = 0.05;
 
-    public static final double approachingXOffset = AllianceFlipUtil.applyX(2);
+    public static final double approachingXOffset = AllianceFlipUtil.applyX(1);
     public static final double approachingYOffset = AllianceFlipUtil.applyY(0.5);
   }
 
