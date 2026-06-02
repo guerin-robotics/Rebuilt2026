@@ -40,7 +40,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.lib.AllianceFlipUtil;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.Robot;
@@ -131,7 +130,7 @@ public class Drive extends SubsystemBase {
         this::getChassisSpeeds,
         this::runVelocity,
         new PPHolonomicDriveController(
-            new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
+            new PIDConstants(50.0, 0.0, 0.0), new PIDConstants(50.0, 0.0, 0.0)),
         PP_CONFIG,
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);
@@ -280,22 +279,11 @@ public class Drive extends SubsystemBase {
     stop();
   }
 
-  public Command alignForDefenseShot() {
-    double targetx = AllianceFlipUtil.applyX(3.5);
-    double targety;
-    if (RobotState.getInstance().getEstimatedPose().getY() >= 4.0) {
-      targety = 6.5;
-    } else {
-      targety = 1.5;
-    }
-    Pose2d targetPose =
-        new Pose2d(
-            targetx,
-            AllianceFlipUtil.applyY(targety),
-            RobotState.getInstance().getAngleToAllianceHub());
+  public void alignForDefenseShot(Pose2d targetPose) {
     Command followCommand =
         AutoBuilder.pathfindToPose(targetPose, PathConstraints.unlimitedConstraints(12));
-    return followCommand;
+    Logger.recordOutput("RobotState/targetPose", targetPose);
+    followCommand.schedule();
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */

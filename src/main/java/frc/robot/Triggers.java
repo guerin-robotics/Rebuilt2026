@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -67,6 +69,10 @@ public class Triggers {
 
   public Trigger passButton() {
     return thrustmaster.button(11);
+  }
+
+  public Trigger hardstopShootButton() {
+    return thrustmaster.button(9);
   }
 
   public Trigger demoDistanceShot() {

@@ -143,13 +143,6 @@ public class Robot extends LoggedRobot {
     // Return to non-RT thread priority (do not modify the first argument)
     // Threads.setCurrentThreadPriority(false, 10);
 
-    Logger.recordOutput("RobotState/BroadZone", RobotState.getInstance().getBroadZone());
-    Logger.recordOutput(
-        "RobotState/SpecificZone", RobotState.getInstance().getSpecificZone(currentPose));
-    Logger.recordOutput(
-        "RobotState/ApproachingZone", RobotState.getInstance().getApproachingZoneX(currentPose));
-    Logger.recordOutput("RobotState/AligningDefensively", robotContainer.aligningDefensively());
-
     // Set tuning mode to false if connected to FMS
     if (HardwareConstants.TuningConstants.atComp) {
       if (DriverStation.isFMSAttached()) {

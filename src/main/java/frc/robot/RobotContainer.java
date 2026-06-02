@@ -18,6 +18,7 @@ import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -419,7 +420,13 @@ public class RobotContainer {
     // This command does not run if the robot is approaching a hardstop spot (bump or trench) -
     // instead it runs
     // the hit hardstop and align command below
-    (Triggers.getInstance().shootButton().and(Triggers.getInstance().isShootSafeZone))
+    ((Triggers.getInstance().shootButton().and(Triggers.getInstance().isShootSafeZone))
+            .and(
+                () ->
+                    !(frc.robot.RobotState.getInstance()
+                            .getApproachingZoneX(
+                                frc.robot.RobotState.getInstance().getEstimatedPose())
+                        == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH)))
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             DriveCommands.alignOrXForShoot(
@@ -428,8 +435,26 @@ public class RobotContainer {
                 () -> -thrustmaster.getX() * .5,
                 () -> RobotState.getInstance().getAngleToAllianceHub()));
 
-    // If close to a hardstop spot (bump or trench), run into the hardstop and align to shoot
+    // If close to a hardstop spot (bump or trench), or if hardstop shoot button pressed,
+    // run into the hardstop and align to shoot
     // Eventually add tower
+    (Triggers.getInstance()
+        .shootButton()
+        .and(Triggers.getInstance().isShootClear)
+        .and(
+            () ->
+                frc.robot.RobotState.getInstance()
+                        .getApproachingZoneX(frc.robot.RobotState.getInstance().getEstimatedPose())
+                    == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH))
+        .or(Triggers.getInstance().hardstopShootButton())
+        .whileTrue(
+            Commands.sequence(
+                DriveCommands.alignForDefenseShot(drive),
+                DriveCommands.alignOrXForShoot(
+                    drive,
+                    () -> Triggers.getInstance().simXSupplier(),
+                    () -> Triggers.getInstance().simYSupplier(),
+                    () -> new Rotation2d(Triggers.getInstance().simRotationSupplier()))));
 
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
     // button is pressed
@@ -756,6 +781,8 @@ public class RobotContainer {
                 () -> Triggers.getInstance().simYSupplier(),
                 () -> RobotState.getInstance().getAngleToAllianceHub()));
 
+    // If shooting when near a hardstop spot (trench and eventually tower), go to the hardstop spot
+    // and shoot
     Triggers.getInstance()
         .simShootButton()
         .and(Triggers.getInstance().isShootClear)
