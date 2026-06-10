@@ -112,5 +112,5 @@ Coupling ratio: 4.5 (drive motor rotations per steer rotation)
 | AdvantageKit | 26.0.2 | `vendordeps/AdvantageKit.json` |
 | PathPlannerLib | current | `vendordeps/PathplannerLib.json` |
 
-Update vendor libraries at the start of each season. Do not update mid-season 
+Update vendor libraries at the start of each season. Do not update mid-season
 unless fixing a known critical bug.

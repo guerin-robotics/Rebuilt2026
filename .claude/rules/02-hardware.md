@@ -39,8 +39,8 @@ When adding a CAN device:
 
 Always use `PhoenixUtil.tryUntilOk(5, () -> motor.getConfigurator().apply(config))`.
 
-**Why:** CTRE devices silently ignore configuration if the CAN bus is busy at startup. 
-`tryUntilOk` retries until the config sticks. Without it, motors boot with default 
+**Why:** CTRE devices silently ignore configuration if the CAN bus is busy at startup.
+`tryUntilOk` retries until the config sticks. Without it, motors boot with default
 configs (no current limits, no gains) and the first match move may brown out the robot.
 
 Always set:
@@ -48,7 +48,7 @@ Always set:
 - Supply current limit with `SupplyCurrentLimitEnable = true`
 - Stator current limit for mechanisms that could stall
 
-Never raise current limits without understanding why they were set. The limits in 
+Never raise current limits without understanding why they were set. The limits in
 `HardwareConstants` were tuned against real motor heating data.
 
 ---
@@ -70,10 +70,10 @@ When changing inversion:
 
 ## Swerve Encoder Offsets
 
-The values in `COMP_TunerConstants.java` (e.g., `kFrontLeftEncoderOffset = 0.139404296875`) 
+The values in `COMP_TunerConstants.java` (e.g., `kFrontLeftEncoderOffset = 0.139404296875`)
 were calibrated by physically zeroing each module. They are not guessable.
 
-**Never change these values** unless you have run the CTRE Tuner X swerve calibration 
+**Never change these values** unless you have run the CTRE Tuner X swerve calibration
 wizard on the physical robot after a physical change (encoder swap, module rebuild).
 
 ---
@@ -114,7 +114,7 @@ Follower TalonFX motors must use the `Follower` control request:
 follower.setControl(new Follower(leader.getDeviceID(), opposeLeaderDirection));
 ```
 
-The `opposeLeaderDirection` boolean is `true` when the follower is physically 
+The `opposeLeaderDirection` boolean is `true` when the follower is physically
 mounted in the opposite direction. For the flywheel: IDs 31, 32, 33 oppose; ID 34 does not.
 
 **Never control a follower directly** while the leader is running.

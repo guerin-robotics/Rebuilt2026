@@ -4,24 +4,20 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
 /**
  * Simulation implementation of ExampleSubsystemIO.
  *
- * TEMPLATE INSTRUCTIONS:
- * 1. Choose the right WPILib sim model:
- *    - FlywheelSim for spinning mechanisms (wheels, rollers)
- *    - SingleJointedArmSim for pivoting mechanisms
- *    - ElevatorSim for linear mechanisms
- * 2. Update motor type and gear ratio
- * 3. Call sim.update(0.02) in updateInputs()
+ * <p>TEMPLATE INSTRUCTIONS: 1. Choose the right WPILib sim model: - FlywheelSim for spinning
+ * mechanisms (wheels, rollers) - SingleJointedArmSim for pivoting mechanisms - ElevatorSim for
+ * linear mechanisms 2. Update motor type and gear ratio 3. Call sim.update(0.02) in updateInputs()
  * 4. For mechanisms where sim physics don't matter, stub methods are fine
  *
- * NOTE: An empty stub (all defaults from the interface) is acceptable for sim
- * if the mechanism is not critical to simulate. Don't over-engineer sim models.
+ * <p>NOTE: An empty stub (all defaults from the interface) is acceptable for sim if the mechanism
+ * is not critical to simulate. Don't over-engineer sim models.
  */
 public class ExampleSubsystemIOSim implements ExampleSubsystemIO {
 

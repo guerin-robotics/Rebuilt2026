@@ -29,12 +29,12 @@ State queries needed (for Triggers or commands):
 Follow the AdvantageKit IO pattern exactly as shown in template/src/.
 Create:
 1. subsystems/[name]/io/[Name]IO.java
-2. subsystems/[name]/io/[Name]IOReal.java  
+2. subsystems/[name]/io/[Name]IOReal.java
 3. subsystems/[name]/io/[Name]IOSim.java
 4. subsystems/[name]/[Name].java
 5. commands/[Name]Commands.java
 
-Wire the real and sim implementations in RobotContainer under the existing 
+Wire the real and sim implementations in RobotContainer under the existing
 real/sim switch. Add the CAN ID constant to HardwareConstants.CanIds.
 Run ./gradlew compileJava before reporting complete.
 ```

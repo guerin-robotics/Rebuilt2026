@@ -1,6 +1,6 @@
 # Prompt: Review a Proposed Change
 
-Use this prompt before implementing a significant change, or to get a second opinion 
+Use this prompt before implementing a significant change, or to get a second opinion
 on a change someone else proposed.
 
 ---

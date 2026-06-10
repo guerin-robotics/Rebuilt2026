@@ -1,6 +1,6 @@
 # Safety Rules
 
-These rules exist because this robot runs on a 120-lb machine with fast-spinning wheels, 
+These rules exist because this robot runs on a 120-lb machine with fast-spinning wheels,
 high-current motors, and a live match environment. Incorrect code changes can cause:
 - Robot mechanism failure mid-match
 - Unexpected motion that injures people
@@ -11,7 +11,7 @@ high-current motors, and a live match environment. Incorrect code changes can ca
 
 ## Absolute Hard Stops
 
-The following require explicit user confirmation with the word "confirm" or equivalent 
+The following require explicit user confirmation with the word "confirm" or equivalent
 before any code is written. If unsure whether a change falls here, it does.
 
 ### CAN Configuration
@@ -45,7 +45,7 @@ before any code is written. If unsure whether a change falls here, it does.
 
 ## High-Risk Changes Requiring Explicit Summary
 
-Make these changes only after stating: "This changes [X] from [old] to [new]. 
+Make these changes only after stating: "This changes [X] from [old] to [new].
 The behavioral consequence is [Y]. The failure mode if wrong is [Z]."
 
 - Any change to drive or vision subsystem code

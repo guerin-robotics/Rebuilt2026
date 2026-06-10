@@ -56,14 +56,14 @@ Do not change any other named commands.
 
 ## Safety Rules for Auto Changes
 
-**Never modify `.auto` path files in code.** PathPlanner paths are edited in the 
+**Never modify `.auto` path files in code.** PathPlanner paths are edited in the
 PathPlanner GUI, not by hand. Editing the JSON directly corrupts waypoints.
 
-**Test auto start pose check.** After any auto change, verify that 
+**Test auto start pose check.** After any auto change, verify that
 `robotContainer.checkStartPose()` validates correctly for the new path's start pose.
 
-**Named command registration order matters.** Commands must be registered 
-before `AutoBuilder.buildAutoChooser()`. If they're registered after, PathPlanner 
+**Named command registration order matters.** Commands must be registered
+before `AutoBuilder.buildAutoChooser()`. If they're registered after, PathPlanner
 silently ignores them and the path runs without the command.
 
 **Event triggers need no subsystem requirements.** See `.claude/rules/03-commands.md`.
@@ -72,7 +72,7 @@ silently ignores them and the path runs without the command.
 
 ## Checking Auto Preview
 
-In `disabledPeriodic()`, the robot calls `robotContainer.updateAutoPreview()` to 
+In `disabledPeriodic()`, the robot calls `robotContainer.updateAutoPreview()` to
 draw the selected auto path on the Field2d widget. After adding a new auto:
 1. Select it on the dashboard
 2. Verify the path appears correctly on the field visualization

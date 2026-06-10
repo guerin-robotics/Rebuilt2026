@@ -13,7 +13,7 @@ Run these checks in order. Do not skip.
 Every change must compile. Do not deliver code with compile errors.
 
 ### 2. AdvantageKit Annotation Processor
-If you added or modified an `@AutoLog` inputs class, check that the annotation 
+If you added or modified an `@AutoLog` inputs class, check that the annotation
 processor generated the updated `*AutoLogged` class:
 ```bash
 ./gradlew generateSources   # or: ./gradlew build -x test
@@ -47,7 +47,7 @@ The repo uses Google Java Format via Spotless. Non-formatted code will fail CI.
 
 ## Simulation Verification
 
-For changes to command logic, trigger logic, or RobotState calculations — 
+For changes to command logic, trigger logic, or RobotState calculations —
 verify in simulation before declaring complete:
 
 ```bash
@@ -73,7 +73,7 @@ Check in Advantage Scope (connected to sim via NT4):
 ## Annotation Processor Note
 
 AdvantageKit uses annotation processing to generate `*AutoLogged` classes.
-If you add a field to an `@AutoLog` class (e.g., `FlywheelIOInputs`), 
+If you add a field to an `@AutoLog` class (e.g., `FlywheelIOInputs`),
 the `FlywheelIOInputsAutoLogged` class is regenerated at build time.
 
 Do not manually edit `*AutoLogged` files — they are overwritten on every build.
@@ -104,5 +104,5 @@ The robot's `build.gradle` sets:
 - GC: SerialGC with 50 ms max pause target
 - Log output: `/U/logs` on USB drive
 
-Do not change JVM flags without understanding the tradeoff. The current settings 
+Do not change JVM flags without understanding the tradeoff. The current settings
 were tuned to prevent GC pauses during match play.

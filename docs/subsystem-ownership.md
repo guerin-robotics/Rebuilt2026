@@ -1,13 +1,13 @@
 # Subsystem Ownership
 
-This document defines which files belong to each subsystem and 
+This document defines which files belong to each subsystem and
 the rules for modifying them.
 
 ---
 
 ## Ownership Model
 
-Each subsystem is a vertical slice. A change to one subsystem should 
+Each subsystem is a vertical slice. A change to one subsystem should
 **never require editing another subsystem's files.**
 
 If a fix requires touching two subsystems, that is a design smell.
@@ -150,7 +150,7 @@ commands/FeederCommands.java               ← shared command file for both feed
 
 ## Integration Layer (not owned by any single subsystem)
 
-These files wire subsystems together. They are the only place cross-subsystem 
+These files wire subsystems together. They are the only place cross-subsystem
 logic is permitted.
 
 ```
@@ -161,8 +161,8 @@ RobotState.java          — shared field geometry (singleton)
 Triggers.java            — shared button/state trigger objects (singleton)
 ```
 
-**Rule for `RobotContainer`:** Wiring only. If you find yourself writing 
-if-statements or game logic inside `RobotContainer`, it belongs in a command factory 
+**Rule for `RobotContainer`:** Wiring only. If you find yourself writing
+if-statements or game logic inside `RobotContainer`, it belongs in a command factory
 or `RobotState`.
 
 ---

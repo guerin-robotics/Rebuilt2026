@@ -11,15 +11,13 @@ import org.littletonrobotics.junction.AutoLog;
 /**
  * IO interface for ExampleSubsystem.
  *
- * TEMPLATE INSTRUCTIONS:
- * 1. Rename "Example" → your subsystem name throughout this file
- * 2. Add fields to ExampleSubsystemInputs for every signal you want logged
- *    (voltage, velocity, position, current, temperature, etc.)
- * 3. Add a default no-op method for every control output
- * 4. Real and sim implementations override these methods
+ * <p>TEMPLATE INSTRUCTIONS: 1. Rename "Example" → your subsystem name throughout this file 2. Add
+ * fields to ExampleSubsystemInputs for every signal you want logged (voltage, velocity, position,
+ * current, temperature, etc.) 3. Add a default no-op method for every control output 4. Real and
+ * sim implementations override these methods
  *
- * RULE: Hardware calls (TalonFX, CANcoder, etc.) belong in the IO implementation,
- * never in the subsystem class itself.
+ * <p>RULE: Hardware calls (TalonFX, CANcoder, etc.) belong in the IO implementation, never in the
+ * subsystem class itself.
  */
 public interface ExampleSubsystemIO {
 

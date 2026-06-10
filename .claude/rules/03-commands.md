@@ -65,7 +65,7 @@ Commands.sequence(
 )
 ```
 
-Phase 2 timeout = total budget minus phase 1. This guarantees the robot always 
+Phase 2 timeout = total budget minus phase 1. This guarantees the robot always
 fires within the total budget even if alignment never arrives.
 
 All timeout constants must live in `HardwareConstants.CompConstants.Waits` — not inline.
@@ -115,7 +115,7 @@ new EventTrigger("DeployIntake")
     //                          ^^ no subsystem arg — intentional
 ```
 
-**Why:** An event trigger with a subsystem requirement will interrupt the path-following 
+**Why:** An event trigger with a subsystem requirement will interrupt the path-following
 command that requires the drive subsystem. Removing the requirement lets both run.
 
 ---
@@ -128,8 +128,8 @@ Use this (from `util/`) when a command's mode must be re-evaluated while running
 new ContinuousConditionalCommand(commandIfTrue, commandIfFalse, conditionSupplier)
 ```
 
-WPILib's `ConditionalCommand` evaluates the condition only at schedule time. 
-Use `ContinuousConditionalCommand` when the driver can toggle a mode mid-execution 
+WPILib's `ConditionalCommand` evaluates the condition only at schedule time.
+Use `ContinuousConditionalCommand` when the driver can toggle a mode mid-execution
 (e.g., single/double compress toggle).
 
 ---

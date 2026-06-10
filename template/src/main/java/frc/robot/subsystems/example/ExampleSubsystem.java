@@ -13,16 +13,14 @@ import org.littletonrobotics.junction.Logger;
 /**
  * Template subsystem following the Guerin Robotics AdvantageKit IO pattern.
  *
- * TEMPLATE INSTRUCTIONS:
- * 1. Rename "ExampleSubsystem" → your subsystem name
- * 2. Update the Logger.processInputs() key to match your subsystem name
- * 3. Update the batteryLogger key to match your subsystem name
- * 4. Add public methods for every control action
- * 5. Do NOT add hardware calls here — all hardware goes in the IO implementation
- * 6. Do NOT reference other subsystems — use RobotState or Supplier callbacks
+ * <p>TEMPLATE INSTRUCTIONS: 1. Rename "ExampleSubsystem" → your subsystem name 2. Update the
+ * Logger.processInputs() key to match your subsystem name 3. Update the batteryLogger key to match
+ * your subsystem name 4. Add public methods for every control action 5. Do NOT add hardware calls
+ * here — all hardware goes in the IO implementation 6. Do NOT reference other subsystems — use
+ * RobotState or Supplier callbacks
  *
- * RULE: This class must compile and run identically whether the IO is real or sim.
- * That's the whole point of the IO abstraction.
+ * <p>RULE: This class must compile and run identically whether the IO is real or sim. That's the
+ * whole point of the IO abstraction.
  */
 public class ExampleSubsystem extends SubsystemBase {
 

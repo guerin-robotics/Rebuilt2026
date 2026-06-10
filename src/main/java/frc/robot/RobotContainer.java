@@ -697,7 +697,9 @@ public class RobotContainer {
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos));
 
     // Set pos to demo pose when demo button is pressed and demo mode is on
-    Triggers.getInstance().demoDistanceShot().and(() -> HardwareConstants.TuningConstants.DEMO_MODE)
+    Triggers.getInstance()
+        .demoDistanceShot()
+        .and(() -> HardwareConstants.TuningConstants.DEMO_MODE)
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodDemoPos));
 
     // CANCELLATIONS

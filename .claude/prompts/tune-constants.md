@@ -36,12 +36,12 @@ Wrong Ks causes the motor to not break static friction. Wrong Kv causes steady-s
 **Current limits:** Raising supply or stator limits risks brownout or motor damage.
 Always state why the old limit was insufficient before raising it.
 
-**Vision thresholds:** 
+**Vision thresholds:**
 - Lowering `maxAmbiguity` rejects more tags (fewer false poses, more pose gaps)
 - Raising `maxAngularVelocity` accepts poses while spinning (may degrade accuracy)
 - Changing std dev scaling directly affects auto accuracy
 
-**Timeout constants:** 
+**Timeout constants:**
 - Lowering `alignmentTimeoutSeconds` means the robot fires sooner without alignment
 - Raising it means the robot waits longer before giving up
 - Both have match-outcome consequences

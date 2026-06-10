@@ -13,34 +13,25 @@ import java.util.function.BooleanSupplier;
 /**
  * Command factory for ExampleSubsystem.
  *
- * TEMPLATE INSTRUCTIONS:
- * 1. Rename "ExampleSubsystem" → your subsystem name
- * 2. All methods are static — never instantiate this class
- * 3. Always call .withName() for AdvantageKit command logging
- * 4. Use Commands.startEnd() for "run while held, stop on release" behavior
- * 5. Use Commands.runOnce() for one-shot actions
- * 6. Use Commands.run() for continuous actions that should repeat each loop
- * 7. Use Commands.sequence() to chain actions
+ * <p>TEMPLATE INSTRUCTIONS: 1. Rename "ExampleSubsystem" → your subsystem name 2. All methods are
+ * static — never instantiate this class 3. Always call .withName() for AdvantageKit command logging
+ * 4. Use Commands.startEnd() for "run while held, stop on release" behavior 5. Use
+ * Commands.runOnce() for one-shot actions 6. Use Commands.run() for continuous actions that should
+ * repeat each loop 7. Use Commands.sequence() to chain actions
  *
- * PATTERN: If a command needs to wait for spinup then alignment before acting:
+ * <p>PATTERN: If a command needs to wait for spinup then alignment before acting:
  *
- *   Commands.sequence(
- *       Commands.waitUntil(isSpunUp).withTimeout(spinupTimeout),
- *       Commands.waitUntil(isAligned).withTimeout(alignTimeout - spinupTimeout),
- *       runAction()
- *   )
+ * <p>Commands.sequence( Commands.waitUntil(isSpunUp).withTimeout(spinupTimeout),
+ * Commands.waitUntil(isAligned).withTimeout(alignTimeout - spinupTimeout), runAction() )
  *
- * The alignment timeout is intentional — fire anyway if alignment never comes.
- * This is the "competition failsafe" pattern from FeederCommands.java.
+ * <p>The alignment timeout is intentional — fire anyway if alignment never comes. This is the
+ * "competition failsafe" pattern from FeederCommands.java.
  */
 public class ExampleCommands {
 
   // Basic voltage control — runs while command is active, stops on end
   public static Command runAtVoltage(ExampleSubsystem subsystem, Voltage voltage) {
-    return Commands.startEnd(
-            () -> subsystem.setVoltage(voltage),
-            () -> subsystem.stop(),
-            subsystem)
+    return Commands.startEnd(() -> subsystem.setVoltage(voltage), () -> subsystem.stop(), subsystem)
         .withName("Example_Voltage_" + voltage.in(Volts) + "V");
   }
 
@@ -52,8 +43,7 @@ public class ExampleCommands {
 
   // Stop immediately
   public static Command stop(ExampleSubsystem subsystem) {
-    return Commands.runOnce(() -> subsystem.stop(), subsystem)
-        .withName("Example_Stop");
+    return Commands.runOnce(() -> subsystem.stop(), subsystem).withName("Example_Stop");
   }
 
   // Idle (continuous default command pattern — runs forever until interrupted)
@@ -67,7 +57,8 @@ public class ExampleCommands {
   public static Command runAfterReady(
       ExampleSubsystem subsystem, AngularVelocity velocity, BooleanSupplier isAligned) {
     return Commands.sequence(
-            Commands.waitUntil(() -> subsystem.isAtVelocity()) // TODO: add isAtVelocity() to subsystem
+            Commands.waitUntil(
+                    () -> subsystem.isAtVelocity()) // TODO: add isAtVelocity() to subsystem
                 .withTimeout(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
             Commands.waitUntil(isAligned)
                 .withTimeout(

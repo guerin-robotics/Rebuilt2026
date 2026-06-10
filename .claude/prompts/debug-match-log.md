@@ -16,7 +16,7 @@ In Advantage Scope, I can see:
 - [key signal you observed, e.g.: "RobotState/IsAlignedToHub was false when the feeder ran"]
 - [another signal if available]
 
-Help me find the root cause by suggesting which signals to check and what the 
+Help me find the root cause by suggesting which signals to check and what the
 AdvantageKit log would show if each hypothesis were true.
 ```
 

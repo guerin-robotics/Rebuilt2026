@@ -15,13 +15,12 @@ import frc.util.PhoenixUtil;
 /**
  * Real hardware implementation of ExampleSubsystemIO.
  *
- * TEMPLATE INSTRUCTIONS:
- * 1. Replace "TODO_MOTOR_CAN_ID" with your CAN ID constant from HardwareConstants
- * 2. Replace "TODO_CAN_BUS" with "rio" or "Canivore"
- * 3. Configure TalonFXConfiguration for your motor (current limits, neutral mode, etc.)
- * 4. Add StatusSignal fields for every signal in ExampleSubsystemIOInputs
- * 5. Add control request objects (VoltageOut, VelocityTorqueCurrentFOC, etc.)
- * 6. Call BaseStatusSignal.refreshAll() at the top of updateInputs()
+ * <p>TEMPLATE INSTRUCTIONS: 1. Replace "TODO_MOTOR_CAN_ID" with your CAN ID constant from
+ * HardwareConstants 2. Replace "TODO_CAN_BUS" with "rio" or "Canivore" 3. Configure
+ * TalonFXConfiguration for your motor (current limits, neutral mode, etc.) 4. Add StatusSignal
+ * fields for every signal in ExampleSubsystemIOInputs 5. Add control request objects (VoltageOut,
+ * VelocityTorqueCurrentFOC, etc.) 6. Call BaseStatusSignal.refreshAll() at the top of
+ * updateInputs()
  */
 public class ExampleSubsystemIOReal implements ExampleSubsystemIO {
 

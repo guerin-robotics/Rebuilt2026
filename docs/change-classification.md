@@ -80,8 +80,8 @@ Then wait for acknowledgment.
 
 ## Level 4 — Blocked (Hard Stop — explicit confirmation required)
 
-Changes that can cause incorrect physical motion, destroy calibration data, 
-or break the logging system. Must not proceed without the user explicitly 
+Changes that can cause incorrect physical motion, destroy calibration data,
+or break the logging system. Must not proceed without the user explicitly
 saying "confirm" or equivalent.
 
 Examples:
