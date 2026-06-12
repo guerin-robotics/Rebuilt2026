@@ -29,62 +29,40 @@ public class VisionConstants {
   public static String camera2Name = "ShooterRight";
   public static String camera3Name = "ShooterLeft";
 
-  // Robot right camera (flipped to left):
-  // x: 1.000
-  // y: -13.175
-  // z: 6.708 - 0.25 = 6.458
-  // roll: 0.0
-  // pitch: 15.0 (positive = tilted upward in WPILib)
-  // yaw: -90.0
+  // Robot-to-camera transforms (values from robot-spec).
+  // WPILib conventions: X forward, Y left, Z up (Inches.of(...) converts to meters).
+  // Rotation3d argument order is (roll, pitch, yaw).
+  // Pitch is rotation about +Y: NEGATIVE pitch tilts the camera UPWARD.
+  // Yaw is rotation about +Z, counterclockwise positive (90 = left, 270/-90 = right).
+
+  // RobotRight: front-right of robot, facing right (yaw 270), tilted up 15 deg
   public static final Transform3d robotToCamera0 =
       new Transform3d(
           new Translation3d(Inches.of(1.0), Inches.of(-12.171), Inches.of(6.438)),
           new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(270.0)));
 
-  // Robot left camera (flipped to right):
-  // x: 1.000
-  // y: 13.425
-  // z: 6.708 - 0.25 = 6.458
-  // roll: 0.0
-  // pitch: 15.0
-  // yaw: 90.0
+  // RobotLeft: front-left of robot, facing left (yaw 90), tilted up 15 deg
   public static final Transform3d robotToCamera1 =
       new Transform3d(
           new Translation3d(Inches.of(1.0), Inches.of(12.421), Inches.of(6.438)),
           new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(90.0)));
 
-  // Shooter right (flipped to left):
-  // x: -13.576
-  // y: -6.125
-  // z: 11.028 + 1.5 = 12.528
-  // roll: 0.0
-  // pitch: 15.0
-  // yaw: 180.0
+  // ShooterRight: rear-right of robot, facing backward (yaw 180), tilted up 15 deg
   public static final Transform3d robotToCamera2 =
       new Transform3d(
-          new Translation3d(
-              Inches.of(-12.572), Inches.of(-6.125), Inches.of(12.509)), // -11.028 - 1.5
+          new Translation3d(Inches.of(-12.572), Inches.of(-6.125), Inches.of(12.509)),
           new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(180)));
 
-  // Shooter left (flipped to right):
-  // x: -13.576
-  // y: 5.375
-  // z: 11.028 + 1.5 = 12.528
-  // roll: 0.0
-  // pitch: 15.0
-  // yaw: 180.0
+  // ShooterLeft: rear-left of robot, facing backward (yaw 180), tilted up 15 deg
   public static final Transform3d robotToCamera3 =
       new Transform3d(
-          new Translation3d(
-              Inches.of(-12.572), Inches.of(5.375), Inches.of(12.509)), // -11.028 - 1.5
+          new Translation3d(Inches.of(-12.572), Inches.of(5.375), Inches.of(12.509)),
           new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(180)));
 
   // ---- Filtering thresholds ----
 
   // Single-tag ambiguity above this is rejected (multi-tag is always trusted).
-  // Lowered from 0.2 → 0.1 to reduce false-positive single-tag solves
-  // that pick the wrong PnP solution.
-  public static double maxAmbiguity = 0.4; // 0.3
+  public static double maxAmbiguity = 0.4;
 
   // Estimated pose Z (height) must be below this to be realistic
   public static double maxZError = 2;

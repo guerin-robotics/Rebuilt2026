@@ -16,10 +16,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 /**
  * IO implementation for real PhotonVision hardware.
@@ -86,7 +86,6 @@ public class VisionIOPhotonVision implements VisionIO {
       if (estimatedPose.isEmpty()) {
         estimatedPose = poseEstimator.estimateLowestAmbiguityPose(result);
       }
-      Logger.recordOutput("Vision/" + camera.getName() + "/UsedMultiTag", usedMultiTag);
 
       // If neither strategy produced a result, skip this frame
       if (estimatedPose.isEmpty()) {
@@ -95,26 +94,45 @@ public class VisionIOPhotonVision implements VisionIO {
 
       EstimatedRobotPose estimate = estimatedPose.get();
 
-      // Calculate average tag distance (used for standard deviation scaling)
-      double totalTagDistance = 0.0;
+      // Collect all tag IDs seen (estimate.targetsUsed contains every target in the frame)
       for (var target : estimate.targetsUsed) {
-        totalTagDistance += target.bestCameraToTarget.getTranslation().getNorm();
-      }
-      double avgTagDistance =
-          estimate.targetsUsed.isEmpty() ? 0.0 : totalTagDistance / estimate.targetsUsed.size();
-
-      // Collect all tag IDs seen
-      for (var target : estimate.targetsUsed) {
-        tagIds.add((short) target.fiducialId);
+        if (target.fiducialId >= 0) {
+          tagIds.add((short) target.fiducialId);
+        }
       }
 
-      // Determine ambiguity — multi-tag results have near-zero ambiguity,
-      // single-tag results use the target's reported ambiguity.
-      double ambiguity =
-          estimate.targetsUsed.size() > 1
-              ? 0.0
-              : (estimate.targetsUsed.isEmpty() ? 1.0 : estimate.targetsUsed.get(0).poseAmbiguity);
-      Logger.recordOutput("Vision/" + camera.getName() + "/Ambiguity", ambiguity);
+      // Determine ambiguity, tag count, and average distance for the solve.
+      // CAUTION: estimateLowestAmbiguityPose() puts ALL targets in the frame into
+      // estimate.targetsUsed even though its pose comes from a single tag, so the
+      // single-tag fallback must recompute metadata from the one target actually used.
+      double ambiguity;
+      int tagCount;
+      double avgTagDistance;
+      if (usedMultiTag) {
+        // Coprocessor multi-tag PnP used every target — near-zero ambiguity
+        ambiguity = 0.0;
+        tagCount = estimate.targetsUsed.size();
+        double totalTagDistance = 0.0;
+        for (var target : estimate.targetsUsed) {
+          totalTagDistance += target.bestCameraToTarget.getTranslation().getNorm();
+        }
+        avgTagDistance = tagCount == 0 ? 0.0 : totalTagDistance / tagCount;
+      } else {
+        // Find the lowest-ambiguity fiducial target — the one the fallback solve used
+        PhotonTrackedTarget usedTarget = null;
+        for (var target : estimate.targetsUsed) {
+          if (target.poseAmbiguity != -1
+              && (usedTarget == null || target.poseAmbiguity < usedTarget.poseAmbiguity)) {
+            usedTarget = target;
+          }
+        }
+        if (usedTarget == null) {
+          continue; // No valid fiducial target — should not happen if a pose was produced
+        }
+        ambiguity = usedTarget.poseAmbiguity;
+        tagCount = 1;
+        avgTagDistance = usedTarget.bestCameraToTarget.getTranslation().getNorm();
+      }
 
       // Add the observation for downstream filtering and pose fusion
       poseObservations.add(
@@ -122,7 +140,7 @@ public class VisionIOPhotonVision implements VisionIO {
               estimate.timestampSeconds,
               estimate.estimatedPose,
               ambiguity,
-              estimate.targetsUsed.size(),
+              tagCount,
               avgTagDistance,
               PoseObservationType.PHOTONVISION));
     }

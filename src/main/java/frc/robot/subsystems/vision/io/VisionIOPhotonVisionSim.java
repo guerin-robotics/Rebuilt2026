@@ -23,6 +23,11 @@ public class VisionIOPhotonVisionSim extends VisionIOPhotonVision {
   private final Supplier<Pose2d> poseSupplier;
   private final PhotonCameraSim cameraSim;
 
+  // visionSim.update() re-renders EVERY camera on the shared VisionSystemSim, so only
+  // the first-constructed instance steps the sim. Its updateInputs() runs first in
+  // Vision.periodic(), so all cameras still see fresh data each loop.
+  private final boolean updatesVisionSim;
+
   /**
    * Creates a new VisionIOPhotonVisionSim.
    *
@@ -35,6 +40,7 @@ public class VisionIOPhotonVisionSim extends VisionIOPhotonVision {
     this.poseSupplier = poseSupplier;
 
     // Initialize vision sim
+    updatesVisionSim = visionSim == null;
     if (visionSim == null) {
       visionSim = new VisionSystemSim("main");
       visionSim.addAprilTags(aprilTagLayout);
@@ -48,7 +54,9 @@ public class VisionIOPhotonVisionSim extends VisionIOPhotonVision {
 
   @Override
   public void updateInputs(VisionIOInputs inputs) {
-    visionSim.update(poseSupplier.get());
+    if (updatesVisionSim) {
+      visionSim.update(poseSupplier.get());
+    }
     super.updateInputs(inputs);
   }
 }
