@@ -14,6 +14,7 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
@@ -53,6 +54,8 @@ import org.littletonrobotics.junction.Logger;
 public class Drive extends SubsystemBase {
 
   public boolean areWheelsXed = false;
+
+  public boolean aligningDefensively = false;
   // TunerConstants doesn't include these constants, so they are declared locally
   static final double ODOMETRY_FREQUENCY = TunerConstants.kCANBus.isNetworkFD() ? 250.0 : 100.0;
   public static final double DRIVE_BASE_RADIUS =
@@ -127,7 +130,7 @@ public class Drive extends SubsystemBase {
         this::getChassisSpeeds,
         this::runVelocity,
         new PPHolonomicDriveController(
-            new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
+            new PIDConstants(50.0, 0.0, 0.0), new PIDConstants(50.0, 0.0, 0.0)),
         PP_CONFIG,
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);
@@ -274,6 +277,13 @@ public class Drive extends SubsystemBase {
     }
     kinematics.resetHeadings(headings);
     stop();
+  }
+
+  public void alignForDefenseShot(Pose2d targetPose) {
+    Command followCommand =
+        AutoBuilder.pathfindToPose(targetPose, PathConstraints.unlimitedConstraints(12));
+    Logger.recordOutput("RobotState/targetPose", targetPose);
+    followCommand.schedule();
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */

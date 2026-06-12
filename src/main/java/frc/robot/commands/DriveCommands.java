@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -76,6 +77,7 @@ public class DriveCommands {
     return Commands.run(
             () -> {
               drive.areWheelsXed = false;
+              drive.aligningDefensively = false;
               // Get linear velocity
               Translation2d linearVelocity =
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
@@ -114,6 +116,7 @@ public class DriveCommands {
     return Commands.run(
             () -> {
               drive.areWheelsXed = false;
+              drive.aligningDefensively = false;
               // Get linear velocity
               Translation2d linearVelocity =
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
@@ -170,6 +173,7 @@ public class DriveCommands {
   //       .withName("DriveLucasProof");
   // }
 
+  // Align to shoot, stopping with x once aligned
   public static Command alignOrXForShoot(
       Drive drive,
       DoubleSupplier xSupplier,
@@ -179,6 +183,37 @@ public class DriveCommands {
         stopWithX(drive),
         joystickDriveAtAngle(drive, xSupplier, ySupplier, rotationSupplier),
         Triggers.getInstance().isAlignedForCurrentShot);
+  }
+
+  public static Command alignForDefenseShot(Drive drive) {
+    return Commands.run(
+        () -> {
+          drive.aligningDefensively = true;
+
+          double targetx = AllianceFlipUtil.applyX(3.5);
+          double targety;
+          if (AllianceFlipUtil.applyY(RobotState.getInstance().getEstimatedPose().getY()) >= 4.0) {
+            targety = AllianceFlipUtil.applyY(6.5);
+          } else {
+            targety = AllianceFlipUtil.applyY(1.5);
+          }
+
+          // Similar mechanism to getAngleToAllianceHub(), only using target pose instead of current
+          // pose
+          // Get alliance hub target (2D position on the field)
+          Translation3d hubTarget3d = RobotState.getInstance().getAllianceHubTarget();
+          Translation2d hubTarget2d = hubTarget3d.toTranslation2d();
+          // Calculate the vector from target pose to hub
+          Translation2d robotToHub = hubTarget2d.minus(new Translation2d(targetx, targety));
+          // Calculate angle
+          Rotation2d targetRotation =
+              new Rotation2d(robotToHub.getX(), robotToHub.getY()).plus(Rotation2d.kPi);
+
+          Pose2d targetPose = new Pose2d(targetx, targety, targetRotation);
+
+          drive.alignForDefenseShot(targetPose);
+        },
+        drive);
   }
 
   /**
@@ -205,6 +240,7 @@ public class DriveCommands {
     return Commands.run(
             () -> {
               drive.areWheelsXed = false;
+              drive.aligningDefensively = false;
               // Get linear velocity
               Translation2d linearVelocity =
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
@@ -289,12 +325,14 @@ public class DriveCommands {
 
           double currentY = RobotState.getInstance().getEstimatedPose().getY();
 
-          // If the robot's y-position is less than the center line, it should snap to -90;
-          // otherwise, to 90
+          // If the robot's y-position is less than the center line, it should snap to 90;
+          // otherwise, to -90
+          // Flipped after shooter rebuild so that fuel trajectory is toward hub as passing through
+          // trench
           if (currentY < FieldConstants.LinesHorizontal.center) {
-            return Rotation2d.kCCW_90deg; // Snap to -90°
-          } else {
             return Rotation2d.kCW_90deg; // Snap to 90°
+          } else {
+            return Rotation2d.kCCW_90deg; // Snap to -90°
           }
         });
   }
@@ -424,6 +462,7 @@ public class DriveCommands {
     return Commands.run(
             () -> {
               drive.areWheelsXed = true;
+              drive.aligningDefensively = false;
               Logger.recordOutput("RobotState/Drive", "Stopping with X");
               drive.stopWithX();
             },

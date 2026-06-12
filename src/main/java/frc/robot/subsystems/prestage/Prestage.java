@@ -1,7 +1,5 @@
 package frc.robot.subsystems.prestage;
 
-import static edu.wpi.first.units.Units.RPM;
-
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
@@ -14,7 +12,6 @@ import org.littletonrobotics.junction.Logger;
 public class Prestage extends SubsystemBase {
   private final PrestageIO io;
   private final PrestageIOInputsAutoLogged inputs;
-  private double currentRPMTarget = 0;
 
   public Prestage(PrestageIO io) {
     this.io = io;
@@ -44,7 +41,6 @@ public class Prestage extends SubsystemBase {
   }
 
   public void setPrestageVelocity(AngularVelocity prestageVelo) {
-    currentRPMTarget = prestageVelo.in(RPM);
     io.setPrestageVelocity(prestageVelo);
   }
 }

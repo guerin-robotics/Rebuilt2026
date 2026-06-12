@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -29,6 +31,8 @@ public class Triggers {
       new CommandJoystick(HardwareConstants.ControllerConstants.JoystickControllerPort);
   private final CommandXboxController simController =
       new CommandXboxController(HardwareConstants.ControllerConstants.SimControllerPort);
+  private final CommandJoystick simKeyboardController =
+      new CommandJoystick(HardwareConstants.ControllerConstants.SimKeyboardControllerPort);
 
   // Button mapping triggers
   public Trigger shootButton() {
@@ -67,6 +71,10 @@ public class Triggers {
     return thrustmaster.button(11);
   }
 
+  public Trigger hardstopShootButton() {
+    return thrustmaster.button(9);
+  }
+
   public Trigger demoDistanceShot() {
     return thrustmaster.button(7);
   }
@@ -76,27 +84,33 @@ public class Triggers {
   }
 
   public Trigger simShootButton() {
-    return simController.b();
+    // return simController.b();
+    return simKeyboardController.button(1);
   }
 
   public Trigger simTrenchAlignButton() {
-    return simController.button(10);
+    // return simController.button(10);
+    return simKeyboardController.button(2);
   }
 
   public Trigger simIntakeInButton() {
-    return simController.button(11);
+    // return simController.button(11);
+    return simKeyboardController.button(3);
   }
 
   public Trigger simIntakeOutButton() {
-    return simController.button(12);
+    // return simController.button(12);
+    return simKeyboardController.button(4);
   }
 
   public Trigger simIntakeRollerButton() {
-    return simController.povUp();
+    // return simController.povUp();
+    return simKeyboardController.button(5);
   }
 
   public Trigger simIntakeCompressButton() {
-    return simController.povDown();
+    // return simController.povDown();
+    return simKeyboardController.button(6);
   }
 
   public Trigger simBumpAlignButton() {
@@ -109,7 +123,8 @@ public class Triggers {
   }
 
   public Trigger simPassButton() {
-    return simController.button(9);
+    // return simController.button(9);
+    return simKeyboardController.button(7);
   }
 
   public Trigger simXWheels() {
@@ -118,7 +133,20 @@ public class Triggers {
   }
 
   public Trigger simAllianceWinFlipper() {
-    return simController.a();
+    // return simController.a();
+    return simKeyboardController.button(8);
+  }
+
+  public double simXSupplier() {
+    return simKeyboardController.getRawAxis(0);
+  }
+
+  public double simYSupplier() {
+    return simKeyboardController.getRawAxis(1);
+  }
+
+  public double simRotationSupplier() {
+    return simKeyboardController.getRawAxis(2);
   }
 
   public Trigger tuningButton() {

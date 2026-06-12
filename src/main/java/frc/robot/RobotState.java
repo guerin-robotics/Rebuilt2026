@@ -435,7 +435,8 @@ public class RobotState {
   }
 
   // Returns a "specific" zone - alliance/opposing tower/trench/bump near/far
-  // Returns null if in neutral zone
+  // Returns neutral if not in alliance/opposing tower/trench/bump near/far (including if just in
+  // middle of alliance zone)
   public HardwareConstants.Zones.specificZone getSpecificZone(Pose2d pose) {
     double poseX = AllianceFlipUtil.applyX(pose.getX());
     double poseY = AllianceFlipUtil.applyY(pose.getY());
@@ -449,11 +450,11 @@ public class RobotState {
     } else if (broadZone == HardwareConstants.Zones.broadZone.ALLIANCE_TRENCH) {
       if (poseY < FieldConstants.RightTrench.openingTopLeft.getY()) {
         return HardwareConstants.Zones.specificZone.ALLIANCE_TRENCH_NEAR;
-      } else if (poseY < FieldConstants.RightBump.nearLeftCorner.getY()) {
+      } else if (poseY < FieldConstants.Hub.farRightCorner.getY()) {
         return HardwareConstants.Zones.specificZone.ALLIANCE_BUMP_NEAR;
-      } else if (poseY < FieldConstants.LeftTrench.openingTopRight.getY()) {
+      } else if (poseY < FieldConstants.Hub.farLeftCorner.getY()) {
         return HardwareConstants.Zones.specificZone.ALLIANCE_HUB;
-      } else if (poseY < FieldConstants.LeftTrench.openingTopLeft.getY()) {
+      } else if (poseY < FieldConstants.LeftTrench.openingTopRight.getY()) {
         return HardwareConstants.Zones.specificZone.ALLIANCE_BUMP_FAR;
       } else {
         return HardwareConstants.Zones.specificZone.ALLIANCE_TRENCH_FAR;
@@ -463,9 +464,9 @@ public class RobotState {
         return HardwareConstants.Zones.specificZone.OPPOSING_TRENCH_NEAR;
       } else if (poseY < FieldConstants.RightBump.nearLeftCorner.getY()) {
         return HardwareConstants.Zones.specificZone.OPPOSING_BUMP_NEAR;
-      } else if (poseY < FieldConstants.LeftTrench.openingTopRight.getY()) {
+      } else if (poseY < FieldConstants.LeftBump.farRightCorner.getY()) {
         return HardwareConstants.Zones.specificZone.OPPOSING_HUB;
-      } else if (poseY < FieldConstants.LeftTrench.openingTopLeft.getY()) {
+      } else if (poseY < FieldConstants.LeftTrench.openingTopRight.getY()) {
         return HardwareConstants.Zones.specificZone.OPPOSING_BUMP_FAR;
       } else {
         return HardwareConstants.Zones.specificZone.OPPOSING_TRENCH_FAR;
@@ -476,7 +477,7 @@ public class RobotState {
         && (poseY > FieldConstants.Tower.oppRightUpright.getY())) {
       return HardwareConstants.Zones.specificZone.OPPOSING_TOWER;
     } else {
-      return null;
+      return HardwareConstants.Zones.specificZone.NEUTRAL;
     }
   }
 
@@ -503,7 +504,7 @@ public class RobotState {
         > FieldConstants.Tower.oppLeftUpright.getX() - HardwareConstants.Zones.approachingXOffset) {
       return HardwareConstants.Zones.approachingZoneX.APPROACHING_OPPOSING_TOWER;
     } else {
-      return null;
+      return HardwareConstants.Zones.approachingZoneX.NEUTRAL;
     }
   }
 
