@@ -212,7 +212,14 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+        // Replay requires one VisionIO per camera so all four cameras' logged inputs are replayed
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIO() {},
+                new VisionIO() {},
+                new VisionIO() {},
+                new VisionIO() {});
         flywheel = new Flywheel(new FlywheelIO() {});
         upperFeeder = new UpperFeeder(new UpperFeederIO() {});
         lowerFeeder = new LowerFeeder(new LowerFeederIO() {});
@@ -697,7 +704,9 @@ public class RobotContainer {
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodTuningPos));
 
     // Set pos to demo pose when demo button is pressed and demo mode is on
-    Triggers.getInstance().demoDistanceShot().and(() -> HardwareConstants.TuningConstants.DEMO_MODE)
+    Triggers.getInstance()
+        .demoDistanceShot()
+        .and(() -> HardwareConstants.TuningConstants.DEMO_MODE)
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodDemoPos));
 
     // CANCELLATIONS
