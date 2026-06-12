@@ -1,0 +1,11 @@
+# Platform-specific binaries — download from releases for your platform
+ClaudeScope.exe
+ClaudeScope-darwin-*
+ClaudeScope-linux-*
+ClaudeScope-windows-*
+
+# Python venv created by wpilib-agent-tools installer
+wpilib-agent-tools/.venv/
+
+# OS metadata
+.DS_Store

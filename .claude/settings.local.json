@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r \"//.*[0-9]\\\\|/*.*[0-9]\" /Users/parkerpulfer/Repos/guerin-robotics/Rebuilt2026/src/main/java/frc/robot/subsystems/drive -include=\"*.java\")",
+      "WebFetch(domain:www.chiefdelphi.com)",
+      "Read(//private/tmp/**)",
+      "Bash(gh api *)",
+      "Bash(python3 -c \"import json,sys; data=json.load\\(sys.stdin\\); [print\\(f['name'], f['type']\\) for f in data]\")",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(curl -s \"https://raw.githubusercontent.com/rylero/ClaudeScope/main/README.md\")",
+      "Bash(find ~/.gradle/caches -name \"akit-logdumper*.jar\" 2>/dev/null | sort -V | tail -3; find /Users/parkerpulfer/Repos/guerin-robotics/Rebuilt2026/build -name \"akit-logdumper*.jar\" 2>/dev/null | head -3)",
+      "Read(//Users/parkerpulfer/.gradle/caches/**)"
+    ]
+  }
+}
