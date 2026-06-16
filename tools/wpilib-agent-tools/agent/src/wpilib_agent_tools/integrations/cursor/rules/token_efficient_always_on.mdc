@@ -1,0 +1,54 @@
+---
+description: Token-efficient agent usage — delegate broad searches and bulk output to subagents, reserve the main agent for reasoning and targeted edits
+alwaysApply: true
+---
+
+# Token-Efficient Agent Usage
+
+## Principle
+Minimize main-agent context consumption and cost. Delegate broad work to subagents. **All subagents MUST use `model: "fast"`.**
+
+## Subagent Model Policy
+
+- **Every `Task` call MUST include `model: "fast"`.** No exceptions.
+- Never omit the model parameter. Omitting it inherits the parent model, which defeats the purpose.
+- If a fast subagent produces insufficient results, retry it with a better prompt before escalating models.
+- If you believe a task truly requires the parent model, **state why in your response to the user and get approval before proceeding.**
+
+## Search & Exploration
+
+- **Always** delegate to `Task` subagents (`explore` or `generalPurpose`) for:
+  - Codebase-wide searches, structural questions, "where/how" queries
+  - Discovering project layout or finding relevant files before editing
+  - Gathering context across multiple files or directories
+- Subagent prompts should request **only what's needed** — file paths, line ranges, key snippets — not full file contents.
+- Prefer multiple focused subagents in parallel over one broad sweep.
+- Short, targeted `Grep`/`Glob` calls are fine on the main agent when you know the exact symbol and expect few results.
+
+## File Reading (Main Agent)
+
+- Read files you already know the exact path and location of (after a subagent identified them, or for a targeted edit).
+- Use line offsets to read only the relevant section of large files.
+- **Do not** speculatively read files to explore — delegate to a subagent.
+
+## CLI Tools, Simulation & Log Analysis
+
+- Delegate to `Task` subagents (`shell` type) for:
+  - `wpilib-agent-tools` commands (`keys`, `query`, `logs`, `graph`, `sim`, `math`)
+  - Any CLI output that may be long or require parsing
+  - Sandbox workflows (create, run, query, graph)
+- Subagents must parse/summarize CLI output and return **only the relevant findings**.
+- Main agent may run short, bounded CLI calls directly (e.g. a single `query --json` with a known key).
+
+## Web Searches & Documentation
+
+- Delegate to `Task` subagents (`generalPurpose`) for:
+  - Web searches, fetching docs, researching unfamiliar topics
+- Subagents return **concise summaries**, not raw page content.
+- Main agent may use `WebSearch`/`WebFetch` directly only for a single quick lookup where you know exactly what you need.
+
+## General
+
+- Batch independent subagent launches into a single message.
+- Summarize subagent results before proceeding — don't re-search the same ground.
+- Never re-read content a subagent already provided unless absolutely necessary.

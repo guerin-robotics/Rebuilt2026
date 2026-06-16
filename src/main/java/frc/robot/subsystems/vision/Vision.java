@@ -118,6 +118,14 @@ public class Vision extends SubsystemBase {
         }
       }
 
+      // Latest per-camera debug values for logging (last observation processed wins)
+      String lastRejectionReason = "";
+      double lastAmbiguity = 0.0;
+      double lastAverageTagDistance = 0.0;
+      int lastTagCount = 0;
+      double lastLinearStdDev = 0.0;
+      double lastAngularStdDev = 0.0;
+
       // Loop over pose observations
       for (var observation : inputs[cameraIndex].poseObservations) {
 
@@ -125,39 +133,44 @@ public class Vision extends SubsystemBase {
         double pitch = Math.abs(observation.pose().getRotation().getY());
         double roll = Math.abs(observation.pose().getRotation().getX());
 
-        // Check whether to reject pose
-        boolean rejectPose =
-            robotSpinningTooFast // Robot spinning too fast — vision unreliable
-                || observation.tagCount() == 0 // Must have at least one tag
-                || (observation.tagCount() == 1
-                    && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
-                || observation.pose().getZ() < -floorError // Robot cannot be below the floor
-                || observation.pose().getZ() > maxZError // Must have realistic Z coordinate
-                || observation.averageTagDistance()
-                    > maxDistanceMeters // Tags too far away — pose error grows with distance
-                || pitch > maxPitchRollRadians // Pitch too large — robot is on flat ground
-                || roll > maxPitchRollRadians // Roll too large — robot is on flat ground
-                // || poseJump > maxPoseJumpMeters // Vision would yank pose too far — likely bad
-                // solve
+        // Determine rejection reason ("" = accepted). Checked in priority order.
+        String rejectionReason = "";
+        if (robotSpinningTooFast) {
+          rejectionReason = "AngularVelocityTooHigh"; // Vision unreliable while spinning
+        } else if (observation.tagCount() == 0) {
+          rejectionReason = "NoTags"; // Must have at least one tag
+        } else if (observation.timestamp() <= 0.0) {
+          rejectionReason = "InvalidTimestamp"; // Timestamp must be positive
+        } else if (observation.tagCount() == 1 && observation.ambiguity() > maxAmbiguity) {
+          rejectionReason = "HighAmbiguity"; // Single-tag solve picked between two solutions
+        } else if (observation.pose().getZ() < -floorError) {
+          rejectionReason = "BelowFloor"; // Robot cannot be below the floor
+        } else if (observation.pose().getZ() > maxZError) {
+          rejectionReason = "ZTooHigh"; // Must have realistic Z coordinate
+        } else if (observation.averageTagDistance() > maxDistanceMeters) {
+          rejectionReason = "TagsTooFar"; // Pose error grows with distance
+        } else if (pitch > maxPitchRollRadians || roll > maxPitchRollRadians) {
+          rejectionReason = "PitchRollTooLarge"; // Robot is on flat ground — solve is wrong
+        } else if (observation.pose().getX() < 0.0
+            || observation.pose().getX() > aprilTagLayout.getFieldLength()
+            || observation.pose().getY() < 0.0
+            || observation.pose().getY() > aprilTagLayout.getFieldWidth()) {
+          rejectionReason = "OutsideField"; // Must be within the field boundaries
+        }
+        boolean rejectPose = !rejectionReason.isEmpty();
 
-                // Must be within the field boundaries
-                || observation.pose().getX() < 0.0
-                || observation.pose().getX() > aprilTagLayout.getFieldLength()
-                || observation.pose().getY() < 0.0
-                || observation.pose().getY() > aprilTagLayout.getFieldWidth();
+        lastRejectionReason = rejectionReason;
+        lastAmbiguity = observation.ambiguity();
+        lastAverageTagDistance = observation.averageTagDistance();
+        lastTagCount = observation.tagCount();
 
         // Add pose to log
         robotPoses.add(observation.pose());
         if (rejectPose) {
           robotPosesRejected.add(observation.pose());
-        } else {
-          robotPosesAccepted.add(observation.pose());
-        }
-
-        // Skip if rejected
-        if (rejectPose) {
           continue;
         }
+        robotPosesAccepted.add(observation.pose());
 
         // Calculate standard deviations
         double stdDevFactor =
@@ -176,6 +189,8 @@ public class Vision extends SubsystemBase {
           linearStdDev *= cameraStdDevFactors[cameraIndex];
           angularStdDev *= cameraStdDevFactors[cameraIndex];
         }
+        lastLinearStdDev = linearStdDev;
+        lastAngularStdDev = angularStdDev;
 
         // Send vision observation
         consumer.accept(
@@ -192,8 +207,14 @@ public class Vision extends SubsystemBase {
           cameraKey + "/RobotPosesAccepted", robotPosesAccepted.toArray(new Pose3d[0]));
       Logger.recordOutput(
           cameraKey + "/RobotPosesRejected", robotPosesRejected.toArray(new Pose3d[0]));
-      Logger.recordOutput(cameraKey + "/TagCount", inputs[cameraIndex].tagIds.length);
-      Logger.recordOutput(cameraKey + "/IsMultiTag", inputs[cameraIndex].tagIds.length > 1);
+      Logger.recordOutput(cameraKey + "/TagIds", inputs[cameraIndex].tagIds);
+      Logger.recordOutput(cameraKey + "/TagCount", lastTagCount);
+      Logger.recordOutput(cameraKey + "/IsMultiTag", lastTagCount > 1);
+      Logger.recordOutput(cameraKey + "/RejectionReason", lastRejectionReason);
+      Logger.recordOutput(cameraKey + "/Ambiguity", lastAmbiguity);
+      Logger.recordOutput(cameraKey + "/AverageTagDistance", lastAverageTagDistance);
+      Logger.recordOutput(cameraKey + "/LinearStdDev", lastLinearStdDev);
+      Logger.recordOutput(cameraKey + "/AngularStdDev", lastAngularStdDev);
       allTagPoses.addAll(tagPoses);
       allRobotPoses.addAll(robotPoses);
       allRobotPosesAccepted.addAll(robotPosesAccepted);
@@ -207,6 +228,8 @@ public class Vision extends SubsystemBase {
         "Vision/Summary/RobotPosesAccepted", allRobotPosesAccepted.toArray(new Pose3d[0]));
     Logger.recordOutput(
         "Vision/Summary/RobotPosesRejected", allRobotPosesRejected.toArray(new Pose3d[0]));
+    Logger.recordOutput("Vision/Summary/AcceptedObservationCount", allRobotPosesAccepted.size());
+    Logger.recordOutput("Vision/Summary/RejectedObservationCount", allRobotPosesRejected.size());
   }
 
   @FunctionalInterface

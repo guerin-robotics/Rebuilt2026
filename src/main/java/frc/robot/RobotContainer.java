@@ -18,6 +18,7 @@ import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -212,7 +213,14 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+        // Replay requires one VisionIO per camera so all four cameras' logged inputs are replayed
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIO() {},
+                new VisionIO() {},
+                new VisionIO() {},
+                new VisionIO() {});
         flywheel = new Flywheel(new FlywheelIO() {});
         upperFeeder = new UpperFeeder(new UpperFeederIO() {});
         lowerFeeder = new LowerFeeder(new LowerFeederIO() {});
@@ -416,7 +424,16 @@ public class RobotContainer {
     // Align for shoot when shoot button is pressed and we're in our alliance zone and hub is
     // active, or if tower shoot button is pressed
     // X while aligned
-    (Triggers.getInstance().shootButton().and(Triggers.getInstance().isShootSafeZone))
+    // This command does not run if the robot is approaching a hardstop spot (bump or trench) -
+    // instead it runs
+    // the hit hardstop and align command below
+    ((Triggers.getInstance().shootButton().and(Triggers.getInstance().isShootSafeZone))
+            .and(
+                () ->
+                    !(frc.robot.RobotState.getInstance()
+                            .getApproachingZoneX(
+                                frc.robot.RobotState.getInstance().getEstimatedPose())
+                        == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH)))
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             DriveCommands.alignOrXForShoot(
@@ -425,9 +442,30 @@ public class RobotContainer {
                 () -> -thrustmaster.getX() * .5,
                 () -> RobotState.getInstance().getAngleToAllianceHub()));
 
+    // If close to a hardstop spot (bump or trench), or if hardstop shoot button pressed,
+    // run into the hardstop and align to shoot
+    // Eventually add tower
+    (Triggers.getInstance()
+        .shootButton()
+        .and(Triggers.getInstance().isShootClear)
+        .and(
+            () ->
+                frc.robot.RobotState.getInstance()
+                        .getApproachingZoneX(frc.robot.RobotState.getInstance().getEstimatedPose())
+                    == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH))
+        .or(Triggers.getInstance().hardstopShootButton())
+        .whileTrue(
+            Commands.sequence(
+                DriveCommands.alignForDefenseShot(drive),
+                DriveCommands.alignOrXForShoot(
+                    drive,
+                    () -> Triggers.getInstance().simXSupplier(),
+                    () -> Triggers.getInstance().simYSupplier(),
+                    () -> new Rotation2d(Triggers.getInstance().simRotationSupplier()))));
+
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
     // button is pressed
-    // Requires demo mode to be false
+    // Requires demo mode to be false (if demo mode is on we don't want to align to pass)
     (Triggers.getInstance()
             .shootButton()
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean()))
@@ -444,18 +482,6 @@ public class RobotContainer {
                             new Translation2d(
                                 RobotState.getInstance().getPassTarget().getX(),
                                 RobotState.getInstance().getPassTarget().getY()))));
-
-    // Now handled in alignment command
-    // // X wheels when shoot button is pressed and we're shooting and we're lined up and
-    // // auto-x hasn't been manually overriden, or when x button is pressed
-    // // Changed stop with x to turn to x
-    // (Triggers.getInstance()
-    //         .shootButton()
-    //         .and(Triggers.getInstance().isShootClear)
-    //         .and(Triggers.getInstance().isAlignedForCurrentShot)
-    //         .and(() -> !xCancelled))
-    //     .or(Triggers.getInstance().xWheels())
-    //     .whileTrue(DriveCommands.stopWithX(drive));
 
     // Align for trench when trench button pressed - zone logic temporarily disabled
     Triggers.getInstance()
@@ -713,27 +739,6 @@ public class RobotContainer {
 
   private void configureSimBindings() {
 
-    // Drivetrain - joystick drive
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> MathUtil.clamp(-getThrustY(), -1.0, 1.0),
-            () -> MathUtil.clamp(-getThrustX(), -1.0, 1.0),
-            () -> MathUtil.clamp(-getThrustRot(), -1.0, 1.0)));
-
-    // DRIVETRAIN
-    // Align for shoot when shoot button is pressed and we're in our alliance zone and hub is
-    // active, or if tower shoot button is pressed
-    // X while aligned
-    (Triggers.getInstance().shootButton().and(Triggers.getInstance().isShootSafeZone))
-        .or(Triggers.getInstance().shootFromTowerButton())
-        .whileTrue(
-            DriveCommands.alignOrXForShoot(
-                drive,
-                () -> -thrustmaster.getY() * .5,
-                () -> -thrustmaster.getX() * .5,
-                () -> RobotState.getInstance().getAngleToAllianceHub()));
-
     // In sim there is no FMS game-specific message, so the hub shift schedule defaults
     // to "inactive" after the first 10-second TRANSITION window.  Disabling the hub
     // shift logic lets isShootSafeTime always return true so the hood (and other
@@ -746,9 +751,9 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> MathUtil.clamp(-simController.getLeftY(), -1.0, 1.0),
-            () -> MathUtil.clamp(-simController.getLeftX(), -1.0, 1.0),
-            () -> MathUtil.clamp(-simController.getLeftTriggerAxis(), -1.0, 1.0)));
+            () -> MathUtil.clamp(Triggers.getInstance().simXSupplier(), -1.0, 1.0),
+            () -> MathUtil.clamp(Triggers.getInstance().simYSupplier(), -1.0, 1.0),
+            () -> MathUtil.clamp(Triggers.getInstance().simRotationSupplier(), -1.0, 1.0)));
     // Flywheel - idle
     flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // // Prestage - idle
@@ -767,15 +772,33 @@ public class RobotContainer {
     // DRIVETRAIN
     // Align for shoot when shoot button is pressed and we're in our alliance zone and hub is
     // active, or if tower shoot button is pressed
+    // Modified to not run if the align to hard stop should be running instead
     (Triggers.getInstance().simShootButton())
         .and(Triggers.getInstance().isShootClear)
+        .and(
+            () ->
+                !(frc.robot.RobotState.getInstance()
+                        .getApproachingZoneX(frc.robot.RobotState.getInstance().getEstimatedPose())
+                    == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH))
         .or(Triggers.getInstance().simShootFromTowerButton())
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -simController.getLeftY(),
-                () -> -simController.getLeftX(),
+                () -> Triggers.getInstance().simXSupplier(),
+                () -> Triggers.getInstance().simYSupplier(),
                 () -> RobotState.getInstance().getAngleToAllianceHub()));
+
+    // If shooting when near a hardstop spot (trench and eventually tower), go to the hardstop spot
+    // and shoot
+    Triggers.getInstance()
+        .simShootButton()
+        .and(Triggers.getInstance().isShootClear)
+        .and(
+            () ->
+                frc.robot.RobotState.getInstance()
+                        .getApproachingZoneX(frc.robot.RobotState.getInstance().getEstimatedPose())
+                    == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH)
+        .whileTrue(DriveCommands.alignForDefenseShot(drive));
 
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
     // button is pressed
@@ -786,8 +809,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -simController.getLeftY(),
-                () -> -simController.getLeftX(),
+                () -> Triggers.getInstance().simXSupplier(),
+                () -> Triggers.getInstance().simYSupplier(),
                 () ->
                     RobotState.getInstance()
                         .getAngleToTarget(
@@ -812,7 +835,9 @@ public class RobotContainer {
         // .or(Triggers.getInstance().isRobotApproachingTrench())
         .whileTrue(
             DriveCommands.joystickDriveAlignForTrench(
-                drive, () -> -thrustmaster.getY(), () -> -thrustmaster.getX()));
+                drive,
+                () -> Triggers.getInstance().simXSupplier(),
+                () -> Triggers.getInstance().simYSupplier()));
 
     // Align for bump when bump button pressed - zone logic temporarily disabled
     Triggers.getInstance()
@@ -821,7 +846,9 @@ public class RobotContainer {
         // .or(Triggers.getInstance().isRobotApproachingBump())
         .whileTrue(
             DriveCommands.joystickDriveAlignForBump(
-                drive, () -> -thrustmaster.getY(), () -> -thrustmaster.getX()));
+                drive,
+                () -> Triggers.getInstance().simXSupplier(),
+                () -> Triggers.getInstance().simYSupplier()));
 
     // UPPER SHOOTER
     // Set shooting velocity if shoot button pressed, we're in our alliance zone, hub is active, and
@@ -1154,5 +1181,9 @@ public class RobotContainer {
 
   public boolean isDriveXed() {
     return drive.areWheelsXed;
+  }
+
+  public boolean aligningDefensively() {
+    return drive.aligningDefensively;
   }
 }

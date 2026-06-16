@@ -1,0 +1,162 @@
+{
+  "name": "Omega",
+  "isFTC": false,
+  "disableSimplification": true,
+  "rotations": [
+    {
+      "axis": "x",
+      "degrees": 90
+    },
+    {
+      "axis": "z",
+      "degrees": 90
+    }
+  ],
+  "position": [],
+  "cameras": [
+    {
+      "name": "RobotRight",
+      "rotations": [
+        {
+          "axis": "x",
+          "degrees": 0
+        },
+        {
+          "axis": "y",
+          "degrees": -15.0
+        },
+        {
+          "axis": "z",
+          "degrees": 270.0
+        }
+      ],
+      "position": [
+        0.0254,
+        -0.3091434,
+        0.1635252
+      ],
+      "resolution": [
+        1600,
+        1304
+      ],
+      "fov": 80
+    },
+    {
+      "name": "RobotLeft",
+      "rotations": [
+        {
+          "axis": "x",
+          "degrees": 0
+        },
+        {
+          "axis": "y",
+          "degrees": -15.0
+        },
+        {
+          "axis": "z",
+          "degrees": 90.0
+        }
+      ],
+      "position": [
+        0.0254,
+        0.3154934,
+        0.1635252
+      ],
+      "resolution": [
+        1600,
+        1304
+      ],
+      "fov": 80
+    },
+    {
+      "name": "ShooterRight",
+      "rotations": [
+        {
+          "axis": "x",
+          "degrees": 0
+        },
+        {
+          "axis": "y",
+          "degrees": -15.0
+        },
+        {
+          "axis": "z",
+          "degrees": 180.0
+        }
+      ],
+      "position": [
+        -0.3193288,
+        -0.155575,
+        0.3177286
+      ],
+      "resolution": [
+        1600,
+        1304
+      ],
+      "fov": 80
+    },
+    {
+      "name": "ShooterLeft",
+      "rotations": [
+        {
+          "axis": "x",
+          "degrees": 0
+        },
+        {
+          "axis": "y",
+          "degrees": -15.0
+        },
+        {
+          "axis": "z",
+          "degrees": 180.0
+        }
+      ],
+      "position": [
+        -0.3193288,
+        0.136525,
+        0.3177286
+      ],
+      "resolution": [
+        1600,
+        1304
+      ],
+      "fov": 80
+    }
+  ],
+  "components": [
+    {
+      "zeroedRotations": [
+        {
+          "axis": "x",
+          "degrees": 0
+        },
+        {
+          "axis": "z",
+          "degrees": 0
+        }
+      ],
+      "zeroedPosition": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "zeroedRotations": [
+        {
+          "axis": "x",
+          "degrees": 0
+        },
+        {
+          "axis": "z",
+          "degrees": 0
+        }
+      ],
+      "zeroedPosition": [
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}

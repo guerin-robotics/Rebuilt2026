@@ -1,0 +1,4 @@
+interface:
+  display_name: "WPILib Agent Tools"
+  short_description: "Run WPILib sim and analyze robot logs safely"
+  default_prompt: "Use $wpilib-agent-tools to run sandboxed WPILib simulations and validate autonomous behavior from logs."
