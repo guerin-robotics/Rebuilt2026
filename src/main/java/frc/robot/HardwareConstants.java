@@ -127,9 +127,9 @@ public class HardwareConstants {
     public static boolean DEMO_MODE;
     public static boolean demo = true;
 
-    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(2000.0);
+    public static final AngularVelocity FlywheelTuningVelocity = RPM.of(4500.0);
     public static final Angle HoodTuningPos = Degrees.of(12.25);
-    public static final Angle HoodDemoPos = Degrees.of(45);
+    public static final Angle HoodDemoPos = Degrees.of(25);
   }
 
   public static class TestConstants {
