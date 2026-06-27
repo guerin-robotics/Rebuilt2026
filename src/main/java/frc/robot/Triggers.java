@@ -1,7 +1,5 @@
 package frc.robot;
 
-import java.util.function.BooleanSupplier;
-
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -135,6 +133,10 @@ public class Triggers {
   public Trigger simAllianceWinFlipper() {
     // return simController.a();
     return simKeyboardController.button(8);
+  }
+
+  public Trigger simShootOnTheMove() {
+    return simKeyboardController.button(9);
   }
 
   public double simXSupplier() {

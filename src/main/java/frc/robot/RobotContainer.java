@@ -49,6 +49,7 @@ import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.FlywheelIOPhoenix6;
 import frc.robot.subsystems.flywheel.io.FlywheelIOSim;
 import frc.robot.subsystems.hood.Hood;
+import frc.robot.subsystems.hood.HoodPosCalculator;
 import frc.robot.subsystems.hood.io.HoodIO;
 import frc.robot.subsystems.hood.io.HoodIOReal;
 import frc.robot.subsystems.hood.io.HoodIOSim;
@@ -446,13 +447,14 @@ public class RobotContainer {
     // run into the hardstop and align to shoot
     // Eventually add tower
     (Triggers.getInstance()
-        .shootButton()
-        .and(Triggers.getInstance().isShootClear)
-        .and(
-            () ->
-                frc.robot.RobotState.getInstance()
-                        .getApproachingZoneX(frc.robot.RobotState.getInstance().getEstimatedPose())
-                    == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH))
+            .shootButton()
+            .and(Triggers.getInstance().isShootClear)
+            .and(
+                () ->
+                    frc.robot.RobotState.getInstance()
+                            .getApproachingZoneX(
+                                frc.robot.RobotState.getInstance().getEstimatedPose())
+                        == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH))
         .or(Triggers.getInstance().hardstopShootButton())
         .whileTrue(
             Commands.sequence(
@@ -858,12 +860,22 @@ public class RobotContainer {
         .and(Triggers.getInstance().isShootClear)
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .whileTrue(
-            FlywheelCommands.setVelocityForHub(flywheel)
+            FlywheelCommands.shootOnTheMove(
+                flywheel, HoodPosCalculator.getInstance().getHoodPosForHub().magnitude())
                 .alongWith(
                     PrestageCommands.setPrestageVelocity(
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity)))
         .onFalse(FlywheelCommands.stop(flywheel))
         .onFalse(PrestageCommands.stop(prestage));
+
+    // // Run dynamic shoot sequence - same constraints as normal shoot, but different trigger
+    // Triggers.getInstance()
+    //     .simShootOnTheMove()
+    //     .and(Triggers.getInstance().isShootClear)
+    //     .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
+    //     .whileTrue(
+    //         FlywheelCommands.shootOnTheMove(
+    //             flywheel, HoodPosCalculator.getInstance().getHoodPosForHub().magnitude()));
 
     // Set passing velocity if shoot button is pressed but we're not in our alliance zone and tuning
     // false,

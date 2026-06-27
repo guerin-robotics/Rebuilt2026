@@ -138,7 +138,6 @@ public class FlywheelConstants {
     }
 
     static {
-      // Passing numbers are guesses
       PASSING_SPEED_MAP.put(inchesToMeters(70.0), 1600.0);
       PASSING_SPEED_MAP.put(inchesToMeters(140.0), 1700.0);
       PASSING_SPEED_MAP.put(inchesToMeters(225.0), 2050.0);

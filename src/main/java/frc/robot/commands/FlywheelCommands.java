@@ -161,4 +161,8 @@ public class FlywheelCommands {
     return Commands.runOnce(() -> shooter.setFlywheelVelocity(RotationsPerSecond.of(0)), shooter)
         .withName("FlywheelStop");
   }
+
+  public static Command shootOnTheMove(Flywheel flywheel, double hoodRadians) {
+    return Commands.run(() -> flywheel.shootDynamic(hoodRadians));
+  }
 }
