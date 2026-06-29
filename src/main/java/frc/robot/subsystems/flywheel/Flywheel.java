@@ -1,6 +1,7 @@
 package frc.robot.subsystems.flywheel;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -165,45 +166,28 @@ public class Flywheel extends SubsystemBase {
           });
 
   public void shootDynamic(double hoodRadians) {
-    Translation2d fuelToGroundVector =
+    Translation2d fuelToGoalDistance =
         new Translation2d(
             (FieldConstants.Hub.topCenterPoint.getX()
                 - RobotState.getInstance().getEstimatedPose().getX()),
             (FieldConstants.Hub.topCenterPoint.getY()
                 - RobotState.getInstance().getEstimatedPose().getY()));
+    double distance = fuelToGoalDistance.getNorm();
+    AngularVelocity fuelToGoalVector = ShotCalculator.getInstance().getFlywheelSpeedForDistance(Meters.of(distance));
+    Translation2d vector = new Translation2d(fuelToGoalVector.magnitude(), RobotState.getInstance().getAngleToAllianceHub());
     Translation2d robotToGroundVector =
         new Translation2d(
             (RobotState.getInstance().getFieldRelativeVelocity().vxMetersPerSecond),
             (RobotState.getInstance().getFieldRelativeVelocity().vyMetersPerSecond));
     Translation2d fuelToRobotVector =
         new Translation2d(
-            (fuelToGroundVector.getX() - robotToGroundVector.getX()),
-            (fuelToGroundVector.getY() - robotToGroundVector.getY()));
+            (vector.getX() - robotToGroundVector.getX()),
+            (vector.getY() - robotToGroundVector.getY()));
     // Our fuelToRobotVector gave us a linear velocity (m/s) which we now convert to rps using
     // flywheel rotations/meter
-    // Steps:
-    // 1. Take the vector we got from adding
-    // 2. Turn it into a linear velocty using the flywheel RPMeter number
-    // 3. Add it to or subtract it from the base velocity we have from the shot calculator
-    // 4. Divide it by the hood angle
-    AngularVelocity velocityOffset = RPM.of((RotationsPerSecond.of(fuelToRobotVector.getNorm())).magnitude());
-    AngularVelocity baseVelocity = ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub();
-    double vX = RobotState.getInstance().getFieldRelativeVelocity().vxMetersPerSecond;
-    double vY = RobotState.getInstance().getFieldRelativeVelocity().vyMetersPerSecond;
-    double currentY = RobotState.getInstance().getEstimatedPose().getY();
-    AngularVelocity targetVelocity;
-    // If the robot is approaching the target, we want a lower velocity; if moving away, a higher
-    // velocity.
-    if (vX < 0) {
-      targetVelocity = baseVelocity.plus(velocityOffset);
-    } else if ((currentY > FieldConstants.LinesHorizontal.center) && (vY > 0)) {
-      targetVelocity = baseVelocity.plus(velocityOffset);
-    } else if ((currentY < FieldConstants.LinesHorizontal.center) && (vY < 0)) {
-      targetVelocity = baseVelocity.plus(velocityOffset);
-    } else {
-      targetVelocity = baseVelocity.minus(velocityOffset);
-    }
-    AngularVelocity finalVelocity = RPM.of(targetVelocity.magnitude() / Math.cos(hoodRadians));
+    AngularVelocity velocityOffset =
+        RPM.of((RotationsPerSecond.of(fuelToRobotVector.getNorm())).magnitude());
+    AngularVelocity finalVelocity = RPM.of(velocityOffset.magnitude() / Math.cos(hoodRadians));
     setFlywheelVelocity(finalVelocity);
   }
 }
