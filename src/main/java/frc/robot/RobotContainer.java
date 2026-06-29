@@ -511,7 +511,7 @@ public class RobotContainer {
         .and(Triggers.getInstance().isShootClear)
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .whileTrue(
-            FlywheelCommands.setVelocityForHub(flywheel)
+            FlywheelCommands.shootOnTheMove(flywheel, HoodPosCalculator.getInstance().getHoodPosForHub().magnitude())
                 .alongWith(
                     PrestageCommands.setPrestageVelocity(
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity)))

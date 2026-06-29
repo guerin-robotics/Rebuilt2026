@@ -1,7 +1,6 @@
 package frc.robot.subsystems.flywheel;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -11,7 +10,6 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.FieldConstants;
@@ -183,17 +181,12 @@ public class Flywheel extends SubsystemBase {
             (fuelToGroundVector.getY() - robotToGroundVector.getY()));
     // Our fuelToRobotVector gave us a linear velocity (m/s) which we now convert to rps using
     // flywheel rotations/meter
-    LinearVelocity fuelVelocity =
-        MetersPerSecond.of((fuelToRobotVector.getNorm() / Math.cos(hoodRadians)));
-    /* velocityOffset is the velocity added to the fuel by the movement of the robot. To find the
-    actual velocity that the robot needs to add to the fuel by means of the flywheel, we subtract
-    velocityOffset from the velocity given by our shot calculator. */
-    AngularVelocity velocityOffset =
-        RPM.of(
-            (RotationsPerSecond.of(
-                    fuelVelocity.magnitude()
-                        * FlywheelConstants.Mechanical.flywheelRotationsPerMeter))
-                .magnitude());
+    // Steps:
+    // 1. Take the vector we got from adding
+    // 2. Turn it into a linear velocty using the flywheel RPMeter number
+    // 3. Add it to or subtract it from the base velocity we have from the shot calculator
+    // 4. Divide it by the hood angle
+    AngularVelocity velocityOffset = RPM.of((RotationsPerSecond.of(fuelToRobotVector.getNorm())).magnitude());
     AngularVelocity baseVelocity = ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub();
     double vX = RobotState.getInstance().getFieldRelativeVelocity().vxMetersPerSecond;
     double vY = RobotState.getInstance().getFieldRelativeVelocity().vyMetersPerSecond;
@@ -210,6 +203,7 @@ public class Flywheel extends SubsystemBase {
     } else {
       targetVelocity = baseVelocity.minus(velocityOffset);
     }
-    setFlywheelVelocity(targetVelocity);
+    AngularVelocity finalVelocity = RPM.of(targetVelocity.magnitude() / Math.cos(hoodRadians));
+    setFlywheelVelocity(finalVelocity);
   }
 }
