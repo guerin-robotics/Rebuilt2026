@@ -166,7 +166,8 @@ public class Flywheel extends SubsystemBase {
             return isSpunUp();
           });
 
-  public void shootDynamic(double hoodRadians) {
+  public void shootDynamic(double hoodDegrees) {
+    // Fuel to hub
     Translation2d fuelToGoalDistance =
         new Translation2d(
             (FieldConstants.Hub.topCenterPoint.getX()
@@ -174,25 +175,30 @@ public class Flywheel extends SubsystemBase {
             (FieldConstants.Hub.topCenterPoint.getY()
                 - RobotState.getInstance().getEstimatedPose().getY()));
     double distance = fuelToGoalDistance.getNorm();
-    AngularVelocity fuelToGoalVector =
+    AngularVelocity idealSpeed =
         ShotCalculator.getInstance().getFlywheelSpeedForDistance(Meters.of(distance));
-    Translation2d vector =
+    Translation2d fuelToGoalVector =
         new Translation2d(
-            fuelToGoalVector.magnitude(), RobotState.getInstance().getAngleToAllianceHub());
-    Translation2d robotToGroundVector =
+            idealSpeed.magnitude(), RobotState.getInstance().getAngleToAllianceHub());
+    // Robot to hub
+    Translation2d robotToGoalVector =
         new Translation2d(
-            (RobotState.getInstance().getFieldRelativeVelocity().vxMetersPerSecond),
-            (RobotState.getInstance().getFieldRelativeVelocity().vyMetersPerSecond));
+            (RobotState.getInstance().getHubRelativeVelocity().vxMetersPerSecond),
+            (RobotState.getInstance().getHubRelativeVelocity().vyMetersPerSecond));
+    // Fuel to robot (what we're finding)
     Translation2d fuelToRobotVector =
         new Translation2d(
-            (vector.getX() - robotToGroundVector.getX()),
-            (vector.getY() - robotToGroundVector.getY()));
+            (fuelToGoalVector.getX() - robotToGoalVector.getX()),
+            (fuelToGoalVector.getY() - robotToGoalVector.getY()));
     // Our fuelToRobotVector gave us a linear velocity (m/s) which we now convert to rps using
     // flywheel rotations/meter
-    AngularVelocity velocityOffset =
-        RPM.of((RotationsPerSecond.of(fuelToRobotVector.getNorm())).magnitude());
+    AngularVelocity velocityInRPS = RotationsPerSecond.of(fuelToRobotVector.getNorm() * FlywheelConstants.Mechanical.flywheelRotationsPerMeter);
+    // Convert to RPM for flywheel
+    AngularVelocity velocityInRPM =
+        RPM.of(velocityInRPS.magnitude());
+    // Finally, divide by cos of hood angle
     AngularVelocity finalVelocity =
-        RPM.of(velocityOffset.magnitude() / Math.cos(Radians.of(hoodRadians).magnitude()));
+        RPM.of(velocityInRPM.magnitude() / Math.cos(Radians.of(hoodDegrees).magnitude()));
     setFlywheelVelocity(finalVelocity);
   }
 }
