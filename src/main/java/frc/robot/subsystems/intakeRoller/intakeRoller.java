@@ -4,6 +4,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.HardwareConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.intakeRoller.io.intakeRollerIO;
 import frc.robot.subsystems.intakeRoller.io.intakeRollerIOInputsAutoLogged;
@@ -45,5 +46,9 @@ public class intakeRoller extends SubsystemBase {
 
   public void setRollerVelocity(AngularVelocity rollerVelo) {
     io.setRollerVelocity(rollerVelo);
+  }
+
+  public void setIntakeRollerIdle() {
+    setRollerVelocity(HardwareConstants.CompConstants.Velocities.intakeRollerIdleVelocity);
   }
 }

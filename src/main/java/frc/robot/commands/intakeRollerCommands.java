@@ -27,6 +27,11 @@ public class intakeRollerCommands {
         .withName("IntakeRollerVelocity");
   }
 
+  public static Command intakeRollerIdle(intakeRoller intakeRoller) {
+    return Commands.run(() -> intakeRoller.setIntakeRollerIdle(), intakeRoller)
+        .withName("intakeRollerIdle");
+  }
+
   public static Command stopIntakeRoller(intakeRoller intakeRoller) {
     return Commands.runOnce(
             () -> intakeRoller.setRollerVelocity(RotationsPerSecond.of(0)), intakeRoller)

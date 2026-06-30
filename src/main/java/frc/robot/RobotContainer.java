@@ -409,6 +409,8 @@ public class RobotContainer {
     // Hood - stop motor when no command is running (prevents stale closed-loop reference)
     hood.setDefaultCommand(HoodCommands.hoodIdle(hood));
 
+    // Intake Roller - Idle
+    intakeRoller.setDefaultCommand(intakeRollerCommands.intakeRollerIdle(intakeRoller));
     // OVERRIDES
     // Flip alliance winner
     Triggers.getInstance().allianceWinFlipper().onTrue(HubShiftUtil.flipWinner());
@@ -511,7 +513,8 @@ public class RobotContainer {
         .and(Triggers.getInstance().isShootClear)
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .whileTrue(
-            FlywheelCommands.setVelocityForHub(flywheel)
+            FlywheelCommands.shootOnTheMove(
+                    flywheel, HoodPosCalculator.getInstance().getHoodPosForHub().magnitude())
                 .alongWith(
                     PrestageCommands.setPrestageVelocity(
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity)))

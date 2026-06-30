@@ -68,6 +68,7 @@ public class HardwareConstants {
       public static final AngularVelocity flywheelIdleVelocity = RPM.of(1200);
       public static final AngularVelocity prestageIdleVelocityHigh = RPM.of(1200);
       public static final AngularVelocity flywheelIdleVelocityHigh = RPM.of(60);
+      public static final AngularVelocity intakeRollerIdleVelocity = RPM.of(1200);
       public static final AngularVelocity intakeRollerVelocity = RPM.of(2400);
       public static final AngularVelocity transportVelocity = RPM.of(-1800);
     }

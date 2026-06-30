@@ -176,6 +176,7 @@ public class DriveCommands {
   // }
 
   // Align to shoot, stopping with x once aligned
+  // Does not x if receiving joystick input (allowing shoot on the move)
   public static Command alignOrXForShoot(
       Drive drive,
       DoubleSupplier xSupplier,
@@ -184,7 +185,10 @@ public class DriveCommands {
     return new ContinuousConditionalCommand(
         stopWithX(drive),
         joystickDriveAtAngle(drive, xSupplier, ySupplier, rotationSupplier),
-        Triggers.getInstance().isAlignedForCurrentShot);
+        () ->
+            Triggers.getInstance().isAlignedForCurrentShot.getAsBoolean()
+                && xSupplier.getAsDouble() < 0.1
+                && ySupplier.getAsDouble() < 0.1);
   }
 
   public static Command alignForDefenseShot(Drive drive) {

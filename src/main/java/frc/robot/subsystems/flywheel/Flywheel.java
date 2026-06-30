@@ -3,6 +3,7 @@ package frc.robot.subsystems.flywheel;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -173,8 +174,11 @@ public class Flywheel extends SubsystemBase {
             (FieldConstants.Hub.topCenterPoint.getY()
                 - RobotState.getInstance().getEstimatedPose().getY()));
     double distance = fuelToGoalDistance.getNorm();
-    AngularVelocity fuelToGoalVector = ShotCalculator.getInstance().getFlywheelSpeedForDistance(Meters.of(distance));
-    Translation2d vector = new Translation2d(fuelToGoalVector.magnitude(), RobotState.getInstance().getAngleToAllianceHub());
+    AngularVelocity fuelToGoalVector =
+        ShotCalculator.getInstance().getFlywheelSpeedForDistance(Meters.of(distance));
+    Translation2d vector =
+        new Translation2d(
+            fuelToGoalVector.magnitude(), RobotState.getInstance().getAngleToAllianceHub());
     Translation2d robotToGroundVector =
         new Translation2d(
             (RobotState.getInstance().getFieldRelativeVelocity().vxMetersPerSecond),
@@ -187,7 +191,8 @@ public class Flywheel extends SubsystemBase {
     // flywheel rotations/meter
     AngularVelocity velocityOffset =
         RPM.of((RotationsPerSecond.of(fuelToRobotVector.getNorm())).magnitude());
-    AngularVelocity finalVelocity = RPM.of(velocityOffset.magnitude() / Math.cos(hoodRadians));
+    AngularVelocity finalVelocity =
+        RPM.of(velocityOffset.magnitude() / Math.cos(Radians.of(hoodRadians).magnitude()));
     setFlywheelVelocity(finalVelocity);
   }
 }

@@ -190,6 +190,13 @@ public class RobotState {
     return kinematics.toChassisSpeeds(currentModuleStates);
   }
 
+  // Hub-relative velocity for use in shoot on the move
+  @AutoLogOutput(key = "RobotState/HubRelativeVelocity")
+  public ChassisSpeeds getHubRelativeVelocity() {
+    ChassisSpeeds robotRelative = getRobotRelativeVelocity();
+    return ChassisSpeeds.fromRobotRelativeSpeeds(robotRelative, getAngleToAllianceHub());
+  }
+
   // ==================== DISTANCE CALCULATIONS ====================
 
   /**
