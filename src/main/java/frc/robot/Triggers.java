@@ -1,6 +1,8 @@
 package frc.robot;
 
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -22,6 +24,44 @@ public class Triggers {
     return instance;
   }
 
+  // Which physical controller drives the real robot. Selected live on the dashboard.
+  //   THRUSTMASTER              - Thrustmaster drives + its game buttons; port-1 Xbox does
+  // overrides.
+  //   XBOX_CONTROLLER           - Xbox drive pad drives (LT/RT/RB/D-pad/sticks); port-1 Xbox
+  // overrides.
+  //   XBOX_CONTROLLER_OVERRIDE  - single Xbox drive pad drives AND owns the A/B/X/Y overrides.
+  public enum DriveControlMode {
+    THRUSTMASTER,
+    XBOX_CONTROLLER,
+    XBOX_CONTROLLER_OVERRIDE
+  }
+
+  private final SendableChooser<DriveControlMode> driveModeChooser = new SendableChooser<>();
+
+  private Triggers() {
+    driveModeChooser.setDefaultOption("Thrustmaster", DriveControlMode.THRUSTMASTER);
+    driveModeChooser.addOption("Xbox Controller", DriveControlMode.XBOX_CONTROLLER);
+    driveModeChooser.addOption(
+        "Xbox Controller + Overrides", DriveControlMode.XBOX_CONTROLLER_OVERRIDE);
+    SmartDashboard.putData("Drive Control Mode", driveModeChooser);
+  }
+
+  // Live-read of the selected mode; treats a null selection as the safe Thrustmaster default.
+  public DriveControlMode driveControlMode() {
+    DriveControlMode mode = driveModeChooser.getSelected();
+    return mode == null ? DriveControlMode.THRUSTMASTER : mode;
+  }
+
+  // True when the Xbox drive pad owns driving + the shoot/intake/pass buttons (either Xbox mode).
+  public boolean useXboxDrive() {
+    return driveControlMode() != DriveControlMode.THRUSTMASTER;
+  }
+
+  // True only in the single-pad mode where the Xbox drive pad also owns the A/B/X/Y overrides.
+  public boolean useXboxOverride() {
+    return driveControlMode() == DriveControlMode.XBOX_CONTROLLER_OVERRIDE;
+  }
+
   // Controllers
   private final CommandXboxController controller =
       new CommandXboxController(HardwareConstants.ControllerConstants.XboxControllerPort);
@@ -32,9 +72,18 @@ public class Triggers {
   private final CommandJoystick simKeyboardController =
       new CommandJoystick(HardwareConstants.ControllerConstants.SimKeyboardControllerPort);
 
-  // Button mapping triggers
+  // Alternate single-Xbox drive controller: LT = intake, RT = shoot, RB = pass, sticks = drive.
+  private final CommandXboxController driveController =
+      new CommandXboxController(HardwareConstants.ControllerConstants.XboxDriveControllerPort);
+
+  // Button mapping triggers.
+  // The three game actions the Xbox scheme owns (shoot/intake/pass) are source-gated on
+  // useXboxDrive() so exactly one controller is live: Thrustmaster when off, Xbox when on.
   public Trigger shootButton() {
-    return thrustmaster.button(1);
+    return thrustmaster
+        .button(1)
+        .and(() -> !useXboxDrive())
+        .or(driveController.rightTrigger().and(this::useXboxDrive));
   }
 
   public Trigger trenchAlignButton() {
@@ -42,7 +91,10 @@ public class Triggers {
   }
 
   public Trigger intakeInButton() {
-    return thrustmaster.button(3);
+    return thrustmaster
+        .button(3)
+        .and(() -> !useXboxDrive())
+        .or(driveController.povUp().and(this::useXboxDrive));
   }
 
   public Trigger intakeOutButton() {
@@ -50,7 +102,10 @@ public class Triggers {
   }
 
   public Trigger intakeRollerButton() {
-    return thrustmaster.button(5);
+    return thrustmaster
+        .button(5)
+        .and(() -> !useXboxDrive())
+        .or(driveController.leftTrigger().and(this::useXboxDrive));
   }
 
   public Trigger intakeCompressButton() {
@@ -66,7 +121,10 @@ public class Triggers {
   }
 
   public Trigger passButton() {
-    return thrustmaster.button(11);
+    return thrustmaster
+        .button(11)
+        .and(() -> !useXboxDrive())
+        .or(driveController.rightBumper().and(this::useXboxDrive));
   }
 
   public Trigger hardstopShootButton() {
@@ -151,25 +209,55 @@ public class Triggers {
     return simKeyboardController.getRawAxis(2);
   }
 
+  // Real-robot drive-axis inputs, source-gated on useXboxDrive().
+  // Returned raw (matching the Thrustmaster raw-axis convention); callers apply the same
+  // negation/scaling they already used, so both controllers share one sign convention:
+  // stick pushed forward/left = robot forward/left, right stick right = clockwise.
+  public double driveXInput() {
+    return useXboxDrive() ? driveController.getLeftX() : thrustmaster.getRawAxis(0); // strafe
+  }
+
+  public double driveYInput() {
+    return useXboxDrive() ? driveController.getLeftY() : thrustmaster.getRawAxis(1); // forward
+  }
+
+  public double driveRotInput() {
+    return useXboxDrive() ? driveController.getRightX() : thrustmaster.getRawAxis(2); // twist
+  }
+
   public Trigger tuningButton() {
     return thrustmaster.button(7);
   }
 
-  // Override triggers
+  // Override triggers.
+  // In XBOX_CONTROLLER_OVERRIDE mode the single Xbox drive pad also owns these (A/Y/B, plus
+  // auto-X on the otherwise-free left bumper); otherwise they stay on their original devices.
   public Trigger allianceWinFlipper() {
-    return controller.a();
+    return controller
+        .a()
+        .and(() -> !useXboxOverride())
+        .or(driveController.a().and(this::useXboxOverride));
   }
 
   public Trigger allianceWinDisabler() {
-    return controller.y();
+    return controller
+        .y()
+        .and(() -> !useXboxOverride())
+        .or(driveController.y().and(this::useXboxOverride));
   }
 
   public Trigger autoXOverride() {
-    return thrustmaster.button(12);
+    return thrustmaster
+        .button(12)
+        .and(() -> !useXboxOverride())
+        .or(driveController.leftBumper().and(this::useXboxOverride));
   }
 
   public Trigger doubleCompressOverride() {
-    return controller.b();
+    return controller
+        .b()
+        .and(() -> !useXboxOverride())
+        .or(driveController.b().and(this::useXboxOverride));
   }
 
   // ==================== STATE-BASED TRIGGERS (cached as final fields) ====================
