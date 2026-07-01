@@ -1,8 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -24,7 +22,8 @@ public class Triggers {
     return instance;
   }
 
-  // Which physical controller drives the real robot. Selected live on the dashboard.
+  // Which physical controller drives the real robot. Set the DRIVE_CONTROL_MODE constant below,
+  // then redeploy — this is a compile-time switch, not a live dashboard selection.
   //   THRUSTMASTER              - Thrustmaster drives + its game buttons; port-1 Xbox does
   // overrides.
   //   XBOX_CONTROLLER           - Xbox drive pad drives (LT/RT/RB/D-pad/sticks); port-1 Xbox
@@ -36,20 +35,12 @@ public class Triggers {
     XBOX_CONTROLLER_OVERRIDE
   }
 
-  private final SendableChooser<DriveControlMode> driveModeChooser = new SendableChooser<>();
+  // >>> Drive team: change this to pick the active control scheme, then redeploy. <<<
+  public static final DriveControlMode DRIVE_CONTROL_MODE = DriveControlMode.THRUSTMASTER;
 
-  private Triggers() {
-    driveModeChooser.setDefaultOption("Thrustmaster", DriveControlMode.THRUSTMASTER);
-    driveModeChooser.addOption("Xbox Controller", DriveControlMode.XBOX_CONTROLLER);
-    driveModeChooser.addOption(
-        "Xbox Controller + Overrides", DriveControlMode.XBOX_CONTROLLER_OVERRIDE);
-    SmartDashboard.putData("Drive Control Mode", driveModeChooser);
-  }
-
-  // Live-read of the selected mode; treats a null selection as the safe Thrustmaster default.
+  // Returns the compile-time selected mode.
   public DriveControlMode driveControlMode() {
-    DriveControlMode mode = driveModeChooser.getSelected();
-    return mode == null ? DriveControlMode.THRUSTMASTER : mode;
+    return DRIVE_CONTROL_MODE;
   }
 
   // True when the Xbox drive pad owns driving + the shoot/intake/pass buttons (either Xbox mode).
@@ -60,6 +51,14 @@ public class Triggers {
   // True only in the single-pad mode where the Xbox drive pad also owns the A/B/X/Y overrides.
   public boolean useXboxOverride() {
     return driveControlMode() == DriveControlMode.XBOX_CONTROLLER_OVERRIDE;
+  }
+
+  // True only in plain XBOX_CONTROLLER mode: the drive pad owns the game buttons while the
+  // A/B/X/Y overrides stay on the port-1 Xbox controller. The face-button game mappings
+  // (intake, compress, tower/hardstop shoot) live here so they never collide with the
+  // override-mode A/Y/B/LB bindings.
+  public boolean useXboxPlain() {
+    return driveControlMode() == DriveControlMode.XBOX_CONTROLLER;
   }
 
   // Controllers
@@ -86,30 +85,35 @@ public class Triggers {
         .or(driveController.rightTrigger().and(this::useXboxDrive));
   }
 
+  // Thrustmaster button(2) always works. In plain XBOX_CONTROLLER mode the drive pad's D-pad up
+  // also triggers trench-align. (Not mapped in override mode, which uses these buttons for
+  // overrides.)
   public Trigger trenchAlignButton() {
-    return thrustmaster.button(2);
+    return thrustmaster.button(2).or(driveController.povUp().and(this::useXboxPlain));
   }
 
   public Trigger intakeInButton() {
     return thrustmaster
         .button(3)
         .and(() -> !useXboxDrive())
-        .or(driveController.povUp().and(this::useXboxDrive));
+        .or(driveController.povUp().and(this::useXboxOverride)) // override mode keeps D-pad up
+        .or(driveController.y().and(this::useXboxPlain)); // plain mode: Y
   }
 
   public Trigger intakeOutButton() {
-    return thrustmaster.button(4);
+    return thrustmaster.button(4).or(driveController.a().and(this::useXboxPlain)); // plain mode: A
   }
 
   public Trigger intakeRollerButton() {
     return thrustmaster
         .button(5)
         .and(() -> !useXboxDrive())
-        .or(driveController.leftTrigger().and(this::useXboxDrive));
+        .or(driveController.leftTrigger().and(this::useXboxOverride)) // override mode keeps LT
+        .or(driveController.x().and(this::useXboxPlain)); // plain mode: X
   }
 
   public Trigger intakeCompressButton() {
-    return thrustmaster.button(6);
+    return thrustmaster.button(6).or(driveController.b().and(this::useXboxPlain)); // plain mode: B
   }
 
   public Trigger bumpAlignButton() {
@@ -117,7 +121,8 @@ public class Triggers {
   }
 
   public Trigger shootFromTowerButton() {
-    return thrustmaster.button(10);
+    // plain mode: D-pad right
+    return thrustmaster.button(10).or(driveController.povRight().and(this::useXboxPlain));
   }
 
   public Trigger passButton() {
@@ -128,7 +133,8 @@ public class Triggers {
   }
 
   public Trigger hardstopShootButton() {
-    return thrustmaster.button(9);
+    // plain mode: LB (override mode keeps LB on auto-X, so gated to plain only — no double-fire)
+    return thrustmaster.button(9).or(driveController.leftBumper().and(this::useXboxPlain));
   }
 
   public Trigger demoDistanceShot() {
