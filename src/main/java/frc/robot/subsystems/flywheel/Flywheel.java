@@ -178,8 +178,7 @@ public class Flywheel extends SubsystemBase {
     AngularVelocity idealSpeed =
         ShotCalculator.getInstance().getFlywheelSpeedForDistance(Meters.of(distance));
     Translation2d fuelToGoalVector =
-        new Translation2d(
-            idealSpeed.magnitude(), RobotState.getInstance().getAngleToAllianceHub());
+        new Translation2d(idealSpeed.magnitude(), RobotState.getInstance().getAngleToAllianceHub());
     // Robot to hub
     Translation2d robotToGoalVector =
         new Translation2d(
@@ -192,10 +191,11 @@ public class Flywheel extends SubsystemBase {
             (fuelToGoalVector.getY() - robotToGoalVector.getY()));
     // Our fuelToRobotVector gave us a linear velocity (m/s) which we now convert to rps using
     // flywheel rotations/meter
-    AngularVelocity velocityInRPS = RotationsPerSecond.of(fuelToRobotVector.getNorm() * FlywheelConstants.Mechanical.flywheelRotationsPerMeter);
+    AngularVelocity velocityInRPS =
+        RotationsPerSecond.of(
+            fuelToRobotVector.getNorm() * FlywheelConstants.Mechanical.flywheelRotationsPerMeter);
     // Convert to RPM for flywheel
-    AngularVelocity velocityInRPM =
-        RPM.of(velocityInRPS.magnitude());
+    AngularVelocity velocityInRPM = RPM.of(velocityInRPS.magnitude());
     // Finally, divide by cos of hood angle
     AngularVelocity finalVelocity =
         RPM.of(velocityInRPM.magnitude() / Math.cos(Radians.of(hoodDegrees).magnitude()));
