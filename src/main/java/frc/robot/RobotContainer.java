@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.AllianceFlipUtil;
 import frc.robot.commands.DriveCommands;
@@ -141,8 +140,6 @@ public class RobotContainer {
   // Controllers
   private final CommandXboxController controller =
       new CommandXboxController(HardwareConstants.ControllerConstants.XboxControllerPort);
-  private final CommandJoystick thrustmaster =
-      new CommandJoystick(HardwareConstants.ControllerConstants.JoystickControllerPort);
   private final CommandXboxController simController =
       new CommandXboxController(HardwareConstants.ControllerConstants.SimControllerPort);
 
@@ -278,16 +275,18 @@ public class RobotContainer {
     return MathUtil.applyDeadband(value, HardwareConstants.ControllerConstants.DEADBAND);
   }
 
+  // Drive-axis inputs are source-gated in Triggers on the "Use Xbox Drive" flag, so these
+  // return the Thrustmaster or the Xbox drive controller depending on the live selection.
   private double getThrustX() {
-    return thrustmaster.getRawAxis(0); // strafe
+    return Triggers.getInstance().driveXInput(); // strafe
   }
 
   private double getThrustY() {
-    return thrustmaster.getRawAxis(1); // forward
+    return Triggers.getInstance().driveYInput(); // forward
   }
 
   private double getThrustRot() {
-    return thrustmaster.getRawAxis(2); // twist
+    return Triggers.getInstance().driveRotInput(); // twist
   }
 
   // NamedCommands
@@ -441,8 +440,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.alignOrXForShoot(
                 drive,
-                () -> -thrustmaster.getY() * .5,
-                () -> -thrustmaster.getX() * .5,
+                () -> -Triggers.getInstance().driveYInput() * .5,
+                () -> -Triggers.getInstance().driveXInput() * .5,
                 () -> RobotState.getInstance().getAngleToAllianceHub()));
 
     // If close to a hardstop spot (bump or trench), or if hardstop shoot button pressed,
@@ -478,8 +477,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -thrustmaster.getY() * .5,
-                () -> -thrustmaster.getX() * .5,
+                () -> -Triggers.getInstance().driveYInput() * .5,
+                () -> -Triggers.getInstance().driveXInput() * .5,
                 () ->
                     RobotState.getInstance()
                         .getAngleToTarget(
@@ -494,7 +493,9 @@ public class RobotContainer {
         // .or(Triggers.getInstance().isRobotApproachingTrench())
         .whileTrue(
             DriveCommands.joystickDriveAlignForTrench(
-                drive, () -> -thrustmaster.getY(), () -> -thrustmaster.getX()));
+                drive,
+                () -> -Triggers.getInstance().driveYInput(),
+                () -> -Triggers.getInstance().driveXInput()));
 
     // Align for bump when bump button pressed - zone logic temporarily disabled
     Triggers.getInstance()
@@ -503,7 +504,9 @@ public class RobotContainer {
         // .or(Triggers.getInstance().isRobotApproachingBump())
         .whileTrue(
             DriveCommands.joystickDriveAlignForBump(
-                drive, () -> -thrustmaster.getY(), () -> -thrustmaster.getX()));
+                drive,
+                () -> -Triggers.getInstance().driveYInput(),
+                () -> -Triggers.getInstance().driveXInput()));
 
     // UPPER SHOOTER
     // Set shooting velocity if shoot button pressed, we're in our alliance zone, hub is active, and
