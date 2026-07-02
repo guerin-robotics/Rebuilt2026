@@ -121,15 +121,18 @@ public class Triggers {
   }
 
   public Trigger shootFromTowerButton() {
-    // plain mode: D-pad right
-    return thrustmaster.button(10).or(driveController.povRight().and(this::useXboxPlain));
+    // plain mode: D-pad right or RB (RB freed up now that pass is folded into the shoot button)
+    return thrustmaster
+        .button(10)
+        .or(driveController.povRight().and(this::useXboxPlain))
+        .or(driveController.rightBumper().and(this::useXboxPlain));
   }
 
+  // Pass is now handled automatically by the zone-aware shoot button (shoots to hub in the
+  // alliance zone, passes when out of it), so RB no longer force-passes. This dedicated
+  // force-pass stays on the Thrustmaster for THRUSTMASTER mode only.
   public Trigger passButton() {
-    return thrustmaster
-        .button(11)
-        .and(() -> !useXboxDrive())
-        .or(driveController.rightBumper().and(this::useXboxDrive));
+    return thrustmaster.button(11).and(() -> !useXboxDrive());
   }
 
   public Trigger hardstopShootButton() {
