@@ -462,9 +462,9 @@ public class RobotContainer {
                 DriveCommands.alignForDefenseShot(drive),
                 DriveCommands.alignOrXForShoot(
                     drive,
-                    () -> Triggers.getInstance().simXSupplier(),
-                    () -> Triggers.getInstance().simYSupplier(),
-                    () -> new Rotation2d(Triggers.getInstance().simRotationSupplier()))));
+                    () -> Triggers.getInstance().thrustmaster.getX(),
+                    () -> Triggers.getInstance().thrustmaster.getY(),
+                    () -> new Rotation2d(Triggers.getInstance().thrustmaster.getTwist()))));
 
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
     // button is pressed
