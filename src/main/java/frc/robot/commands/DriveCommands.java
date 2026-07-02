@@ -45,8 +45,8 @@ public class DriveCommands {
   // follows omega commands with ~0.3 s lag, so kP 7-8.5 with no profile velocity feedforward
   // oscillated around the target (30-70 error sign flips per align) and lagged 7-20 deg while
   // moving. Lower kP + higher kD + clamped velocity feedforward tracks the profile instead.
-  private static final double ANGLE_KP = 3.0; // 8.5
-  private static final double ANGLE_KD = 1.0; // 0.4
+  private static final double ANGLE_KP = 8.0; // 8.5
+  private static final double ANGLE_KD = 0.4; // 0.4
   private static final double ANGLE_MAX_VELOCITY = 6.0; // 8.0
   private static final double ANGLE_MAX_ACCELERATION = 14.0; // 20.0
   // Cap on the profile velocity feedforward: full effect at shoot-on-the-move target rates
@@ -95,7 +95,7 @@ public class DriveCommands {
               // Square rotation value for more precise control
               // Cubed as of drive practice 6/29 to further increase precision
               // Multiplied by constant
-              omega = Math.copySign(Math.pow(Math.abs(omega), 1.35), omega); // Exponent 1.5
+              omega = Math.copySign(Math.pow(Math.abs(omega), 2), omega); // Exponent 1.35
 
               // Convert to field relative speeds & send command
               ChassisSpeeds speeds =
