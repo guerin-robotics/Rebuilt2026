@@ -189,3 +189,11 @@ compile_commands.json
 build/
 
 .DS_Store
+
+# graphify - keep graph.json/GRAPH_REPORT.md/graph.html, ignore machine-local state
+graphify-out/cache/
+graphify-out/manifest.json
+graphify-out/cost.json
+graphify-out/.graphify_python
+graphify-out/.graphify_root
+graphify-out/.graphify_labels.json
