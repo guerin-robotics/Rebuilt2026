@@ -35,6 +35,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -187,39 +188,45 @@ public class DriveCommands {
         joystickDriveAtAngle(drive, xSupplier, ySupplier, rotationSupplier),
         () ->
             Triggers.getInstance().isAlignedForCurrentShot.getAsBoolean()
-                && xSupplier.getAsDouble() < 0.1
-                && ySupplier.getAsDouble() < 0.1);
+                && Math.abs(xSupplier.getAsDouble()) < DEADBAND
+                && Math.abs(ySupplier.getAsDouble()) < DEADBAND);
   }
 
+  // Pathfinds to the nearest hardstop spot once, then follows that path until the target is
+  // reached or the command is cancelled (driver releases the button). The target pose is computed
+  // once at schedule time via defer — scheduling a new pathfinder every loop interrupts itself
+  // and never makes progress.
   public static Command alignForDefenseShot(Drive drive) {
-    return Commands.run(
-        () -> {
-          drive.aligningDefensively = true;
+    return Commands.defer(
+            () -> {
+              double targetx = AllianceFlipUtil.applyX(3.5);
+              double targety;
+              if (AllianceFlipUtil.applyY(RobotState.getInstance().getEstimatedPose().getY())
+                  >= 4.0) {
+                targety = AllianceFlipUtil.applyY(6.5);
+              } else {
+                targety = AllianceFlipUtil.applyY(1.5);
+              }
 
-          double targetx = AllianceFlipUtil.applyX(3.5);
-          double targety;
-          if (AllianceFlipUtil.applyY(RobotState.getInstance().getEstimatedPose().getY()) >= 4.0) {
-            targety = AllianceFlipUtil.applyY(6.5);
-          } else {
-            targety = AllianceFlipUtil.applyY(1.5);
-          }
+              // Similar mechanism to getAngleToAllianceHub(), only using target pose instead of
+              // current pose
+              // Get alliance hub target (2D position on the field)
+              Translation3d hubTarget3d = RobotState.getInstance().getAllianceHubTarget();
+              Translation2d hubTarget2d = hubTarget3d.toTranslation2d();
+              // Calculate the vector from target pose to hub
+              Translation2d robotToHub = hubTarget2d.minus(new Translation2d(targetx, targety));
+              // Calculate angle
+              Rotation2d targetRotation =
+                  new Rotation2d(robotToHub.getX(), robotToHub.getY()).plus(Rotation2d.kPi);
 
-          // Similar mechanism to getAngleToAllianceHub(), only using target pose instead of current
-          // pose
-          // Get alliance hub target (2D position on the field)
-          Translation3d hubTarget3d = RobotState.getInstance().getAllianceHubTarget();
-          Translation2d hubTarget2d = hubTarget3d.toTranslation2d();
-          // Calculate the vector from target pose to hub
-          Translation2d robotToHub = hubTarget2d.minus(new Translation2d(targetx, targety));
-          // Calculate angle
-          Rotation2d targetRotation =
-              new Rotation2d(robotToHub.getX(), robotToHub.getY()).plus(Rotation2d.kPi);
+              Pose2d targetPose = new Pose2d(targetx, targety, targetRotation);
 
-          Pose2d targetPose = new Pose2d(targetx, targety, targetRotation);
-
-          drive.alignForDefenseShot(targetPose);
-        },
-        drive);
+              return drive.alignForDefenseShot(targetPose);
+            },
+            Set.of(drive))
+        .beforeStarting(() -> drive.aligningDefensively = true)
+        .finallyDo(() -> drive.aligningDefensively = false)
+        .withName("Drive_AlignForDefenseShot");
   }
 
   /**
