@@ -279,11 +279,14 @@ public class Drive extends SubsystemBase {
     stop();
   }
 
-  public void alignForDefenseShot(Pose2d targetPose) {
-    Command followCommand =
-        AutoBuilder.pathfindToPose(targetPose, PathConstraints.unlimitedConstraints(12));
+  /**
+   * Returns a pathfinding command to the given pose. The caller schedules it (e.g. via a whileTrue
+   * binding) — returning instead of scheduling here avoids re-scheduling a new pathfinder every
+   * loop, which interrupts itself and never makes progress.
+   */
+  public Command alignForDefenseShot(Pose2d targetPose) {
     Logger.recordOutput("RobotState/targetPose", targetPose);
-    followCommand.schedule();
+    return AutoBuilder.pathfindToPose(targetPose, PathConstraints.unlimitedConstraints(12));
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */

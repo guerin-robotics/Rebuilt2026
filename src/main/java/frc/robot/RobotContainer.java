@@ -18,7 +18,6 @@ import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -463,9 +462,9 @@ public class RobotContainer {
                 DriveCommands.alignForDefenseShot(drive),
                 DriveCommands.alignOrXForShoot(
                     drive,
-                    () -> Triggers.getInstance().simXSupplier(),
-                    () -> Triggers.getInstance().simYSupplier(),
-                    () -> new Rotation2d(Triggers.getInstance().simRotationSupplier()))));
+                    () -> -thrustmaster.getY() * .5,
+                    () -> -thrustmaster.getX() * .5,
+                    () -> RobotState.getInstance().getAngleToAllianceHub())));
 
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
     // button is pressed
