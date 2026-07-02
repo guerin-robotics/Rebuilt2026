@@ -187,8 +187,8 @@ public class DriveCommands {
         joystickDriveAtAngle(drive, xSupplier, ySupplier, rotationSupplier),
         () ->
             Triggers.getInstance().isAlignedForCurrentShot.getAsBoolean()
-                && xSupplier.getAsDouble() < 0.1
-                && ySupplier.getAsDouble() < 0.1);
+                && Math.abs(xSupplier.getAsDouble()) < DEADBAND
+                && Math.abs(ySupplier.getAsDouble()) < DEADBAND);
   }
 
   public static Command alignForDefenseShot(Drive drive) {
