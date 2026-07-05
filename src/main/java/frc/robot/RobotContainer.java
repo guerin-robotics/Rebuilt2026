@@ -11,6 +11,7 @@ import static edu.wpi.first.math.util.Units.metersToInches;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Volts;
 
+import choreo.auto.AutoFactory;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -36,6 +37,9 @@ import frc.robot.commands.IntakePivotCommands;
 import frc.robot.commands.PrestageCommands;
 import frc.robot.commands.ShootSequences;
 import frc.robot.commands.TransportCommands;
+import frc.robot.commands.autos.AutoPaths;
+import frc.robot.commands.autos.utils.AutoContext;
+import frc.robot.commands.autos.utils.AutoOption;
 import frc.robot.commands.intakeRollerCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -100,8 +104,22 @@ public class RobotContainer {
   private final intakeRoller intakeRoller;
   private final Transport transport;
 
+  // ── Auto Type Switch ────────────────────────────────────────────────────────
+  // Selects which autonomous system runs: PathPlanner (.auto files, competition-proven)
+  // or Choreo (AutoRoutine-based, under development). PathPlanner is the default.
+  private enum AutoType {
+    PATHPLANNER,
+    CHOREO
+  }
+
+  // Choreo auto infrastructure
+  private final AutoFactory autoFactory;
+  private final AutoContext autoContext;
+
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+  private final LoggedDashboardChooser<AutoOption> choreoChooser;
+  private final LoggedDashboardChooser<AutoType> autoTypeChooser;
 
   // ── Auto Preview & Starting Pose Check ──────────────────────────────────────
   // Field2d widget to show the selected auto's path and the robot's current position.
@@ -247,6 +265,35 @@ public class RobotContainer {
     autoChooser.addDefaultOption(
         HardwareConstants.CompConstants.Autos.DefaultAutoName,
         new PathPlannerAuto(HardwareConstants.CompConstants.Autos.DefaultAutoName));
+
+    // ── Choreo Auto Infrastructure ────────────────────────────────────────────
+    // AutoFactory drives Choreo trajectory following; alliance flipping enabled.
+    autoFactory =
+        new AutoFactory(drive::getPose, drive::setPose, drive::followTrajectory, true, drive);
+    autoContext =
+        AutoContext.create(
+            drive,
+            flywheel,
+            prestage,
+            hood,
+            upperFeeder,
+            lowerFeeder,
+            transport,
+            intakePivot,
+            intakeRoller,
+            autoFactory);
+
+    // Choreo auto chooser — options wrap a lazy command supplier plus preview poses.
+    // Only autos whose .traj files exist in deploy/choreo are registered.
+    choreoChooser = new LoggedDashboardChooser<>("Choreo Auto Choices");
+    choreoChooser.addDefaultOption("None", new AutoOption(Commands::none, List.of(), new Pose2d()));
+    choreoChooser.addOption("Left Auto", AutoPaths.leftAuto(autoContext));
+
+    // Auto type switch — selects which chooser getAutonomousCommand() reads.
+    // PathPlanner remains the default so competition behavior is unchanged.
+    autoTypeChooser = new LoggedDashboardChooser<>("Auto Type");
+    autoTypeChooser.addDefaultOption("PathPlanner", AutoType.PATHPLANNER);
+    autoTypeChooser.addOption("Choreo", AutoType.CHOREO);
 
     // Publish the auto preview field to the dashboard so we can see the selected path
     SmartDashboard.putData("Auto Preview", autoPreviewField);
@@ -1058,7 +1105,14 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     double delay = SmartDashboard.getNumber(autoDelayKey, defaultAutoDelay);
-    return Commands.sequence(Commands.waitSeconds(delay), autoChooser.get().asProxy());
+    Command auto;
+    if (autoTypeChooser.get() == AutoType.CHOREO) {
+      AutoOption selected = choreoChooser.get();
+      auto = (selected == null) ? Commands.none() : selected.command();
+    } else {
+      auto = autoChooser.get().asProxy();
+    }
+    return Commands.sequence(Commands.waitSeconds(delay), auto);
   }
 
   // ==================== AUTO PREVIEW & STARTING POSE CHECK ====================
@@ -1066,14 +1120,63 @@ public class RobotContainer {
   /** Tracks the last auto name so we only reload paths when the selection changes. */
   private String lastAutoName = "";
 
+  /** Tracks the last selected Choreo option so we only redraw when the selection changes. */
+  private AutoOption lastChoreoOption = null;
+
   /**
    * Updates the auto path preview on the Field2d when the selected auto changes.
    *
-   * <p>Call this periodically (e.g., from {@code disabledPeriodic}). It reads the currently
-   * selected auto command's name, loads all paths from that auto file, and draws them on the "Auto
-   * Preview" Field2d widget.
+   * <p>Call this periodically (e.g., from {@code disabledPeriodic}). Dispatches to the PathPlanner
+   * or Choreo preview based on the auto type switch, and draws the result on the "Auto Preview"
+   * Field2d widget.
    */
   public void updateAutoPreview() {
+    if (autoTypeChooser.get() == AutoType.CHOREO) {
+      // Invalidate the PathPlanner cache so switching back redraws
+      lastAutoName = "";
+      updateChoreoPreview();
+    } else {
+      // Invalidate the Choreo cache so switching back redraws
+      lastChoreoOption = null;
+      updatePathPlannerPreview();
+    }
+  }
+
+  /**
+   * Draws the selected Choreo auto's pre-computed preview poses. The AutoOption already contains
+   * the poses and starting pose, so no trajectory files are parsed at runtime.
+   */
+  private void updateChoreoPreview() {
+    AutoOption selectedOption = choreoChooser.get();
+    if (selectedOption == null) return;
+
+    // Only redraw if the selection changed
+    if (selectedOption.equals(lastChoreoOption)) return;
+    lastChoreoOption = selectedOption;
+
+    // Clear any previously drawn paths
+    autoPreviewField.getObject("path").setPoses();
+
+    List<Pose2d> previewPoses = selectedOption.previewPoses();
+    if (previewPoses == null || previewPoses.isEmpty()) {
+      Logger.recordOutput("Auto/PreviewStatus", "No preview poses for selected Choreo auto");
+      autoStartPose = new Pose2d();
+      return;
+    }
+
+    autoPreviewField.getObject("path").setPoses(previewPoses);
+
+    autoStartPose = selectedOption.startingPose();
+    if (autoStartPose == null) {
+      autoStartPose = new Pose2d();
+    }
+
+    Logger.recordOutput("Auto/PreviewStatus", "Loaded " + previewPoses.size() + " preview poses");
+    Logger.recordOutput("Auto/StartPose", autoStartPose);
+  }
+
+  /** Draws the selected PathPlanner auto's paths, loaded from its .auto file. */
+  private void updatePathPlannerPreview() {
     // Get the currently selected auto command
     Command selectedAuto = autoChooser.get();
     if (selectedAuto == null) return;
