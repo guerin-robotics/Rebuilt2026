@@ -2,6 +2,7 @@ package frc.robot.commands.autos;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import choreo.auto.AutoTrajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -13,6 +14,7 @@ import frc.robot.commands.FlywheelCommands;
 import frc.robot.commands.HoodCommands;
 import frc.robot.commands.IntakePivotCommands;
 import frc.robot.commands.PrestageCommands;
+import frc.robot.commands.ShootSequences;
 import frc.robot.commands.TransportCommands;
 import frc.robot.commands.autos.utils.AutoContext;
 import frc.robot.commands.intakeRollerCommands;
@@ -104,6 +106,85 @@ public class AutoCommands {
                 intakeRollerCommands.setRollerVoltage(
                     ctx.intakeRoller(),
                     HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))));
+  }
+
+  // ─── PathPlanner-converted auto helpers ─────────────────────────────────────
+  // These replicate the exact named commands and event triggers the PathPlanner
+  // autos used (see RobotContainer.registerNamedCommands / registerEventTriggers)
+  // so converted Choreo autos behave the same way.
+
+  /**
+   * Replicates the PathPlanner auto structure {@code race(Shoot, wait(seconds))}: aligns the
+   * drivetrain toward the alliance hub while running the full hub shoot sequence, giving up after
+   * {@code seconds}.
+   */
+  public static Command shootToHubTimed(AutoContext ctx, double seconds) {
+    return Commands.race(
+        DriveCommands.joystickDriveAtAngle(
+                ctx.drive(),
+                () -> 0,
+                () -> 0,
+                () -> RobotState.getInstance().getAngleToAllianceHub())
+            .alongWith(
+                ShootSequences.autoShootToHub(
+                    ctx.flywheel(),
+                    ctx.prestage(),
+                    ctx.hood(),
+                    ctx.upperFeeder(),
+                    ctx.lowerFeeder(),
+                    ctx.transport(),
+                    ctx.intakeRoller(),
+                    ctx.intakePivot())),
+        Commands.waitSeconds(seconds));
+  }
+
+  /** Replicates the PathPlanner named command "stopAll". */
+  public static Command stopShooting(AutoContext ctx) {
+    return ShootSequences.stopAll(
+        ctx.flywheel(),
+        ctx.prestage(),
+        ctx.hood(),
+        ctx.upperFeeder(),
+        ctx.lowerFeeder(),
+        ctx.transport(),
+        ctx.intakeRoller());
+  }
+
+  /** Replicates the PathPlanner named command "DeployIntake" (pivot to the down position). */
+  public static Command deployIntakeDown(AutoContext ctx) {
+    return IntakePivotCommands.setPivotPosition(
+        ctx.intakePivot(), HardwareConstants.CompConstants.Positions.pivotDownPos);
+  }
+
+  /**
+   * Binds converted PathPlanner event markers on a Choreo trajectory.
+   *
+   * <p>Commands are deliberately requirement-free (mirroring the PathPlanner EventTrigger
+   * registrations) so they never interrupt the running trajectory command. "RunIntake" zones from
+   * PathPlanner are split into "RunIntakeStart"/"RunIntakeStop" point events at conversion time.
+   */
+  public static void bindMarkers(AutoTrajectory traj, AutoContext ctx, String... markers) {
+    for (String marker : markers) {
+      switch (marker) {
+        case "DeployIntake" -> traj.atTime("DeployIntake")
+            .onTrue(
+                Commands.runOnce(
+                    () ->
+                        ctx.intakePivot()
+                            .setPivotPosition(
+                                HardwareConstants.CompConstants.Positions.pivotDownPos)));
+        case "RunIntakeStart" -> traj.atTime("RunIntakeStart")
+            .onTrue(
+                Commands.runOnce(
+                    () ->
+                        ctx.intakeRoller()
+                            .setRollerVoltage(
+                                HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)));
+        case "RunIntakeStop" -> traj.atTime("RunIntakeStop")
+            .onTrue(Commands.runOnce(() -> ctx.intakeRoller().setRollerVoltage(Volts.of(0))));
+        default -> throw new IllegalArgumentException("Unknown auto marker: " + marker);
+      }
+    }
   }
 
   /**

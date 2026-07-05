@@ -284,10 +284,29 @@ public class RobotContainer {
             autoFactory);
 
     // Choreo auto chooser — options wrap a lazy command supplier plus preview poses.
-    // Only autos whose .traj files exist in deploy/choreo are registered.
+    // The named entries below were converted from the PathPlanner autos of the same name.
     choreoChooser = new LoggedDashboardChooser<>("Choreo Auto Choices");
     choreoChooser.addDefaultOption("None", new AutoOption(Commands::none, List.of(), new Pose2d()));
     choreoChooser.addOption("Left Auto", AutoPaths.leftAuto(autoContext));
+    choreoChooser.addOption("2.5-Left-Comp", AutoPaths.leftComp25(autoContext));
+    choreoChooser.addOption("2.5-Right-Comp", AutoPaths.rightComp25(autoContext));
+    choreoChooser.addOption("Center-Bump", AutoPaths.centerBump(autoContext));
+    choreoChooser.addOption("Champs-Follow-Left", AutoPaths.champsFollowLeft(autoContext));
+    choreoChooser.addOption("Champs-Follow-Right", AutoPaths.champsFollowRight(autoContext));
+    choreoChooser.addOption("Champs-Left", AutoPaths.champsLeft(autoContext));
+    choreoChooser.addOption("Champs-Right", AutoPaths.champsRight(autoContext));
+    choreoChooser.addOption("Champs-Safe-Left", AutoPaths.champsSafeLeft(autoContext));
+    choreoChooser.addOption("Champs-Safe-Right", AutoPaths.champsSafeRight(autoContext));
+    choreoChooser.addOption("Left-Depot", AutoPaths.leftDepot(autoContext));
+    choreoChooser.addOption("Left-Disruptor", AutoPaths.leftDisruptor(autoContext));
+    choreoChooser.addOption("Left-Double", AutoPaths.leftDouble(autoContext));
+    choreoChooser.addOption("Qual55", AutoPaths.qual55(autoContext));
+    choreoChooser.addOption("Right-Disruptor", AutoPaths.rightDisruptor(autoContext));
+    choreoChooser.addOption("Right-Double", AutoPaths.rightDouble(autoContext));
+    choreoChooser.addOption("Safe-2-Left-Comp", AutoPaths.safe2LeftComp(autoContext));
+    choreoChooser.addOption("Safe-2-Right-Comp", AutoPaths.safe2RightComp(autoContext));
+    choreoChooser.addOption("State-Elims", AutoPaths.stateElims(autoContext));
+    choreoChooser.addOption("qual2", AutoPaths.qual2(autoContext));
 
     // Auto type switch — selects which chooser getAutonomousCommand() reads.
     // PathPlanner remains the default so competition behavior is unchanged.
