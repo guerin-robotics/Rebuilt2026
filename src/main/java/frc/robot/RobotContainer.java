@@ -85,6 +85,7 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.io.VisionIO;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVisionSim;
+import frc.robot.util.DriverPresets;
 import frc.robot.util.HubShiftUtil;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
@@ -310,6 +311,9 @@ public class RobotContainer {
     autoTypeChooser = new LoggedDashboardChooser<>("Auto Type");
     autoTypeChooser.addDefaultOption("PathPlanner", AutoType.PATHPLANNER);
     autoTypeChooser.addOption("Choreo", AutoType.CHOREO);
+
+    // Publish the "Driver Preset" chooser at boot (DriveCommands reads it each loop)
+    DriverPresets.getInstance();
 
     // Publish the auto preview field to the dashboard so we can see the selected path
     SmartDashboard.putData("Auto Preview", autoPreviewField);
