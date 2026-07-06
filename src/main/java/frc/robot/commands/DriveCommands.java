@@ -88,7 +88,7 @@ public class DriveCommands {
               // Square rotation value for more precise control
               // Cubed as of drive practice 6/29 to further increase precision
               // Multiplied by constant
-              omega = Math.copySign(Math.pow(Math.abs(omega), 1.35), omega); // Exponent 1.5
+              omega = Math.copySign(Math.pow(Math.abs(omega), 1.35), omega); // Exponent 1.35
 
               // Convert to field relative speeds & send command
               ChassisSpeeds speeds =
