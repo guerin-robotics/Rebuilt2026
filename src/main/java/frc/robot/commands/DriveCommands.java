@@ -31,6 +31,7 @@ import frc.robot.RobotState;
 import frc.robot.Triggers;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.util.DriverPresets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -57,8 +58,9 @@ public class DriveCommands {
     double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), DEADBAND);
     Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
 
-    // Square magnitude for more precise control
-    linearMagnitude = linearMagnitude * linearMagnitude;
+    // Raise magnitude to the active driver preset's exponent for more precise control
+    // (2.0 on the Parker preset, matching the previous squared behavior)
+    linearMagnitude = Math.pow(linearMagnitude, DriverPresets.getInstance().getDriveExponent());
 
     // Return new linear velocity
     return new Pose2d(Translation2d.kZero, linearDirection)
@@ -85,10 +87,12 @@ public class DriveCommands {
               // Apply rotation deadband
               double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
 
-              // Square rotation value for more precise control
-              // Cubed as of drive practice 6/29 to further increase precision
-              // Multiplied by constant
-              omega = Math.copySign(Math.pow(Math.abs(omega), 1.35), omega); // Exponent 1.5
+              // Raise rotation value to the active driver preset's exponent for more precise
+              // control (1.35 on the Parker preset, set at drive practice 6/29)
+              omega =
+                  Math.copySign(
+                      Math.pow(Math.abs(omega), DriverPresets.getInstance().getSteerExponent()),
+                      omega);
 
               // Convert to field relative speeds & send command
               ChassisSpeeds speeds =
