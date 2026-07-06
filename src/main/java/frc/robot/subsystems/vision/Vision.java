@@ -43,6 +43,12 @@ import org.littletonrobotics.junction.Logger;
  *       VisionConstants#maxPitchRollRadians} are rejected because a robot on flat carpet should
  *       never be significantly tilted; large tilt means the solve is wrong.
  * </ul>
+ *
+ * <p><b>Change log (2026-07-05):</b> Added single-tag distance filter — single-tag observations
+ * farther than {@link VisionConstants#maxSingleTagDistanceMeters} are rejected. Match-log analysis
+ * (State q30/e3, Worlds q2) showed every accepted pose that was 2.5–9.6 m wrong came from a
+ * single-tag solve at ≥ 3.8 m, some with near-zero ambiguity, so the ambiguity filter alone cannot
+ * catch them. Multi-tag observations keep the looser {@link VisionConstants#maxDistanceMeters}.
  */
 public class Vision extends SubsystemBase {
   private final VisionConsumer consumer;
@@ -149,6 +155,9 @@ public class Vision extends SubsystemBase {
           rejectionReason = "ZTooHigh"; // Must have realistic Z coordinate
         } else if (observation.averageTagDistance() > maxDistanceMeters) {
           rejectionReason = "TagsTooFar"; // Pose error grows with distance
+        } else if (observation.tagCount() == 1
+            && observation.averageTagDistance() > maxSingleTagDistanceMeters) {
+          rejectionReason = "SingleTagTooFar"; // Far single-tag solves can flip PnP solutions
         } else if (pitch > maxPitchRollRadians || roll > maxPitchRollRadians) {
           rejectionReason = "PitchRollTooLarge"; // Robot is on flat ground — solve is wrong
         } else if (observation.pose().getX() < 0.0
