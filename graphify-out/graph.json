@@ -24110,13 +24110,13 @@
       "id": "skills_game_info"
     },
     {
-      "label": "Game Info \u2014 FRC 2026",
+      "label": "Game Info — FRC 2026",
       "file_type": "document",
       "source_file": ".agent/skills/game-info.md",
       "source_location": "L6",
       "_origin": "ast",
       "community": 36,
-      "norm_label": "game info \u2014 frc 2026",
+      "norm_label": "game info — frc 2026",
       "id": "skills_game_info_game_info_frc_2026"
     },
     {
@@ -25040,13 +25040,13 @@
       "id": "rules_02_hardware_hardware_can_rules"
     },
     {
-      "label": "CAN ID Map \u2014 Source of Truth",
+      "label": "CAN ID Map — Source of Truth",
       "file_type": "document",
       "source_file": ".claude/rules/02-hardware.md",
       "source_location": "L5",
       "_origin": "ast",
       "community": 209,
-      "norm_label": "can id map \u2014 source of truth",
+      "norm_label": "can id map — source of truth",
       "id": "rules_02_hardware_can_id_map_source_of_truth"
     },
     {
@@ -25170,13 +25170,13 @@
       "id": "rules_03_commands_timeouts_are_mandatory_on_waituntil"
     },
     {
-      "label": "The Spinup \u2192 Align \u2192 Act Pattern",
+      "label": "The Spinup → Align → Act Pattern",
       "file_type": "document",
       "source_file": ".claude/rules/03-commands.md",
       "source_location": "L47",
       "_origin": "ast",
       "community": 145,
-      "norm_label": "the spinup \u2192 align \u2192 act pattern",
+      "norm_label": "the spinup → align → act pattern",
       "id": "rules_03_commands_the_spinup_align_act_pattern"
     },
     {
@@ -25750,13 +25750,13 @@
       "id": "agents_copilot_cloud_agent_for_format_details_see_https_gh_io_customagents_config"
     },
     {
-      "label": "Copilot Coding Agent \u2014 Autonomous Issue Implementation",
+      "label": "Copilot Coding Agent — Autonomous Issue Implementation",
       "file_type": "document",
       "source_file": ".github/agents/copilot-cloud.agent.md",
       "source_location": "L12",
       "_origin": "ast",
       "community": 91,
-      "norm_label": "copilot coding agent \u2014 autonomous issue implementation",
+      "norm_label": "copilot coding agent — autonomous issue implementation",
       "id": "agents_copilot_cloud_agent_copilot_coding_agent_autonomous_issue_implementation"
     },
     {
@@ -25780,23 +25780,23 @@
       "id": "agents_copilot_cloud_agent_your_mission"
     },
     {
-      "label": "Step 1 \u2014 Understand the Issue Deeply",
+      "label": "Step 1 — Understand the Issue Deeply",
       "file_type": "document",
       "source_file": ".github/agents/copilot-cloud.agent.md",
       "source_location": "L26",
       "_origin": "ast",
       "community": 91,
-      "norm_label": "step 1 \u2014 understand the issue deeply",
+      "norm_label": "step 1 — understand the issue deeply",
       "id": "agents_copilot_cloud_agent_step_1_understand_the_issue_deeply"
     },
     {
-      "label": "Step 2 \u2014 Explore the Codebase First",
+      "label": "Step 2 — Explore the Codebase First",
       "file_type": "document",
       "source_file": ".github/agents/copilot-cloud.agent.md",
       "source_location": "L36",
       "_origin": "ast",
       "community": 91,
-      "norm_label": "step 2 \u2014 explore the codebase first",
+      "norm_label": "step 2 — explore the codebase first",
       "id": "agents_copilot_cloud_agent_step_2_explore_the_codebase_first"
     },
     {
@@ -25820,33 +25820,33 @@
       "id": "agents_copilot_cloud_agent_how_to_explore_effectively"
     },
     {
-      "label": "Step 3 \u2014 Research What You Don't Know",
+      "label": "Step 3 — Research What You Don't Know",
       "file_type": "document",
       "source_file": ".github/agents/copilot-cloud.agent.md",
       "source_location": "L57",
       "_origin": "ast",
       "community": 91,
-      "norm_label": "step 3 \u2014 research what you don't know",
+      "norm_label": "step 3 — research what you don't know",
       "id": "agents_copilot_cloud_agent_step_3_research_what_you_don_t_know"
     },
     {
-      "label": "Step 4 \u2014 Form a Plan Before Writing Code",
+      "label": "Step 4 — Form a Plan Before Writing Code",
       "file_type": "document",
       "source_file": ".github/agents/copilot-cloud.agent.md",
       "source_location": "L69",
       "_origin": "ast",
       "community": 91,
-      "norm_label": "step 4 \u2014 form a plan before writing code",
+      "norm_label": "step 4 — form a plan before writing code",
       "id": "agents_copilot_cloud_agent_step_4_form_a_plan_before_writing_code"
     },
     {
-      "label": "Step 5 \u2014 Implement Following Project Conventions",
+      "label": "Step 5 — Implement Following Project Conventions",
       "file_type": "document",
       "source_file": ".github/agents/copilot-cloud.agent.md",
       "source_location": "L82",
       "_origin": "ast",
       "community": 91,
-      "norm_label": "step 5 \u2014 implement following project conventions",
+      "norm_label": "step 5 — implement following project conventions",
       "id": "agents_copilot_cloud_agent_step_5_implement_following_project_conventions"
     },
     {
@@ -25880,23 +25880,23 @@
       "id": "agents_copilot_cloud_agent_what_not_to_do"
     },
     {
-      "label": "Step 6 \u2014 Verify Your Implementation",
+      "label": "Step 6 — Verify Your Implementation",
       "file_type": "document",
       "source_file": ".github/agents/copilot-cloud.agent.md",
       "source_location": "L108",
       "_origin": "ast",
       "community": 91,
-      "norm_label": "step 6 \u2014 verify your implementation",
+      "norm_label": "step 6 — verify your implementation",
       "id": "agents_copilot_cloud_agent_step_6_verify_your_implementation"
     },
     {
-      "label": "Step 7 \u2014 Report Progress and Submit",
+      "label": "Step 7 — Report Progress and Submit",
       "file_type": "document",
       "source_file": ".github/agents/copilot-cloud.agent.md",
       "source_location": "L124",
       "_origin": "ast",
       "community": 91,
-      "norm_label": "step 7 \u2014 report progress and submit",
+      "norm_label": "step 7 — report progress and submit",
       "id": "agents_copilot_cloud_agent_step_7_report_progress_and_submit"
     },
     {
@@ -25980,13 +25980,13 @@
       "id": "agents_copilot_cloudagent_for_format_details_see_https_gh_io_customagents_config"
     },
     {
-      "label": "Copilot Coding Agent \u2014 Autonomous Issue Implementation",
+      "label": "Copilot Coding Agent — Autonomous Issue Implementation",
       "file_type": "document",
       "source_file": ".github/agents/copilot-cloudagent.md",
       "source_location": "L12",
       "_origin": "ast",
       "community": 93,
-      "norm_label": "copilot coding agent \u2014 autonomous issue implementation",
+      "norm_label": "copilot coding agent — autonomous issue implementation",
       "id": "agents_copilot_cloudagent_copilot_coding_agent_autonomous_issue_implementation"
     },
     {
@@ -26010,23 +26010,23 @@
       "id": "agents_copilot_cloudagent_your_mission"
     },
     {
-      "label": "Step 1 \u2014 Understand the Issue Deeply",
+      "label": "Step 1 — Understand the Issue Deeply",
       "file_type": "document",
       "source_file": ".github/agents/copilot-cloudagent.md",
       "source_location": "L26",
       "_origin": "ast",
       "community": 93,
-      "norm_label": "step 1 \u2014 understand the issue deeply",
+      "norm_label": "step 1 — understand the issue deeply",
       "id": "agents_copilot_cloudagent_step_1_understand_the_issue_deeply"
     },
     {
-      "label": "Step 2 \u2014 Explore the Codebase First",
+      "label": "Step 2 — Explore the Codebase First",
       "file_type": "document",
       "source_file": ".github/agents/copilot-cloudagent.md",
       "source_location": "L36",
       "_origin": "ast",
       "community": 93,
-      "norm_label": "step 2 \u2014 explore the codebase first",
+      "norm_label": "step 2 — explore the codebase first",
       "id": "agents_copilot_cloudagent_step_2_explore_the_codebase_first"
     },
     {
@@ -26050,33 +26050,33 @@
       "id": "agents_copilot_cloudagent_how_to_explore_effectively"
     },
     {
-      "label": "Step 3 \u2014 Research What You Don't Know",
+      "label": "Step 3 — Research What You Don't Know",
       "file_type": "document",
       "source_file": ".github/agents/copilot-cloudagent.md",
       "source_location": "L57",
       "_origin": "ast",
       "community": 93,
-      "norm_label": "step 3 \u2014 research what you don't know",
+      "norm_label": "step 3 — research what you don't know",
       "id": "agents_copilot_cloudagent_step_3_research_what_you_don_t_know"
     },
     {
-      "label": "Step 4 \u2014 Form a Plan Before Writing Code",
+      "label": "Step 4 — Form a Plan Before Writing Code",
       "file_type": "document",
       "source_file": ".github/agents/copilot-cloudagent.md",
       "source_location": "L69",
       "_origin": "ast",
       "community": 93,
-      "norm_label": "step 4 \u2014 form a plan before writing code",
+      "norm_label": "step 4 — form a plan before writing code",
       "id": "agents_copilot_cloudagent_step_4_form_a_plan_before_writing_code"
     },
     {
-      "label": "Step 5 \u2014 Implement Following Project Conventions",
+      "label": "Step 5 — Implement Following Project Conventions",
       "file_type": "document",
       "source_file": ".github/agents/copilot-cloudagent.md",
       "source_location": "L82",
       "_origin": "ast",
       "community": 93,
-      "norm_label": "step 5 \u2014 implement following project conventions",
+      "norm_label": "step 5 — implement following project conventions",
       "id": "agents_copilot_cloudagent_step_5_implement_following_project_conventions"
     },
     {
@@ -26110,23 +26110,23 @@
       "id": "agents_copilot_cloudagent_what_not_to_do"
     },
     {
-      "label": "Step 6 \u2014 Verify Your Implementation",
+      "label": "Step 6 — Verify Your Implementation",
       "file_type": "document",
       "source_file": ".github/agents/copilot-cloudagent.md",
       "source_location": "L108",
       "_origin": "ast",
       "community": 93,
-      "norm_label": "step 6 \u2014 verify your implementation",
+      "norm_label": "step 6 — verify your implementation",
       "id": "agents_copilot_cloudagent_step_6_verify_your_implementation"
     },
     {
-      "label": "Step 7 \u2014 Report Progress and Submit",
+      "label": "Step 7 — Report Progress and Submit",
       "file_type": "document",
       "source_file": ".github/agents/copilot-cloudagent.md",
       "source_location": "L124",
       "_origin": "ast",
       "community": 93,
-      "norm_label": "step 7 \u2014 report progress and submit",
+      "norm_label": "step 7 — report progress and submit",
       "id": "agents_copilot_cloudagent_step_7_report_progress_and_submit"
     },
     {
@@ -26170,13 +26170,13 @@
       "id": "agents_copilot_coding_agent"
     },
     {
-      "label": "Copilot Coding Agent \u2014 Autonomous Issue Implementation",
+      "label": "Copilot Coding Agent — Autonomous Issue Implementation",
       "file_type": "document",
       "source_file": ".github/agents/copilot-coding-agent.md",
       "source_location": "L5",
       "_origin": "ast",
       "community": 98,
-      "norm_label": "copilot coding agent \u2014 autonomous issue implementation",
+      "norm_label": "copilot coding agent — autonomous issue implementation",
       "id": "agents_copilot_coding_agent_copilot_coding_agent_autonomous_issue_implementation"
     },
     {
@@ -26200,23 +26200,23 @@
       "id": "agents_copilot_coding_agent_your_mission"
     },
     {
-      "label": "Step 1 \u2014 Understand the Issue Deeply",
+      "label": "Step 1 — Understand the Issue Deeply",
       "file_type": "document",
       "source_file": ".github/agents/copilot-coding-agent.md",
       "source_location": "L19",
       "_origin": "ast",
       "community": 98,
-      "norm_label": "step 1 \u2014 understand the issue deeply",
+      "norm_label": "step 1 — understand the issue deeply",
       "id": "agents_copilot_coding_agent_step_1_understand_the_issue_deeply"
     },
     {
-      "label": "Step 2 \u2014 Explore the Codebase First",
+      "label": "Step 2 — Explore the Codebase First",
       "file_type": "document",
       "source_file": ".github/agents/copilot-coding-agent.md",
       "source_location": "L29",
       "_origin": "ast",
       "community": 98,
-      "norm_label": "step 2 \u2014 explore the codebase first",
+      "norm_label": "step 2 — explore the codebase first",
       "id": "agents_copilot_coding_agent_step_2_explore_the_codebase_first"
     },
     {
@@ -26240,33 +26240,33 @@
       "id": "agents_copilot_coding_agent_how_to_explore_effectively"
     },
     {
-      "label": "Step 3 \u2014 Research What You Don't Know",
+      "label": "Step 3 — Research What You Don't Know",
       "file_type": "document",
       "source_file": ".github/agents/copilot-coding-agent.md",
       "source_location": "L50",
       "_origin": "ast",
       "community": 98,
-      "norm_label": "step 3 \u2014 research what you don't know",
+      "norm_label": "step 3 — research what you don't know",
       "id": "agents_copilot_coding_agent_step_3_research_what_you_don_t_know"
     },
     {
-      "label": "Step 4 \u2014 Form a Plan Before Writing Code",
+      "label": "Step 4 — Form a Plan Before Writing Code",
       "file_type": "document",
       "source_file": ".github/agents/copilot-coding-agent.md",
       "source_location": "L62",
       "_origin": "ast",
       "community": 98,
-      "norm_label": "step 4 \u2014 form a plan before writing code",
+      "norm_label": "step 4 — form a plan before writing code",
       "id": "agents_copilot_coding_agent_step_4_form_a_plan_before_writing_code"
     },
     {
-      "label": "Step 5 \u2014 Implement Following Project Conventions",
+      "label": "Step 5 — Implement Following Project Conventions",
       "file_type": "document",
       "source_file": ".github/agents/copilot-coding-agent.md",
       "source_location": "L75",
       "_origin": "ast",
       "community": 98,
-      "norm_label": "step 5 \u2014 implement following project conventions",
+      "norm_label": "step 5 — implement following project conventions",
       "id": "agents_copilot_coding_agent_step_5_implement_following_project_conventions"
     },
     {
@@ -26300,23 +26300,23 @@
       "id": "agents_copilot_coding_agent_what_not_to_do"
     },
     {
-      "label": "Step 6 \u2014 Verify Your Implementation",
+      "label": "Step 6 — Verify Your Implementation",
       "file_type": "document",
       "source_file": ".github/agents/copilot-coding-agent.md",
       "source_location": "L101",
       "_origin": "ast",
       "community": 98,
-      "norm_label": "step 6 \u2014 verify your implementation",
+      "norm_label": "step 6 — verify your implementation",
       "id": "agents_copilot_coding_agent_step_6_verify_your_implementation"
     },
     {
-      "label": "Step 7 \u2014 Report Progress and Submit",
+      "label": "Step 7 — Report Progress and Submit",
       "file_type": "document",
       "source_file": ".github/agents/copilot-coding-agent.md",
       "source_location": "L117",
       "_origin": "ast",
       "community": 98,
-      "norm_label": "step 7 \u2014 report progress and submit",
+      "norm_label": "step 7 — report progress and submit",
       "id": "agents_copilot_coding_agent_step_7_report_progress_and_submit"
     },
     {
@@ -26470,13 +26470,13 @@
       "id": "prompts_code_review_prompt"
     },
     {
-      "label": "Code Review \u2014 Logical & Behavioral Audit",
+      "label": "Code Review — Logical & Behavioral Audit",
       "file_type": "document",
       "source_file": ".github/prompts/code-review.prompt.md",
       "source_location": "L1",
       "_origin": "ast",
       "community": 100,
-      "norm_label": "code review \u2014 logical & behavioral audit",
+      "norm_label": "code review — logical & behavioral audit",
       "id": "prompts_code_review_prompt_code_review_logical_behavioral_audit"
     },
     {
@@ -26660,13 +26660,13 @@
       "id": "reviews_changelog_2026_04_12"
     },
     {
-      "label": "Code Review Fixes Changelog \u2014 2026-04-12",
+      "label": "Code Review Fixes Changelog — 2026-04-12",
       "file_type": "document",
       "source_file": ".github/reviews/changelog-2026-04-12.md",
       "source_location": "L1",
       "_origin": "ast",
       "community": 74,
-      "norm_label": "code review fixes changelog \u2014 2026-04-12",
+      "norm_label": "code review fixes changelog — 2026-04-12",
       "id": "reviews_changelog_2026_04_12_code_review_fixes_changelog_2026_04_12"
     },
     {
@@ -26680,63 +26680,63 @@
       "id": "reviews_changelog_2026_04_12_changes_made"
     },
     {
-      "label": "`Triggers.java` \u2014 Issues 1, 2, 4, 5, T1",
+      "label": "`Triggers.java` — Issues 1, 2, 4, 5, T1",
       "file_type": "document",
       "source_file": ".github/reviews/changelog-2026-04-12.md",
       "source_location": "L9",
       "_origin": "ast",
       "community": 74,
-      "norm_label": "`triggers.java` \u2014 issues 1, 2, 4, 5, t1",
+      "norm_label": "`triggers.java` — issues 1, 2, 4, 5, t1",
       "id": "reviews_changelog_2026_04_12_triggers_java_issues_1_2_4_5_t1"
     },
     {
-      "label": "`DriveCommands.java` \u2014 Issue 3",
+      "label": "`DriveCommands.java` — Issue 3",
       "file_type": "document",
       "source_file": ".github/reviews/changelog-2026-04-12.md",
       "source_location": "L19",
       "_origin": "ast",
       "community": 74,
-      "norm_label": "`drivecommands.java` \u2014 issue 3",
+      "norm_label": "`drivecommands.java` — issue 3",
       "id": "reviews_changelog_2026_04_12_drivecommands_java_issue_3"
     },
     {
-      "label": "`ShootSequences.java` \u2014 Issues 6, 8",
+      "label": "`ShootSequences.java` — Issues 6, 8",
       "file_type": "document",
       "source_file": ".github/reviews/changelog-2026-04-12.md",
       "source_location": "L23",
       "_origin": "ast",
       "community": 74,
-      "norm_label": "`shootsequences.java` \u2014 issues 6, 8",
+      "norm_label": "`shootsequences.java` — issues 6, 8",
       "id": "reviews_changelog_2026_04_12_shootsequences_java_issues_6_8"
     },
     {
-      "label": "`PrestageCommands.java` \u2014 Issue 9",
+      "label": "`PrestageCommands.java` — Issue 9",
       "file_type": "document",
       "source_file": ".github/reviews/changelog-2026-04-12.md",
       "source_location": "L28",
       "_origin": "ast",
       "community": 74,
-      "norm_label": "`prestagecommands.java` \u2014 issue 9",
+      "norm_label": "`prestagecommands.java` — issue 9",
       "id": "reviews_changelog_2026_04_12_prestagecommands_java_issue_9"
     },
     {
-      "label": "`RobotState.java` \u2014 Issue 11",
+      "label": "`RobotState.java` — Issue 11",
       "file_type": "document",
       "source_file": ".github/reviews/changelog-2026-04-12.md",
       "source_location": "L32",
       "_origin": "ast",
       "community": 74,
-      "norm_label": "`robotstate.java` \u2014 issue 11",
+      "norm_label": "`robotstate.java` — issue 11",
       "id": "reviews_changelog_2026_04_12_robotstate_java_issue_11"
     },
     {
-      "label": "`RobotContainer.java` \u2014 Issues 7, 12, 13, T2",
+      "label": "`RobotContainer.java` — Issues 7, 12, 13, T2",
       "file_type": "document",
       "source_file": ".github/reviews/changelog-2026-04-12.md",
       "source_location": "L36",
       "_origin": "ast",
       "community": 74,
-      "norm_label": "`robotcontainer.java` \u2014 issues 7, 12, 13, t2",
+      "norm_label": "`robotcontainer.java` — issues 7, 12, 13, t2",
       "id": "reviews_changelog_2026_04_12_robotcontainer_java_issues_7_12_13_t2"
     },
     {
@@ -26750,13 +26750,13 @@
       "id": "reviews_changelog_2026_04_12_skipped"
     },
     {
-      "label": "Subsystem IO Layer Review \u2014 Fixes",
+      "label": "Subsystem IO Layer Review — Fixes",
       "file_type": "document",
       "source_file": ".github/reviews/changelog-2026-04-12.md",
       "source_location": "L49",
       "_origin": "ast",
       "community": 74,
-      "norm_label": "subsystem io layer review \u2014 fixes",
+      "norm_label": "subsystem io layer review — fixes",
       "id": "reviews_changelog_2026_04_12_subsystem_io_layer_review_fixes"
     },
     {
@@ -26770,53 +26770,53 @@
       "id": "reviews_changelog_2026_04_12_critical_fixes"
     },
     {
-      "label": "`FlywheelIOSim.java` \u2014 Follower 1 Alignment (Bug #2)",
+      "label": "`FlywheelIOSim.java` — Follower 1 Alignment (Bug #2)",
       "file_type": "document",
       "source_file": ".github/reviews/changelog-2026-04-12.md",
       "source_location": "L56",
       "_origin": "ast",
       "community": 74,
-      "norm_label": "`flywheeliosim.java` \u2014 follower 1 alignment (bug #2)",
+      "norm_label": "`flywheeliosim.java` — follower 1 alignment (bug #2)",
       "id": "reviews_changelog_2026_04_12_flywheeliosim_java_follower_1_alignment_bug_2"
     },
     {
-      "label": "`intakeRollerIOSim.java` \u2014 Follower Alignment (Bug #3)",
+      "label": "`intakeRollerIOSim.java` — Follower Alignment (Bug #3)",
       "file_type": "document",
       "source_file": ".github/reviews/changelog-2026-04-12.md",
       "source_location": "L64",
       "_origin": "ast",
       "community": 74,
-      "norm_label": "`intakerolleriosim.java` \u2014 follower alignment (bug #3)",
+      "norm_label": "`intakerolleriosim.java` — follower alignment (bug #3)",
       "id": "reviews_changelog_2026_04_12_intakerolleriosim_java_follower_alignment_bug_3"
     },
     {
-      "label": "`PrestageIOSim.java` \u2014 Swapped ClosedLoopReference / Error (Bugs #4 & #5)",
+      "label": "`PrestageIOSim.java` — Swapped ClosedLoopReference / Error (Bugs #4 & #5)",
       "file_type": "document",
       "source_file": ".github/reviews/changelog-2026-04-12.md",
       "source_location": "L71",
       "_origin": "ast",
       "community": 74,
-      "norm_label": "`prestageiosim.java` \u2014 swapped closedloopreference / error (bugs #4 & #5)",
+      "norm_label": "`prestageiosim.java` — swapped closedloopreference / error (bugs #4 & #5)",
       "id": "reviews_changelog_2026_04_12_prestageiosim_java_swapped_closedloopreference_error_bugs_4_5"
     },
     {
-      "label": "`LowerFeeder.java` / `UpperFeeder.java` \u2014 Duplicate Logger Key (Bug #6)",
+      "label": "`LowerFeeder.java` / `UpperFeeder.java` — Duplicate Logger Key (Bug #6)",
       "file_type": "document",
       "source_file": ".github/reviews/changelog-2026-04-12.md",
       "source_location": "L78",
       "_origin": "ast",
       "community": 74,
-      "norm_label": "`lowerfeeder.java` / `upperfeeder.java` \u2014 duplicate logger key (bug #6)",
+      "norm_label": "`lowerfeeder.java` / `upperfeeder.java` — duplicate logger key (bug #6)",
       "id": "reviews_changelog_2026_04_12_lowerfeeder_java_upperfeeder_java_duplicate_logger_key_bug_6"
     },
     {
-      "label": "`PrestageIOSim.java` \u2014 Right Motor Never Commanded (Bug #10)",
+      "label": "`PrestageIOSim.java` — Right Motor Never Commanded (Bug #10)",
       "file_type": "document",
       "source_file": ".github/reviews/changelog-2026-04-12.md",
       "source_location": "L85",
       "_origin": "ast",
       "community": 74,
-      "norm_label": "`prestageiosim.java` \u2014 right motor never commanded (bug #10)",
+      "norm_label": "`prestageiosim.java` — right motor never commanded (bug #10)",
       "id": "reviews_changelog_2026_04_12_prestageiosim_java_right_motor_never_commanded_bug_10"
     },
     {
@@ -26830,43 +26830,43 @@
       "id": "reviews_changelog_2026_04_12_warnings_fixed"
     },
     {
-      "label": "`FlywheelIOSim.java` \u2014 Missing leaderAngle (Bug #7)",
+      "label": "`FlywheelIOSim.java` — Missing leaderAngle (Bug #7)",
       "file_type": "document",
       "source_file": ".github/reviews/changelog-2026-04-12.md",
       "source_location": "L94",
       "_origin": "ast",
       "community": 74,
-      "norm_label": "`flywheeliosim.java` \u2014 missing leaderangle (bug #7)",
+      "norm_label": "`flywheeliosim.java` — missing leaderangle (bug #7)",
       "id": "reviews_changelog_2026_04_12_flywheeliosim_java_missing_leaderangle_bug_7"
     },
     {
-      "label": "All IO Inputs \u2014 Null Measure Defaults (Bug #8)",
+      "label": "All IO Inputs — Null Measure Defaults (Bug #8)",
       "file_type": "document",
       "source_file": ".github/reviews/changelog-2026-04-12.md",
       "source_location": "L100",
       "_origin": "ast",
       "community": 74,
-      "norm_label": "all io inputs \u2014 null measure defaults (bug #8)",
+      "norm_label": "all io inputs — null measure defaults (bug #8)",
       "id": "reviews_changelog_2026_04_12_all_io_inputs_null_measure_defaults_bug_8"
     },
     {
-      "label": "`IntakePivotIOSim.java` \u2014 Wrong NeutralMode (Bug #9)",
+      "label": "`IntakePivotIOSim.java` — Wrong NeutralMode (Bug #9)",
       "file_type": "document",
       "source_file": ".github/reviews/changelog-2026-04-12.md",
       "source_location": "L109",
       "_origin": "ast",
       "community": 74,
-      "norm_label": "`intakepivotiosim.java` \u2014 wrong neutralmode (bug #9)",
+      "norm_label": "`intakepivotiosim.java` — wrong neutralmode (bug #9)",
       "id": "reviews_changelog_2026_04_12_intakepivotiosim_java_wrong_neutralmode_bug_9"
     },
     {
-      "label": "`FlywheelConstants.java` \u2014 Motor Count Mismatch (Bug #16)",
+      "label": "`FlywheelConstants.java` — Motor Count Mismatch (Bug #16)",
       "file_type": "document",
       "source_file": ".github/reviews/changelog-2026-04-12.md",
       "source_location": "L116",
       "_origin": "ast",
       "community": 74,
-      "norm_label": "`flywheelconstants.java` \u2014 motor count mismatch (bug #16)",
+      "norm_label": "`flywheelconstants.java` — motor count mismatch (bug #16)",
       "id": "reviews_changelog_2026_04_12_flywheelconstants_java_motor_count_mismatch_bug_16"
     },
     {
@@ -26880,13 +26880,13 @@
       "id": "reviews_changelog_2026_04_12_suggestions_implemented"
     },
     {
-      "label": "`intakeRollerIOSim.java` \u2014 Missing Follower Fields (S6)",
+      "label": "`intakeRollerIOSim.java` — Missing Follower Fields (S6)",
       "file_type": "document",
       "source_file": ".github/reviews/changelog-2026-04-12.md",
       "source_location": "L125",
       "_origin": "ast",
       "community": 74,
-      "norm_label": "`intakerolleriosim.java` \u2014 missing follower fields (s6)",
+      "norm_label": "`intakerolleriosim.java` — missing follower fields (s6)",
       "id": "reviews_changelog_2026_04_12_intakerolleriosim_java_missing_follower_fields_s6"
     },
     {
@@ -26910,13 +26910,13 @@
       "id": "reviews_changelog_2026_04_12_other"
     },
     {
-      "label": "`IntakePivotCommands.java` \u2014 Dead Command Factory",
+      "label": "`IntakePivotCommands.java` — Dead Command Factory",
       "file_type": "document",
       "source_file": ".github/reviews/changelog-2026-04-12.md",
       "source_location": "L141",
       "_origin": "ast",
       "community": 74,
-      "norm_label": "`intakepivotcommands.java` \u2014 dead command factory",
+      "norm_label": "`intakepivotcommands.java` — dead command factory",
       "id": "reviews_changelog_2026_04_12_intakepivotcommands_java_dead_command_factory"
     },
     {
@@ -26940,13 +26940,13 @@
       "id": "reviews_code_review_2026_04_12"
     },
     {
-      "label": "Code Review \u2014 Logical & Behavioral Audit",
+      "label": "Code Review — Logical & Behavioral Audit",
       "file_type": "document",
       "source_file": ".github/reviews/code-review-2026-04-12.md",
       "source_location": "L1",
       "_origin": "ast",
       "community": 38,
-      "norm_label": "code review \u2014 logical & behavioral audit",
+      "norm_label": "code review — logical & behavioral audit",
       "id": "reviews_code_review_2026_04_12_code_review_logical_behavioral_audit"
     },
     {
@@ -27000,13 +27000,13 @@
       "id": "reviews_cpu_optimization_2026_04_15"
     },
     {
-      "label": "CPU Optimization Review \u2014 2026-04-15",
+      "label": "CPU Optimization Review — 2026-04-15",
       "file_type": "document",
       "source_file": ".github/reviews/cpu-optimization-2026-04-15.md",
       "source_location": "L1",
       "_origin": "ast",
       "community": 186,
-      "norm_label": "cpu optimization review \u2014 2026-04-15",
+      "norm_label": "cpu optimization review — 2026-04-15",
       "id": "reviews_cpu_optimization_2026_04_15_cpu_optimization_review_2026_04_15"
     },
     {
@@ -27030,53 +27030,53 @@
       "id": "reviews_cpu_optimization_2026_04_15_how_the_robot_loop_works_context"
     },
     {
-      "label": "Issue 1 \u2014 `getApproachingZone()` internally called sub-methods up to 12 times per invocation",
+      "label": "Issue 1 — `getApproachingZone()` internally called sub-methods up to 12 times per invocation",
       "file_type": "document",
       "source_file": ".github/reviews/cpu-optimization-2026-04-15.md",
       "source_location": "L24",
       "_origin": "ast",
       "community": 186,
-      "norm_label": "issue 1 \u2014 `getapproachingzone()` internally called sub-methods up to 12 times per invocation",
+      "norm_label": "issue 1 — `getapproachingzone()` internally called sub-methods up to 12 times per invocation",
       "id": "reviews_cpu_optimization_2026_04_15_issue_1_getapproachingzone_internally_called_sub_methods_up_to_12_times_per_invocation"
     },
     {
-      "label": "Issue 2 \u2014 `getSpecificZone()` called `getBroadZone()` up to 4 times per invocation",
+      "label": "Issue 2 — `getSpecificZone()` called `getBroadZone()` up to 4 times per invocation",
       "file_type": "document",
       "source_file": ".github/reviews/cpu-optimization-2026-04-15.md",
       "source_location": "L49",
       "_origin": "ast",
       "community": 186,
-      "norm_label": "issue 2 \u2014 `getspecificzone()` called `getbroadzone()` up to 4 times per invocation",
+      "norm_label": "issue 2 — `getspecificzone()` called `getbroadzone()` up to 4 times per invocation",
       "id": "reviews_cpu_optimization_2026_04_15_issue_2_getspecificzone_called_getbroadzone_up_to_4_times_per_invocation"
     },
     {
-      "label": "Issue 3 \u2014 `Robot.robotPeriodic()` called `getEstimatedPose()` 4 separate times",
+      "label": "Issue 3 — `Robot.robotPeriodic()` called `getEstimatedPose()` 4 separate times",
       "file_type": "document",
       "source_file": ".github/reviews/cpu-optimization-2026-04-15.md",
       "source_location": "L67",
       "_origin": "ast",
       "community": 186,
-      "norm_label": "issue 3 \u2014 `robot.robotperiodic()` called `getestimatedpose()` 4 separate times",
+      "norm_label": "issue 3 — `robot.robotperiodic()` called `getestimatedpose()` 4 separate times",
       "id": "reviews_cpu_optimization_2026_04_15_issue_3_robot_robotperiodic_called_getestimatedpose_4_separate_times"
     },
     {
-      "label": "Issue 4 \u2014 `getPassTarget()` called `DriverStation.getAlliance()` twice, creating Optional allocations",
+      "label": "Issue 4 — `getPassTarget()` called `DriverStation.getAlliance()` twice, creating Optional allocations",
       "file_type": "document",
       "source_file": ".github/reviews/cpu-optimization-2026-04-15.md",
       "source_location": "L85",
       "_origin": "ast",
       "community": 186,
-      "norm_label": "issue 4 \u2014 `getpasstarget()` called `driverstation.getalliance()` twice, creating optional allocations",
+      "norm_label": "issue 4 — `getpasstarget()` called `driverstation.getalliance()` twice, creating optional allocations",
       "id": "reviews_cpu_optimization_2026_04_15_issue_4_getpasstarget_called_driverstation_getalliance_twice_creating_optional_allocations"
     },
     {
-      "label": "Issue 5 \u2014 `getDistanceToAllianceHub()` logged its return value twice per loop",
+      "label": "Issue 5 — `getDistanceToAllianceHub()` logged its return value twice per loop",
       "file_type": "document",
       "source_file": ".github/reviews/cpu-optimization-2026-04-15.md",
       "source_location": "L107",
       "_origin": "ast",
       "community": 186,
-      "norm_label": "issue 5 \u2014 `getdistancetoalliancehub()` logged its return value twice per loop",
+      "norm_label": "issue 5 — `getdistancetoalliancehub()` logged its return value twice per loop",
       "id": "reviews_cpu_optimization_2026_04_15_issue_5_getdistancetoalliancehub_logged_its_return_value_twice_per_loop"
     },
     {
@@ -27150,13 +27150,13 @@
       "id": "reviews_cpu_optimization_round2_2026_04_15"
     },
     {
-      "label": "CPU Optimization Review \u2014 Round 2",
+      "label": "CPU Optimization Review — Round 2",
       "file_type": "document",
       "source_file": ".github/reviews/cpu-optimization-round2-2026-04-15.md",
       "source_location": "L1",
       "_origin": "ast",
       "community": 182,
-      "norm_label": "cpu optimization review \u2014 round 2",
+      "norm_label": "cpu optimization review — round 2",
       "id": "reviews_cpu_optimization_round2_2026_04_15_cpu_optimization_review_round_2"
     },
     {
@@ -27180,13 +27180,13 @@
       "id": "reviews_cpu_optimization_round2_2026_04_15_debug_logging_removed"
     },
     {
-      "label": "1. `getCurrentCommand()` logging \u2014 8 subsystems",
+      "label": "1. `getCurrentCommand()` logging — 8 subsystems",
       "file_type": "document",
       "source_file": ".github/reviews/cpu-optimization-round2-2026-04-15.md",
       "source_location": "L17",
       "_origin": "ast",
       "community": 182,
-      "norm_label": "1. `getcurrentcommand()` logging \u2014 8 subsystems",
+      "norm_label": "1. `getcurrentcommand()` logging — 8 subsystems",
       "id": "reviews_cpu_optimization_round2_2026_04_15_1_getcurrentcommand_logging_8_subsystems"
     },
     {
@@ -27240,33 +27240,33 @@
       "id": "reviews_cpu_optimization_round2_2026_04_15_dead_code_removed"
     },
     {
-      "label": "6. `ShotCalculator` \u2014 4 dead methods",
+      "label": "6. `ShotCalculator` — 4 dead methods",
       "file_type": "document",
       "source_file": ".github/reviews/cpu-optimization-round2-2026-04-15.md",
       "source_location": "L69",
       "_origin": "ast",
       "community": 182,
-      "norm_label": "6. `shotcalculator` \u2014 4 dead methods",
+      "norm_label": "6. `shotcalculator` — 4 dead methods",
       "id": "reviews_cpu_optimization_round2_2026_04_15_6_shotcalculator_4_dead_methods"
     },
     {
-      "label": "7. `Flywheel.shootDynamic()` \u2014 dead method",
+      "label": "7. `Flywheel.shootDynamic()` — dead method",
       "file_type": "document",
       "source_file": ".github/reviews/cpu-optimization-round2-2026-04-15.md",
       "source_location": "L80",
       "_origin": "ast",
       "community": 182,
-      "norm_label": "7. `flywheel.shootdynamic()` \u2014 dead method",
+      "norm_label": "7. `flywheel.shootdynamic()` — dead method",
       "id": "reviews_cpu_optimization_round2_2026_04_15_7_flywheel_shootdynamic_dead_method"
     },
     {
-      "label": "8. `Drive.getHeadingForShootDynamic()` \u2014 dead method",
+      "label": "8. `Drive.getHeadingForShootDynamic()` — dead method",
       "file_type": "document",
       "source_file": ".github/reviews/cpu-optimization-round2-2026-04-15.md",
       "source_location": "L84",
       "_origin": "ast",
       "community": 182,
-      "norm_label": "8. `drive.getheadingforshootdynamic()` \u2014 dead method",
+      "norm_label": "8. `drive.getheadingforshootdynamic()` — dead method",
       "id": "reviews_cpu_optimization_round2_2026_04_15_8_drive_getheadingforshootdynamic_dead_method"
     },
     {
@@ -27310,13 +27310,13 @@
       "id": "reviews_pre_states_review_2026_04_17"
     },
     {
-      "label": "Pre-States Code Review \u2014 April 17, 2026",
+      "label": "Pre-States Code Review — April 17, 2026",
       "file_type": "document",
       "source_file": ".github/reviews/pre-states-review-2026-04-17.md",
       "source_location": "L1",
       "_origin": "ast",
       "community": 38,
-      "norm_label": "pre-states code review \u2014 april 17, 2026",
+      "norm_label": "pre-states code review — april 17, 2026",
       "id": "reviews_pre_states_review_2026_04_17_pre_states_code_review_april_17_2026"
     },
     {
@@ -27350,13 +27350,13 @@
       "id": "reviews_pre_states_review_2026_04_17_1_hooddown_eventtrigger_will_interrupt_the_entire_auto_group"
     },
     {
-      "label": "2. `RunIntake` EventTrigger doesn't run transport \u2014 NamedCommand version does",
+      "label": "2. `RunIntake` EventTrigger doesn't run transport — NamedCommand version does",
       "file_type": "document",
       "source_file": ".github/reviews/pre-states-review-2026-04-17.md",
       "source_location": "L27",
       "_origin": "ast",
       "community": 38,
-      "norm_label": "2. `runintake` eventtrigger doesn't run transport \u2014 namedcommand version does",
+      "norm_label": "2. `runintake` eventtrigger doesn't run transport — namedcommand version does",
       "id": "reviews_pre_states_review_2026_04_17_2_runintake_eventtrigger_doesn_t_run_transport_namedcommand_version_does"
     },
     {
@@ -27400,13 +27400,13 @@
       "id": "reviews_pre_states_review_2026_04_17_5_compresspivot_doesn_t_reset_pivot_position_on_end"
     },
     {
-      "label": "6. `zonePassOrShoot` uses `Commands.either()` \u2014 evaluates condition once",
+      "label": "6. `zonePassOrShoot` uses `Commands.either()` — evaluates condition once",
       "file_type": "document",
       "source_file": ".github/reviews/pre-states-review-2026-04-17.md",
       "source_location": "L68",
       "_origin": "ast",
       "community": 38,
-      "norm_label": "6. `zonepassorshoot` uses `commands.either()` \u2014 evaluates condition once",
+      "norm_label": "6. `zonepassorshoot` uses `commands.either()` — evaluates condition once",
       "id": "reviews_pre_states_review_2026_04_17_6_zonepassorshoot_uses_commands_either_evaluates_condition_once"
     },
     {
@@ -27430,13 +27430,13 @@
       "id": "reviews_subsystem_io_review_2026_04_12"
     },
     {
-      "label": "Subsystem & IO Layer Code Review \u2014 April 12, 2026",
+      "label": "Subsystem & IO Layer Code Review — April 12, 2026",
       "file_type": "document",
       "source_file": ".github/reviews/subsystem-io-review-2026-04-12.md",
       "source_location": "L1",
       "_origin": "ast",
       "community": 75,
-      "norm_label": "subsystem & io layer code review \u2014 april 12, 2026",
+      "norm_label": "subsystem & io layer code review — april 12, 2026",
       "id": "reviews_subsystem_io_review_2026_04_12_subsystem_io_layer_code_review_april_12_2026"
     },
     {
@@ -27460,63 +27460,63 @@
       "id": "reviews_subsystem_io_review_2026_04_12_critical_issues"
     },
     {
-      "label": "1. \u2705 FIXED BY USER \u2014 intakeRollerIOReal \u2014 Leader velocity overwritten by follower velocity",
+      "label": "1. ✅ FIXED BY USER — intakeRollerIOReal — Leader velocity overwritten by follower velocity",
       "file_type": "document",
       "source_file": ".github/reviews/subsystem-io-review-2026-04-12.md",
       "source_location": "L11",
       "_origin": "ast",
       "community": 75,
-      "norm_label": "1. \u2705 fixed by user \u2014 intakerollerioreal \u2014 leader velocity overwritten by follower velocity",
+      "norm_label": "1. ✅ fixed by user — intakerollerioreal — leader velocity overwritten by follower velocity",
       "id": "reviews_subsystem_io_review_2026_04_12_1_fixed_by_user_intakerollerioreal_leader_velocity_overwritten_by_follower_velocity"
     },
     {
-      "label": "2. FlywheelIOSim \u2014 Follower alignment does not match real hardware",
+      "label": "2. FlywheelIOSim — Follower alignment does not match real hardware",
       "file_type": "document",
       "source_file": ".github/reviews/subsystem-io-review-2026-04-12.md",
       "source_location": "L16",
       "_origin": "ast",
       "community": 75,
-      "norm_label": "2. flywheeliosim \u2014 follower alignment does not match real hardware",
+      "norm_label": "2. flywheeliosim — follower alignment does not match real hardware",
       "id": "reviews_subsystem_io_review_2026_04_12_2_flywheeliosim_follower_alignment_does_not_match_real_hardware"
     },
     {
-      "label": "3. intakeRollerIOSim \u2014 Follower alignment does not match real hardware",
+      "label": "3. intakeRollerIOSim — Follower alignment does not match real hardware",
       "file_type": "document",
       "source_file": ".github/reviews/subsystem-io-review-2026-04-12.md",
       "source_location": "L28",
       "_origin": "ast",
       "community": 75,
-      "norm_label": "3. intakerolleriosim \u2014 follower alignment does not match real hardware",
+      "norm_label": "3. intakerolleriosim — follower alignment does not match real hardware",
       "id": "reviews_subsystem_io_review_2026_04_12_3_intakerolleriosim_follower_alignment_does_not_match_real_hardware"
     },
     {
-      "label": "4. PrestageIOSim \u2014 `prestageLeftClosedLoopReference` reads from ClosedLoopError instead of ClosedLoopReference",
+      "label": "4. PrestageIOSim — `prestageLeftClosedLoopReference` reads from ClosedLoopError instead of ClosedLoopReference",
       "file_type": "document",
       "source_file": ".github/reviews/subsystem-io-review-2026-04-12.md",
       "source_location": "L33",
       "_origin": "ast",
       "community": 75,
-      "norm_label": "4. prestageiosim \u2014 `prestageleftclosedloopreference` reads from closedlooperror instead of closedloopreference",
+      "norm_label": "4. prestageiosim — `prestageleftclosedloopreference` reads from closedlooperror instead of closedloopreference",
       "id": "reviews_subsystem_io_review_2026_04_12_4_prestageiosim_prestageleftclosedloopreference_reads_from_closedlooperror_instead_of_closedloopreference"
     },
     {
-      "label": "5. PrestageIOSim \u2014 `prestageLeftClosedLoopError` is never set",
+      "label": "5. PrestageIOSim — `prestageLeftClosedLoopError` is never set",
       "file_type": "document",
       "source_file": ".github/reviews/subsystem-io-review-2026-04-12.md",
       "source_location": "L42",
       "_origin": "ast",
       "community": 75,
-      "norm_label": "5. prestageiosim \u2014 `prestageleftclosedlooperror` is never set",
+      "norm_label": "5. prestageiosim — `prestageleftclosedlooperror` is never set",
       "id": "reviews_subsystem_io_review_2026_04_12_5_prestageiosim_prestageleftclosedlooperror_is_never_set"
     },
     {
-      "label": "6. LowerFeeder & UpperFeeder \u2014 Duplicate `Logger.processInputs` key `\"Feeder\"`",
+      "label": "6. LowerFeeder & UpperFeeder — Duplicate `Logger.processInputs` key `\"Feeder\"`",
       "file_type": "document",
       "source_file": ".github/reviews/subsystem-io-review-2026-04-12.md",
       "source_location": "L45",
       "_origin": "ast",
       "community": 75,
-      "norm_label": "6. lowerfeeder & upperfeeder \u2014 duplicate `logger.processinputs` key `\"feeder\"`",
+      "norm_label": "6. lowerfeeder & upperfeeder — duplicate `logger.processinputs` key `\"feeder\"`",
       "id": "reviews_subsystem_io_review_2026_04_12_6_lowerfeeder_upperfeeder_duplicate_logger_processinputs_key_feeder"
     },
     {
@@ -27530,93 +27530,93 @@
       "id": "reviews_subsystem_io_review_2026_04_12_warnings"
     },
     {
-      "label": "7. FlywheelIOSim \u2014 `leaderAngle` (position) not populated",
+      "label": "7. FlywheelIOSim — `leaderAngle` (position) not populated",
       "file_type": "document",
       "source_file": ".github/reviews/subsystem-io-review-2026-04-12.md",
       "source_location": "L54",
       "_origin": "ast",
       "community": 75,
-      "norm_label": "7. flywheeliosim \u2014 `leaderangle` (position) not populated",
+      "norm_label": "7. flywheeliosim — `leaderangle` (position) not populated",
       "id": "reviews_subsystem_io_review_2026_04_12_7_flywheeliosim_leaderangle_position_not_populated"
     },
     {
-      "label": "8. FlywheelIO \u2014 All `@AutoLog` `Inputs` fields default to `null`",
+      "label": "8. FlywheelIO — All `@AutoLog` `Inputs` fields default to `null`",
       "file_type": "document",
       "source_file": ".github/reviews/subsystem-io-review-2026-04-12.md",
       "source_location": "L57",
       "_origin": "ast",
       "community": 75,
-      "norm_label": "8. flywheelio \u2014 all `@autolog` `inputs` fields default to `null`",
+      "norm_label": "8. flywheelio — all `@autolog` `inputs` fields default to `null`",
       "id": "reviews_subsystem_io_review_2026_04_12_8_flywheelio_all_autolog_inputs_fields_default_to_null"
     },
     {
-      "label": "9. IntakePivotIOSim \u2014 NeutralMode is Coast, Real is Brake",
+      "label": "9. IntakePivotIOSim — NeutralMode is Coast, Real is Brake",
       "file_type": "document",
       "source_file": ".github/reviews/subsystem-io-review-2026-04-12.md",
       "source_location": "L60",
       "_origin": "ast",
       "community": 75,
-      "norm_label": "9. intakepivotiosim \u2014 neutralmode is coast, real is brake",
+      "norm_label": "9. intakepivotiosim — neutralmode is coast, real is brake",
       "id": "reviews_subsystem_io_review_2026_04_12_9_intakepivotiosim_neutralmode_is_coast_real_is_brake"
     },
     {
-      "label": "10. PrestageIOSim \u2014 Right motor not driven by `setPrestageVoltage` / `setPrestageVelocity`",
+      "label": "10. PrestageIOSim — Right motor not driven by `setPrestageVoltage` / `setPrestageVelocity`",
       "file_type": "document",
       "source_file": ".github/reviews/subsystem-io-review-2026-04-12.md",
       "source_location": "L63",
       "_origin": "ast",
       "community": 75,
-      "norm_label": "10. prestageiosim \u2014 right motor not driven by `setprestagevoltage` / `setprestagevelocity`",
+      "norm_label": "10. prestageiosim — right motor not driven by `setprestagevoltage` / `setprestagevelocity`",
       "id": "reviews_subsystem_io_review_2026_04_12_10_prestageiosim_right_motor_not_driven_by_setprestagevoltage_setprestagevelocity"
     },
     {
-      "label": "11. \u2705 REMOVED BY USER \u2014 PrestageIO `setOneVelo` had no implementation",
+      "label": "11. ✅ REMOVED BY USER — PrestageIO `setOneVelo` had no implementation",
       "file_type": "document",
       "source_file": ".github/reviews/subsystem-io-review-2026-04-12.md",
       "source_location": "L66",
       "_origin": "ast",
       "community": 75,
-      "norm_label": "11. \u2705 removed by user \u2014 prestageio `setonevelo` had no implementation",
+      "norm_label": "11. ✅ removed by user — prestageio `setonevelo` had no implementation",
       "id": "reviews_subsystem_io_review_2026_04_12_11_removed_by_user_prestageio_setonevelo_had_no_implementation"
     },
     {
-      "label": "12. HoodIOSim \u2014 No physics simulation (USER: skip for now)",
+      "label": "12. HoodIOSim — No physics simulation (USER: skip for now)",
       "file_type": "document",
       "source_file": ".github/reviews/subsystem-io-review-2026-04-12.md",
       "source_location": "L68",
       "_origin": "ast",
       "community": 75,
-      "norm_label": "12. hoodiosim \u2014 no physics simulation (user: skip for now)",
+      "norm_label": "12. hoodiosim — no physics simulation (user: skip for now)",
       "id": "reviews_subsystem_io_review_2026_04_12_12_hoodiosim_no_physics_simulation_user_skip_for_now"
     },
     {
-      "label": "13. \u2705 REMOVED BY USER \u2014 HoodIO `stopHood()` was unimplemented",
+      "label": "13. ✅ REMOVED BY USER — HoodIO `stopHood()` was unimplemented",
       "file_type": "document",
       "source_file": ".github/reviews/subsystem-io-review-2026-04-12.md",
       "source_location": "L70",
       "_origin": "ast",
       "community": 75,
-      "norm_label": "13. \u2705 removed by user \u2014 hoodio `stophood()` was unimplemented",
+      "norm_label": "13. ✅ removed by user — hoodio `stophood()` was unimplemented",
       "id": "reviews_subsystem_io_review_2026_04_12_13_removed_by_user_hoodio_stophood_was_unimplemented"
     },
     {
-      "label": "14. IntakePivotIOSim \u2014 Uses Voltage-based control (USER: leave as-is, intentional)",
+      "label": "14. IntakePivotIOSim — Uses Voltage-based control (USER: leave as-is, intentional)",
       "file_type": "document",
       "source_file": ".github/reviews/subsystem-io-review-2026-04-12.md",
       "source_location": "L72",
       "_origin": "ast",
       "community": 75,
-      "norm_label": "14. intakepivotiosim \u2014 uses voltage-based control (user: leave as-is, intentional)",
+      "norm_label": "14. intakepivotiosim — uses voltage-based control (user: leave as-is, intentional)",
       "id": "reviews_subsystem_io_review_2026_04_12_14_intakepivotiosim_uses_voltage_based_control_user_leave_as_is_intentional"
     },
     {
-      "label": "15. IntakePivotIOReal \u2014 Feedback config applied separately (USER: leave as-is, works)",
+      "label": "15. IntakePivotIOReal — Feedback config applied separately (USER: leave as-is, works)",
       "file_type": "document",
       "source_file": ".github/reviews/subsystem-io-review-2026-04-12.md",
       "source_location": "L74",
       "_origin": "ast",
       "community": 75,
-      "norm_label": "15. intakepivotioreal \u2014 feedback config applied separately (user: leave as-is, works)",
+      "norm_label": "15. intakepivotioreal — feedback config applied separately (user: leave as-is, works)",
       "id": "reviews_subsystem_io_review_2026_04_12_15_intakepivotioreal_feedback_config_applied_separately_user_leave_as_is_works"
     },
     {
@@ -27820,13 +27820,13 @@
       "id": "architecture_named_commands_vs_event_triggers"
     },
     {
-      "label": "RobotState \u2014 Central Singleton",
+      "label": "RobotState — Central Singleton",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
       "source_location": "L202",
       "_origin": "ast",
       "community": 72,
-      "norm_label": "robotstate \u2014 central singleton",
+      "norm_label": "robotstate — central singleton",
       "id": "architecture_robotstate_central_singleton"
     },
     {
@@ -27860,13 +27860,13 @@
       "id": "architecture_triggers_button_bindings"
     },
     {
-      "label": "Primary Driver \u2014 Thrustmaster Joystick",
+      "label": "Primary Driver — Thrustmaster Joystick",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
       "source_location": "L231",
       "_origin": "ast",
       "community": 72,
-      "norm_label": "primary driver \u2014 thrustmaster joystick",
+      "norm_label": "primary driver — thrustmaster joystick",
       "id": "architecture_primary_driver_thrustmaster_joystick"
     },
     {
@@ -27920,13 +27920,13 @@
       "id": "architecture_vendor_library_versions"
     },
     {
-      "label": "Strong Patterns \u2014 Keep These",
+      "label": "Strong Patterns — Keep These",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
       "source_location": "L298",
       "_origin": "ast",
       "community": 72,
-      "norm_label": "strong patterns \u2014 keep these",
+      "norm_label": "strong patterns — keep these",
       "id": "architecture_strong_patterns_keep_these"
     },
     {
@@ -27990,13 +27990,13 @@
       "id": "claude"
     },
     {
-      "label": "Claude Code \u2014 Guerin Robotics FRC",
+      "label": "Claude Code — Guerin Robotics FRC",
       "file_type": "document",
       "source_file": "CLAUDE.md",
       "source_location": "L1",
       "_origin": "ast",
       "community": 55,
-      "norm_label": "claude code \u2014 guerin robotics frc",
+      "norm_label": "claude code — guerin robotics frc",
       "id": "claude_claude_code_guerin_robotics_frc"
     },
     {
@@ -28010,13 +28010,13 @@
       "id": "claude_identity"
     },
     {
-      "label": "Hard Stops \u2014 Never Do These Without Explicit Instruction",
+      "label": "Hard Stops — Never Do These Without Explicit Instruction",
       "file_type": "document",
       "source_file": "CLAUDE.md",
       "source_location": "L15",
       "_origin": "ast",
       "community": 55,
-      "norm_label": "hard stops \u2014 never do these without explicit instruction",
+      "norm_label": "hard stops — never do these without explicit instruction",
       "id": "claude_hard_stops_never_do_these_without_explicit_instruction"
     },
     {
@@ -28260,43 +28260,43 @@
       "id": "readme_entry_point_robot_java_and_robotcontainer_java"
     },
     {
-      "label": "`RobotState` \u2014 one place for \u201cwhere am I on the field?\u201d",
+      "label": "`RobotState` — one place for “where am I on the field?”",
       "file_type": "document",
       "source_file": "README.md",
       "source_location": "L69",
       "_origin": "ast",
       "community": 71,
-      "norm_label": "`robotstate` \u2014 one place for \u201cwhere am i on the field?\u201d",
+      "norm_label": "`robotstate` — one place for “where am i on the field?”",
       "id": "readme_robotstate_one_place_for_where_am_i_on_the_field"
     },
     {
-      "label": "`ShotCalculator` and `HoodPosCalculator` \u2014 turning distance into shooter settings",
+      "label": "`ShotCalculator` and `HoodPosCalculator` — turning distance into shooter settings",
       "file_type": "document",
       "source_file": "README.md",
       "source_location": "L80",
       "_origin": "ast",
       "community": 71,
-      "norm_label": "`shotcalculator` and `hoodposcalculator` \u2014 turning distance into shooter settings",
+      "norm_label": "`shotcalculator` and `hoodposcalculator` — turning distance into shooter settings",
       "id": "readme_shotcalculator_and_hoodposcalculator_turning_distance_into_shooter_settings"
     },
     {
-      "label": "`ShootSequences` \u2014 recipes that combine subsystems",
+      "label": "`ShootSequences` — recipes that combine subsystems",
       "file_type": "document",
       "source_file": "README.md",
       "source_location": "L95",
       "_origin": "ast",
       "community": 71,
-      "norm_label": "`shootsequences` \u2014 recipes that combine subsystems",
+      "norm_label": "`shootsequences` — recipes that combine subsystems",
       "id": "readme_shootsequences_recipes_that_combine_subsystems"
     },
     {
-      "label": "`Triggers` \u2014 buttons and \u201cis it safe to shoot?\u201d",
+      "label": "`Triggers` — buttons and “is it safe to shoot?”",
       "file_type": "document",
       "source_file": "README.md",
       "source_location": "L105",
       "_origin": "ast",
       "community": 71,
-      "norm_label": "`triggers` \u2014 buttons and \u201cis it safe to shoot?\u201d",
+      "norm_label": "`triggers` — buttons and “is it safe to shoot?”",
       "id": "readme_triggers_buttons_and_is_it_safe_to_shoot"
     },
     {
@@ -28330,43 +28330,43 @@
       "id": "readme_where_constants_live_numbers_you_might_need_to_change"
     },
     {
-      "label": "`Constants.java` \u2014 simulation mode and which drivetrain file to use",
+      "label": "`Constants.java` — simulation mode and which drivetrain file to use",
       "file_type": "document",
       "source_file": "README.md",
       "source_location": "L131",
       "_origin": "ast",
       "community": 71,
-      "norm_label": "`constants.java` \u2014 simulation mode and which drivetrain file to use",
+      "norm_label": "`constants.java` — simulation mode and which drivetrain file to use",
       "id": "readme_constants_java_simulation_mode_and_which_drivetrain_file_to_use"
     },
     {
-      "label": "`HardwareConstants.java` \u2014 IDs, driver ports, and \u201ccompetition\u201d presets",
+      "label": "`HardwareConstants.java` — IDs, driver ports, and “competition” presets",
       "file_type": "document",
       "source_file": "README.md",
       "source_location": "L138",
       "_origin": "ast",
       "community": 71,
-      "norm_label": "`hardwareconstants.java` \u2014 ids, driver ports, and \u201ccompetition\u201d presets",
+      "norm_label": "`hardwareconstants.java` — ids, driver ports, and “competition” presets",
       "id": "readme_hardwareconstants_java_ids_driver_ports_and_competition_presets"
     },
     {
-      "label": "Per-subsystem `*Constants.java` \u2014 gains, limits, and lookup tables",
+      "label": "Per-subsystem `*Constants.java` — gains, limits, and lookup tables",
       "file_type": "document",
       "source_file": "README.md",
       "source_location": "L151",
       "_origin": "ast",
       "community": 71,
-      "norm_label": "per-subsystem `*constants.java` \u2014 gains, limits, and lookup tables",
+      "norm_label": "per-subsystem `*constants.java` — gains, limits, and lookup tables",
       "id": "readme_per_subsystem_constants_java_gains_limits_and_lookup_tables"
     },
     {
-      "label": "`FieldConstants` \u2014 the official field in code form",
+      "label": "`FieldConstants` — the official field in code form",
       "file_type": "document",
       "source_file": "README.md",
       "source_location": "L161",
       "_origin": "ast",
       "community": 71,
-      "norm_label": "`fieldconstants` \u2014 the official field in code form",
+      "norm_label": "`fieldconstants` — the official field in code form",
       "id": "readme_fieldconstants_the_official_field_in_code_form"
     },
     {
@@ -28730,53 +28730,53 @@
       "id": "docs_change_classification_change_classification_guide"
     },
     {
-      "label": "Level 0 \u2014 Safe (Proceed)",
+      "label": "Level 0 — Safe (Proceed)",
       "file_type": "document",
       "source_file": "docs/change-classification.md",
       "source_location": "L8",
       "_origin": "ast",
       "community": 214,
-      "norm_label": "level 0 \u2014 safe (proceed)",
+      "norm_label": "level 0 — safe (proceed)",
       "id": "docs_change_classification_level_0_safe_proceed"
     },
     {
-      "label": "Level 1 \u2014 Low Risk (Proceed, note what was added)",
+      "label": "Level 1 — Low Risk (Proceed, note what was added)",
       "file_type": "document",
       "source_file": "docs/change-classification.md",
       "source_location": "L23",
       "_origin": "ast",
       "community": 214,
-      "norm_label": "level 1 \u2014 low risk (proceed, note what was added)",
+      "norm_label": "level 1 — low risk (proceed, note what was added)",
       "id": "docs_change_classification_level_1_low_risk_proceed_note_what_was_added"
     },
     {
-      "label": "Level 2 \u2014 Medium Risk (Proceed, describe behavioral change)",
+      "label": "Level 2 — Medium Risk (Proceed, describe behavioral change)",
       "file_type": "document",
       "source_file": "docs/change-classification.md",
       "source_location": "L38",
       "_origin": "ast",
       "community": 214,
-      "norm_label": "level 2 \u2014 medium risk (proceed, describe behavioral change)",
+      "norm_label": "level 2 — medium risk (proceed, describe behavioral change)",
       "id": "docs_change_classification_level_2_medium_risk_proceed_describe_behavioral_change"
     },
     {
-      "label": "Level 3 \u2014 High Risk (Ask for confirmation, name failure mode)",
+      "label": "Level 3 — High Risk (Ask for confirmation, name failure mode)",
       "file_type": "document",
       "source_file": "docs/change-classification.md",
       "source_location": "L54",
       "_origin": "ast",
       "community": 214,
-      "norm_label": "level 3 \u2014 high risk (ask for confirmation, name failure mode)",
+      "norm_label": "level 3 — high risk (ask for confirmation, name failure mode)",
       "id": "docs_change_classification_level_3_high_risk_ask_for_confirmation_name_failure_mode"
     },
     {
-      "label": "Level 4 \u2014 Blocked (Hard Stop \u2014 explicit confirmation required)",
+      "label": "Level 4 — Blocked (Hard Stop — explicit confirmation required)",
       "file_type": "document",
       "source_file": "docs/change-classification.md",
       "source_location": "L81",
       "_origin": "ast",
       "community": 214,
-      "norm_label": "level 4 \u2014 blocked (hard stop \u2014 explicit confirmation required)",
+      "norm_label": "level 4 — blocked (hard stop — explicit confirmation required)",
       "id": "docs_change_classification_level_4_blocked_hard_stop_explicit_confirmation_required"
     },
     {
@@ -29020,13 +29020,13 @@
       "id": "docs_robot_spec"
     },
     {
-      "label": "Guerin Robotics \u2014 Rebuilt2026 Complete Specification",
+      "label": "Guerin Robotics — Rebuilt2026 Complete Specification",
       "file_type": "document",
       "source_file": "docs/robot-spec.md",
       "source_location": "L1",
       "_origin": "ast",
       "community": 117,
-      "norm_label": "guerin robotics \u2014 rebuilt2026 complete specification",
+      "norm_label": "guerin robotics — rebuilt2026 complete specification",
       "id": "docs_robot_spec_guerin_robotics_rebuilt2026_complete_specification"
     },
     {
@@ -29130,13 +29130,13 @@
       "id": "docs_robot_spec_pose_estimator"
     },
     {
-      "label": "5. Robot.java \u2014 Lifecycle",
+      "label": "5. Robot.java — Lifecycle",
       "file_type": "document",
       "source_file": "docs/robot-spec.md",
       "source_location": "L193",
       "_origin": "ast",
       "community": 117,
-      "norm_label": "5. robot.java \u2014 lifecycle",
+      "norm_label": "5. robot.java — lifecycle",
       "id": "docs_robot_spec_5_robot_java_lifecycle"
     },
     {
@@ -29150,13 +29150,13 @@
       "id": "docs_robot_spec_6_constants_java"
     },
     {
-      "label": "7. HardwareConstants.java \u2014 Complete Values",
+      "label": "7. HardwareConstants.java — Complete Values",
       "file_type": "document",
       "source_file": "docs/robot-spec.md",
       "source_location": "L255",
       "_origin": "ast",
       "community": 185,
-      "norm_label": "7. hardwareconstants.java \u2014 complete values",
+      "norm_label": "7. hardwareconstants.java — complete values",
       "id": "docs_robot_spec_7_hardwareconstants_java_complete_values"
     },
     {
@@ -29730,13 +29730,13 @@
       "id": "docs_robot_spec_18_vision_subsystem"
     },
     {
-      "label": "Camera Transforms (robot\u2192camera, all pitch=\u221215\u00b0, roll=0\u00b0)",
+      "label": "Camera Transforms (robot→camera, all pitch=−15°, roll=0°)",
       "file_type": "document",
       "source_file": "docs/robot-spec.md",
       "source_location": "L905",
       "_origin": "ast",
       "community": 231,
-      "norm_label": "camera transforms (robot\u2192camera, all pitch=\u221215\u00b0, roll=0\u00b0)",
+      "norm_label": "camera transforms (robot→camera, all pitch=−15°, roll=0°)",
       "id": "docs_robot_spec_camera_transforms_robot_camera_all_pitch_15_roll_0"
     },
     {
@@ -29770,23 +29770,23 @@
       "id": "docs_robot_spec_standard_deviations"
     },
     {
-      "label": "19. RobotState.java \u2014 Complete API",
+      "label": "19. RobotState.java — Complete API",
       "file_type": "document",
       "source_file": "docs/robot-spec.md",
       "source_location": "L956",
       "_origin": "ast",
       "community": 117,
-      "norm_label": "19. robotstate.java \u2014 complete api",
+      "norm_label": "19. robotstate.java — complete api",
       "id": "docs_robot_spec_19_robotstate_java_complete_api"
     },
     {
-      "label": "20. Triggers.java \u2014 Complete Listing",
+      "label": "20. Triggers.java — Complete Listing",
       "file_type": "document",
       "source_file": "docs/robot-spec.md",
       "source_location": "L1002",
       "_origin": "ast",
       "community": 239,
-      "norm_label": "20. triggers.java \u2014 complete listing",
+      "norm_label": "20. triggers.java — complete listing",
       "id": "docs_robot_spec_20_triggers_java_complete_listing"
     },
     {
@@ -29930,13 +29930,13 @@
       "id": "docs_robot_spec_spitsequences"
     },
     {
-      "label": "22. RobotContainer \u2014 Binding Logic",
+      "label": "22. RobotContainer — Binding Logic",
       "file_type": "document",
       "source_file": "docs/robot-spec.md",
       "source_location": "L1227",
       "_origin": "ast",
       "community": 226,
-      "norm_label": "22. robotcontainer \u2014 binding logic",
+      "norm_label": "22. robotcontainer — binding logic",
       "id": "docs_robot_spec_22_robotcontainer_binding_logic"
     },
     {
@@ -30040,13 +30040,13 @@
       "id": "docs_robot_spec_27_vision_system"
     },
     {
-      "label": "28. HubShiftUtil \u2014 Complete API",
+      "label": "28. HubShiftUtil — Complete API",
       "file_type": "document",
       "source_file": "docs/robot-spec.md",
       "source_location": "L1388",
       "_origin": "ast",
       "community": 117,
-      "norm_label": "28. hubshiftutil \u2014 complete api",
+      "norm_label": "28. hubshiftutil — complete api",
       "id": "docs_robot_spec_28_hubshiftutil_complete_api"
     },
     {
@@ -30230,13 +30230,13 @@
       "id": "template_guide_frc_season_template_guide"
     },
     {
-      "label": "A \u2014 Timeless Patterns (Copy Every Season)",
+      "label": "A — Timeless Patterns (Copy Every Season)",
       "file_type": "document",
       "source_file": "template/GUIDE.md",
       "source_location": "L9",
       "_origin": "ast",
       "community": 183,
-      "norm_label": "a \u2014 timeless patterns (copy every season)",
+      "norm_label": "a — timeless patterns (copy every season)",
       "id": "template_guide_a_timeless_patterns_copy_every_season"
     },
     {
@@ -30270,33 +30270,33 @@
       "id": "template_guide_vision_subsystem"
     },
     {
-      "label": "B \u2014 Game-Specific Code (Rewrite Each Season)",
+      "label": "B — Game-Specific Code (Rewrite Each Season)",
       "file_type": "document",
       "source_file": "template/GUIDE.md",
       "source_location": "L47",
       "_origin": "ast",
       "community": 183,
-      "norm_label": "b \u2014 game-specific code (rewrite each season)",
+      "norm_label": "b — game-specific code (rewrite each season)",
       "id": "template_guide_b_game_specific_code_rewrite_each_season"
     },
     {
-      "label": "C \u2014 Technical Debt (Fix, Don't Copy)",
+      "label": "C — Technical Debt (Fix, Don't Copy)",
       "file_type": "document",
       "source_file": "template/GUIDE.md",
       "source_location": "L72",
       "_origin": "ast",
       "community": 183,
-      "norm_label": "c \u2014 technical debt (fix, don't copy)",
+      "norm_label": "c — technical debt (fix, don't copy)",
       "id": "template_guide_c_technical_debt_fix_don_t_copy"
     },
     {
-      "label": "D \u2014 Areas Needing Redesign",
+      "label": "D — Areas Needing Redesign",
       "file_type": "document",
       "source_file": "template/GUIDE.md",
       "source_location": "L91",
       "_origin": "ast",
       "community": 183,
-      "norm_label": "d \u2014 areas needing redesign",
+      "norm_label": "d — areas needing redesign",
       "id": "template_guide_d_areas_needing_redesign"
     },
     {
@@ -30390,53 +30390,53 @@
       "id": "template_new_season_checklist_new_season_checklist"
     },
     {
-      "label": "Week 1 \u2014 Infrastructure",
+      "label": "Week 1 — Infrastructure",
       "file_type": "document",
       "source_file": "template/NEW_SEASON_CHECKLIST.md",
       "source_location": "L7",
       "_origin": "ast",
       "community": 245,
-      "norm_label": "week 1 \u2014 infrastructure",
+      "norm_label": "week 1 — infrastructure",
       "id": "template_new_season_checklist_week_1_infrastructure"
     },
     {
-      "label": "Week 2 \u2014 Hardware Setup",
+      "label": "Week 2 — Hardware Setup",
       "file_type": "document",
       "source_file": "template/NEW_SEASON_CHECKLIST.md",
       "source_location": "L22",
       "_origin": "ast",
       "community": 245,
-      "norm_label": "week 2 \u2014 hardware setup",
+      "norm_label": "week 2 — hardware setup",
       "id": "template_new_season_checklist_week_2_hardware_setup"
     },
     {
-      "label": "Week 3 \u2014 Mechanism Subsystems",
+      "label": "Week 3 — Mechanism Subsystems",
       "file_type": "document",
       "source_file": "template/NEW_SEASON_CHECKLIST.md",
       "source_location": "L30",
       "_origin": "ast",
       "community": 245,
-      "norm_label": "week 3 \u2014 mechanism subsystems",
+      "norm_label": "week 3 — mechanism subsystems",
       "id": "template_new_season_checklist_week_3_mechanism_subsystems"
     },
     {
-      "label": "Week 4 \u2014 Tuning",
+      "label": "Week 4 — Tuning",
       "file_type": "document",
       "source_file": "template/NEW_SEASON_CHECKLIST.md",
       "source_location": "L41",
       "_origin": "ast",
       "community": 245,
-      "norm_label": "week 4 \u2014 tuning",
+      "norm_label": "week 4 — tuning",
       "id": "template_new_season_checklist_week_4_tuning"
     },
     {
-      "label": "Week 5 \u2014 Auto",
+      "label": "Week 5 — Auto",
       "file_type": "document",
       "source_file": "template/NEW_SEASON_CHECKLIST.md",
       "source_location": "L52",
       "_origin": "ast",
       "community": 245,
-      "norm_label": "week 5 \u2014 auto",
+      "norm_label": "week 5 — auto",
       "id": "template_new_season_checklist_week_5_auto"
     },
     {
@@ -30560,93 +30560,93 @@
       "id": "plans_2026_04_16_claudescope_implementation_task_1_delete_old_files_and_scaffold_package_directories"
     },
     {
-      "label": "Task 2: `session/interface.go` \u2014 shared types and `DataSession` interface",
+      "label": "Task 2: `session/interface.go` — shared types and `DataSession` interface",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/docs/superpowers/plans/2026-04-16-claudescope-implementation.md",
       "source_location": "L82",
       "_origin": "ast",
       "community": 189,
-      "norm_label": "task 2: `session/interface.go` \u2014 shared types and `datasession` interface",
+      "norm_label": "task 2: `session/interface.go` — shared types and `datasession` interface",
       "id": "plans_2026_04_16_claudescope_implementation_task_2_session_interface_go_shared_types_and_datasession_interface"
     },
     {
-      "label": "Task 3: `session/log_session.go` \u2014 `.wpilog` parser",
+      "label": "Task 3: `session/log_session.go` — `.wpilog` parser",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/docs/superpowers/plans/2026-04-16-claudescope-implementation.md",
       "source_location": "L185",
       "_origin": "ast",
       "community": 189,
-      "norm_label": "task 3: `session/log_session.go` \u2014 `.wpilog` parser",
+      "norm_label": "task 3: `session/log_session.go` — `.wpilog` parser",
       "id": "plans_2026_04_16_claudescope_implementation_task_3_session_log_session_go_wpilog_parser"
     },
     {
-      "label": "Task 4: `session/nt_session.go` \u2014 live NT4 `DataSession`",
+      "label": "Task 4: `session/nt_session.go` — live NT4 `DataSession`",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/docs/superpowers/plans/2026-04-16-claudescope-implementation.md",
       "source_location": "L978",
       "_origin": "ast",
       "community": 189,
-      "norm_label": "task 4: `session/nt_session.go` \u2014 live nt4 `datasession`",
+      "norm_label": "task 4: `session/nt_session.go` — live nt4 `datasession`",
       "id": "plans_2026_04_16_claudescope_implementation_task_4_session_nt_session_go_live_nt4_datasession"
     },
     {
-      "label": "Task 5: `daemon/registry.go` \u2014 session map and expiry",
+      "label": "Task 5: `daemon/registry.go` — session map and expiry",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/docs/superpowers/plans/2026-04-16-claudescope-implementation.md",
       "source_location": "L1206",
       "_origin": "ast",
       "community": 189,
-      "norm_label": "task 5: `daemon/registry.go` \u2014 session map and expiry",
+      "norm_label": "task 5: `daemon/registry.go` — session map and expiry",
       "id": "plans_2026_04_16_claudescope_implementation_task_5_daemon_registry_go_session_map_and_expiry"
     },
     {
-      "label": "Task 6: `daemon/handlers.go` \u2014 HTTP request/response types and handlers",
+      "label": "Task 6: `daemon/handlers.go` — HTTP request/response types and handlers",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/docs/superpowers/plans/2026-04-16-claudescope-implementation.md",
       "source_location": "L1499",
       "_origin": "ast",
       "community": 189,
-      "norm_label": "task 6: `daemon/handlers.go` \u2014 http request/response types and handlers",
+      "norm_label": "task 6: `daemon/handlers.go` — http request/response types and handlers",
       "id": "plans_2026_04_16_claudescope_implementation_task_6_daemon_handlers_go_http_request_response_types_and_handlers"
     },
     {
-      "label": "Task 7: `daemon/server.go` \u2014 HTTP server and route registration",
+      "label": "Task 7: `daemon/server.go` — HTTP server and route registration",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/docs/superpowers/plans/2026-04-16-claudescope-implementation.md",
       "source_location": "L2027",
       "_origin": "ast",
       "community": 189,
-      "norm_label": "task 7: `daemon/server.go` \u2014 http server and route registration",
+      "norm_label": "task 7: `daemon/server.go` — http server and route registration",
       "id": "plans_2026_04_16_claudescope_implementation_task_7_daemon_server_go_http_server_and_route_registration"
     },
     {
-      "label": "Task 8: `cli/client.go` \u2014 HTTP client and daemon auto-start",
+      "label": "Task 8: `cli/client.go` — HTTP client and daemon auto-start",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/docs/superpowers/plans/2026-04-16-claudescope-implementation.md",
       "source_location": "L2087",
       "_origin": "ast",
       "community": 189,
-      "norm_label": "task 8: `cli/client.go` \u2014 http client and daemon auto-start",
+      "norm_label": "task 8: `cli/client.go` — http client and daemon auto-start",
       "id": "plans_2026_04_16_claudescope_implementation_task_8_cli_client_go_http_client_and_daemon_auto_start"
     },
     {
-      "label": "Task 9: `cli/commands.go` \u2014 argument parsing and JSON output",
+      "label": "Task 9: `cli/commands.go` — argument parsing and JSON output",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/docs/superpowers/plans/2026-04-16-claudescope-implementation.md",
       "source_location": "L2347",
       "_origin": "ast",
       "community": 189,
-      "norm_label": "task 9: `cli/commands.go` \u2014 argument parsing and json output",
+      "norm_label": "task 9: `cli/commands.go` — argument parsing and json output",
       "id": "plans_2026_04_16_claudescope_implementation_task_9_cli_commands_go_argument_parsing_and_json_output"
     },
     {
-      "label": "Task 10: `main.go` \u2014 entry point",
+      "label": "Task 10: `main.go` — entry point",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/docs/superpowers/plans/2026-04-16-claudescope-implementation.md",
       "source_location": "L2821",
       "_origin": "ast",
       "community": 189,
-      "norm_label": "task 10: `main.go` \u2014 entry point",
+      "norm_label": "task 10: `main.go` — entry point",
       "id": "plans_2026_04_16_claudescope_implementation_task_10_main_go_entry_point"
     },
     {
@@ -30800,13 +30800,13 @@
       "id": "specs_2026_05_06_simulate_design"
     },
     {
-      "label": "Simulate Skill \u2014 Design Spec",
+      "label": "Simulate Skill — Design Spec",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/docs/superpowers/specs/2026-05-06-simulate-design.md",
       "source_location": "L1",
       "_origin": "ast",
       "community": 196,
-      "norm_label": "simulate skill \u2014 design spec",
+      "norm_label": "simulate skill — design spec",
       "id": "specs_2026_05_06_simulate_design_simulate_skill_design_spec"
     },
     {
@@ -30840,53 +30840,53 @@
       "id": "specs_2026_05_06_simulate_design_architecture"
     },
     {
-      "label": "Step 0 \u2014 Prerequisites Check",
+      "label": "Step 0 — Prerequisites Check",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/docs/superpowers/specs/2026-05-06-simulate-design.md",
       "source_location": "L25",
       "_origin": "ast",
       "community": 196,
-      "norm_label": "step 0 \u2014 prerequisites check",
+      "norm_label": "step 0 — prerequisites check",
       "id": "specs_2026_05_06_simulate_design_step_0_prerequisites_check"
     },
     {
-      "label": "Phase 1 \u2014 Setup",
+      "label": "Phase 1 — Setup",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/docs/superpowers/specs/2026-05-06-simulate-design.md",
       "source_location": "L49",
       "_origin": "ast",
       "community": 196,
-      "norm_label": "phase 1 \u2014 setup",
+      "norm_label": "phase 1 — setup",
       "id": "specs_2026_05_06_simulate_design_phase_1_setup"
     },
     {
-      "label": "Phase 2 \u2014 Discover",
+      "label": "Phase 2 — Discover",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/docs/superpowers/specs/2026-05-06-simulate-design.md",
       "source_location": "L58",
       "_origin": "ast",
       "community": 196,
-      "norm_label": "phase 2 \u2014 discover",
+      "norm_label": "phase 2 — discover",
       "id": "specs_2026_05_06_simulate_design_phase_2_discover"
     },
     {
-      "label": "Phase 3 \u2014 Execute",
+      "label": "Phase 3 — Execute",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/docs/superpowers/specs/2026-05-06-simulate-design.md",
       "source_location": "L70",
       "_origin": "ast",
       "community": 196,
-      "norm_label": "phase 3 \u2014 execute",
+      "norm_label": "phase 3 — execute",
       "id": "specs_2026_05_06_simulate_design_phase_3_execute"
     },
     {
-      "label": "Phase 4 \u2014 Report",
+      "label": "Phase 4 — Report",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/docs/superpowers/specs/2026-05-06-simulate-design.md",
       "source_location": "L103",
       "_origin": "ast",
       "community": 196,
-      "norm_label": "phase 4 \u2014 report",
+      "norm_label": "phase 4 — report",
       "id": "specs_2026_05_06_simulate_design_phase_4_report"
     },
     {
@@ -30930,13 +30930,13 @@
       "id": "scope_skill"
     },
     {
-      "label": "ClaudeScope \u2014 AI Agent Guide",
+      "label": "ClaudeScope — AI Agent Guide",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/skills/scope/SKILL.md",
       "source_location": "L10",
       "_origin": "ast",
       "community": 212,
-      "norm_label": "claudescope \u2014 ai agent guide",
+      "norm_label": "claudescope — ai agent guide",
       "id": "scope_skill_claudescope_ai_agent_guide"
     },
     {
@@ -31020,13 +31020,13 @@
       "id": "scope_skill_list_fields_and_time_range"
     },
     {
-      "label": "Get value at timestamp (time=0 \u2192 latest)",
+      "label": "Get value at timestamp (time=0 → latest)",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/skills/scope/SKILL.md",
       "source_location": "L69",
       "_origin": "ast",
       "community": 195,
-      "norm_label": "get value at timestamp (time=0 \u2192 latest)",
+      "norm_label": "get value at timestamp (time=0 → latest)",
       "id": "scope_skill_get_value_at_timestamp_time_0_latest"
     },
     {
@@ -31150,13 +31150,13 @@
       "id": "simulate_skill"
     },
     {
-      "label": "Simulate \u2014 FRC Robot Simulation with ClaudeScope",
+      "label": "Simulate — FRC Robot Simulation with ClaudeScope",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/skills/simulate/SKILL.md",
       "source_location": "L6",
       "_origin": "ast",
       "community": 203,
-      "norm_label": "simulate \u2014 frc robot simulation with claudescope",
+      "norm_label": "simulate — frc robot simulation with claudescope",
       "id": "simulate_skill_simulate_frc_robot_simulation_with_claudescope"
     },
     {
@@ -31170,43 +31170,43 @@
       "id": "simulate_skill_trigger"
     },
     {
-      "label": "Step 0 \u2014 Prerequisites Check",
+      "label": "Step 0 — Prerequisites Check",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/skills/simulate/SKILL.md",
       "source_location": "L20",
       "_origin": "ast",
       "community": 203,
-      "norm_label": "step 0 \u2014 prerequisites check",
+      "norm_label": "step 0 — prerequisites check",
       "id": "simulate_skill_step_0_prerequisites_check"
     },
     {
-      "label": "Phase 1 \u2014 Setup",
+      "label": "Phase 1 — Setup",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/skills/simulate/SKILL.md",
       "source_location": "L43",
       "_origin": "ast",
       "community": 203,
-      "norm_label": "phase 1 \u2014 setup",
+      "norm_label": "phase 1 — setup",
       "id": "simulate_skill_phase_1_setup"
     },
     {
-      "label": "Phase 2 \u2014 Discover",
+      "label": "Phase 2 — Discover",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/skills/simulate/SKILL.md",
       "source_location": "L66",
       "_origin": "ast",
       "community": 203,
-      "norm_label": "phase 2 \u2014 discover",
+      "norm_label": "phase 2 — discover",
       "id": "simulate_skill_phase_2_discover"
     },
     {
-      "label": "Phase 3 \u2014 Execute",
+      "label": "Phase 3 — Execute",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/skills/simulate/SKILL.md",
       "source_location": "L83",
       "_origin": "ast",
       "community": 203,
-      "norm_label": "phase 3 \u2014 execute",
+      "norm_label": "phase 3 — execute",
       "id": "simulate_skill_phase_3_execute"
     },
     {
@@ -31240,13 +31240,13 @@
       "id": "simulate_skill_collecting_data"
     },
     {
-      "label": "Phase 4 \u2014 Report",
+      "label": "Phase 4 — Report",
       "file_type": "document",
       "source_file": "tools/ClaudeScope/skills/simulate/SKILL.md",
       "source_location": "L144",
       "_origin": "ast",
       "community": 203,
-      "norm_label": "phase 4 \u2014 report",
+      "norm_label": "phase 4 — report",
       "id": "simulate_skill_phase_4_report"
     },
     {
