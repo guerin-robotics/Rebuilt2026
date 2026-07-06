@@ -153,6 +153,11 @@ public class Flywheel extends SubsystemBase {
     setFlywheelVelocity(velocity);
   }
 
+  /** Returns the accumulated flywheel leader angle (used to spin the drum in the 3D model). */
+  public Angle getFlywheelAngle() {
+    return inputs.leaderAngle;
+  }
+
   public boolean isSpunUp() {
     Logger.recordOutput("Flywheel/currentRPMTarget", currentRPMTarget);
     return (Math.abs(currentRPMTarget - inputs.leaderVelocity.in(RPM))
