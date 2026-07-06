@@ -41,17 +41,10 @@ import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
-  // Retuned 7/2/26 from match-log analysis (Columbus/Lafayette/State/Worlds): the chassis
-  // follows omega commands with ~0.3 s lag, so kP 7-8.5 with no profile velocity feedforward
-  // oscillated around the target (30-70 error sign flips per align) and lagged 7-20 deg while
-  // moving. Lower kP + higher kD + clamped velocity feedforward tracks the profile instead.
-  private static final double ANGLE_KP = 3.0; // 8.5
-  private static final double ANGLE_KD = 1.0; // 0.4
-  private static final double ANGLE_MAX_VELOCITY = 6.0; // 8.0
-  private static final double ANGLE_MAX_ACCELERATION = 14.0; // 20.0
-  // Cap on the profile velocity feedforward: full effect at shoot-on-the-move target rates
-  // (<2 rad/s), limited during large slews so chassis lag doesn't carry it past the target.
-  private static final double ANGLE_FF_MAX = 2.0; // Rad/Sec
+  private static final double ANGLE_KP = 8.5; // 7.5
+  private static final double ANGLE_KD = 0.4;
+  private static final double ANGLE_MAX_VELOCITY = 8.0;
+  private static final double ANGLE_MAX_ACCELERATION = 20.0;
   private static final double FF_START_DELAY = 2.0; // Secs
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
@@ -194,12 +187,12 @@ public class DriveCommands {
         joystickDriveAtAngle(drive, xSupplier, ySupplier, rotationSupplier),
         () ->
             Triggers.getInstance().isAlignedForCurrentShot.getAsBoolean()
-                && xSupplier.getAsDouble() < 0.1
-                && ySupplier.getAsDouble() < 0.1);
+                && Math.abs(xSupplier.getAsDouble()) < 0.1
+                && Math.abs(ySupplier.getAsDouble()) < 0.1);
   }
 
   public static Command alignForDefenseShot(Drive drive) {
-    return Commands.run(
+    return Commands.runOnce(
         () -> {
           drive.aligningDefensively = true;
 
@@ -258,14 +251,10 @@ public class DriveCommands {
               Translation2d linearVelocity =
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
-              // Calculate angular speed: PID on the profiled setpoint plus the profile's
-              // velocity as feedforward, so the robot tracks the profile instead of
-              // trailing it (the source of the old high-kP oscillation)
+              // Calculate angular speed
               double omega =
                   angleController.calculate(
-                          drive.getRotation().getRadians(), rotationSupplier.get().getRadians())
-                      + MathUtil.clamp(
-                          angleController.getSetpoint().velocity, -ANGLE_FF_MAX, ANGLE_FF_MAX);
+                      drive.getRotation().getRadians(), rotationSupplier.get().getRadians());
 
               // Log target and current angles every loop for debugging
               Logger.recordOutput("AutoAim/TargetAngle", rotationSupplier.get());
