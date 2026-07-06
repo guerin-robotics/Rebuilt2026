@@ -9,6 +9,7 @@ package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.*;
 
+import choreo.trajectory.SwerveSample;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
@@ -21,6 +22,7 @@ import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -56,6 +58,12 @@ public class Drive extends SubsystemBase {
   public boolean areWheelsXed = false;
 
   public boolean aligningDefensively = false;
+
+  // PID controllers for Choreo trajectory following (independent of PathPlanner's
+  // PPHolonomicDriveController — used only by followTrajectory())
+  private final PIDController choreoXController = new PIDController(10.0, 0.0, 0.0);
+  private final PIDController choreoYController = new PIDController(10.0, 0.0, 0.0);
+  private final PIDController choreoHeadingController = new PIDController(7.5, 0.0, 0.0);
   // TunerConstants doesn't include these constants, so they are declared locally
   static final double ODOMETRY_FREQUENCY = TunerConstants.kCANBus.isNetworkFD() ? 250.0 : 100.0;
   public static final double DRIVE_BASE_RADIUS =
@@ -117,6 +125,11 @@ public class Drive extends SubsystemBase {
     modules[2] = new Module(blModuleIO, 2, TunerConstants.BackLeft);
     modules[3] = new Module(brModuleIO, 3, TunerConstants.BackRight);
 
+    // Enable continuous input so the Choreo heading PID correctly handles the -π ↔ +π
+    // wrap-around. Without this, the controller can see a ~358° error instead of a ~2° error
+    // when the robot's heading crosses the ±180° boundary, causing wild over-rotation.
+    choreoHeadingController.enableContinuousInput(-Math.PI, Math.PI);
+
     // Usage reporting for swerve template
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
 
@@ -159,6 +172,27 @@ public class Drive extends SubsystemBase {
     // This ensures there is only ONE SwerveDrivePoseEstimator — eliminating the dual-estimator
     // divergence bug where two independent estimators would drift apart.
     RobotState.getInstance().setPoseSupplier(this::getPose);
+  }
+
+  /**
+   * Follows a single Choreo trajectory sample. Passed to the Choreo {@code AutoFactory} as the
+   * trajectory follower — called once per loop while a Choreo trajectory command is running.
+   */
+  public void followTrajectory(SwerveSample sample) {
+    Pose2d pose = getPose();
+    Pose2d targetPose = sample.getPose();
+
+    // Feedforward from the trajectory plus PID feedback on field-relative pose error
+    ChassisSpeeds speeds =
+        new ChassisSpeeds(
+            sample.vx + choreoXController.calculate(pose.getX(), sample.x),
+            sample.vy + choreoYController.calculate(pose.getY(), sample.y),
+            sample.omega
+                + choreoHeadingController.calculate(
+                    pose.getRotation().getRadians(), sample.heading));
+
+    runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, pose.getRotation()));
+    Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
   }
 
   @Override
