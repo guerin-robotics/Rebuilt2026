@@ -140,6 +140,9 @@ public class Robot extends LoggedRobot {
     // This must be in robotPeriodic() so it runs in ALL modes (disabled, teleop, auto, test).
     fieldMap.setRobotPose(currentPose);
 
+    // Publish the articulated component poses for the AdvantageScope 3D robot model
+    robotContainer.updateRobotModelVisualizer();
+
     // Return to non-RT thread priority (do not modify the first argument)
     // Threads.setCurrentThreadPriority(false, 10);
 
