@@ -87,6 +87,7 @@ import frc.robot.subsystems.vision.io.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVisionSim;
 import frc.robot.util.DriverPresets;
 import frc.robot.util.HubShiftUtil;
+import frc.robot.util.RobotModelVisualizer;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -103,6 +104,9 @@ public class RobotContainer {
   private final IntakePivot intakePivot;
   private final intakeRoller intakeRoller;
   private final Transport transport;
+
+  // Publishes articulated component poses for the AdvantageScope 3D robot model
+  private final RobotModelVisualizer robotModelVisualizer;
 
   // ── Auto Type Switch ────────────────────────────────────────────────────────
   // Selects which autonomous system runs: PathPlanner (.auto files, competition-proven)
@@ -252,6 +256,12 @@ public class RobotContainer {
     // Wire the hood angle supplier into the flywheel's trajectory visualizer.
     // This keeps Flywheel and Hood decoupled — the supplier is the only link.
     flywheel.setHoodAngleSupplier(hood::getPosition);
+
+    // 3D robot model component poses for AdvantageScope (Robot_Omega articulated model).
+    // Suppliers only — no subsystem cross-references. Updated from Robot.robotPeriodic().
+    robotModelVisualizer =
+        new RobotModelVisualizer(
+            intakePivot::getPosition, hood::getPosition, flywheel::getFlywheelAngle);
 
     // IMPORTANT: Register named commands and event triggers BEFORE building the auto chooser.
     // AutoBuilder.buildAutoChooser() parses the .auto files and resolves named commands at
@@ -532,8 +542,8 @@ public class RobotContainer {
                 DriveCommands.alignForDefenseShot(drive),
                 DriveCommands.alignOrXForShoot(
                     drive,
-                    () -> Triggers.getInstance().thrustmaster.getX(),
                     () -> Triggers.getInstance().thrustmaster.getY(),
+                    () -> Triggers.getInstance().thrustmaster.getX(),
                     () -> new Rotation2d(Triggers.getInstance().thrustmaster.getTwist()))));
 
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
@@ -547,8 +557,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -Triggers.getInstance().thrustmaster.getX() * .5,
                 () -> -Triggers.getInstance().thrustmaster.getY() * .5,
+                () -> -Triggers.getInstance().thrustmaster.getX() * .5,
                 () ->
                     RobotState.getInstance()
                         .getAngleToTarget(
@@ -564,8 +574,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAlignForTrench(
                 drive,
-                () -> -Triggers.getInstance().thrustmaster.getY() * .5,
-                () -> -Triggers.getInstance().thrustmaster.getX() * .5));
+                () -> -Triggers.getInstance().thrustmaster.getY(),
+                () -> -Triggers.getInstance().thrustmaster.getX()));
 
     // Align for bump when bump button pressed - zone logic temporarily disabled
     Triggers.getInstance()
@@ -1148,6 +1158,15 @@ public class RobotContainer {
 
   /** Tracks the last selected Choreo option so we only redraw when the selection changes. */
   private AutoOption lastChoreoOption = null;
+
+  /**
+   * Updates the 3D robot model component poses for AdvantageScope.
+   *
+   * <p>Called from {@code Robot.robotPeriodic()} so the model animates in all modes.
+   */
+  public void updateRobotModelVisualizer() {
+    robotModelVisualizer.update();
+  }
 
   /**
    * Updates the auto path preview on the Field2d when the selected auto changes.

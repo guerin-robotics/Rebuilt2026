@@ -1,0 +1,37 @@
+# CI: build + format check on every PR and push to main.
+#
+# WPILib 2026 targets JDK 17, and this is a pure-Java robot project: the roboRIO
+# and desktop JNI natives are precompiled maven artifacts, so no cross-compile
+# toolchain is needed for `build`/`test`. We therefore run on a standard runner
+# with Temurin 17 rather than the WPILib cross-build container (whose plain
+# `2026-22.04` Java image isn't published yet — only the RobotPy `-pyXXX`
+# variants exist, and those ship without a JDK).
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Check formatting
+        run: ./gradlew spotlessCheck
+
+      - name: Build and run tests
+        run: ./gradlew build
