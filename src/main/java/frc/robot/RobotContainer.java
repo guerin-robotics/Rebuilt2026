@@ -538,8 +538,8 @@ public class RobotContainer {
                 DriveCommands.alignForDefenseShot(drive),
                 DriveCommands.alignOrXForShoot(
                     drive,
-                    () -> Triggers.getInstance().thrustmaster.getX(),
                     () -> Triggers.getInstance().thrustmaster.getY(),
+                    () -> Triggers.getInstance().thrustmaster.getX(),
                     () -> new Rotation2d(Triggers.getInstance().thrustmaster.getTwist()))));
 
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
@@ -553,8 +553,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -Triggers.getInstance().thrustmaster.getX() * .5,
                 () -> -Triggers.getInstance().thrustmaster.getY() * .5,
+                () -> -Triggers.getInstance().thrustmaster.getX() * .5,
                 () ->
                     RobotState.getInstance()
                         .getAngleToTarget(
@@ -570,8 +570,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAlignForTrench(
                 drive,
-                () -> -Triggers.getInstance().thrustmaster.getY() * .5,
-                () -> -Triggers.getInstance().thrustmaster.getX() * .5));
+                () -> -Triggers.getInstance().thrustmaster.getY(),
+                () -> -Triggers.getInstance().thrustmaster.getX()));
 
     // Align for bump when bump button pressed - zone logic temporarily disabled
     Triggers.getInstance()
