@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.guerin.logsync</string>
+
+  <!-- Update this path if the repo lives somewhere else. -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/parkerpulfer/Repos/guerin-robotics/Rebuilt2026/tools/log-sync/sync-logs.sh</string>
+    <string>--watch</string>
+  </array>
+
+  <!-- launchd starts with a minimal PATH; add Homebrew so rclone is found. -->
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+  </dict>
+
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+
+  <key>StandardOutPath</key>
+  <string>/tmp/guerin-log-sync.out</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/guerin-log-sync.err</string>
+</dict>
+</plist>

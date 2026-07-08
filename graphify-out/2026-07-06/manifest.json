@@ -30,9 +30,9 @@
     "semantic_hash": "6b493c83b1bd0d7f90cbe0a10f4c4de0"
   },
   "Advantage Scope Assets/Robot_Omega/config.json": {
-    "mtime": 1781269658.0392466,
-    "ast_hash": "870883e1d48984b5c137d0d9955497b2",
-    "semantic_hash": "870883e1d48984b5c137d0d9955497b2"
+    "mtime": 1783393492.5437644,
+    "ast_hash": "a5f31c2b2d26c8f323de3636d71afb63",
+    "semantic_hash": ""
   },
   "Advantage Scope Layouts/PreStatesLayout.json": {
     "mtime": 1776226700.698135,
@@ -70,7 +70,7 @@
     "semantic_hash": "4575de2457199b47a6b2f7bb80598c60"
   },
   "simgui-ds.json": {
-    "mtime": 1781269658.0969026,
+    "mtime": 1783368676.2822938,
     "ast_hash": "b01f258b4c6ac70c6c03d432d7bcdd34",
     "semantic_hash": "b01f258b4c6ac70c6c03d432d7bcdd34"
   },
@@ -160,8 +160,8 @@
     "semantic_hash": "e59a796186d478433a87dee6e0da6a9c"
   },
   "src/main/java/frc/robot/BuildConstants.java": {
-    "mtime": 1783300085.1186748,
-    "ast_hash": "2cd9b071630c5cedc2f088d667adaf68",
+    "mtime": 1783393493.081372,
+    "ast_hash": "8415ad8d7e108757b6c944afb2562ce2",
     "semantic_hash": ""
   },
   "src/main/java/frc/robot/Constants.java": {
@@ -180,13 +180,13 @@
     "semantic_hash": "2f7b167b605a59bc182e6c416a563e7d"
   },
   "src/main/java/frc/robot/Robot.java": {
-    "mtime": 1783281985.2219856,
-    "ast_hash": "3c69292dd950c0d49e431e26ce4d7f37",
-    "semantic_hash": "3c69292dd950c0d49e431e26ce4d7f37"
+    "mtime": 1783393492.6807995,
+    "ast_hash": "d466d07b7712b7e3bd282da5e84f2651",
+    "semantic_hash": ""
   },
   "src/main/java/frc/robot/RobotContainer.java": {
-    "mtime": 1783288656.7846785,
-    "ast_hash": "4914ee69a7b2f8f71fe401cce8979932",
+    "mtime": 1783393492.6812186,
+    "ast_hash": "ade604688e91bd1b95a1dca27d50206a",
     "semantic_hash": ""
   },
   "src/main/java/frc/robot/RobotState.java": {
@@ -195,13 +195,13 @@
     "semantic_hash": "dabfcc1a4027afdb435749960ff27cdb"
   },
   "src/main/java/frc/robot/Triggers.java": {
-    "mtime": 1783300046.4459314,
+    "mtime": 1783393493.0816405,
     "ast_hash": "b1c104ab9ad395a5ee3a6501e6fe9842",
     "semantic_hash": ""
   },
   "src/main/java/frc/robot/commands/DriveCommands.java": {
-    "mtime": 1783288656.785893,
-    "ast_hash": "10611d6f3b81c671d66bc2cfcc852178",
+    "mtime": 1783393492.6817634,
+    "ast_hash": "fcf6600a8396e51d9be984d1430703ba",
     "semantic_hash": ""
   },
   "src/main/java/frc/robot/commands/FeederCommands.java": {
@@ -265,8 +265,8 @@
     "semantic_hash": "60b3f6340d7a3af7d5db6688cf9c536b"
   },
   "src/main/java/frc/robot/subsystems/drive/Drive.java": {
-    "mtime": 1783263365.9738448,
-    "ast_hash": "edbd8953c8315037dc83ef6323c055a6",
+    "mtime": 1783393444.4030142,
+    "ast_hash": "c4c97660705c7b103e0d4d9a4ed29ef6",
     "semantic_hash": ""
   },
   "src/main/java/frc/robot/subsystems/drive/DriveConstants.java": {
@@ -320,9 +320,9 @@
     "semantic_hash": "f902132c431184fb3cf6cfc76192f8bf"
   },
   "src/main/java/frc/robot/subsystems/flywheel/Flywheel.java": {
-    "mtime": 1782964490.8276818,
-    "ast_hash": "be01837c8a3d127673f2cfe10e5243ea",
-    "semantic_hash": "be01837c8a3d127673f2cfe10e5243ea"
+    "mtime": 1783393492.6819654,
+    "ast_hash": "baa72d9e7e8b55ab8a86107c93bccad5",
+    "semantic_hash": ""
   },
   "src/main/java/frc/robot/subsystems/flywheel/FlywheelConstants.java": {
     "mtime": 1782964490.8279471,
@@ -540,14 +540,14 @@
     "semantic_hash": "eaff13c3dfc328657ed6e12a2d310173"
   },
   "src/main/java/frc/robot/subsystems/vision/Vision.java": {
-    "mtime": 1781238400.784632,
-    "ast_hash": "69370c00c41cda0131d199bb3d7dd494",
-    "semantic_hash": "69370c00c41cda0131d199bb3d7dd494"
+    "mtime": 1783303337.267434,
+    "ast_hash": "30ed4f1f528e80906a63dc35d0dac6c4",
+    "semantic_hash": ""
   },
   "src/main/java/frc/robot/subsystems/vision/VisionConstants.java": {
-    "mtime": 1781270354.7047713,
-    "ast_hash": "bedb2c5891a3f97be6f7d9a0d8622144",
-    "semantic_hash": "bedb2c5891a3f97be6f7d9a0d8622144"
+    "mtime": 1783303317.4284713,
+    "ast_hash": "b077322e49419a0b01d442a6ed967e4c",
+    "semantic_hash": ""
   },
   "src/main/java/frc/robot/subsystems/vision/io/VisionIO.java": {
     "mtime": 1771296952.2184124,
@@ -1039,11 +1039,6 @@
     "ast_hash": "7585369f6d42bbbf9c6df6cf12b8c2a1",
     "semantic_hash": "7585369f6d42bbbf9c6df6cf12b8c2a1"
   },
-  "vendordeps/Phoenix6-26.2.0.json": {
-    "mtime": 1779190956.6192935,
-    "ast_hash": "756e20ca01381c4bec395bb7c133bdc0",
-    "semantic_hash": "756e20ca01381c4bec395bb7c133bdc0"
-  },
   "vendordeps/Studica.json": {
     "mtime": 1771296952.2194095,
     "ast_hash": "a5adb56b93781b5d1a054679809c228e",
@@ -1427,6 +1422,41 @@
   "vendordeps/ChoreoLib2026.json": {
     "mtime": 1783263335.3639383,
     "ast_hash": "9afbc40a7918c2ba14120e1ce0c38e54",
+    "semantic_hash": ""
+  },
+  "docs/ai-development-playbook.md": {
+    "mtime": 1783381987.7757843,
+    "ast_hash": "c01807ff1d90f964e96f0e0f73593478",
+    "semantic_hash": ""
+  },
+  "tools/log-sync/sync-logs.sh": {
+    "mtime": 1783392901.0397227,
+    "ast_hash": "5f5aea35efc3fc38232da0ade27917ce",
+    "semantic_hash": ""
+  },
+  "tools/log-sync/README.md": {
+    "mtime": 1783392926.3295329,
+    "ast_hash": "58a1cac1d5be20ade91b4d549790626f",
+    "semantic_hash": ""
+  },
+  "src/test/java/frc/robot/subsystems/drive/PathFollowingGainSweepTest.java": {
+    "mtime": 1783393404.819737,
+    "ast_hash": "1242913ebbb5478ec8233eff060232a3",
+    "semantic_hash": ""
+  },
+  "src/main/java/frc/robot/util/DriverPresets.java": {
+    "mtime": 1783393492.6820927,
+    "ast_hash": "728f66d05b6270f2bb8190f6d97bd1aa",
+    "semantic_hash": ""
+  },
+  "src/main/java/frc/robot/util/RobotModelVisualizer.java": {
+    "mtime": 1783393492.6821785,
+    "ast_hash": "07136b1a4d15cab0763f8b151e902f74",
+    "semantic_hash": ""
+  },
+  "vendordeps/Phoenix6-26.2.0.json": {
+    "mtime": 1783393492.6822886,
+    "ast_hash": "756e20ca01381c4bec395bb7c133bdc0",
     "semantic_hash": ""
   }
 }

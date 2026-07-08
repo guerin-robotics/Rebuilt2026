@@ -1,16 +1,16 @@
 # Graph Report - Rebuilt2026  (2026-07-05)
 
 ## Corpus Check
-- 282 files · ~166,216 words
+- 282 files · ~166,297 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3342 nodes · 5704 edges · 253 communities (219 shown, 34 thin omitted)
-- Extraction: 89% EXTRACTED · 11% INFERRED · 0% AMBIGUOUS · INFERRED: 627 edges (avg confidence: 0.78)
+- 3344 nodes · 5687 edges · 261 communities (226 shown, 35 thin omitted)
+- Extraction: 89% EXTRACTED · 11% INFERRED · 0% AMBIGUOUS · INFERRED: 610 edges (avg confidence: 0.78)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a6ca295d`
+- Built from commit: `68ccf486`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -254,14 +254,21 @@
 - [[_COMMUNITY_Community 240|Community 240]]
 - [[_COMMUNITY_Community 241|Community 241]]
 - [[_COMMUNITY_Community 242|Community 242]]
+- [[_COMMUNITY_Community 243|Community 243]]
 - [[_COMMUNITY_Community 244|Community 244]]
 - [[_COMMUNITY_Community 245|Community 245]]
 - [[_COMMUNITY_Community 246|Community 246]]
 - [[_COMMUNITY_Community 247|Community 247]]
+- [[_COMMUNITY_Community 248|Community 248]]
+- [[_COMMUNITY_Community 249|Community 249]]
+- [[_COMMUNITY_Community 250|Community 250]]
 - [[_COMMUNITY_Community 251|Community 251]]
 - [[_COMMUNITY_Community 252|Community 252]]
+- [[_COMMUNITY_Community 253|Community 253]]
+- [[_COMMUNITY_Community 254|Community 254]]
 - [[_COMMUNITY_Community 255|Community 255]]
 - [[_COMMUNITY_Community 256|Community 256]]
+- [[_COMMUNITY_Community 257|Community 257]]
 - [[_COMMUNITY_Community 258|Community 258]]
 - [[_COMMUNITY_Community 259|Community 259]]
 
@@ -269,8 +276,8 @@
 1. `LogReader` - 38 edges
 2. `SandboxManager` - 35 edges
 3. `Triggers` - 34 edges
-4. `Guerin Robotics — Rebuilt2026 Complete Specification` - 31 edges
-5. `Trigger` - 30 edges
+4. `Trigger` - 32 edges
+5. `Guerin Robotics — Rebuilt2026 Complete Specification` - 31 edges
 6. `AutoPaths` - 25 edges
 7. `RobotState` - 25 edges
 8. `RunCommand()` - 25 edges
@@ -279,15 +286,15 @@
 
 ## Surprising Connections (you probably didn't know these)
 - `_SubParsersAction` --uses--> `LogReader`  [INFERRED]
+  tools/wpilib-agent-tools/agent/src/wpilib_agent_tools/commands/graph.py → tools/wpilib-agent-tools/agent/src/wpilib_agent_tools/lib/log_reader.py
+- `Namespace` --uses--> `LogReader`  [INFERRED]
+  tools/wpilib-agent-tools/agent/src/wpilib_agent_tools/commands/graph.py → tools/wpilib-agent-tools/agent/src/wpilib_agent_tools/lib/log_reader.py
+- `_SubParsersAction` --uses--> `LogReader`  [INFERRED]
   tools/wpilib-agent-tools/agent/src/wpilib_agent_tools/commands/keys.py → tools/wpilib-agent-tools/agent/src/wpilib_agent_tools/lib/log_reader.py
 - `Namespace` --uses--> `LogReader`  [INFERRED]
   tools/wpilib-agent-tools/agent/src/wpilib_agent_tools/commands/keys.py → tools/wpilib-agent-tools/agent/src/wpilib_agent_tools/lib/log_reader.py
 - `_SubParsersAction` --uses--> `LogReader`  [INFERRED]
   tools/wpilib-agent-tools/agent/src/wpilib_agent_tools/commands/logs.py → tools/wpilib-agent-tools/agent/src/wpilib_agent_tools/lib/log_reader.py
-- `Namespace` --uses--> `LogReader`  [INFERRED]
-  tools/wpilib-agent-tools/agent/src/wpilib_agent_tools/commands/logs.py → tools/wpilib-agent-tools/agent/src/wpilib_agent_tools/lib/log_reader.py
-- `_SubParsersAction` --uses--> `LogReader`  [INFERRED]
-  tools/wpilib-agent-tools/agent/src/wpilib_agent_tools/commands/query.py → tools/wpilib-agent-tools/agent/src/wpilib_agent_tools/lib/log_reader.py
 
 ## Import Cycles
 - None detected.
@@ -303,7 +310,7 @@
 - **Shared Codex/Claude/Cursor Harness Installer Pattern** — agent_readme_harnessinstall, workspace_claude_block, workspace_agents_block, commands_wpilib_agent_tools_validate [EXTRACTED 1.00]
 - **Cross-Project Goal-Driven FRC Simulation Workflow Pattern** — specs_2026_05_06_simulate_design, simulate_skill, skill_bundle_skill, skill_bundle_skill_sandboxworkflow [INFERRED 0.80]
 
-## Communities (253 total, 34 thin omitted)
+## Communities (261 total, 35 thin omitted)
 
 ### Community 0 - "CLI Sandbox Command Handlers"
 Cohesion: 0.06
@@ -314,12 +321,12 @@ Cohesion: 0.13
 Nodes (19): decode_value(), expand_log_glob(), _extract_schema_struct(), _infer_raw_struct_type(), LogSummary, WPILOG log reading utilities., Return file-level metadata including duration and counts., Return timestamp-value points for a key. (+11 more)
 
 ### Community 2 - "CLI Argument Parser Tests"
-Cohesion: 0.06
-Nodes (46): ArgumentParser, test_sandbox_run_parser_accepts_output_controls(), test_sim_parser_accepts_assertions(), test_sim_parser_accepts_recording_flags(), test_sim_parser_defaults_to_concise_mode(), test_build_parser_does_not_load_pyplot(), test_load_pyplot_surfaces_dependency_error(), _args() (+38 more)
+Cohesion: 0.15
+Nodes (15): ArgumentParser, test_sandbox_run_parser_accepts_output_controls(), test_sim_parser_accepts_assertions(), test_sim_parser_accepts_recording_flags(), test_sim_parser_defaults_to_concise_mode(), test_harness_cli_parser_registers_install_command(), _args(), test_math_cli_parser_registers_math_command() (+7 more)
 
 ### Community 3 - "Drive Subsystem"
-Cohesion: 0.11
-Nodes (9): Module, Override, CANcoderConfiguration, ModuleIO, Rotation2d, SwerveModuleConstants, SwerveModulePosition, SwerveModuleState (+1 more)
+Cohesion: 0.06
+Nodes (24): Alliance, AutoLogOutput, ChassisSpeeds, Direction, Drive, Module, Matrix, N1 (+16 more)
 
 ### Community 4 - "NT Session Request/Response Types"
 Cohesion: 0.10
@@ -338,8 +345,8 @@ Cohesion: 0.12
 Nodes (43): main(), runDaemon(), writeErrorAndExit(), DoRequest(), EnsureDaemon(), PingDaemon(), spawnDaemon(), patchAddr() (+35 more)
 
 ### Community 8 - "Flywheel Commands"
-Cohesion: 0.17
-Nodes (8): Flywheel, Angle, AngularVelocity, Distance, FlywheelIO, Supplier, Translation3d, Voltage
+Cohesion: 0.12
+Nodes (15): FlywheelCommands, Flywheel, AngularVelocity, Command, Distance, Flywheel, Translation3d, Voltage (+7 more)
 
 ### Community 9 - "Log Analysis Expression Engine"
 Cohesion: 0.09
@@ -366,8 +373,8 @@ Cohesion: 0.19
 Nodes (21): _emit(), handle_sim(), _is_running(), _kill_prior_instance(), _logs_dir(), _parse_assert_ranges(), Kill previous sim instance to enforce single active run., How long to wait for recorder to flush before forcing termination. (+13 more)
 
 ### Community 16 - "Code Review Agent Criteria"
-Cohesion: 0.13
-Nodes (15): Fill in the fields below to create a basic custom agent for your repository., For format details, see: https://gh.io/customagents/config, The Copilot CLI can be used for local testing: https://gh.io/customagents/cli, To make this agent available, merge this file into the default repository branch., Fill in the fields below to create a basic custom agent for your repository., For format details, see: https://gh.io/customagents/config, The Copilot CLI can be used for local testing: https://gh.io/customagents/cli, To make this agent available, merge this file into the default repository branch. (+7 more)
+Cohesion: 0.11
+Nodes (18): Triggers Review Criteria, Fill in the fields below to create a basic custom agent for your repository., For format details, see: https://gh.io/customagents/config, The Copilot CLI can be used for local testing: https://gh.io/customagents/cli, To make this agent available, merge this file into the default repository branch., Fill in the fields below to create a basic custom agent for your repository., For format details, see: https://gh.io/customagents/config, The Copilot CLI can be used for local testing: https://gh.io/customagents/cli (+10 more)
 
 ### Community 17 - "Elastic Dashboard Notifications"
 Cohesion: 0.11
@@ -390,20 +397,20 @@ Cohesion: 0.07
 Nodes (27): editor.defaultFormatter, files.exclude, bin/, **/.classpath, **/CVS, **/.DS_Store, **/.factorypath, **/.git (+19 more)
 
 ### Community 22 - "Log Reader Key Lookup"
-Cohesion: 0.13
-Nodes (14): Prompt: Review a Proposed Change, Change Risk Classification (Safe/Low/Medium/High/Blocked), Self-Review Checklist, Self-Review Checklist (Run Before Asking for Review), What to Expect in a Review Response, Absolute Hard Stops, AdvantageKit Integrity, CAN Configuration (+6 more)
+Cohesion: 0.12
+Nodes (15): Prompt: Review a Proposed Change, Change Risk Classification (Safe/Low/Medium/High/Blocked), Self-Review Checklist, Self-Review Checklist (Run Before Asking for Review), What to Expect in a Review Response, Absolute Hard Stops, AdvantageKit Integrity, CAN Configuration (+7 more)
 
 ### Community 23 - "Intake Pivot Visualizer / VisionIO"
-Cohesion: 0.15
-Nodes (12): EventTrigger Must Not Declare Subsystem Requirements, Hub Shift Mechanic (Rebuilt 2026), Field Zone Classification System, Matrix, N1, N3, Override, Pose2d (+4 more)
+Cohesion: 0.17
+Nodes (10): EventTrigger Must Not Declare Subsystem Requirements, Matrix, N1, N3, Override, Pose2d, Rotation2d, Vision (+2 more)
 
 ### Community 24 - "Log Keys/Listing CLI"
-Cohesion: 0.11
-Nodes (20): handle_keys(), List keys in a log file., register_subparser(), handle_logs(), List available log files., register_subparser(), bound_lines(), dumps_json() (+12 more)
+Cohesion: 0.10
+Nodes (24): handle_keys(), List keys in a log file., register_subparser(), handle_logs(), List available log files., register_subparser(), handle_query(), ensure_log_file() (+16 more)
 
 ### Community 25 - "Log Query CLI"
-Cohesion: 0.13
-Nodes (22): _bound_items(), _format_value_for_text(), handle_query(), _json_safe(), _limit_points(), Query/analyze log values., Convert nested payload values into JSON-serializable forms., Render nested values in stable, human-readable text form. (+14 more)
+Cohesion: 0.12
+Nodes (20): _bound_items(), _format_value_for_text(), _json_safe(), _limit_points(), Query/analyze log values., Convert nested payload values into JSON-serializable forms., Render nested values in stable, human-readable text form., Resolve canonical DriverStation keys to available log key names. (+12 more)
 
 ### Community 26 - "Lower Feeder IO Real"
 Cohesion: 0.13
@@ -422,20 +429,20 @@ Cohesion: 0.12
 Nodes (20): handle_math(), Symbolic and numeric calculator command., register_subparser(), _run_math_operation(), evaluate_expression(), parse_assignments(), Symbolic math helpers powered by sympy., Compute symbolic derivative d(expression)/d(variable). (+12 more)
 
 ### Community 30 - "PathPlanner Path Types"
-Cohesion: 0.11
-Nodes (29): AutoFactory, AutoOption, AutoCommands, AutoPaths, Flywheel, Hood, IntakePivot, intakeRoller (+21 more)
+Cohesion: 0.17
+Nodes (21): AutoFactory, AutoOption, AutoCommands, AutoPaths, Flywheel, Hood, IntakePivot, intakeRoller (+13 more)
 
 ### Community 31 - "HardwareConstants"
-Cohesion: 0.07
-Nodes (25): Prompt: Add a New Subsystem, template/src IO Pattern, What Claude Will Do, What Claude Will Not Do Without Asking, Autos, CanIds, CompConstants, ControllerConstants (+17 more)
+Cohesion: 0.09
+Nodes (21): Autos, CanIds, CompConstants, ControllerConstants, HardwareConstants, hubDangerZone, PassConstants, Positions (+13 more)
 
 ### Community 32 - "Change Classification Docs"
-Cohesion: 0.13
-Nodes (15): Constraints for Code Changes, Drive Subsystem, Hood Subsystem, IntakeRoller Subsystem, Key Architecture Points, Key Files, LowerFeeder Subsystem, Prestage Subsystem (+7 more)
+Cohesion: 0.08
+Nodes (26): Auto ran wrong path / started from wrong position, Brownout during match, Intake didn't compress, Key Signals to Check for Common Problems, Prompt: Debug a Match Log, Replay Instructions, Robot aligned wrong direction, Robot didn't shoot when button was pressed (+18 more)
 
 ### Community 33 - "Hub Shift Util"
-Cohesion: 0.19
-Nodes (5): Alliance, Boolean, ShiftInfo, Command, HubShiftUtil
+Cohesion: 0.21
+Nodes (5): Boolean, Optional, ShiftInfo, Command, HubShiftUtil
 
 ### Community 34 - "Harness Validation Status"
 Cohesion: 0.09
@@ -446,12 +453,12 @@ Cohesion: 0.15
 Nodes (9): HoodIO, HoodIOReal, HoodIOSim, Angle, HoodIOInputs, Override, Angle, HoodIOInputs (+1 more)
 
 ### Community 36 - "Field Constants / AprilTag Layout"
-Cohesion: 0.14
-Nodes (16): AprilTagFieldLayout, AprilTagLayoutType(), Depot, FieldConstants, getLayout(), getLayoutString(), Hub, LeftBump (+8 more)
+Cohesion: 0.08
+Nodes (30): AprilTagFieldLayout, AprilTagLayoutType(), Depot, FieldConstants, getLayout(), getLayoutString(), Hub, LeftBump (+22 more)
 
 ### Community 37 - "Feeder Commands"
-Cohesion: 0.13
-Nodes (23): FeederCommands, intakeRollerCommands, ShootSequences, AngularVelocity, BooleanSupplier, Command, LowerFeeder, UpperFeeder (+15 more)
+Cohesion: 0.36
+Nodes (7): FeederCommands, AngularVelocity, BooleanSupplier, Command, LowerFeeder, UpperFeeder, Voltage
 
 ### Community 38 - "Intake Pivot Commands"
 Cohesion: 0.07
@@ -466,20 +473,20 @@ Cohesion: 0.12
 Nodes (11): CurrentLimits, DistanceMap, FlywheelConstants, flywheelMagicConstants, Limits, Mechanical, PID, Sim (+3 more)
 
 ### Community 41 - "Robot Periodic / Battery Logger"
-Cohesion: 0.13
-Nodes (12): AutoLogOutput, Direction, Drive, Matrix, N1, N3, Command, Pose2d (+4 more)
+Cohesion: 0.41
+Nodes (6): intakeRollerCommands, AngularVelocity, BooleanSupplier, Command, intakeRoller, Voltage
 
 ### Community 42 - "ContinuousConditionalCommand"
-Cohesion: 0.13
-Nodes (11): DebounceType, InterruptionBehavior, ContinuousConditionalCommand, SendableBuilder, BooleanSupplier, Override, BooleanSupplier, Override (+3 more)
+Cohesion: 0.25
+Nodes (5): InterruptionBehavior, ContinuousConditionalCommand, SendableBuilder, BooleanSupplier, Override
 
 ### Community 43 - "Gyro IO (NavX/Pigeon2)"
 Cohesion: 0.20
 Nodes (8): Double, GyroIONavX, Queue, GyroIOInputs, Override, Angle, DoubleSupplier, StatusSignal
 
 ### Community 44 - "Intake Pivot IO Real"
-Cohesion: 0.22
-Nodes (6): IntakePivotIOReal, Angle, AngularVelocity, IntakePivotIOInputs, Override, Voltage
+Cohesion: 0.20
+Nodes (7): IntakePivotIO, IntakePivotIOReal, Angle, AngularVelocity, IntakePivotIOInputs, Override, Voltage
 
 ### Community 45 - "Robot Profile Patch Script"
 Cohesion: 0.30
@@ -490,8 +497,8 @@ Cohesion: 0.23
 Nodes (7): CANdiConfiguration, ModuleIOTalonFXS, ModuleIOInputs, Override, Rotation2d, SwerveModuleConstants, TalonFXSConfiguration
 
 ### Community 47 - "Shoot Sequences"
-Cohesion: 0.29
-Nodes (7): FlywheelCommands, AngularVelocity, Command, Distance, Flywheel, Translation3d, Voltage
+Cohesion: 0.39
+Nodes (10): ShootSequences, Command, Flywheel, Hood, IntakePivot, intakeRoller, LowerFeeder, Prestage (+2 more)
 
 ### Community 48 - "Swerve Module IO TalonFX"
 Cohesion: 0.23
@@ -506,8 +513,8 @@ Cohesion: 0.23
 Nodes (9): AutoCloseable, CompletableFuture, ConfigurationFailedException, Override, StatusCode, Supplier, ThrowingRunnable, CANUpdateThread (+1 more)
 
 ### Community 51 - "Log Reader Core (Python)"
-Cohesion: 0.12
-Nodes (17): _expand_keys(), handle_graph(), _load_pyplot(), _numeric_points(), Load matplotlib lazily so non-graph commands avoid GUI/font side effects., register_subparser(), ensure_log_file(), LogReader (+9 more)
+Cohesion: 0.17
+Nodes (13): LogReader, Read data from `.wpilog` files., List supported log files newest-first., Return keys available in the file., _append_value(), _args(), test_query_fft_and_settle_modes(), test_query_new_modes_stats_smooth_threshold_rms_expr() (+5 more)
 
 ### Community 52 - "Spit Sequences"
 Cohesion: 0.21
@@ -530,12 +537,12 @@ Cohesion: 0.44
 Nodes (6): TransportCommands, AngularVelocity, BooleanSupplier, Command, Transport, Voltage
 
 ### Community 57 - "LoggedTrigger"
-Cohesion: 0.18
-Nodes (11): Auto ran wrong path / started from wrong position, Brownout during match, Intake didn't compress, Key Signals to Check for Common Problems, Prompt: Debug a Match Log, Replay Instructions, Robot aligned wrong direction, Robot didn't shoot when button was pressed (+3 more)
+Cohesion: 0.26
+Nodes (6): DebounceType, BooleanSupplier, Override, String, LoggedTrigger, LoggingBooleanSupplier
 
 ### Community 58 - "Hood Subsystem"
-Cohesion: 0.24
-Nodes (9): ChassisSpeeds, Command, DriveCommands, WheelRadiusCharacterizationState, DoubleSupplier, Drive, Rotation2d, Command (+1 more)
+Cohesion: 0.29
+Nodes (9): Command, DriveCommands, WheelRadiusCharacterizationState, Drive, Command, DoubleSupplier, Rotation2d, Supplier (+1 more)
 
 ### Community 59 - "Flywheel IO Phoenix6"
 Cohesion: 0.24
@@ -578,8 +585,8 @@ Cohesion: 0.17
 Nodes (11): conflictsWith, cppDependencies, fileName, frcYear, javaDependencies, jniDependencies, jsonUrl, mavenUrls (+3 more)
 
 ### Community 69 - "Graph Plotting CLI"
-Cohesion: 0.20
-Nodes (10): 1. ✅ FIXED BY USER — intakeRollerIOReal — Leader velocity overwritten by follower velocity, 2. FlywheelIOSim — Follower alignment does not match real hardware, 3. intakeRollerIOSim — Follower alignment does not match real hardware, 4. PrestageIOSim — `prestageLeftClosedLoopReference` reads from ClosedLoopError instead of ClosedLoopReference, 5. PrestageIOSim — `prestageLeftClosedLoopError` is never set, 6. LowerFeeder & UpperFeeder — Duplicate `Logger.processInputs` key `"Feeder"`, Critical Issues, Subsystem & IO Layer Code Review — April 12, 2026 (+2 more)
+Cohesion: 0.25
+Nodes (10): _expand_keys(), handle_graph(), _load_pyplot(), _numeric_points(), Load matplotlib lazily so non-graph commands avoid GUI/font side effects., register_subparser(), test_expand_keys_accepts_repeated_and_comma_separated_values(), Any (+2 more)
 
 ### Community 70 - "Hood Commands"
 Cohesion: 0.47
@@ -602,32 +609,32 @@ Cohesion: 0.07
 Nodes (27): All IO Inputs — Null Measure Defaults (Bug #8), Changes Made, Code Review Fixes Changelog — 2026-04-12, Critical Fixes, `DriveCommands.java` — Issue 3, `FlywheelConstants.java` — Motor Count Mismatch (Bug #16), `FlywheelIOSim.java` — Follower 1 Alignment (Bug #2), `FlywheelIOSim.java` — Missing leaderAngle (Bug #7) (+19 more)
 
 ### Community 75 - "Intake Roller Subsystem"
-Cohesion: 0.18
-Nodes (11): 10. PrestageIOSim — Right motor not driven by `setPrestageVoltage` / `setPrestageVelocity`, 11. ✅ REMOVED BY USER — PrestageIO `setOneVelo` had no implementation, 12. HoodIOSim — No physics simulation (USER: skip for now), 13. ✅ REMOVED BY USER — HoodIO `stopHood()` was unimplemented, 14. IntakePivotIOSim — Uses Voltage-based control (USER: leave as-is, intentional), 15. IntakePivotIOReal — Feedback config applied separately (USER: leave as-is, works), 16. FlywheelConstants.Sim.NUM_MOTORS = 5, but only 4+1 motors exist, 7. FlywheelIOSim — `leaderAngle` (position) not populated (+3 more)
+Cohesion: 0.10
+Nodes (21): 10. PrestageIOSim — Right motor not driven by `setPrestageVoltage` / `setPrestageVelocity`, 11. ✅ REMOVED BY USER — PrestageIO `setOneVelo` had no implementation, 12. HoodIOSim — No physics simulation (USER: skip for now), 13. ✅ REMOVED BY USER — HoodIO `stopHood()` was unimplemented, 14. IntakePivotIOSim — Uses Voltage-based control (USER: leave as-is, intentional), 15. IntakePivotIOReal — Feedback config applied separately (USER: leave as-is, works), 16. FlywheelConstants.Sim.NUM_MOTORS = 5, but only 4+1 motors exist, 1. ✅ FIXED BY USER — intakeRollerIOReal — Leader velocity overwritten by follower velocity (+13 more)
 
 ### Community 76 - "Intake Pivot IO Interface"
 Cohesion: 0.25
 Nodes (5): IntakePivotIO, IntakePivotIOInputs, Angle, AngularVelocity, Voltage
 
 ### Community 77 - "Lower Feeder Subsystem"
-Cohesion: 0.36
-Nodes (4): LowerFeeder, AngularVelocity, LowerFeederIO, Voltage
+Cohesion: 0.27
+Nodes (5): LowerFeeder, AngularVelocity, LowerFeederIO, Override, Voltage
 
 ### Community 78 - "Prestage Subsystem"
 Cohesion: 0.10
 Nodes (20): Before You Begin, Code Review Agent, Codebase Context, Commands (`commands/*.java`), Critical Issues, Dig Deeper When Necessary, First: Read Your Instructions, Output Format (+12 more)
 
 ### Community 79 - "Replay Testing / AdvantageScope Logs"
-Cohesion: 0.42
-Nodes (8): _append_value(), _args(), test_query_fft_and_settle_modes(), test_query_new_modes_stats_smooth_threshold_rms_expr(), _write_log(), Any, Namespace, Path
+Cohesion: 0.38
+Nodes (6): AdvantageScope, akit_26-03-21_16-32-11_incol_q12.wpilog, akit_26-03-21_15-19-00_incol_q4.wpilog, AdvantageKit Replay Mode, WPILOGReader, WPILOGWriter
 
 ### Community 80 - "Transport Subsystem"
 Cohesion: 0.36
 Nodes (4): AngularVelocity, TransportIO, Voltage, Transport
 
 ### Community 81 - "Upper Feeder Subsystem"
-Cohesion: 0.27
-Nodes (5): AngularVelocity, Override, UpperFeederIO, Voltage, UpperFeeder
+Cohesion: 0.36
+Nodes (4): AngularVelocity, UpperFeederIO, Voltage, UpperFeeder
 
 ### Community 82 - "AdvantageKit Vendordep"
 Cohesion: 0.18
@@ -654,8 +661,8 @@ Cohesion: 0.18
 Nodes (10): cppDependencies, fileName, frcYear, javaDependencies, jniDependencies, jsonUrl, mavenUrls, name (+2 more)
 
 ### Community 89 - "Shot Calculator"
-Cohesion: 0.16
-Nodes (8): Sim/Real IO Parity Requirement, IntakePivotIO, IntakePivotIOSim, Angle, AngularVelocity, IntakePivotIOInputs, Override, Voltage
+Cohesion: 0.23
+Nodes (6): IntakePivotIOSim, Angle, AngularVelocity, IntakePivotIOInputs, Override, Voltage
 
 ### Community 90 - "Flywheel IO Sim"
 Cohesion: 0.18
@@ -715,7 +722,7 @@ Nodes (6): ALPHA_TunerConstants, TunerSwerveDrivetrain, Matrix, N1, N3, SwerveDr
 
 ### Community 104 - "COMP TunerConstants (Swerve)"
 Cohesion: 0.13
-Nodes (16): AllianceFlipUtil, Alliance Coordinate Convention, AprilTag Layout, Broad Zones (X axis, alliance-relative), Bumps and Trenches, Depot and Outpost, Field Dimensions, Game Info — FRC 2026 (+8 more)
+Nodes (10): approachingZoneComposite, approachingZoneX, approachingZoneY, broadZone, AllianceFlipUtil, specificZone, Pose2d, Rotation2d (+2 more)
 
 ### Community 105 - "Hood Constants"
 Cohesion: 0.25
@@ -886,8 +893,8 @@ Cohesion: 0.13
 Nodes (15): 1. Repo-first / source-first, 2. `pipx` from GitHub, 3. PyPI, 4. GitHub Releases, 5. Three unrelated agent-specific installers, Cons, Cons, Cons (+7 more)
 
 ### Community 151 - "Gyro IO Inputs (Real)"
-Cohesion: 0.13
-Nodes (12): FlywheelVisualizer, IntakePivotVisualizer, Pose3d, Rotation3d, Pose2d, Rotation2d, Translation2d, Translation3d (+4 more)
+Cohesion: 0.18
+Nodes (8): FlywheelVisualizer, IntakePivotVisualizer, Pose3d, Rotation3d, Override, Angle, AngularVelocity, String
 
 ### Community 178 - "GitHub Issue Template"
 Cohesion: 0.40
@@ -934,8 +941,8 @@ Cohesion: 0.26
 Nodes (5): `harness install` Command (shared Codex/Claude/Cursor installer), wpilib-agent-tools CI Workflow, Release ClaudeScope CI Workflow, WPILib Agent Tools, WPILib Agent Tools
 
 ### Community 192 - "Community 192"
-Cohesion: 0.12
-Nodes (15): approachingZoneComposite, approachingZoneX, approachingZoneY, broadZone, RobotState, specificZone, AutoLogOutput, ChassisSpeeds (+7 more)
+Cohesion: 0.19
+Nodes (10): RobotState, AutoLogOutput, ChassisSpeeds, Distance, Pose2d, Rotation2d, Supplier, SwerveModuleState (+2 more)
 
 ### Community 193 - "Community 193"
 Cohesion: 0.20
@@ -960,6 +967,10 @@ Nodes (11): 21. Command Implementations, DriveCommands, FeederCommands, Flywheel
 ### Community 199 - "Community 199"
 Cohesion: 0.27
 Nodes (5): FlywheelIOSim, AngularVelocity, Override, ShooterIOInputs, Voltage
+
+### Community 200 - "Community 200"
+Cohesion: 0.20
+Nodes (7): VisionIO, VisionIOInputs, VisionIOPhotonVision, Override, String, Transform3d, VisionIOInputs
 
 ### Community 201 - "Community 201"
 Cohesion: 0.25
@@ -1026,16 +1037,16 @@ Cohesion: 0.25
 Nodes (7): Auto-Generated Files, Branch Strategy, Commit Principles, Git Discipline, Pre-Commit Checklist, Reverting at Competition, What to Stage (Never Stage These)
 
 ### Community 217 - "Community 217"
-Cohesion: 0.15
-Nodes (14): AdvantageScope, Available Match Logs, Comparing Logs in AdvantageScope, How Replay Works, Key Invariant, akit_26-03-21_16-32-11_incol_q12.wpilog, akit_26-03-21_15-19-00_incol_q4.wpilog, AdvantageKit Replay Mode (+6 more)
+Cohesion: 0.25
+Nodes (8): Available Match Logs, Comparing Logs in AdvantageScope, How Replay Works, Key Invariant, Replay Testing, Setting Up Replay Mode, Workflow: Reproduce a Bug, Workflow: Validate a Code Change
 
 ### Community 218 - "Community 218"
 Cohesion: 0.25
 Nodes (8): Architecture & Process Model, ClaudeScope Design, CLI Commands, Error Handling, File Structure, Overview, Session Interface, Testing Strategy
 
 ### Community 219 - "Community 219"
-Cohesion: 0.22
-Nodes (8): Common Constant Locations, Current Limits Tuning Rationale, Feedforward Ks/Kv/Ka Rationale, PID Gains Tuning Rationale, Prompt: Update Tuning Constants, Safety Notes for Tuning Changes, Timeout Constants Tuning Rationale, Vision Thresholds Tuning Rationale
+Cohesion: 0.17
+Nodes (9): Common Constant Locations, Current Limits Tuning Rationale, Feedforward Ks/Kv/Ka Rationale, PID Gains Tuning Rationale, Prompt: Update Tuning Constants, Safety Notes for Tuning Changes, Timeout Constants Tuning Rationale, Vision Thresholds Tuning Rationale (+1 more)
 
 ### Community 220 - "Community 220"
 Cohesion: 0.29
@@ -1125,6 +1136,10 @@ Nodes (3): 13. Intake Roller Subsystem, intakeRollerIO Inputs (`@AutoLog`), inta
 Cohesion: 0.67
 Nodes (3): 8. CAN Bus Layout, CANivore Bus (`"Canivore"`), RIO CAN Bus (`"rio"`)
 
+### Community 243 - "Community 243"
+Cohesion: 0.35
+Nodes (9): _args(), test_rules_cli_parser_registers_install_command(), test_rules_install_custom_target_installs_core_template(), test_rules_install_custom_target_requires_output_dir(), test_rules_install_overwrites_existing_with_force(), test_rules_install_skips_existing_without_force(), CaptureFixture, Namespace (+1 more)
+
 ### Community 244 - "Community 244"
 Cohesion: 0.25
 Nodes (5): GyroIOPigeon2, GyroIO, ModuleIO, GyroIOInputs, Override
@@ -1141,9 +1156,21 @@ Nodes (7): VisionIOPhotonVisionSim, Override, Pose2d, String, Supplier, Transfor
 Cohesion: 0.36
 Nodes (6): COMP_TunerConstants, TunerSwerveDrivetrain, Matrix, N1, N3, SwerveDrivetrainConstants
 
+### Community 248 - "Community 248"
+Cohesion: 0.40
+Nodes (4): Prompt: Add a New Subsystem, template/src IO Pattern, What Claude Will Do, What Claude Will Not Do Without Asking
+
+### Community 249 - "Community 249"
+Cohesion: 0.67
+Nodes (9): _install_runtime_fakes(), _sim_args(), test_sim_auto_record_enabled_by_default_and_invoked(), test_sim_fails_when_no_generated_log(), test_sim_fallback_to_wpilog_when_record_fails(), test_sim_normalizes_bounded_termination_exit_code(), test_sim_waits_for_recorder_flush_before_terminate(), Any (+1 more)
+
+### Community 250 - "Community 250"
+Cohesion: 0.47
+Nodes (8): _args(), test_harness_install_all_creates_codex_claude_and_cursor_assets(), test_harness_install_rejects_unknown_harness(), test_harness_install_skips_existing_generated_files_without_force(), test_harness_install_updates_managed_blocks_without_force(), CaptureFixture, Namespace, Path
+
 ### Community 251 - "Community 251"
-Cohesion: 0.21
-Nodes (10): Commands Review Criteria, Robot Review Criteria, RobotContainer Review Criteria, RobotState Review Criteria, Triggers Review Criteria, Per-Loop CPU Optimization Effort, AdvantageKit Documentation, CTRE Phoenix 6 API Reference (+2 more)
+Cohesion: 0.23
+Nodes (9): Commands Review Criteria, Robot Review Criteria, RobotContainer Review Criteria, RobotState Review Criteria, Per-Loop CPU Optimization Effort, AdvantageKit Documentation, CTRE Phoenix 6 API Reference, WPILib Command-Based Programming Docs (+1 more)
 
 ### Community 252 - "Community 252"
 Cohesion: 0.50
@@ -1157,6 +1184,10 @@ Nodes (5): Delay Tradeoffs, If Behavior Is Missed, Recorder Timing, Tuning Tips,
 Cohesion: 0.40
 Nodes (5): Direct Analysis (No Sandbox Required), Direct Behavior Validation (No Code Edit), Reusable Validation Script Workflow, Sandbox Iteration Workflow, Workflows
 
+### Community 257 - "Community 257"
+Cohesion: 0.50
+Nodes (3): test_build_parser_does_not_load_pyplot(), test_load_pyplot_surfaces_dependency_error(), MonkeyPatch
+
 ### Community 258 - "Community 258"
 Cohesion: 0.50
 Nodes (4): CLI only via `pipx` from GitHub, Harness support only, Install Options, Recommended: shared installer
@@ -1166,24 +1197,24 @@ Cohesion: 0.67
 Nodes (3): Defaults, Example Profile: 2026-Robot-Code, Validation Patch Set (Sandbox Only)
 
 ## Knowledge Gaps
-- **1138 isolated node(s):** `HardwareConstants`, `CanIds`, `CompConstants`, `Voltages`, `SpitVoltages` (+1133 more)
+- **1138 isolated node(s):** `AutoContext`, `Override`, `fileName`, `name`, `version` (+1133 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **34 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **35 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Guerin Robotics — Rebuilt2026 Complete Specification` connect `Code Review Findings (CPU/Trigger Bugs)` to `Community 226`, `Community 227`, `Community 229`, `Community 230`, `Community 231`, `Community 198`, `Community 234`, `Community 235`, `Community 236`, `Community 237`, `Community 238`, `Community 239`, `Community 241`, `Community 242`, `Intake Pivot Visualizer / VisionIO`, `Community 185`, `Community 220`?**
-  _High betweenness centrality (0.031) - this node is a cross-community bridge._
-- **Why does `ContinuousConditionalCommand` connect `ContinuousConditionalCommand` to `Hood Subsystem`?**
-  _High betweenness centrality (0.014) - this node is a cross-community bridge._
-- **Why does `Code Review Fixes Changelog — 2026-04-12` connect `Hood Position Calculator` to `Shot Calculator`?**
+- **Why does `Guerin Robotics — Rebuilt2026 Complete Specification` connect `Code Review Findings (CPU/Trigger Bugs)` to `Community 226`, `Community 227`, `Community 229`, `Community 230`, `Community 231`, `Community 198`, `Community 234`, `Community 235`, `Community 236`, `Community 237`, `Community 238`, `Community 239`, `Code Review Agent Criteria`, `Community 241`, `Community 242`, `Community 185`, `Community 220`?**
+  _High betweenness centrality (0.026) - this node is a cross-community bridge._
+- **Why does `Drive` connect `Drive Subsystem` to `Community 202`, `Hood Subsystem`, `Community 244`, `Triggers Bindings`?**
+  _High betweenness centrality (0.016) - this node is a cross-community bridge._
+- **Why does `Code Review Fixes Changelog — 2026-04-12` connect `Hood Position Calculator` to `Community 254`?**
   _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **Are the 26 inferred relationships involving `LogReader` (e.g. with `Event` and `LogReader`) actually correct?**
   _`LogReader` has 26 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 7 inferred relationships involving `SandboxManager` (e.g. with `ResolvedSource` and `SourceResolutionError`) actually correct?**
   _`SandboxManager` has 7 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `HardwareConstants`, `CanIds`, `CompConstants` to the rest of the system?**
+- **What connects `AutoContext`, `Override`, `fileName` to the rest of the system?**
   _1245 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `CLI Sandbox Command Handlers` be split into smaller, more focused modules?**
   _Cohesion score 0.056915807560137456 - nodes in this community are weakly interconnected._
