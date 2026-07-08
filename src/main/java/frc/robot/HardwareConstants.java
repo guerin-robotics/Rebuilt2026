@@ -101,7 +101,7 @@ public class HardwareConstants {
       public static final double waitToDropSeconds = 0.5;
       public static final double waitBetweenCompressSeconds = 0.15;
 
-      public static final double autoWaitToCompressSeconds = 0.85;
+      public static final double autoWaitToCompressSeconds = 0.50; // 0.85
     }
 
     public static class Thresholds {
