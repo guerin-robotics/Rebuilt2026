@@ -12,7 +12,7 @@ jobs:
   build:
     name: Build & Test
     runs-on: ubuntu-latest
-    container: wpilib/roborio-cross-ubuntu:2026-22.04
+    container: wpilib/roborio-cross-ubuntu:2026-22.04-py313
     steps:
       - uses: actions/checkout@v4
 
