@@ -1,6 +1,11 @@
 # CI: build + format check on every PR and push to main.
-# Uses the same WPILib RoboRIO cross-build container as the official WPILib template,
-# so CI results match local ./gradlew build results.
+#
+# WPILib 2026 targets JDK 17, and this is a pure-Java robot project: the roboRIO
+# and desktop JNI natives are precompiled maven artifacts, so no cross-compile
+# toolchain is needed for `build`/`test`. We therefore run on a standard runner
+# with Temurin 17 rather than the WPILib cross-build container (whose plain
+# `2026-22.04` Java image isn't published yet — only the RobotPy `-pyXXX`
+# variants exist, and those ship without a JDK).
 name: Build
 
 on:
@@ -12,21 +17,18 @@ jobs:
   build:
     name: Build & Test
     runs-on: ubuntu-latest
-    container: wpilib/roborio-cross-ubuntu:2026-22.04-py313
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-
-      - name: Cache Gradle
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle', 'gradle/wrapper/gradle-wrapper.properties') }}
-          restore-keys: gradle-${{ runner.os }}-
 
       - name: Check formatting
         run: ./gradlew spotlessCheck
