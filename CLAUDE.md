@@ -145,9 +145,14 @@ Common task templates are in `.claude/prompts/`:
 
 - [add-subsystem.md](.claude/prompts/add-subsystem.md) — scaffold a new mechanism subsystem
 - [tune-constants.md](.claude/prompts/tune-constants.md) — update PID/FF/threshold values
-- [debug-match-log.md](.claude/prompts/debug-match-log.md) — analyze an AdvantageKit log
 - [new-auto.md](.claude/prompts/new-auto.md) — create or modify an autonomous routine
 - [review-change.md](.claude/prompts/review-change.md) — review a proposed change for safety
+- [write-test.md](.claude/prompts/write-test.md) — lock in a behavior or bug as a JUnit test
+
+Team skills (slash commands) are in `.claude/skills/`:
+
+- `/debug-match-log` — root-cause a field problem from an AdvantageKit log
+- `/pid-tune` — sim-based PID/FF tuning loop; proposes gains, user confirms
 
 ---
 

@@ -1,0 +1,35 @@
+# CI: build + format check on every PR and push to main.
+# Uses the same WPILib RoboRIO cross-build container as the official WPILib template,
+# so CI results match local ./gradlew build results.
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    container: wpilib/roborio-cross-ubuntu:2026-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle', 'gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: Check formatting
+        run: ./gradlew spotlessCheck
+
+      - name: Build and run tests
+        run: ./gradlew build
