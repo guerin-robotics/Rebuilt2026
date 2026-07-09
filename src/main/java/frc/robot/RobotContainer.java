@@ -85,6 +85,7 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.io.VisionIO;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVisionSim;
+import frc.robot.util.DriverPresets;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.RobotModelVisualizer;
 import java.util.List;
@@ -320,6 +321,10 @@ public class RobotContainer {
     autoTypeChooser = new LoggedDashboardChooser<>("Auto Type");
     autoTypeChooser.addDefaultOption("PathPlanner", AutoType.PATHPLANNER);
     autoTypeChooser.addOption("Choreo", AutoType.CHOREO);
+
+    // Publish the "Driver Preset" chooser at boot; the selection is applied once per
+    // teleop enable in Robot.teleopInit() (not per loop — see DriverPresets javadoc)
+    DriverPresets.getInstance();
 
     // Publish the auto preview field to the dashboard so we can see the selected path
     SmartDashboard.putData("Auto Preview", autoPreviewField);
