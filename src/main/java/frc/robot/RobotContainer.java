@@ -85,6 +85,7 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.io.VisionIO;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVisionSim;
+import frc.robot.util.DriverPresets;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.RobotModelVisualizer;
 import java.util.List;
@@ -321,6 +322,10 @@ public class RobotContainer {
     autoTypeChooser.addDefaultOption("PathPlanner", AutoType.PATHPLANNER);
     autoTypeChooser.addOption("Choreo", AutoType.CHOREO);
 
+    // Publish the "Driver Preset" chooser at boot; the selection is applied once per
+    // teleop enable in Robot.teleopInit() (not per loop — see DriverPresets javadoc)
+    DriverPresets.getInstance();
+
     // Publish the auto preview field to the dashboard so we can see the selected path
     SmartDashboard.putData("Auto Preview", autoPreviewField);
     SmartDashboard.putNumber(autoDelayKey, defaultAutoDelay);
@@ -538,8 +543,8 @@ public class RobotContainer {
                 DriveCommands.alignForDefenseShot(drive),
                 DriveCommands.alignOrXForShoot(
                     drive,
-                    () -> Triggers.getInstance().thrustmaster.getX(),
                     () -> Triggers.getInstance().thrustmaster.getY(),
+                    () -> Triggers.getInstance().thrustmaster.getX(),
                     () -> new Rotation2d(Triggers.getInstance().thrustmaster.getTwist()))));
 
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
@@ -553,8 +558,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -Triggers.getInstance().thrustmaster.getX() * .5,
                 () -> -Triggers.getInstance().thrustmaster.getY() * .5,
+                () -> -Triggers.getInstance().thrustmaster.getX() * .5,
                 () ->
                     RobotState.getInstance()
                         .getAngleToTarget(
@@ -570,8 +575,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAlignForTrench(
                 drive,
-                () -> -Triggers.getInstance().thrustmaster.getY() * .5,
-                () -> -Triggers.getInstance().thrustmaster.getX() * .5));
+                () -> -Triggers.getInstance().thrustmaster.getY(),
+                () -> -Triggers.getInstance().thrustmaster.getX()));
 
     // Align for bump when bump button pressed - zone logic temporarily disabled
     Triggers.getInstance()

@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.AllianceFlipUtil;
 import frc.robot.util.BatteryLogger;
+import frc.robot.util.DriverPresets;
 import frc.robot.util.Elastic;
 import frc.robot.util.HubShiftUtil;
 import org.littletonrobotics.junction.AutoLogOutputManager;
@@ -206,6 +207,10 @@ public class Robot extends LoggedRobot {
     }
     CommandScheduler.getInstance().schedule(robotContainer.getAutoStopCommand());
     HubShiftUtil.initialize();
+
+    // Apply the selected driver preset once per teleop enable. Reading the chooser/NT
+    // values in the drive loop saturated the RIO CPU — keep this out of periodic code.
+    DriverPresets.getInstance().refresh();
 
     CommandScheduler.getInstance().schedule(robotContainer.getIntakeRollerCommand());
     CommandScheduler.getInstance().schedule(robotContainer.getIntakePivotCommand());
