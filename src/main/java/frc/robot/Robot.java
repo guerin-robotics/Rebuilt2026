@@ -212,7 +212,6 @@ public class Robot extends LoggedRobot {
     // values in the drive loop saturated the RIO CPU — keep this out of periodic code.
     DriverPresets.getInstance().refresh();
 
-    CommandScheduler.getInstance().schedule(robotContainer.getIntakeRollerCommand());
     CommandScheduler.getInstance().schedule(robotContainer.getIntakePivotCommand());
 
     // Automated tab switching

@@ -489,8 +489,11 @@ public class RobotContainer {
     // Hood - stop motor when no command is running (prevents stale closed-loop reference)
     hood.setDefaultCommand(HoodCommands.hoodIdle(hood));
 
-    // Intake Roller - Idle
-    intakeRoller.setDefaultCommand(intakeRollerCommands.intakeRollerIdle(intakeRoller));
+    // Intake Roller - always run at intake voltage; shoot/pass/tower sequences override this with
+    // agitate voltage via their own whileTrue bindings
+    intakeRoller.setDefaultCommand(
+        intakeRollerCommands.setRollerVoltage(
+            intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage));
     // OVERRIDES
     // Flip alliance winner
     Triggers.getInstance().allianceWinFlipper().onTrue(HubShiftUtil.flipWinner());
@@ -730,12 +733,18 @@ public class RobotContainer {
         .onFalse(TransportCommands.stop(transport));
 
     // INTAKE ROLLER
-    // Set to intaking voltage when intake button is pressed
+    // Set to agitate voltage (after a wait) when any shooting sequence is started (shoot to hub,
+    // pass, shoot from tower). Agitate is also delayed until aligned. Reverts to the default
+    // (intakeRollerVoltage) once the shoot/pass button is released.
     Triggers.getInstance()
-        .intakeRollerButton()
+        .shootButton()
+        .or(Triggers.getInstance().passButton())
+        .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
-            intakeRollerCommands.setRollerVoltage(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage))
+            intakeRollerCommands.setVoltageAfterWait(
+                intakeRoller,
+                HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage,
+                Triggers.getInstance().isAlignedForCurrentShot))
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // INTAKE PIVOT
@@ -848,6 +857,11 @@ public class RobotContainer {
     // prestage.setDefaultCommand(PrestageCommands.prestageIdle(prestage));
     // Hood - stop motor when no command is running (prevents stale closed-loop reference)
     hood.setDefaultCommand(HoodCommands.hoodIdle(hood));
+    // Intake Roller - always run at intake voltage; shoot/pass/tower sequences override this with
+    // agitate voltage via their own whileTrue bindings
+    intakeRoller.setDefaultCommand(
+        intakeRollerCommands.setRollerVoltage(
+            intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage));
 
     // OVERRIDES
     // Flip alliance winner
@@ -1048,15 +1062,6 @@ public class RobotContainer {
         .onFalse(FeederCommands.stopLower(lowerFeeder))
         .onFalse(FeederCommands.stopUpper(upperFeeder))
         .onFalse(TransportCommands.stop(transport));
-
-    // INTAKE ROLLER
-    // Set to intaking voltage when intake button is pressed
-    Triggers.getInstance()
-        .simIntakeRollerButton()
-        .whileTrue(
-            intakeRollerCommands.setRollerVoltage(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage))
-        .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // Set to agitate voltage (after a wait) when any shooting sequence is started (shoot to hub,
     // pass, shoot from tower). Agitate is also delayed until aligned.
@@ -1326,11 +1331,6 @@ public class RobotContainer {
   public Command getAutoStopCommand() {
     return ShootSequences.stopAll(
         flywheel, prestage, hood, upperFeeder, lowerFeeder, transport, intakeRoller);
-  }
-
-  public Command getIntakeRollerCommand() {
-    return intakeRollerCommands.setRollerVoltage(
-        intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage);
   }
 
   public Command getIntakePivotCommand() {
