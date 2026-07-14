@@ -45,6 +45,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.HardwareConstants;
 import frc.robot.Robot;
 import frc.robot.RobotState;
 import frc.robot.generated.TunerConstants;
@@ -80,6 +81,10 @@ public class Drive extends SubsystemBase {
   private static final double ROBOT_MASS_KG = 63.503;
   private static final double ROBOT_MOI = 5.162;
   private static final double WHEEL_COF = 1.2;
+  // Modeled on the boosted auto slip current (see Robot.autonomousInit()/teleopInit()) since
+  // PP_CONFIG's dynamics model is used for autonomous path following and on-the-fly pathfinding.
+  // Note: teleop-triggered pathfinding (e.g. Drive.alignForDefenseShot()) will use this same
+  // 120A-modeled feasibility even though the hardware is reconfigured to 80A in teleop.
   private static final RobotConfig PP_CONFIG =
       new RobotConfig(
           ROBOT_MASS_KG,
@@ -90,7 +95,7 @@ public class Drive extends SubsystemBase {
               WHEEL_COF,
               DCMotor.getKrakenX60Foc(1)
                   .withReduction(TunerConstants.FrontLeft.DriveMotorGearRatio),
-              TunerConstants.FrontLeft.SlipCurrent,
+              HardwareConstants.CompConstants.Currents.autoSlipCurrent.in(Amps),
               1),
           getModuleTranslations());
 
