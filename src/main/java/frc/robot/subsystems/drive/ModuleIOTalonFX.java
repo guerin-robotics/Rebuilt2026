@@ -266,12 +266,16 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void setSlipCurrent(double slipCurrentAmps) {
+    // Refresh from the device first so fields we don't touch here (e.g. TorqueNeutralDeadband,
+    // SupplyCurrentLimit) aren't reset to config-object defaults when we apply.
     var torqueCurrentConfig = new TorqueCurrentConfigs();
+    tryUntilOk(5, () -> driveTalon.getConfigurator().refresh(torqueCurrentConfig));
     torqueCurrentConfig.PeakForwardTorqueCurrent = slipCurrentAmps;
     torqueCurrentConfig.PeakReverseTorqueCurrent = -slipCurrentAmps;
     tryUntilOk(5, () -> driveTalon.getConfigurator().apply(torqueCurrentConfig, 0.25));
 
     var currentLimitsConfig = new CurrentLimitsConfigs();
+    tryUntilOk(5, () -> driveTalon.getConfigurator().refresh(currentLimitsConfig));
     currentLimitsConfig.StatorCurrentLimit = slipCurrentAmps;
     currentLimitsConfig.StatorCurrentLimitEnable = true;
     tryUntilOk(5, () -> driveTalon.getConfigurator().apply(currentLimitsConfig, 0.25));
