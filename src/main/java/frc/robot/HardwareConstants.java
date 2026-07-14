@@ -1,6 +1,7 @@
 package frc.robot;
 
 import static edu.wpi.first.math.util.Units.inchesToMeters;
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
@@ -9,6 +10,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.lib.AllianceFlipUtil;
 
@@ -118,6 +120,14 @@ public class HardwareConstants {
 
     public static class Autos {
       public static final String DefaultAutoName = "2.5-Left-Comp";
+    }
+
+    // Drive motor slip current (stator/torque current limit). Boosted for autonomous path
+    // following; teleopSlipCurrent must match COMP_TunerConstants.kSlipCurrent, the validated
+    // boot-time default.
+    public static class Currents {
+      public static final Current autoSlipCurrent = Amps.of(120);
+      public static final Current teleopSlipCurrent = Amps.of(80);
     }
   }
 

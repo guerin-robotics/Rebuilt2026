@@ -46,4 +46,7 @@ public interface ModuleIO {
 
   /** Run the turn motor to the specified rotation. */
   public default void setTurnPosition(Rotation2d rotation) {}
+
+  /** Sets the drive motor's slip current (stator/torque current limit) in amps. */
+  public default void setSlipCurrent(double slipCurrentAmps) {}
 }

@@ -94,6 +94,11 @@ public class Module {
     io.setTurnOpenLoop(0.0);
   }
 
+  /** Sets the drive motor's slip current (stator/torque current limit) in amps. */
+  public void setSlipCurrent(double slipCurrentAmps) {
+    io.setSlipCurrent(slipCurrentAmps);
+  }
+
   /** Returns the current turn angle of the module. */
   public Rotation2d getAngle() {
     return inputs.turnPosition;

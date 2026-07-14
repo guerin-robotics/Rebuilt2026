@@ -12,7 +12,9 @@ import static frc.robot.util.PhoenixUtil.*;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
@@ -260,5 +262,18 @@ public class ModuleIOTalonFX implements ModuleIO {
           case TorqueCurrentFOC -> positionTorqueCurrentRequest.withPosition(
               rotation.getRotations());
         });
+  }
+
+  @Override
+  public void setSlipCurrent(double slipCurrentAmps) {
+    var torqueCurrentConfig = new TorqueCurrentConfigs();
+    torqueCurrentConfig.PeakForwardTorqueCurrent = slipCurrentAmps;
+    torqueCurrentConfig.PeakReverseTorqueCurrent = -slipCurrentAmps;
+    tryUntilOk(5, () -> driveTalon.getConfigurator().apply(torqueCurrentConfig, 0.25));
+
+    var currentLimitsConfig = new CurrentLimitsConfigs();
+    currentLimitsConfig.StatorCurrentLimit = slipCurrentAmps;
+    currentLimitsConfig.StatorCurrentLimitEnable = true;
+    tryUntilOk(5, () -> driveTalon.getConfigurator().apply(currentLimitsConfig, 0.25));
   }
 }

@@ -180,6 +180,10 @@ public class Robot extends LoggedRobot {
   public void autonomousInit() {
     autonomousCommand = robotContainer.getAutonomousCommand();
 
+    // Boost drive slip current for autonomous path following; reset to the tuned/validated
+    // value in teleopInit(). Called once per mode transition, not from a periodic loop.
+    robotContainer.setDriveSlipCurrent(HardwareConstants.CompConstants.Currents.autoSlipCurrent);
+
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
       CommandScheduler.getInstance().schedule(autonomousCommand);
@@ -207,6 +211,9 @@ public class Robot extends LoggedRobot {
     }
     CommandScheduler.getInstance().schedule(robotContainer.getAutoStopCommand());
     HubShiftUtil.initialize();
+
+    // Reset drive slip current to the tuned/validated teleop value (see autonomousInit()).
+    robotContainer.setDriveSlipCurrent(HardwareConstants.CompConstants.Currents.teleopSlipCurrent);
 
     // Apply the selected driver preset once per teleop enable. Reading the chooser/NT
     // values in the drive loop saturated the RIO CPU — keep this out of periodic code.

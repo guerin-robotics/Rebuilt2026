@@ -35,6 +35,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -316,6 +317,17 @@ public class Drive extends SubsystemBase {
     }
     kinematics.resetHeadings(headings);
     stop();
+  }
+
+  /**
+   * Sets the drive motors' slip current (stator/torque current limit) on all four modules. Call
+   * once on a mode transition (e.g. autonomousInit/teleopInit) — not from a periodic loop.
+   */
+  public void setSlipCurrent(Current slipCurrent) {
+    double slipCurrentAmps = slipCurrent.in(Amps);
+    for (var module : modules) {
+      module.setSlipCurrent(slipCurrentAmps);
+    }
   }
 
   public void alignForDefenseShot(Pose2d targetPose) {

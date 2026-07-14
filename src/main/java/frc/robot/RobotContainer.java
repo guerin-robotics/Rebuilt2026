@@ -21,6 +21,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -1326,6 +1327,11 @@ public class RobotContainer {
   public Command getAutoStopCommand() {
     return ShootSequences.stopAll(
         flywheel, prestage, hood, upperFeeder, lowerFeeder, transport, intakeRoller);
+  }
+
+  /** Sets the drive motors' slip current on all modules. Call once per mode transition. */
+  public void setDriveSlipCurrent(Current slipCurrent) {
+    drive.setSlipCurrent(slipCurrent);
   }
 
   public Command getIntakeRollerCommand() {
