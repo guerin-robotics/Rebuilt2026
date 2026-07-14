@@ -389,10 +389,7 @@ public class RobotContainer {
         "RunIntake",
         intakeRollerCommands
             .setRollerVoltage(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage)
-            .alongWith(
-                TransportCommands.setTransportVoltage(
-                    transport, HardwareConstants.CompConstants.Voltages.transportVoltage)));
+                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage));
 
     // Auto shoot command
     NamedCommands.registerCommand(
@@ -407,7 +404,6 @@ public class RobotContainer {
                     upperFeeder,
                     lowerFeeder,
                     transport,
-                    intakeRoller,
                     intakePivot)));
 
     // Stop all subsystems after shooting
