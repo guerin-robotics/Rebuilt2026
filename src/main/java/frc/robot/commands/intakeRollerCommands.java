@@ -39,8 +39,11 @@ public class intakeRollerCommands {
   }
 
   /**
-   * Runs the intake roller at the given agitate voltage, but only after the robot is aligned (or
-   * timeout).
+   * Runs the intake roller at the given agitate voltage, but only once the robot is actually
+   * aligned. Unlike the feeder/transport wait sequences, this does not fall through to agitating
+   * after the alignment timeout — if alignment is never achieved, the roller is held at zero
+   * (claiming the subsystem so the default command cannot re-engage) until the caller's whileTrue
+   * binding is released.
    *
    * <p>See {@link FeederCommands#setLowerVelocityAfterWait} for full details on the wait logic.
    *
@@ -56,7 +59,10 @@ public class intakeRollerCommands {
                 .withTimeout(
                     HardwareConstants.CompConstants.Waits.alignmentTimeoutSeconds
                         - HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
-            setRollerVoltage(intakeRoller, voltage))
+            Commands.either(
+                setRollerVoltage(intakeRoller, voltage),
+                Commands.run(() -> {}, intakeRoller),
+                isAligned))
         .withName("IntakeRollerVoltageAfterWait");
   }
 }

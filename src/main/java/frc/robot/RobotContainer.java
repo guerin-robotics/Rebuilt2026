@@ -744,8 +744,7 @@ public class RobotContainer {
             intakeRollerCommands.setVoltageAfterWait(
                 intakeRoller,
                 HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage,
-                Triggers.getInstance().isAlignedForCurrentShot))
-        .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
+                Triggers.getInstance().isAlignedForCurrentShot));
 
     // INTAKE PIVOT
     // Retract on retract button — also cancels automatic compression for this shoot press
@@ -1073,8 +1072,7 @@ public class RobotContainer {
             intakeRollerCommands.setVoltageAfterWait(
                 intakeRoller,
                 HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage,
-                Triggers.getInstance().isAlignedForCurrentShot))
-        .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
+                Triggers.getInstance().isAlignedForCurrentShot));
 
     // INTAKE PIVOT
     // Retract on retract button — also cancels automatic compression for this shoot press
