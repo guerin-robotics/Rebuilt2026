@@ -77,6 +77,12 @@
           "data": {
             "name": "stopAll"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Champs-Right-3"
+          }
         }
       ]
     }

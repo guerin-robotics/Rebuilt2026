@@ -21,7 +21,7 @@ import org.littletonrobotics.junction.Logger;
 public class VisionConstants {
   // AprilTag layout
   public static AprilTagFieldLayout aprilTagLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded); // .k2026RebuiltAndymark
+      AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark); // k2026RebuiltWelded
 
   // Camera names, must match names configured on coprocessor
   public static String camera0Name = "RobotRight";
