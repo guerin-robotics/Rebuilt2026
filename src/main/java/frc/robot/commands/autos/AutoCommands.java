@@ -133,7 +133,6 @@ public class AutoCommands {
                     ctx.upperFeeder(),
                     ctx.lowerFeeder(),
                     ctx.transport(),
-                    ctx.intakeRoller(),
                     ctx.intakePivot())),
         Commands.waitSeconds(seconds));
   }

@@ -387,9 +387,8 @@ public class RobotContainer {
     // Auto run intake command
     NamedCommands.registerCommand(
         "RunIntake",
-        intakeRollerCommands
-            .setRollerVoltage(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage));
+        intakeRollerCommands.setRollerVoltage(
+            intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage));
 
     // Auto shoot command
     NamedCommands.registerCommand(
@@ -398,13 +397,7 @@ public class RobotContainer {
                 drive, () -> 0, () -> 0, () -> RobotState.getInstance().getAngleToAllianceHub())
             .alongWith(
                 ShootSequences.autoShootToHub(
-                    flywheel,
-                    prestage,
-                    hood,
-                    upperFeeder,
-                    lowerFeeder,
-                    transport,
-                    intakePivot)));
+                    flywheel, prestage, hood, upperFeeder, lowerFeeder, transport, intakePivot)));
 
     // Stop all subsystems after shooting
     NamedCommands.registerCommand(

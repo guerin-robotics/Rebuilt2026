@@ -14,7 +14,7 @@
     "Other"
   ],
   "defaultMaxVel": 4.0,
-  "defaultMaxAccel": 5.0,
+  "defaultMaxAccel": 7.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 1020.0,
   "defaultNominalVoltage": 12.0,
