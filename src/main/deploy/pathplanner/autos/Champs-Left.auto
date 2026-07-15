@@ -77,6 +77,12 @@
           "data": {
             "name": "DeployIntake"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Champs-Left-3"
+          }
         }
       ]
     }
