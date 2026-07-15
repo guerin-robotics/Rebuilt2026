@@ -24,7 +24,7 @@ public class intakeRollerConstants {
   }
 
   public static class rollerMagicConstants {
-    public static final double rollerAccel = 200.0; // 100.0
+    public static final double rollerAccel = 100.0;
   }
 
   // Real robot PID gains for torque-current velocity control
