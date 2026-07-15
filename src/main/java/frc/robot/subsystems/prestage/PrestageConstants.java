@@ -35,7 +35,7 @@ public class PrestageConstants {
   }
 
   public static class prestageMagicConstants {
-    public static final double prestageAccel = 80.0;
+    public static final double prestageAccel = 200.0; // 80.0
   }
 
   /** Simulation constants for the prestage motors. */
