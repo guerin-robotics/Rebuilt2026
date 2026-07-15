@@ -34,7 +34,7 @@ public class TransportConstants {
   }
 
   public static class transportMagicConstants {
-    public static final double transportAccel = 120.0;
+    public static final double transportAccel = 200.0;
   }
 
   /** Simulation constants for the transport motor. */

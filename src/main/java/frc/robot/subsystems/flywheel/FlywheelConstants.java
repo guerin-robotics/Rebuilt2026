@@ -76,7 +76,7 @@ public class FlywheelConstants {
   }
 
   public static class flywheelMagicConstants {
-    public static final double flywheelAccel = 100;
+    public static final double flywheelAccel = 200;
   }
 
   /**
