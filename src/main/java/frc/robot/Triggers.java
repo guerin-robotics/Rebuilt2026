@@ -6,8 +6,18 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.LoggedTrigger;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class Triggers {
+
+  // Which physical controller drives the real robot's translation/rotation and its
+  // shoot/intake/trench buttons. Selectable live from the dashboard (no redeploy needed) — see
+  // refreshControlScheme(). Defaults to Thrustmaster, the competition-proven scheme.
+  public enum ControlScheme {
+    THRUSTMASTER,
+    XBOX_CONTROLLER
+  }
 
   /* These are all booleans that we'll use later to determine when commands should be called - mostly for safe
   driving. They use pose, velocity, and zone estimation from RobotState. */
@@ -32,25 +42,96 @@ public class Triggers {
   private final CommandJoystick simKeyboardController =
       new CommandJoystick(HardwareConstants.ControllerConstants.SimKeyboardControllerPort);
 
+  // Alternate single-Xbox drive controller. Left stick = translate, right stick = rotate,
+  // RT = shoot/pass, LT = intake roller, LB = intake out, RB = intake in, right stick click =
+  // trench align. Live only when the "Drive Control Scheme" chooser selects XBOX_CONTROLLER.
+  private final CommandXboxController driveController =
+      new CommandXboxController(HardwareConstants.ControllerConstants.XboxDriveControllerPort);
+
+  private final LoggedDashboardChooser<ControlScheme> controlSchemeChooser;
+
+  // Cached by refreshControlScheme(), called once per teleop enable from Robot.teleopInit().
+  // Never read the chooser directly from a periodic loop — repeated NetworkTables reads at 50 Hz
+  // saturated the RIO CPU when DriverPresets tried it (see DriverPresets javadoc / PR #89 revert).
+  private boolean xboxDriveActive = false;
+
+  private Triggers() {
+    controlSchemeChooser = new LoggedDashboardChooser<>("Drive Control Scheme");
+    controlSchemeChooser.addDefaultOption("Thrustmaster", ControlScheme.THRUSTMASTER);
+    controlSchemeChooser.addOption("Xbox Controller", ControlScheme.XBOX_CONTROLLER);
+  }
+
+  /**
+   * Reads the selected drive control scheme and caches it. Call exactly once per teleop enable from
+   * {@code Robot.teleopInit()} — never from a periodic loop. To switch schemes before a match: pick
+   * it in Elastic/Shuffleboard, then disable and re-enable teleop.
+   */
+  public void refreshControlScheme() {
+    ControlScheme selected = controlSchemeChooser.get();
+    xboxDriveActive = selected == ControlScheme.XBOX_CONTROLLER;
+    Logger.recordOutput("Triggers/XboxDriveActive", xboxDriveActive);
+  }
+
+  private boolean useXboxDrive() {
+    return xboxDriveActive;
+  }
+
+  // Real-robot drive-axis inputs, source-gated on the cached control scheme. Returned with the
+  // same raw sign convention the Thrustmaster already used, so callers keep negating/scaling
+  // exactly as before regardless of which controller is live.
+  public double driveXInput() {
+    return xboxDriveActive ? driveController.getLeftX() : thrustmaster.getX(); // strafe
+  }
+
+  public double driveYInput() {
+    return xboxDriveActive ? driveController.getLeftY() : thrustmaster.getY(); // forward
+  }
+
+  public double driveRotInput() {
+    return xboxDriveActive ? driveController.getRightX() : thrustmaster.getTwist(); // twist
+  }
+
   // Button mapping triggers
+  // Also fires on the Xbox drive controller's right trigger when that scheme is active. The
+  // existing zone-aware shoot logic already decides shoot-to-hub vs. pass based on alliance zone,
+  // so one button covers both — no separate Xbox pass binding is needed.
   public Trigger shootButton() {
-    return thrustmaster.button(1);
+    return thrustmaster
+        .button(1)
+        .and(() -> !useXboxDrive())
+        .or(driveController.rightTrigger().and(this::useXboxDrive));
   }
 
+  // Also fires on the Xbox drive controller's right stick click when that scheme is active.
   public Trigger trenchAlignButton() {
-    return thrustmaster.button(2);
+    return thrustmaster
+        .button(2)
+        .and(() -> !useXboxDrive())
+        .or(driveController.rightStick().and(this::useXboxDrive));
   }
 
+  // Also fires on the Xbox drive controller's right bumper when that scheme is active.
   public Trigger intakeInButton() {
-    return thrustmaster.button(3);
+    return thrustmaster
+        .button(3)
+        .and(() -> !useXboxDrive())
+        .or(driveController.rightBumper().and(this::useXboxDrive));
   }
 
+  // Also fires on the Xbox drive controller's left bumper when that scheme is active.
   public Trigger intakeOutButton() {
-    return thrustmaster.button(4);
+    return thrustmaster
+        .button(4)
+        .and(() -> !useXboxDrive())
+        .or(driveController.leftBumper().and(this::useXboxDrive));
   }
 
+  // Also fires on the Xbox drive controller's left trigger when that scheme is active.
   public Trigger intakeRollerButton() {
-    return thrustmaster.button(5);
+    return thrustmaster
+        .button(5)
+        .and(() -> !useXboxDrive())
+        .or(driveController.leftTrigger().and(this::useXboxDrive));
   }
 
   public Trigger intakeCompressButton() {

@@ -204,8 +204,10 @@ public class HardwareConstants {
     public static final int XboxControllerPort = 1;
     public static final int JoystickControllerPort = 2;
     public static final int ButtonPanelPort = 0;
-    // Alternate single-Xbox drive scheme (LT=intake, RT=shoot, RB=pass, sticks=drive).
-    // Selected live via the "Use Xbox Drive" SmartDashboard boolean.
+    // Alternate single-Xbox drive scheme (sticks=drive/rotate, RT=shoot/pass, LT=intake roller,
+    // LB=intake out, RB=intake in, right stick click=trench align).
+    // Selected live via the "Drive Control Scheme" dashboard chooser (see
+    // Triggers.refreshControlScheme()).
     public static final int XboxDriveControllerPort = 4;
     public static final double DEADBAND = 0.08;
     public static final int SimControllerPort = 5;

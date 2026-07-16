@@ -212,6 +212,11 @@ public class Robot extends LoggedRobot {
     // values in the drive loop saturated the RIO CPU — keep this out of periodic code.
     DriverPresets.getInstance().refresh();
 
+    // Apply the selected drive control scheme (Thrustmaster vs. Xbox drive controller) once per
+    // teleop enable — same reasoning as DriverPresets above. Switch schemes pre-match from the
+    // dashboard, then disable/re-enable teleop to pick it up.
+    Triggers.getInstance().refreshControlScheme();
+
     CommandScheduler.getInstance().schedule(robotContainer.getIntakeRollerCommand());
     CommandScheduler.getInstance().schedule(robotContainer.getIntakePivotCommand());
 
