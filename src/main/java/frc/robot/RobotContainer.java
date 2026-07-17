@@ -19,7 +19,6 @@ import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -85,7 +84,6 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.io.VisionIO;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVisionSim;
-import frc.robot.util.DriverPresets;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.RobotModelVisualizer;
 import java.util.List;
@@ -322,10 +320,6 @@ public class RobotContainer {
     autoTypeChooser.addDefaultOption("PathPlanner", AutoType.PATHPLANNER);
     autoTypeChooser.addOption("Choreo", AutoType.CHOREO);
 
-    // Publish the "Driver Preset" chooser at boot; the selection is applied once per
-    // teleop enable in Robot.teleopInit() (not per loop — see DriverPresets javadoc)
-    DriverPresets.getInstance();
-
     // Publish the auto preview field to the dashboard so we can see the selected path
     SmartDashboard.putData("Auto Preview", autoPreviewField);
     SmartDashboard.putNumber(autoDelayKey, defaultAutoDelay);
@@ -514,27 +508,27 @@ public class RobotContainer {
                 () -> -Triggers.getInstance().thrustmaster.getX() * .5,
                 () -> RobotState.getInstance().getAngleToAllianceHub()));
 
-    // If close to a hardstop spot (bump or trench), or if hardstop shoot button pressed,
-    // run into the hardstop and align to shoot
-    // Eventually add tower
-    (Triggers.getInstance()
-            .shootButton()
-            .and(Triggers.getInstance().isShootClear)
-            .and(
-                () ->
-                    frc.robot.RobotState.getInstance()
-                            .getApproachingZoneX(
-                                frc.robot.RobotState.getInstance().getEstimatedPose())
-                        == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH))
-        .or(Triggers.getInstance().hardstopShootButton())
-        .whileTrue(
-            Commands.sequence(
-                DriveCommands.alignForDefenseShot(drive),
-                DriveCommands.alignOrXForShoot(
-                    drive,
-                    () -> Triggers.getInstance().thrustmaster.getY(),
-                    () -> Triggers.getInstance().thrustmaster.getX(),
-                    () -> new Rotation2d(Triggers.getInstance().thrustmaster.getTwist()))));
+    // // If close to a hardstop spot (bump or trench), or if hardstop shoot button pressed,
+    // // run into the hardstop and align to shoot
+    // // Eventually add tower
+    // (Triggers.getInstance()
+    //         .shootButton()
+    //         .and(Triggers.getInstance().isShootClear)
+    //         .and(
+    //             () ->
+    //                 frc.robot.RobotState.getInstance()
+    //                         .getApproachingZoneX(
+    //                             frc.robot.RobotState.getInstance().getEstimatedPose())
+    //                     == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH))
+    //     .or(Triggers.getInstance().hardstopShootButton())
+    //     .whileTrue(
+    //         Commands.sequence(
+    //             DriveCommands.alignForDefenseShot(drive),
+    //             DriveCommands.alignOrXForShoot(
+    //                 drive,
+    //                 () -> Triggers.getInstance().thrustmaster.getY(),
+    //                 () -> Triggers.getInstance().thrustmaster.getX(),
+    //                 () -> new Rotation2d(Triggers.getInstance().thrustmaster.getTwist()))));
 
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
     // button is pressed

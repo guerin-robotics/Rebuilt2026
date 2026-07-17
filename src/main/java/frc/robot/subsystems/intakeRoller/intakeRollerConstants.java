@@ -12,7 +12,7 @@ public class intakeRollerConstants {
     public static final int INTAKE_ROLLER_MAIN_SUPPLY_AMP = 40;
     public static final int INTAKE_ROLLER_MAIN_SUPPLY_TRIGGER_AMP = 35;
     public static final Time INTAKE_ROLLER_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
-    public static final int INTAKE_ROLLER_MAIN_STATOR_AMP = 60; // 40 before IRI // 55
+    public static final int INTAKE_ROLLER_MAIN_STATOR_AMP = 80; // 60 // 40 before IRI // 55
   }
 
   public static class SoftwareConstants {

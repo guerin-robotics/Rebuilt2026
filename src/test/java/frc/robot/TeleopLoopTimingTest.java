@@ -14,7 +14,6 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.util.DriverPresets;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterAll;
@@ -89,8 +88,6 @@ public class TeleopLoopTimingTest {
             new ModuleIOSim(TunerConstants.BackLeft),
             new ModuleIOSim(TunerConstants.BackRight));
     drive.setPose(new Pose2d(4.0, 4.0, Rotation2d.kZero));
-
-    DriverPresets.getInstance().refresh(); // as in Robot.teleopInit()
 
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
