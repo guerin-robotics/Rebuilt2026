@@ -90,7 +90,7 @@ public class DriveCommands {
               // precise control (1.35 on the Parker preset, set at drive practice 6/29)
               omega =
                   Math.copySign(
-                      Math.pow(Math.abs(omega), 1.35), // Christian 2.0
+                      Math.pow(Math.abs(omega), 1.35), // Christian 2.0 // Parker 1.35
                       omega);
 
               // Convert to field relative speeds & send command
