@@ -502,7 +502,7 @@ public class RobotContainer {
         //                     frc.robot.RobotState.getInstance().getEstimatedPose())
         //             == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH))
         )
-        .or(Triggers.getInstance().shootFromTowerButton())
+        // .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             DriveCommands.alignOrXForShoot(
                 drive,
@@ -755,14 +755,15 @@ public class RobotContainer {
     //   - compression has not been cancelled by a prior intake override this shoot press
     //   - we're not in our alliance zone with the hub inactive
     // Runs double compress if operator has activated override, otherwise single
-    Triggers.getInstance()
-        .shootButton()
-        .and(() -> !compressCancelled)
-        .and(
-            () ->
-                !(Triggers.getInstance().isShootSafeZone.getAsBoolean()
-                    && !Triggers.getInstance().isShootSafeTime.getAsBoolean()))
-        .and(Triggers.getInstance().isAlignedLooser)
+    (Triggers.getInstance()
+            .shootButton()
+            .and(() -> !compressCancelled)
+            .and(
+                () ->
+                    !(Triggers.getInstance().isShootSafeZone.getAsBoolean()
+                        && !Triggers.getInstance().isShootSafeTime.getAsBoolean()))
+            .and(Triggers.getInstance().isAlignedLooser))
+        .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             Commands.sequence(
                 Commands.waitUntil(flywheel.isFlywheelSpunUp)
@@ -1047,8 +1048,8 @@ public class RobotContainer {
     // pass, shoot from tower). Agitate is also delayed until aligned.
     Triggers.getInstance()
         .simShootButton()
-        .or(Triggers.getInstance().passButton())
-        .or(Triggers.getInstance().shootFromTowerButton())
+        .or(Triggers.getInstance().simPassButton())
+        .or(Triggers.getInstance().simShootFromTowerButton())
         .whileTrue(
             intakeRollerCommands.setVoltageAfterWait(
                 intakeRoller,
