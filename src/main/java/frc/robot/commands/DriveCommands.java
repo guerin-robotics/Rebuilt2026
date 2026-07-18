@@ -88,9 +88,12 @@ public class DriveCommands {
 
               // Raise rotation value to the active driver preset's cached exponent for more
               // precise control (1.35 on the Parker preset, set at drive practice 6/29)
+              // Change presets here
               omega =
                   Math.copySign(
-                      Math.pow(Math.abs(omega), 1.35), // Christian 2.0 // Parker 1.35
+                      Math.pow(
+                          Math.abs(omega),
+                          HardwareConstants.DriverConstants.Parker), // Christian 2.0 // Parker 1.35
                       omega);
 
               // Convert to field relative speeds & send command

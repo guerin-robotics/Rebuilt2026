@@ -488,18 +488,20 @@ public class RobotContainer {
 
     // DRIVETRAIN
     // Align for shoot when shoot button is pressed and we're in our alliance zone and hub is
-    // active, or if tower shoot button is pressed
+    // active (MODIFIED: no longer cares if the hub is active, allowing us to align early), or if
+    // tower shoot button is pressed
     // X while aligned
     // This command does not run if the robot is approaching a hardstop spot (bump or trench) -
     // instead it runs
-    // the hit hardstop and align command below
+    // the hit hardstop and align command below (MODIFIED: no longer needed)
     ((Triggers.getInstance().shootButton().and(Triggers.getInstance().isShootSafeZone))
-            .and(
-                () ->
-                    !(frc.robot.RobotState.getInstance()
-                            .getApproachingZoneX(
-                                frc.robot.RobotState.getInstance().getEstimatedPose())
-                        == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH)))
+        // .and(
+        //     () ->
+        //         !(frc.robot.RobotState.getInstance()
+        //                 .getApproachingZoneX(
+        //                     frc.robot.RobotState.getInstance().getEstimatedPose())
+        //             == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH))
+        )
         .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             DriveCommands.alignOrXForShoot(
