@@ -115,6 +115,7 @@ public class Vision extends SubsystemBase {
       List<Pose3d> robotPosesAccepted =
           new ArrayList<>(inputs[cameraIndex].poseObservations.length);
       List<Pose3d> robotPosesRejected = new ArrayList<>();
+      List<String> rejectionReasons = new ArrayList<>();
 
       // Add tag poses
       for (int tagId : inputs[cameraIndex].tagIds) {
@@ -177,6 +178,7 @@ public class Vision extends SubsystemBase {
         robotPoses.add(observation.pose());
         if (rejectPose) {
           robotPosesRejected.add(observation.pose());
+          rejectionReasons.add(rejectionReason);
           continue;
         }
         robotPosesAccepted.add(observation.pose());

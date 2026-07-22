@@ -31,7 +31,6 @@ import frc.robot.RobotState;
 import frc.robot.Triggers;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
-import frc.robot.util.DriverPresets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -60,7 +59,7 @@ public class DriveCommands {
 
     // Raise magnitude to the active driver preset's cached exponent for more precise control
     // (2.0 on the Parker preset, matching the previous squared behavior)
-    linearMagnitude = Math.pow(linearMagnitude, DriverPresets.getInstance().getDriveExponent());
+    linearMagnitude = Math.pow(linearMagnitude, 2.0);
 
     // Return new linear velocity
     return new Pose2d(Translation2d.kZero, linearDirection)
@@ -89,9 +88,12 @@ public class DriveCommands {
 
               // Raise rotation value to the active driver preset's cached exponent for more
               // precise control (1.35 on the Parker preset, set at drive practice 6/29)
+              // Change presets here
               omega =
                   Math.copySign(
-                      Math.pow(Math.abs(omega), DriverPresets.getInstance().getSteerExponent()),
+                      Math.pow(
+                          Math.abs(omega),
+                          HardwareConstants.DriverConstants.Parker), // Christian 2.0 // Parker 1.35
                       omega);
 
               // Convert to field relative speeds & send command
@@ -208,7 +210,8 @@ public class DriveCommands {
             targety = AllianceFlipUtil.applyY(1.5);
           }
 
-          // Similar mechanism to getAngleToAllianceHub(), only using target pose instead of current
+          // Similar mechanism to getAngleToAllianceHub(), only using target pose instead of
+          // current
           // pose
           // Get alliance hub target (2D position on the field)
           Translation3d hubTarget3d = RobotState.getInstance().getAllianceHubTarget();

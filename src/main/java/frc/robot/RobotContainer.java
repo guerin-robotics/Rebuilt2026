@@ -11,7 +11,6 @@ import static edu.wpi.first.math.util.Units.metersToInches;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Volts;
 
-import choreo.auto.AutoFactory;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -19,7 +18,6 @@ import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -36,9 +34,6 @@ import frc.robot.commands.IntakePivotCommands;
 import frc.robot.commands.PrestageCommands;
 import frc.robot.commands.ShootSequences;
 import frc.robot.commands.TransportCommands;
-import frc.robot.commands.autos.AutoPaths;
-import frc.robot.commands.autos.utils.AutoContext;
-import frc.robot.commands.autos.utils.AutoOption;
 import frc.robot.commands.intakeRollerCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -85,7 +80,6 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.io.VisionIO;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVisionSim;
-import frc.robot.util.DriverPresets;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.RobotModelVisualizer;
 import java.util.List;
@@ -108,22 +102,8 @@ public class RobotContainer {
   // Publishes articulated component poses for the AdvantageScope 3D robot model
   private final RobotModelVisualizer robotModelVisualizer;
 
-  // ── Auto Type Switch ────────────────────────────────────────────────────────
-  // Selects which autonomous system runs: PathPlanner (.auto files, competition-proven)
-  // or Choreo (AutoRoutine-based, under development). PathPlanner is the default.
-  private enum AutoType {
-    PATHPLANNER,
-    CHOREO
-  }
-
-  // Choreo auto infrastructure
-  private final AutoFactory autoFactory;
-  private final AutoContext autoContext;
-
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-  private final LoggedDashboardChooser<AutoOption> choreoChooser;
-  private final LoggedDashboardChooser<AutoType> autoTypeChooser;
 
   // ── Auto Preview & Starting Pose Check ──────────────────────────────────────
   // Field2d widget to show the selected auto's path and the robot's current position.
@@ -273,58 +253,6 @@ public class RobotContainer {
     autoChooser.addDefaultOption(
         HardwareConstants.CompConstants.Autos.DefaultAutoName,
         new PathPlannerAuto(HardwareConstants.CompConstants.Autos.DefaultAutoName));
-
-    // ── Choreo Auto Infrastructure ────────────────────────────────────────────
-    // AutoFactory drives Choreo trajectory following; alliance flipping enabled.
-    autoFactory =
-        new AutoFactory(drive::getPose, drive::setPose, drive::followTrajectory, true, drive);
-    autoContext =
-        AutoContext.create(
-            drive,
-            flywheel,
-            prestage,
-            hood,
-            upperFeeder,
-            lowerFeeder,
-            transport,
-            intakePivot,
-            intakeRoller,
-            autoFactory);
-
-    // Choreo auto chooser — options wrap a lazy command supplier plus preview poses.
-    // The named entries below were converted from the PathPlanner autos of the same name.
-    choreoChooser = new LoggedDashboardChooser<>("Choreo Auto Choices");
-    choreoChooser.addDefaultOption("None", new AutoOption(Commands::none, List.of(), new Pose2d()));
-    choreoChooser.addOption("Left Auto", AutoPaths.leftAuto(autoContext));
-    choreoChooser.addOption("2.5-Left-Comp", AutoPaths.leftComp25(autoContext));
-    choreoChooser.addOption("2.5-Right-Comp", AutoPaths.rightComp25(autoContext));
-    choreoChooser.addOption("Center-Bump", AutoPaths.centerBump(autoContext));
-    choreoChooser.addOption("Champs-Follow-Left", AutoPaths.champsFollowLeft(autoContext));
-    choreoChooser.addOption("Champs-Follow-Right", AutoPaths.champsFollowRight(autoContext));
-    choreoChooser.addOption("Champs-Left", AutoPaths.champsLeft(autoContext));
-    choreoChooser.addOption("Champs-Right", AutoPaths.champsRight(autoContext));
-    choreoChooser.addOption("Champs-Safe-Left", AutoPaths.champsSafeLeft(autoContext));
-    choreoChooser.addOption("Champs-Safe-Right", AutoPaths.champsSafeRight(autoContext));
-    choreoChooser.addOption("Left-Depot", AutoPaths.leftDepot(autoContext));
-    choreoChooser.addOption("Left-Disruptor", AutoPaths.leftDisruptor(autoContext));
-    choreoChooser.addOption("Left-Double", AutoPaths.leftDouble(autoContext));
-    choreoChooser.addOption("Qual55", AutoPaths.qual55(autoContext));
-    choreoChooser.addOption("Right-Disruptor", AutoPaths.rightDisruptor(autoContext));
-    choreoChooser.addOption("Right-Double", AutoPaths.rightDouble(autoContext));
-    choreoChooser.addOption("Safe-2-Left-Comp", AutoPaths.safe2LeftComp(autoContext));
-    choreoChooser.addOption("Safe-2-Right-Comp", AutoPaths.safe2RightComp(autoContext));
-    choreoChooser.addOption("State-Elims", AutoPaths.stateElims(autoContext));
-    choreoChooser.addOption("qual2", AutoPaths.qual2(autoContext));
-
-    // Auto type switch — selects which chooser getAutonomousCommand() reads.
-    // PathPlanner remains the default so competition behavior is unchanged.
-    autoTypeChooser = new LoggedDashboardChooser<>("Auto Type");
-    autoTypeChooser.addDefaultOption("PathPlanner", AutoType.PATHPLANNER);
-    autoTypeChooser.addOption("Choreo", AutoType.CHOREO);
-
-    // Publish the "Driver Preset" chooser at boot; the selection is applied once per
-    // teleop enable in Robot.teleopInit() (not per loop — see DriverPresets javadoc)
-    DriverPresets.getInstance();
 
     // Publish the auto preview field to the dashboard so we can see the selected path
     SmartDashboard.putData("Auto Preview", autoPreviewField);
@@ -494,19 +422,21 @@ public class RobotContainer {
 
     // DRIVETRAIN
     // Align for shoot when shoot button is pressed and we're in our alliance zone and hub is
-    // active, or if tower shoot button is pressed
+    // active (MODIFIED: no longer cares if the hub is active, allowing us to align early), or if
+    // tower shoot button is pressed
     // X while aligned
     // This command does not run if the robot is approaching a hardstop spot (bump or trench) -
     // instead it runs
-    // the hit hardstop and align command below
+    // the hit hardstop and align command below (MODIFIED: no longer needed)
     ((Triggers.getInstance().shootButton().and(Triggers.getInstance().isShootSafeZone))
-            .and(
-                () ->
-                    !(frc.robot.RobotState.getInstance()
-                            .getApproachingZoneX(
-                                frc.robot.RobotState.getInstance().getEstimatedPose())
-                        == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH)))
-        .or(Triggers.getInstance().shootFromTowerButton())
+        // .and(
+        //     () ->
+        //         !(frc.robot.RobotState.getInstance()
+        //                 .getApproachingZoneX(
+        //                     frc.robot.RobotState.getInstance().getEstimatedPose())
+        //             == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH))
+        )
+        // .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             DriveCommands.alignOrXForShoot(
                 drive,
@@ -514,27 +444,27 @@ public class RobotContainer {
                 () -> -Triggers.getInstance().thrustmaster.getX() * .5,
                 () -> RobotState.getInstance().getAngleToAllianceHub()));
 
-    // If close to a hardstop spot (bump or trench), or if hardstop shoot button pressed,
-    // run into the hardstop and align to shoot
-    // Eventually add tower
-    (Triggers.getInstance()
-            .shootButton()
-            .and(Triggers.getInstance().isShootClear)
-            .and(
-                () ->
-                    frc.robot.RobotState.getInstance()
-                            .getApproachingZoneX(
-                                frc.robot.RobotState.getInstance().getEstimatedPose())
-                        == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH))
-        .or(Triggers.getInstance().hardstopShootButton())
-        .whileTrue(
-            Commands.sequence(
-                DriveCommands.alignForDefenseShot(drive),
-                DriveCommands.alignOrXForShoot(
-                    drive,
-                    () -> Triggers.getInstance().thrustmaster.getY(),
-                    () -> Triggers.getInstance().thrustmaster.getX(),
-                    () -> new Rotation2d(Triggers.getInstance().thrustmaster.getTwist()))));
+    // // If close to a hardstop spot (bump or trench), or if hardstop shoot button pressed,
+    // // run into the hardstop and align to shoot
+    // // Eventually add tower
+    // (Triggers.getInstance()
+    //         .shootButton()
+    //         .and(Triggers.getInstance().isShootClear)
+    //         .and(
+    //             () ->
+    //                 frc.robot.RobotState.getInstance()
+    //                         .getApproachingZoneX(
+    //                             frc.robot.RobotState.getInstance().getEstimatedPose())
+    //                     == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH))
+    //     .or(Triggers.getInstance().hardstopShootButton())
+    //     .whileTrue(
+    //         Commands.sequence(
+    //             DriveCommands.alignForDefenseShot(drive),
+    //             DriveCommands.alignOrXForShoot(
+    //                 drive,
+    //                 () -> Triggers.getInstance().thrustmaster.getY(),
+    //                 () -> Triggers.getInstance().thrustmaster.getX(),
+    //                 () -> new Rotation2d(Triggers.getInstance().thrustmaster.getTwist()))));
 
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
     // button is pressed
@@ -759,14 +689,15 @@ public class RobotContainer {
     //   - compression has not been cancelled by a prior intake override this shoot press
     //   - we're not in our alliance zone with the hub inactive
     // Runs double compress if operator has activated override, otherwise single
-    Triggers.getInstance()
-        .shootButton()
-        .and(() -> !compressCancelled)
-        .and(
-            () ->
-                !(Triggers.getInstance().isShootSafeZone.getAsBoolean()
-                    && !Triggers.getInstance().isShootSafeTime.getAsBoolean()))
-        .and(Triggers.getInstance().isAlignedLooser)
+    (Triggers.getInstance()
+            .shootButton()
+            .and(() -> !compressCancelled)
+            .and(
+                () ->
+                    !(Triggers.getInstance().isShootSafeZone.getAsBoolean()
+                        && !Triggers.getInstance().isShootSafeTime.getAsBoolean()))
+            .and(Triggers.getInstance().isAlignedLooser))
+        .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             Commands.sequence(
                 Commands.waitUntil(flywheel.isFlywheelSpunUp)
@@ -1051,8 +982,8 @@ public class RobotContainer {
     // pass, shoot from tower). Agitate is also delayed until aligned.
     Triggers.getInstance()
         .simShootButton()
-        .or(Triggers.getInstance().passButton())
-        .or(Triggers.getInstance().shootFromTowerButton())
+        .or(Triggers.getInstance().simPassButton())
+        .or(Triggers.getInstance().simShootFromTowerButton())
         .whileTrue(
             intakeRollerCommands.setVoltageAfterWait(
                 intakeRoller,
@@ -1131,13 +1062,7 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     double delay = SmartDashboard.getNumber(autoDelayKey, defaultAutoDelay);
-    Command auto;
-    if (autoTypeChooser.get() == AutoType.CHOREO) {
-      AutoOption selected = choreoChooser.get();
-      auto = (selected == null) ? Commands.none() : selected.command();
-    } else {
-      auto = autoChooser.get().asProxy();
-    }
+    Command auto = autoChooser.get().asProxy();
     return Commands.sequence(Commands.waitSeconds(delay), auto);
   }
 
@@ -1145,9 +1070,6 @@ public class RobotContainer {
 
   /** Tracks the last auto name so we only reload paths when the selection changes. */
   private String lastAutoName = "";
-
-  /** Tracks the last selected Choreo option so we only redraw when the selection changes. */
-  private AutoOption lastChoreoOption = null;
 
   /**
    * Updates the 3D robot model component poses for AdvantageScope.
@@ -1161,53 +1083,10 @@ public class RobotContainer {
   /**
    * Updates the auto path preview on the Field2d when the selected auto changes.
    *
-   * <p>Call this periodically (e.g., from {@code disabledPeriodic}). Dispatches to the PathPlanner
-   * or Choreo preview based on the auto type switch, and draws the result on the "Auto Preview"
-   * Field2d widget.
+   * <p>Call this periodically (e.g., from {@code disabledPeriodic}).
    */
   public void updateAutoPreview() {
-    if (autoTypeChooser.get() == AutoType.CHOREO) {
-      // Invalidate the PathPlanner cache so switching back redraws
-      lastAutoName = "";
-      updateChoreoPreview();
-    } else {
-      // Invalidate the Choreo cache so switching back redraws
-      lastChoreoOption = null;
-      updatePathPlannerPreview();
-    }
-  }
-
-  /**
-   * Draws the selected Choreo auto's pre-computed preview poses. The AutoOption already contains
-   * the poses and starting pose, so no trajectory files are parsed at runtime.
-   */
-  private void updateChoreoPreview() {
-    AutoOption selectedOption = choreoChooser.get();
-    if (selectedOption == null) return;
-
-    // Only redraw if the selection changed
-    if (selectedOption.equals(lastChoreoOption)) return;
-    lastChoreoOption = selectedOption;
-
-    // Clear any previously drawn paths
-    autoPreviewField.getObject("path").setPoses();
-
-    List<Pose2d> previewPoses = selectedOption.previewPoses();
-    if (previewPoses == null || previewPoses.isEmpty()) {
-      Logger.recordOutput("Auto/PreviewStatus", "No preview poses for selected Choreo auto");
-      autoStartPose = new Pose2d();
-      return;
-    }
-
-    autoPreviewField.getObject("path").setPoses(previewPoses);
-
-    autoStartPose = selectedOption.startingPose();
-    if (autoStartPose == null) {
-      autoStartPose = new Pose2d();
-    }
-
-    Logger.recordOutput("Auto/PreviewStatus", "Loaded " + previewPoses.size() + " preview poses");
-    Logger.recordOutput("Auto/StartPose", autoStartPose);
+    updatePathPlannerPreview();
   }
 
   /** Draws the selected PathPlanner auto's paths, loaded from its .auto file. */
