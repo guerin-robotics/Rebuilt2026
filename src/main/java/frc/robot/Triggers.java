@@ -25,59 +25,117 @@ public class Triggers {
   // Controllers
   private final CommandXboxController controller =
       new CommandXboxController(HardwareConstants.ControllerConstants.XboxControllerPort);
-  public final CommandJoystick thrustmaster =
+  // Private on purpose: all drive-axis reads must go through driveXSupplier()/driveYSupplier()/
+  // driveRotSupplier() so they respect the XBOX_DRIVE_MODE gate.
+  private final CommandJoystick thrustmaster =
       new CommandJoystick(HardwareConstants.ControllerConstants.JoystickControllerPort);
   private final CommandXboxController simController =
       new CommandXboxController(HardwareConstants.ControllerConstants.SimControllerPort);
   private final CommandJoystick simKeyboardController =
       new CommandJoystick(HardwareConstants.ControllerConstants.SimKeyboardControllerPort);
 
+  // ==================== DRIVE-SOURCE GATING ====================
+  // Every driver-facing trigger below is built once and routed at poll time based on the
+  // latched HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE flag.
+  //
+  // Why a branch instead of `thrustmaster.button(1).or(controller.rightTrigger())`:
+  // an .or() polls BOTH sources every loop. This branch polls exactly one, so the loop
+  // cost is identical to the single-controller scheme we had before, plus one boolean
+  // field read per trigger.
+  //
+  // Side benefit: bindings that collide across modes (Xbox A is bumpAlign in drive mode
+  // but allianceWinFlipper in override mode) are mutually exclusive for free — only one
+  // meaning is ever live.
+  private static boolean xboxDrive() {
+    return HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE;
+  }
+
+  /**
+   * Routes a function between the control it lives on in each mode. Note the parameters are
+   * MODE-based, not device-based: drive functions move Thrustmaster -> Xbox, while override
+   * functions move the opposite way, Xbox -> Thrustmaster.
+   */
+  private Trigger sourced(Trigger whenThrustmasterDrives, Trigger whenXboxDrives) {
+    return new Trigger(
+        () -> xboxDrive() ? whenXboxDrives.getAsBoolean() : whenThrustmasterDrives.getAsBoolean());
+  }
+
+  // Analog-trigger press threshold for the Xbox shoot/intake triggers.
+  private static final double TRIGGER_THRESHOLD = 0.5;
+
+  // ==================== DRIVE AXES ====================
+  // Thrustmaster mode: joystick X/Y/twist. Xbox mode: left stick translation, right stick X
+  // rotation. RobotContainer applies the sign flips and scaling, same as before.
+  public double driveXSupplier() {
+    return xboxDrive() ? controller.getLeftX() : thrustmaster.getX();
+  }
+
+  public double driveYSupplier() {
+    return xboxDrive() ? controller.getLeftY() : thrustmaster.getY();
+  }
+
+  public double driveRotSupplier() {
+    return xboxDrive() ? controller.getRightX() : thrustmaster.getTwist();
+  }
+
   // Button mapping triggers
   public Trigger shootButton() {
-    return thrustmaster.button(1);
+    // RT in Xbox mode
+    return sourced(thrustmaster.button(1), controller.rightTrigger(TRIGGER_THRESHOLD));
   }
 
   public Trigger trenchAlignButton() {
-    return thrustmaster.button(2);
+    // R3 in Xbox mode
+    return sourced(thrustmaster.button(2), controller.rightStick());
   }
 
   public Trigger intakeInButton() {
-    return thrustmaster.button(3);
+    // LB in Xbox mode
+    return sourced(thrustmaster.button(3), controller.leftBumper());
   }
 
   public Trigger intakeOutButton() {
-    return thrustmaster.button(4);
+    // RB in Xbox mode
+    return sourced(thrustmaster.button(4), controller.rightBumper());
   }
 
   public Trigger intakeRollerButton() {
-    return thrustmaster.button(5);
+    // LT in Xbox mode
+    return sourced(thrustmaster.button(5), controller.leftTrigger(TRIGGER_THRESHOLD));
   }
 
   public Trigger intakeCompressButton() {
+    // No Xbox-mode home — auto-compress on shoot still works in Xbox mode.
     return thrustmaster.button(6);
   }
 
   public Trigger bumpAlignButton() {
-    return thrustmaster.button(8);
+    // A in Xbox mode
+    return sourced(thrustmaster.button(8), controller.a());
   }
 
   public Trigger shootFromTowerButton() {
-    return thrustmaster.button(10);
+    // Y in Xbox mode
+    return sourced(thrustmaster.button(10), controller.y());
   }
 
   public Trigger passButton() {
+    // No Xbox-mode home.
     return thrustmaster.button(11);
   }
 
   public Trigger hardstopShootButton() {
+    // Only referenced by commented-out code.
     return thrustmaster.button(9);
   }
 
   public Trigger demoDistanceShot() {
+    // DEMO_MODE only.
     return thrustmaster.button(7);
   }
 
   public Trigger xWheels() {
+    // Sim-only binding; not wired in configureStateBindings().
     return controller.x();
   }
 
@@ -156,19 +214,27 @@ public class Triggers {
   }
 
   // Override triggers
+  // These move the OPPOSITE direction from the drive functions above: in Xbox drive mode the
+  // Thrustmaster becomes the override controller, so alliance-win control moves onto it.
+  // This also resolves the A/Y collision — Xbox A is bumpAlign in drive mode and
+  // allianceWinFlipper in Thrustmaster mode, and only one is ever live.
   public Trigger allianceWinFlipper() {
-    return controller.a();
+    // TM buttons 3 and 4 are BOTH mapped to the flipper in Xbox drive mode, per drive team
+    // request. flipWinner() is a toggle, so pressing both in succession is a no-op round trip.
+    return sourced(controller.a(), thrustmaster.button(3).or(thrustmaster.button(4)));
   }
 
   public Trigger allianceWinDisabler() {
-    return controller.y();
+    return sourced(controller.y(), thrustmaster.button(2));
   }
 
   public Trigger autoXOverride() {
+    // Already an override on the Thrustmaster; unchanged in both modes.
     return thrustmaster.button(12);
   }
 
   public Trigger doubleCompressOverride() {
+    // Xbox B is unassigned in the Xbox drive layout, so this works in both modes unchanged.
     return controller.b();
   }
 

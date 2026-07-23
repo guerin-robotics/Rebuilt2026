@@ -210,12 +210,32 @@ public class HardwareConstants {
     public static final int XboxControllerPort = 1;
     public static final int JoystickControllerPort = 2;
     public static final int ButtonPanelPort = 0;
-    // Alternate single-Xbox drive scheme (LT=intake, RT=shoot, RB=pass, sticks=drive).
-    // Selected live via the "Use Xbox Drive" SmartDashboard boolean.
-    public static final int XboxDriveControllerPort = 4;
     public static final double DEADBAND = 0.08;
     public static final int SimControllerPort = 5;
     public static final int SimKeyboardControllerPort = 3;
+
+    // ==================== XBOX DRIVE MODE ====================
+    // Lets us swap which controller drives the robot between matches without a redeploy.
+    //
+    //   false (default) — Thrustmaster drives, Xbox is the override controller.
+    //   true            — Xbox drives, Thrustmaster becomes the override controller.
+    //
+    // LATCHING: this value is read from NetworkTables exactly ONCE, in Robot.teleopInit().
+    // It is NOT polled during the match — flipping the dashboard toggle mid-match does
+    // nothing until the next disable -> enable cycle. This is deliberate: the button
+    // triggers in Triggers.java read this field every loop, and an NT read per trigger
+    // per loop would cost real loop time.
+    public static boolean XBOX_DRIVE_MODE = false;
+
+    // Dashboard key the drive team flips (the PENDING value).
+    public static final String xboxDriveModeKey = "Use Xbox Drive";
+
+    // Dashboard key echoing what is actually LIVE right now (the LATCHED value).
+    // These are separate on purpose: without the split, the dashboard would show the new
+    // value the instant someone taps the toggle even though the robot is still running the
+    // old scheme. Put both side by side on the Elastic teleop tab and confirm they match
+    // before the match starts.
+    public static final String xboxDriveActiveKey = "Xbox Drive ACTIVE";
   }
 
   public static class Zones {

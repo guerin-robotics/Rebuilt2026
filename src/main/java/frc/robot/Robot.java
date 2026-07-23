@@ -207,6 +207,21 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().schedule(robotContainer.getAutoStopCommand());
     HubShiftUtil.initialize();
 
+    // Latch the drive-controller selection for this enable. This is the ONLY place the
+    // dashboard toggle is read — flipping it mid-match does nothing until the next
+    // disable -> enable. Reading it here instead of per-loop keeps NetworkTables traffic
+    // out of the 20 ms loop entirely.
+    HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE =
+        SmartDashboard.getBoolean(HardwareConstants.ControllerConstants.xboxDriveModeKey, false);
+
+    // Echo back what is actually live now, so the drive team can confirm the latched state
+    // rather than the pending toggle position.
+    SmartDashboard.putBoolean(
+        HardwareConstants.ControllerConstants.xboxDriveActiveKey,
+        HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE);
+    Logger.recordOutput(
+        "DriveMode/XboxDrive", HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE);
+
     CommandScheduler.getInstance().schedule(robotContainer.getIntakeRollerCommand());
     CommandScheduler.getInstance().schedule(robotContainer.getIntakePivotCommand());
 
