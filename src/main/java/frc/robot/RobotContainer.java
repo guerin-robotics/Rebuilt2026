@@ -26,7 +26,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.AllianceFlipUtil;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeederCommands;
@@ -146,11 +145,6 @@ public class RobotContainer {
   // How close (in degrees) the robot's heading needs to be to the auto's starting heading.
   private static final double STARTING_POSE_ROT_TOLERANCE_DEGREES = 5.0;
 
-  // Controllers
-  private final CommandXboxController controller =
-      new CommandXboxController(HardwareConstants.ControllerConstants.XboxControllerPort);
-  private final CommandXboxController simController =
-      new CommandXboxController(HardwareConstants.ControllerConstants.SimControllerPort);
 
   public RobotContainer() {
     switch (Constants.currentMode) {
@@ -323,10 +317,6 @@ public class RobotContainer {
     } else if (Robot.isSimulation()) {
       configureSimBindings();
     }
-  }
-
-  private double deadband(double value) {
-    return MathUtil.applyDeadband(value, HardwareConstants.ControllerConstants.DEADBAND);
   }
 
   // Drive-axis inputs are source-gated in Triggers on the latched XBOX_DRIVE_MODE flag, so these
