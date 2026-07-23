@@ -415,10 +415,7 @@ public class RobotContainer {
     // Drivetrain - joystick drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive,
-            () -> MathUtil.clamp(-getDriveY(), -1.0, 1.0),
-            () -> MathUtil.clamp(-getDriveX(), -1.0, 1.0),
-            () -> MathUtil.clamp(-getDriveRot(), -1.0, 1.0)));
+            drive, () -> -getDriveY(), () -> -getDriveX(), () -> -getDriveRot()));
     // Flywheel - idle
     flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // // Prestage - idle
