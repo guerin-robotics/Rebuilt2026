@@ -217,8 +217,8 @@ public class HardwareConstants {
     // ==================== XBOX DRIVE MODE ====================
     // Lets us swap which controller drives the robot between matches without a redeploy.
     //
-    //   false (default) — Thrustmaster drives, Xbox is the override controller.
-    //   true            — Xbox drives, Thrustmaster becomes the override controller.
+    //   false (default) — FLIGHTSTICK drives, Xbox is the override controller.
+    //   true            — XBOX drives, flightstick becomes the override controller.
     //
     // LATCHING: this value is read from NetworkTables exactly ONCE, in Robot.teleopInit().
     // It is NOT polled during the match — flipping the dashboard toggle mid-match does
@@ -227,15 +227,36 @@ public class HardwareConstants {
     // per loop would cost real loop time.
     public static boolean XBOX_DRIVE_MODE = false;
 
-    // Dashboard key the drive team flips (the PENDING value).
+    // Display names for the two drive controllers. Published as text rather than a raw
+    // boolean so nobody has to translate a checkbox into "which stick am I holding".
+    public static final String XBOX_LABEL = "XBOX";
+    public static final String FLIGHTSTICK_LABEL = "FLIGHTSTICK";
+
+    /** Human-readable name of the drive controller for a given mode flag. */
+    public static String driveControllerLabel(boolean xboxDrive) {
+      return xboxDrive ? XBOX_LABEL : FLIGHTSTICK_LABEL;
+    }
+
+    // ---- Dashboard keys ----
+    // The toggle the drive team flips. Boolean because Elastic needs a switch widget to
+    // write to; the human-readable state comes from the two string keys below.
     public static final String xboxDriveModeKey = "Use Xbox Drive";
 
-    // Dashboard key echoing what is actually LIVE right now (the LATCHED value).
-    // These are separate on purpose: without the split, the dashboard would show the new
-    // value the instant someone taps the toggle even though the robot is still running the
-    // old scheme. Put both side by side on the Elastic teleop tab and confirm they match
-    // before the match starts.
-    public static final String xboxDriveActiveKey = "Xbox Drive ACTIVE";
+    // What is actually driving the robot RIGHT NOW (the latched value). Updated only at
+    // teleopInit, so during a match this always reflects the scheme the robot is really
+    // running -- not wherever the toggle happens to be sitting.
+    public static final String driveControllerActiveKey = "DRIVING NOW";
+
+    // What WILL drive the robot at the next enable (the pending toggle position). Updated
+    // while disabled so the drive team can flip the toggle and immediately confirm the
+    // change took, instead of finding out when the match starts.
+    //
+    // These are separate on purpose. If a single key tracked the toggle live, it would show
+    // the new controller the instant someone tapped it even though the robot was still
+    // running the old scheme -- which is exactly how a match gets driven with the wrong
+    // stick. Put both on the Elastic teleop tab; they agree except between a toggle flip
+    // and the next enable.
+    public static final String driveControllerPendingKey = "Drive Next Enable";
   }
 
   public static class Zones {

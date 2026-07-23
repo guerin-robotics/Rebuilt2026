@@ -258,13 +258,20 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Preview", autoPreviewField);
     SmartDashboard.putNumber(autoDelayKey, defaultAutoDelay);
 
-    // Publish the drive-controller toggle so the Elastic widget exists before the first enable.
+    // Publish the drive-controller toggle so the Elastic widgets exist before the first enable.
     // setDefaultBoolean (not putBoolean) so a value the drive team already set is preserved
     // rather than stomped back to false on a code restart.
     SmartDashboard.setDefaultBoolean(HardwareConstants.ControllerConstants.xboxDriveModeKey, false);
-    SmartDashboard.putBoolean(
-        HardwareConstants.ControllerConstants.xboxDriveActiveKey,
-        HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE);
+
+    // Nothing has been latched yet at boot, so the live key reads as unset rather than
+    // naming a controller that is not driving anything. disabledPeriodic fills in the
+    // pending key, and teleopInit sets both.
+    SmartDashboard.putString(
+        HardwareConstants.ControllerConstants.driveControllerActiveKey, "-- NOT ENABLED --");
+    SmartDashboard.putString(
+        HardwareConstants.ControllerConstants.driveControllerPendingKey,
+        HardwareConstants.ControllerConstants.driveControllerLabel(
+            HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE));
 
     // autoChooser.addOption(
     //     "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));

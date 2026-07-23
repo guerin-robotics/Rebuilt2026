@@ -172,6 +172,15 @@ public class Robot extends LoggedRobot {
     // This lets the drive team verify the selected auto path and robot placement.
     robotContainer.updateAutoPreview();
     robotContainer.checkStartPose();
+
+    // Show which controller will drive at the next enable, so flipping the toggle gives
+    // immediate visible confirmation instead of a surprise when the match starts.
+    // Safe to poll NetworkTables here — we are disabled, so this is not on the match loop.
+    SmartDashboard.putString(
+        HardwareConstants.ControllerConstants.driveControllerPendingKey,
+        HardwareConstants.ControllerConstants.driveControllerLabel(
+            SmartDashboard.getBoolean(
+                HardwareConstants.ControllerConstants.xboxDriveModeKey, false)));
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
@@ -214,11 +223,17 @@ public class Robot extends LoggedRobot {
     HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE =
         SmartDashboard.getBoolean(HardwareConstants.ControllerConstants.xboxDriveModeKey, false);
 
-    // Echo back what is actually live now, so the drive team can confirm the latched state
-    // rather than the pending toggle position.
-    SmartDashboard.putBoolean(
-        HardwareConstants.ControllerConstants.xboxDriveActiveKey,
-        HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE);
+    // Name the controller that is actually driving now, so the drive team reads
+    // "DRIVING NOW: XBOX" rather than having to translate a checkbox. Both the live and
+    // pending keys are written here so they agree the moment the latch takes.
+    String driveLabel =
+        HardwareConstants.ControllerConstants.driveControllerLabel(
+            HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE);
+    SmartDashboard.putString(
+        HardwareConstants.ControllerConstants.driveControllerActiveKey, driveLabel);
+    SmartDashboard.putString(
+        HardwareConstants.ControllerConstants.driveControllerPendingKey, driveLabel);
+    Logger.recordOutput("DriveMode/DriveController", driveLabel);
     Logger.recordOutput(
         "DriveMode/XboxDrive", HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE);
 

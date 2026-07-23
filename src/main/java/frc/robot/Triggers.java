@@ -38,6 +38,9 @@ public class Triggers {
   // Every driver-facing trigger below is built once and routed at poll time based on the
   // latched HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE flag.
   //
+  // Naming note: the `thrustmaster` field below is the device the dashboard calls
+  // FLIGHTSTICK. Same controller, brand name in code, plain name on the driver station.
+  //
   // Why a branch instead of `thrustmaster.button(1).or(controller.rightTrigger())`:
   // an .or() polls BOTH sources every loop. This branch polls exactly one, so the loop
   // cost is identical to the single-controller scheme we had before, plus one boolean
