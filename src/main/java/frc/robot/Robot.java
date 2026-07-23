@@ -173,14 +173,13 @@ public class Robot extends LoggedRobot {
     robotContainer.updateAutoPreview();
     robotContainer.checkStartPose();
 
-    // Show which controller will drive at the next enable, so flipping the toggle gives
+    // Show which controller will drive at the next enable, so changing the selector gives
     // immediate visible confirmation instead of a surprise when the match starts.
-    // Safe to poll NetworkTables here — we are disabled, so this is not on the match loop.
+    // Safe to read the chooser here — we are disabled, so this is not on the match loop.
     SmartDashboard.putString(
         HardwareConstants.ControllerConstants.driveControllerPendingKey,
         HardwareConstants.ControllerConstants.driveControllerLabel(
-            SmartDashboard.getBoolean(
-                HardwareConstants.ControllerConstants.xboxDriveModeKey, false)));
+            robotContainer.isXboxDriveSelected()));
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
@@ -217,14 +216,13 @@ public class Robot extends LoggedRobot {
     HubShiftUtil.initialize();
 
     // Latch the drive-controller selection for this enable. This is the ONLY place the
-    // dashboard toggle is read — flipping it mid-match does nothing until the next
+    // dashboard selector is read — changing it mid-match does nothing until the next
     // disable -> enable. Reading it here instead of per-loop keeps NetworkTables traffic
     // out of the 20 ms loop entirely.
-    HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE =
-        SmartDashboard.getBoolean(HardwareConstants.ControllerConstants.xboxDriveModeKey, false);
+    HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE = robotContainer.isXboxDriveSelected();
 
     // Name the controller that is actually driving now, so the drive team reads
-    // "DRIVING NOW: XBOX" rather than having to translate a checkbox. Both the live and
+    // "DRIVING NOW: XBOX CONTROLLER" rather than interpreting a switch. Both the live and
     // pending keys are written here so they agree the moment the latch takes.
     String driveLabel =
         HardwareConstants.ControllerConstants.driveControllerLabel(

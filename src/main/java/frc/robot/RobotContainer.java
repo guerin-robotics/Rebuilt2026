@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -104,6 +105,10 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+
+  // Which controller drives the robot. Read only at teleopInit — see
+  // HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE for the latching rationale.
+  private final SendableChooser<Boolean> driveControllerChooser = new SendableChooser<>();
 
   // ── Auto Preview & Starting Pose Check ──────────────────────────────────────
   // Field2d widget to show the selected auto's path and the robot's current position.
@@ -258,20 +263,23 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Preview", autoPreviewField);
     SmartDashboard.putNumber(autoDelayKey, defaultAutoDelay);
 
-    // Publish the drive-controller toggle so the Elastic widgets exist before the first enable.
-    // setDefaultBoolean (not putBoolean) so a value the drive team already set is preserved
-    // rather than stomped back to false on a code restart.
-    SmartDashboard.setDefaultBoolean(HardwareConstants.ControllerConstants.xboxDriveModeKey, false);
+    // Drive-controller selector. Both options are spelled out by name so a driver picks
+    // "XBOX CONTROLLER Drive" rather than deducing it from a switch position.
+    driveControllerChooser.setDefaultOption(
+        HardwareConstants.ControllerConstants.FLIGHTSTICK_OPTION, false);
+    driveControllerChooser.addOption(HardwareConstants.ControllerConstants.XBOX_OPTION, true);
+    SmartDashboard.putData(
+        HardwareConstants.ControllerConstants.driveControllerChooserKey, driveControllerChooser);
 
-    // Nothing has been latched yet at boot, so the live key reads as unset rather than
-    // naming a controller that is not driving anything. disabledPeriodic fills in the
-    // pending key, and teleopInit sets both.
+    // Nothing has been latched yet at boot, so the live key says so rather than naming a
+    // controller that is not driving anything. disabledPeriodic keeps the pending key
+    // current, and teleopInit sets both.
     SmartDashboard.putString(
-        HardwareConstants.ControllerConstants.driveControllerActiveKey, "-- NOT ENABLED --");
+        HardwareConstants.ControllerConstants.driveControllerActiveKey,
+        HardwareConstants.ControllerConstants.NOT_YET_LATCHED);
     SmartDashboard.putString(
         HardwareConstants.ControllerConstants.driveControllerPendingKey,
-        HardwareConstants.ControllerConstants.driveControllerLabel(
-            HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE));
+        HardwareConstants.ControllerConstants.driveControllerLabel(isXboxDriveSelected()));
 
     // autoChooser.addOption(
     //     "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
@@ -316,6 +324,15 @@ public class RobotContainer {
 
   private double getDriveRot() {
     return Triggers.getInstance().driveRotSupplier(); // twist / right stick X
+  }
+
+  /**
+   * Currently selected drive controller. Defaults to the flightstick if nothing has been chosen, so
+   * an untouched dashboard gives the normal driving scheme.
+   */
+  public boolean isXboxDriveSelected() {
+    Boolean selected = driveControllerChooser.getSelected();
+    return selected != null && selected;
   }
 
   // NamedCommands

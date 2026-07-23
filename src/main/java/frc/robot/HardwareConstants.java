@@ -227,9 +227,11 @@ public class HardwareConstants {
     // per loop would cost real loop time.
     public static boolean XBOX_DRIVE_MODE = false;
 
-    // Display names for the two drive controllers. Published as text rather than a raw
-    // boolean so nobody has to translate a checkbox into "which stick am I holding".
-    public static final String XBOX_LABEL = "XBOX";
+    // ---- Display names ----
+    // Every readout names the physical controller outright. A driver who has never seen this
+    // dashboard should be able to read one line and know which device to pick up, without
+    // interpreting a checkbox or knowing which mode is "default".
+    public static final String XBOX_LABEL = "XBOX CONTROLLER";
     public static final String FLIGHTSTICK_LABEL = "FLIGHTSTICK";
 
     /** Human-readable name of the drive controller for a given mode flag. */
@@ -237,26 +239,33 @@ public class HardwareConstants {
       return xboxDrive ? XBOX_LABEL : FLIGHTSTICK_LABEL;
     }
 
-    // ---- Dashboard keys ----
-    // The toggle the drive team flips. Boolean because Elastic needs a switch widget to
-    // write to; the human-readable state comes from the two string keys below.
-    public static final String xboxDriveModeKey = "Use Xbox Drive";
+    // ---- Selector ----
+    // A named dropdown, not a boolean toggle. A toggle labelled "Use Xbox Drive" tells a new
+    // driver what ON means but never what OFF means; a two-option chooser spells out both
+    // choices and makes the current selection readable at a glance.
+    public static final String driveControllerChooserKey = "DRIVE CONTROLLER";
+    public static final String FLIGHTSTICK_OPTION = "FLIGHTSTICK Drive (normal)";
+    public static final String XBOX_OPTION = "XBOX CONTROLLER Drive";
 
+    // ---- Status readouts ----
     // What is actually driving the robot RIGHT NOW (the latched value). Updated only at
     // teleopInit, so during a match this always reflects the scheme the robot is really
-    // running -- not wherever the toggle happens to be sitting.
+    // running -- not wherever the selector happens to be sitting.
     public static final String driveControllerActiveKey = "DRIVING NOW";
 
-    // What WILL drive the robot at the next enable (the pending toggle position). Updated
-    // while disabled so the drive team can flip the toggle and immediately confirm the
-    // change took, instead of finding out when the match starts.
+    // What WILL drive the robot at the next enable (the pending selection). Updated while
+    // disabled so the drive team can change the selection and immediately confirm it took,
+    // instead of finding out when the match starts.
     //
-    // These are separate on purpose. If a single key tracked the toggle live, it would show
-    // the new controller the instant someone tapped it even though the robot was still
+    // These are separate on purpose. If a single key tracked the selector live, it would show
+    // the new controller the instant someone changed it even though the robot was still
     // running the old scheme -- which is exactly how a match gets driven with the wrong
-    // stick. Put both on the Elastic teleop tab; they agree except between a toggle flip
+    // stick. Put both on the Elastic teleop tab; they agree except between a selection change
     // and the next enable.
-    public static final String driveControllerPendingKey = "Drive Next Enable";
+    public static final String driveControllerPendingKey = "DRIVE NEXT ENABLE";
+
+    // Shown before the first enable of a power cycle, when nothing has been latched yet.
+    public static final String NOT_YET_LATCHED = "-- NOT ENABLED YET --";
   }
 
   public static class Zones {
