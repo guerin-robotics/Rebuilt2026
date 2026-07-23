@@ -20,6 +20,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -263,20 +264,41 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Preview", autoPreviewField);
     SmartDashboard.putNumber(autoDelayKey, defaultAutoDelay);
 
-    // Drive-controller selector. Both options are spelled out by name so a driver picks
-    // "XBOX CONTROLLER Drive" rather than deducing it from a switch position.
+    // ── Drive-controller selector ───────────────────────────────────────────────
+    // Recover the last selection from the roboRIO's persistent Preferences file. This is
+    // what makes a mid-match brownout survivable: if the RIO resets, robot code restarts
+    // with NetworkTables empty, and without this the chooser would come back on the
+    // flightstick and hand an Xbox driver a dead controller for the rest of the match.
+    // Preferences is backed by /home/lvuser/networktables.json on flash, so it survives a
+    // code restart, a RIO reboot, and a redeploy.
+    Preferences.initBoolean(HardwareConstants.ControllerConstants.driveControllerPrefKey, false);
+    boolean restoredXboxDrive =
+        Preferences.getBoolean(HardwareConstants.ControllerConstants.driveControllerPrefKey, false);
+
+    // Apply the restored selection immediately, not just at the next teleopInit, so the
+    // correct scheme is live the instant code finishes starting.
+    HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE = restoredXboxDrive;
+
+    // Both options are spelled out by name so a driver picks "XBOX CONTROLLER Drive" rather
+    // than deducing it from a switch position. The restored selection becomes the chooser's
+    // default, so getSelected() returns it before anyone touches the dashboard.
     driveControllerChooser.setDefaultOption(
-        HardwareConstants.ControllerConstants.FLIGHTSTICK_OPTION, false);
-    driveControllerChooser.addOption(HardwareConstants.ControllerConstants.XBOX_OPTION, true);
+        HardwareConstants.ControllerConstants.driveControllerOption(restoredXboxDrive),
+        restoredXboxDrive);
+    driveControllerChooser.addOption(
+        HardwareConstants.ControllerConstants.driveControllerOption(!restoredXboxDrive),
+        !restoredXboxDrive);
     SmartDashboard.putData(
         HardwareConstants.ControllerConstants.driveControllerChooserKey, driveControllerChooser);
 
-    // Nothing has been latched yet at boot, so the live key says so rather than naming a
-    // controller that is not driving anything. disabledPeriodic keeps the pending key
-    // current, and teleopInit sets both.
+    // Name the restored controller rather than "-- NOT ENABLED YET --" when we actually did
+    // recover a selection: after a mid-match reset the drive team needs to see immediately
+    // that the robot came back on the right stick.
     SmartDashboard.putString(
         HardwareConstants.ControllerConstants.driveControllerActiveKey,
-        HardwareConstants.ControllerConstants.NOT_YET_LATCHED);
+        restoredXboxDrive
+            ? HardwareConstants.ControllerConstants.driveControllerLabel(true)
+            : HardwareConstants.ControllerConstants.NOT_YET_LATCHED);
     SmartDashboard.putString(
         HardwareConstants.ControllerConstants.driveControllerPendingKey,
         HardwareConstants.ControllerConstants.driveControllerLabel(isXboxDriveSelected()));
@@ -327,12 +349,27 @@ public class RobotContainer {
   }
 
   /**
-   * Currently selected drive controller. Defaults to the flightstick if nothing has been chosen, so
-   * an untouched dashboard gives the normal driving scheme.
+   * Currently selected drive controller. Falls back to the value restored from Preferences at
+   * construction if the chooser has no selection yet.
    */
   public boolean isXboxDriveSelected() {
     Boolean selected = driveControllerChooser.getSelected();
-    return selected != null && selected;
+    return selected != null ? selected : HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE;
+  }
+
+  /**
+   * Writes the drive-controller selection to the roboRIO's persistent Preferences so it survives a
+   * brownout reset. Only writes when the value actually changed — Preferences writes hit flash, and
+   * rewriting an unchanged value every loop would be pointless wear.
+   */
+  public void persistDriveControllerSelection() {
+    boolean selected = isXboxDriveSelected();
+    if (selected
+        != Preferences.getBoolean(
+            HardwareConstants.ControllerConstants.driveControllerPrefKey, false)) {
+      Preferences.setBoolean(
+          HardwareConstants.ControllerConstants.driveControllerPrefKey, selected);
+    }
   }
 
   // NamedCommands

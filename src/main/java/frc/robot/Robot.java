@@ -180,6 +180,11 @@ public class Robot extends LoggedRobot {
         HardwareConstants.ControllerConstants.driveControllerPendingKey,
         HardwareConstants.ControllerConstants.driveControllerLabel(
             robotContainer.isXboxDriveSelected()));
+
+    // Save the selection to flash as soon as it is made, rather than waiting for the enable.
+    // If the RIO resets before the match even starts, we still come back on the right stick.
+    // No-ops unless the value actually changed.
+    robotContainer.persistDriveControllerSelection();
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
@@ -220,6 +225,10 @@ public class Robot extends LoggedRobot {
     // disable -> enable. Reading it here instead of per-loop keeps NetworkTables traffic
     // out of the 20 ms loop entirely.
     HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE = robotContainer.isXboxDriveSelected();
+
+    // Persist the latched value too, in case the selection was made while already enabled
+    // (practice, or a re-enable after a fault) and disabledPeriodic never saw it.
+    robotContainer.persistDriveControllerSelection();
 
     // Name the controller that is actually driving now, so the drive team reads
     // "DRIVING NOW: XBOX CONTROLLER" rather than interpreting a switch. Both the live and

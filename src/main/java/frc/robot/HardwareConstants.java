@@ -247,6 +247,21 @@ public class HardwareConstants {
     public static final String FLIGHTSTICK_OPTION = "FLIGHTSTICK Drive (normal)";
     public static final String XBOX_OPTION = "XBOX CONTROLLER Drive";
 
+    /** Chooser option label for a given mode flag. */
+    public static String driveControllerOption(boolean xboxDrive) {
+      return xboxDrive ? XBOX_OPTION : FLIGHTSTICK_OPTION;
+    }
+
+    // Persistent storage key for the selection. Preferences writes through to
+    // /home/lvuser/networktables.json on the roboRIO's flash, so the selection survives a
+    // brownout-induced RIO reset, a code restart, and a redeploy. Without this, a mid-match
+    // reset would bring the robot back on the flightstick regardless of who is driving.
+    //
+    // NOTE: this makes the selection STICKY across events, not just matches. It stays where
+    // it was last set until someone changes it, including across a power cycle days later.
+    // It is cleared by reimaging the RIO or deleting networktables.json.
+    public static final String driveControllerPrefKey = "DriveController_UseXbox";
+
     // ---- Status readouts ----
     // What is actually driving the robot RIGHT NOW (the latched value). Updated only at
     // teleopInit, so during a match this always reflects the scheme the robot is really
