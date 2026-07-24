@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.AllianceFlipUtil;
+import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.util.BatteryLogger;
 import frc.robot.util.Elastic;
 import frc.robot.util.HubShiftUtil;
@@ -159,6 +160,8 @@ public class Robot extends LoggedRobot {
       HardwareConstants.TuningConstants.TUNING_MODE = HardwareConstants.TuningConstants.isTuning;
       HardwareConstants.TuningConstants.DEMO_MODE = HardwareConstants.TuningConstants.demo;
     }
+
+    Logger.recordOutput("driverPreset", DriveConstants.rotationExponent);
   }
 
   /** This function is called once when the robot is disabled. */
@@ -249,6 +252,8 @@ public class Robot extends LoggedRobot {
 
     // Automated tab switching
     Elastic.selectTab("Teleoperated");
+
+    DriveConstants.rotationExponent = robotContainer.getDriverPreset();
   }
 
   /** This function is called periodically during operator control. */

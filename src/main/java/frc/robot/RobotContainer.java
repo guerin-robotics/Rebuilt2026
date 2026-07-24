@@ -105,6 +105,7 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+  private final LoggedDashboardChooser<Double> driverPresetChooser;
 
   // Which controller drives the robot. Read only at teleopInit — see
   // HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE for the latching rationale.
@@ -252,6 +253,10 @@ public class RobotContainer {
     autoChooser.addDefaultOption(
         HardwareConstants.CompConstants.Autos.DefaultAutoName,
         new PathPlannerAuto(HardwareConstants.CompConstants.Autos.DefaultAutoName));
+
+    driverPresetChooser = new LoggedDashboardChooser("Driver Preset");
+    driverPresetChooser.addDefaultOption("Parker", 1.35);
+    driverPresetChooser.addOption("Christian", 2.0);
 
     // Publish the auto preview field to the dashboard so we can see the selected path
     SmartDashboard.putData("Auto Preview", autoPreviewField);
@@ -1119,6 +1124,10 @@ public class RobotContainer {
     double delay = SmartDashboard.getNumber(autoDelayKey, defaultAutoDelay);
     Command auto = autoChooser.get().asProxy();
     return Commands.sequence(Commands.waitSeconds(delay), auto);
+  }
+
+  public double getDriverPreset() {
+    return driverPresetChooser.get();
   }
 
   // ==================== AUTO PREVIEW & STARTING POSE CHECK ====================
