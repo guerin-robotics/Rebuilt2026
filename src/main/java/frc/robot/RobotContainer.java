@@ -145,7 +145,6 @@ public class RobotContainer {
   // How close (in degrees) the robot's heading needs to be to the auto's starting heading.
   private static final double STARTING_POSE_ROT_TOLERANCE_DEGREES = 5.0;
 
-
   public RobotContainer() {
     switch (Constants.currentMode) {
       case REAL:
