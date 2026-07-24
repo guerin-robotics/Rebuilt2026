@@ -89,11 +89,7 @@ public class DriveCommands {
               // Raise rotation value to the active driver preset's cached exponent for more
               // precise control (1.35 on the Parker preset, set at drive practice 6/29)
               omega =
-                  Math.copySign(
-                      Math.pow(
-                          Math.abs(omega),
-                          DriveConstants.rotationExponent),
-                      omega);
+                  Math.copySign(Math.pow(Math.abs(omega), DriveConstants.rotationExponent), omega);
 
               // Convert to field relative speeds & send command
               ChassisSpeeds speeds =
