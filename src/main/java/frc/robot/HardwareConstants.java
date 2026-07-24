@@ -13,6 +13,12 @@ import edu.wpi.first.units.measure.Voltage;
 import frc.lib.AllianceFlipUtil;
 
 public class HardwareConstants {
+
+  public static class DriverConstants {
+    public static final double Christian = 2.0;
+    public static final double Parker = 1.35;
+  }
+
   public static final int NUMBER_OF_CAMERAS = 4;
 
   public static class CanIds {
@@ -124,7 +130,7 @@ public class HardwareConstants {
   public static class TuningConstants {
     public static boolean TUNING_MODE;
     public static boolean isTuning = false;
-    public static boolean atComp = false;
+    public static boolean atComp = true;
     public static boolean DEMO_MODE;
     public static boolean demo = false;
 

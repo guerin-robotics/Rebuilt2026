@@ -94,9 +94,19 @@ public class VisionIOPhotonVision implements VisionIO {
 
       EstimatedRobotPose estimate = estimatedPose.get();
 
+      HashSet<Integer> trenchIDs = new HashSet<Integer>();
+      trenchIDs.add(1);
+      trenchIDs.add(6);
+      trenchIDs.add(7);
+      trenchIDs.add(12);
+      trenchIDs.add(17);
+      trenchIDs.add(22);
+      trenchIDs.add(23);
+      trenchIDs.add(28);
+
       // Collect all tag IDs seen (estimate.targetsUsed contains every target in the frame)
       for (var target : estimate.targetsUsed) {
-        if (target.fiducialId >= 0) {
+        if (target.fiducialId >= 0 && !trenchIDs.contains(target.fiducialId)) {
           tagIds.add((short) target.fiducialId);
         }
       }

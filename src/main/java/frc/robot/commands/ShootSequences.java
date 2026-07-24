@@ -23,7 +23,6 @@ public class ShootSequences {
       UpperFeeder upperFeeder,
       LowerFeeder lowerFeeder,
       Transport transport,
-      intakeRoller intakeRoller,
       IntakePivot intakePivot) {
     return Commands.parallel(
             Commands.runOnce(() -> Logger.recordOutput("RobotState/shooting", true)),
@@ -42,9 +41,6 @@ public class ShootSequences {
                         upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
                     TransportCommands.setTransportVelocity(
                         transport, HardwareConstants.CompConstants.Velocities.transportVelocity),
-                    intakeRollerCommands.setRollerVoltage(
-                        intakeRoller,
-                        HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage),
                     IntakePivotCommands.autoPivotCompress(intakePivot))))
         // .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
         .withName("ShootToHub");

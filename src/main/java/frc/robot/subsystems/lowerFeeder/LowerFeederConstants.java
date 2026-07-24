@@ -13,7 +13,7 @@ public class LowerFeederConstants {
     public static final int LOWER_FEEDER_MAIN_SUPPLY_AMP = 40;
     public static final int LOWER_FEEDER_MAIN_SUPPLY_TRIGGER_AMP = 35;
     public static final Time LOWER_FEEDER_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
-    public static final int LOWER_FEEDER_MAIN_STATOR_AMP = 35;
+    public static final int LOWER_FEEDER_MAIN_STATOR_AMP = 40; // 35
   }
 
   public static class SoftwareConstants {
@@ -37,7 +37,8 @@ public class LowerFeederConstants {
   }
 
   public static class feederMagicConstants {
-    public static final double lowerFeederAccel = 120.0;
+    public static final double lowerFeederAccel =
+        120.0; // As of quals 27 IRI: reverted to 120 from 150
   }
 
   /** Simulation constants for the feeder motor. */

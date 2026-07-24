@@ -34,7 +34,8 @@ public class UpperFeederConstants {
   }
 
   public static class feederMagicConstants {
-    public static final double upperFeederAccel = 120.0;
+    public static final double upperFeederAccel =
+        120.0; // As of quals 27 IRI: reverted to 120.0 from 150.0
   }
 
   /** Simulation constants for the feeder motor. */

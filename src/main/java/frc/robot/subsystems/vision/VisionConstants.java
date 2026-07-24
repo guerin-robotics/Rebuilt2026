@@ -21,7 +21,7 @@ import org.littletonrobotics.junction.Logger;
 public class VisionConstants {
   // AprilTag layout
   public static AprilTagFieldLayout aprilTagLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded); // .k2026RebuiltAndymark
+      AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark); // k2026RebuiltWelded
 
   // Camera names, must match names configured on coprocessor
   public static String camera0Name = "RobotRight";
@@ -85,7 +85,7 @@ public class VisionConstants {
   // Log analysis of State q30/e3 showed accepted single-tag solves with
   // ambiguity 0.33–0.37 that were 3.3–3.4 m wrong (wrong PnP solution).
   // 0.2 rejects those while keeping ~85% of single-tag observations.
-  public static double maxAmbiguity = 0.2; // was 0.4
+  public static double maxAmbiguity = 0.35; // was 0.4
 
   // Estimated pose Z (height) must be below this to be realistic
   public static double maxZError = 2;
@@ -106,7 +106,7 @@ public class VisionConstants {
 
   // If the robot is spinning faster than this (rad/s), vision is unreliable
   // because motion blur and timestamp misalignment degrade the estimate.
-  public static double maxAngularVelocityRadPerSec = 4.0; // 2.0
+  public static double maxAngularVelocityRadPerSec = 6.0; // 4.0
 
   // Maximum pitch or roll (radians) allowed in an estimated pose.
   // A real robot on flat carpet should never be tilted more than ~10°.
