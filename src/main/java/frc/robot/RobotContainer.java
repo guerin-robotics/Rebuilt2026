@@ -104,6 +104,7 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+  private final LoggedDashboardChooser<Double> driverPresetChooser;
 
   // ── Auto Preview & Starting Pose Check ──────────────────────────────────────
   // Field2d widget to show the selected auto's path and the robot's current position.
@@ -253,6 +254,10 @@ public class RobotContainer {
     autoChooser.addDefaultOption(
         HardwareConstants.CompConstants.Autos.DefaultAutoName,
         new PathPlannerAuto(HardwareConstants.CompConstants.Autos.DefaultAutoName));
+
+    driverPresetChooser = new LoggedDashboardChooser("Driver Preset");
+    driverPresetChooser.addDefaultOption("Parker", 1.35);
+    driverPresetChooser.addOption("Christian", 2.0);
 
     // Publish the auto preview field to the dashboard so we can see the selected path
     SmartDashboard.putData("Auto Preview", autoPreviewField);
@@ -1064,6 +1069,10 @@ public class RobotContainer {
     double delay = SmartDashboard.getNumber(autoDelayKey, defaultAutoDelay);
     Command auto = autoChooser.get().asProxy();
     return Commands.sequence(Commands.waitSeconds(delay), auto);
+  }
+
+  public double getDriverPreset() {
+    return driverPresetChooser.get();
   }
 
   // ==================== AUTO PREVIEW & STARTING POSE CHECK ====================
