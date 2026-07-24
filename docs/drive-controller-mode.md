@@ -112,7 +112,6 @@ This also survives a full power cycle and a code redeploy.
 | Right stick press | Trench align |
 | A | Bump align |
 | Y | Shoot from tower |
-| B | Double compress toggle |
 
 The flightstick becomes the override controller:
 
@@ -146,7 +145,82 @@ the left stick press are all still free.
 
 ---
 
-## 6. First time on the robot — verify stick direction
+## 6. Changing a button binding
+
+Button bindings are **code**, not a dashboard setting. Changing one is a
+`Triggers.java` edit plus a redeploy — unlike swapping which controller drives, which
+is the runtime dropdown in section 3. If you only need to hand the robot to a different
+driver, use the dropdown; don't touch this.
+
+Every function has one method in `Triggers.java`, in one of three shapes.
+
+**1. Drive-facing functions** (shoot, intake, aligns) use `sourced(...)`:
+
+```java
+public Trigger shootFromTowerButton() {
+    // Y in Xbox mode
+    return sourced(thrustmaster.button(10), controller.y());
+    //             ^ flightstick-drive mode   ^ Xbox-drive mode
+}
+```
+
+The **first** argument is the binding when the flightstick drives; the **second** is
+the binding in Xbox drive mode. To move this onto Xbox X, change `controller.y()` to
+`controller.x()` (and fix the `// Y in Xbox mode` comment).
+
+**2. Override functions** (`allianceWinFlipper`, `allianceWinDisabler`) also use
+`sourced(...)`, but the arguments read the opposite way — these live on the
+*non-driving* controller, so in Xbox drive mode they sit on the flightstick:
+
+```java
+public Trigger allianceWinDisabler() {
+    return sourced(controller.y(), thrustmaster.button(2));
+    //             ^ flightstick-drive: Xbox Y   ^ Xbox-drive: flightstick btn 2
+}
+```
+
+For the Xbox-mode flightstick button, edit the **second** argument.
+
+**3. Single-controller functions** (`passButton`, `intakeCompressButton`,
+`autoXOverride`) return one binding with no `sourced(...)`, and that binding is live in
+**both** modes. `passButton` and `intakeCompressButton` stay on the flightstick in both
+modes — this is why they are the "not available on Xbox" gaps above.
+
+`doubleCompressOverride` (Xbox B) is override-only: it uses `sourced(...)` with a dead
+second argument (`new Trigger(() -> false)`), so it toggles double compress **only when
+the flightstick drives**. In Xbox drive mode B does nothing — the Xbox driver has no
+hidden toggle on the pad, and double compress is not available in that mode.
+
+### Binding names
+
+| Physical control | Code |
+|---|---|
+| A / B / X / Y | `controller.a()` … `controller.y()` |
+| Left / right bumper | `controller.leftBumper()` / `.rightBumper()` |
+| Left / right trigger | `controller.leftTrigger(TRIGGER_THRESHOLD)` / `.rightTrigger(TRIGGER_THRESHOLD)` |
+| Left / right stick press | `controller.leftStick()` / `.rightStick()` |
+| D-pad | `controller.povUp()` / `.povDown()` / `.povLeft()` / `.povRight()` |
+| Start / Back | `controller.start()` / `.back()` |
+| Flightstick button N | `thrustmaster.button(N)` |
+
+**Free Xbox buttons** — nothing on them in Xbox drive mode: X, the D-pad, Start, Back,
+and the left stick press. Prefer these when adding a function.
+
+### Rules
+
+- **Do not put two live functions on the same button in the same mode.** The
+  `sourced(...)` design lets a button mean different things across modes safely — Xbox
+  A is bump align while driving and alliance-flip while overriding — but two
+  drive-mode functions on Xbox A would both fire.
+- **Drive axes go through `driveXSupplier()` / `driveYSupplier()` /
+  `driveRotSupplier()`**, not `RobotContainer`. A sign flip there is inherited by the
+  align commands too (see section 7).
+- After the edit: `./gradlew compileJava`, then `./gradlew spotlessApply`, then
+  redeploy. **Update the section 5 button map** so the tables don't drift from the code.
+
+---
+
+## 7. First time on the robot — verify stick direction
 
 Before trusting Xbox mode in a match, enable in a safe open space and push the left stick
 gently forward.
@@ -159,14 +233,14 @@ Check rotation direction the same way with the right stick.
 
 ---
 
-## 7. Troubleshooting
+## 8. Troubleshooting
 
 | Symptom | Cause | Fix |
 |---|---|---|
 | Dropdown change does nothing to `DRIVE NEXT ENABLE` | Dashboard not connected | Reconnect Elastic; check team number |
 | `DRIVING NOW` disagrees with `DRIVE NEXT ENABLE` | Selection made but not yet latched | Disable, re-enable |
 | Controller does nothing at all | Wrong DS port | Check DS USB tab: Xbox on 1, flightstick on 2 |
-| Robot drives backwards in Xbox mode | Stick sign convention | See section 6 |
+| Robot drives backwards in Xbox mode | Stick sign convention | See section 7 |
 | Robot boots on the wrong controller | Sticky saved selection | Re-pick from the dropdown |
 | Widgets missing in Elastic | Robot code not running | Confirm code is deployed and running |
 

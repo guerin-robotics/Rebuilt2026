@@ -237,8 +237,10 @@ public class Triggers {
   }
 
   public Trigger doubleCompressOverride() {
-    // Xbox B is unassigned in the Xbox drive layout, so this works in both modes unchanged.
-    return controller.b();
+    // Override-only: live when the flightstick drives (Xbox is the override controller). In Xbox
+    // drive mode the flightstick is the override and B is not relocated, so B on the driving Xbox
+    // is intentionally dead — the Xbox driver has no hidden compress toggle on the pad.
+    return sourced(controller.b(), new Trigger(() -> false));
   }
 
   // ==================== STATE-BASED TRIGGERS (cached as final fields) ====================

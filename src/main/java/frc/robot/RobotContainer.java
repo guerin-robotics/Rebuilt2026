@@ -561,8 +561,7 @@ public class RobotContainer {
         // .and(Triggers.getInstance().isRobotOnBump())
         // .or(Triggers.getInstance().isRobotApproachingBump())
         .whileTrue(
-            DriveCommands.joystickDriveAlignForBump(
-                drive, () -> -getDriveY() * .5, () -> -getDriveX() * .5));
+            DriveCommands.joystickDriveAlignForBump(drive, () -> -getDriveY(), () -> -getDriveX()));
 
     // UPPER SHOOTER
     // Set shooting velocity if shoot button pressed, we're in our alliance zone, hub is active, and
