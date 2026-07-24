@@ -210,7 +210,6 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().schedule(robotContainer.getAutoStopCommand());
     HubShiftUtil.initialize();
 
-    CommandScheduler.getInstance().schedule(robotContainer.getIntakeRollerCommand());
     CommandScheduler.getInstance().schedule(robotContainer.getIntakePivotCommand());
 
     // Automated tab switching
