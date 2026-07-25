@@ -247,7 +247,6 @@ public class Robot extends LoggedRobot {
     Logger.recordOutput(
         "DriveMode/XboxDrive", HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE);
 
-    CommandScheduler.getInstance().schedule(robotContainer.getIntakeRollerCommand());
     CommandScheduler.getInstance().schedule(robotContainer.getIntakePivotCommand());
 
     // Automated tab switching
