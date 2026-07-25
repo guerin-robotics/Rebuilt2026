@@ -255,9 +255,9 @@ public class RobotContainer {
         HardwareConstants.CompConstants.Autos.DefaultAutoName,
         new PathPlannerAuto(HardwareConstants.CompConstants.Autos.DefaultAutoName));
 
-    driverPresetChooser = new LoggedDashboardChooser("Driver Preset");
-    driverPresetChooser.addDefaultOption("Parker", 1.35);
-    driverPresetChooser.addOption("Christian", 2.0);
+    driverPresetChooser = new LoggedDashboardChooser<Double>("Driver Preset");
+    driverPresetChooser.addDefaultOption("Parker", 1.35); // 1.35
+    driverPresetChooser.addOption("Christian", 2.0); // 2.0
 
     // Publish the auto preview field to the dashboard so we can see the selected path
     SmartDashboard.putData("Auto Preview", autoPreviewField);
