@@ -20,11 +20,12 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.AllianceFlipUtil;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeederCommands;
@@ -106,6 +107,10 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
   private final LoggedDashboardChooser<Double> driverPresetChooser;
 
+  // Which controller drives the robot. Read only at teleopInit — see
+  // HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE for the latching rationale.
+  private final SendableChooser<Boolean> driveControllerChooser = new SendableChooser<>();
+
   // ── Auto Preview & Starting Pose Check ──────────────────────────────────────
   // Field2d widget to show the selected auto's path and the robot's current position.
   // Used during disabled/pre-match to verify the robot is placed correctly.
@@ -140,12 +145,6 @@ public class RobotContainer {
 
   // How close (in degrees) the robot's heading needs to be to the auto's starting heading.
   private static final double STARTING_POSE_ROT_TOLERANCE_DEGREES = 5.0;
-
-  // Controllers
-  private final CommandXboxController controller =
-      new CommandXboxController(HardwareConstants.ControllerConstants.XboxControllerPort);
-  private final CommandXboxController simController =
-      new CommandXboxController(HardwareConstants.ControllerConstants.SimControllerPort);
 
   public RobotContainer() {
     switch (Constants.currentMode) {
@@ -263,6 +262,45 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Preview", autoPreviewField);
     SmartDashboard.putNumber(autoDelayKey, defaultAutoDelay);
 
+    // ── Drive-controller selector ───────────────────────────────────────────────
+    // Recover the last selection from the roboRIO's persistent Preferences file. This is
+    // what makes a mid-match brownout survivable: if the RIO resets, robot code restarts
+    // with NetworkTables empty, and without this the chooser would come back on the
+    // flightstick and hand an Xbox driver a dead controller for the rest of the match.
+    // Preferences is backed by /home/lvuser/networktables.json on flash, so it survives a
+    // code restart, a RIO reboot, and a redeploy.
+    Preferences.initBoolean(HardwareConstants.ControllerConstants.driveControllerPrefKey, false);
+    boolean restoredXboxDrive =
+        Preferences.getBoolean(HardwareConstants.ControllerConstants.driveControllerPrefKey, false);
+
+    // Apply the restored selection immediately, not just at the next teleopInit, so the
+    // correct scheme is live the instant code finishes starting.
+    HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE = restoredXboxDrive;
+
+    // Both options are spelled out by name so a driver picks "XBOX CONTROLLER Drive" rather
+    // than deducing it from a switch position. The restored selection becomes the chooser's
+    // default, so getSelected() returns it before anyone touches the dashboard.
+    driveControllerChooser.setDefaultOption(
+        HardwareConstants.ControllerConstants.driveControllerOption(restoredXboxDrive),
+        restoredXboxDrive);
+    driveControllerChooser.addOption(
+        HardwareConstants.ControllerConstants.driveControllerOption(!restoredXboxDrive),
+        !restoredXboxDrive);
+    SmartDashboard.putData(
+        HardwareConstants.ControllerConstants.driveControllerChooserKey, driveControllerChooser);
+
+    // Name the restored controller rather than "-- NOT ENABLED YET --" when we actually did
+    // recover a selection: after a mid-match reset the drive team needs to see immediately
+    // that the robot came back on the right stick.
+    SmartDashboard.putString(
+        HardwareConstants.ControllerConstants.driveControllerActiveKey,
+        restoredXboxDrive
+            ? HardwareConstants.ControllerConstants.driveControllerLabel(true)
+            : HardwareConstants.ControllerConstants.NOT_YET_LATCHED);
+    SmartDashboard.putString(
+        HardwareConstants.ControllerConstants.driveControllerPendingKey,
+        HardwareConstants.ControllerConstants.driveControllerLabel(isXboxDriveSelected()));
+
     // autoChooser.addOption(
     //     "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
     // autoChooser.addOption(
@@ -285,22 +323,47 @@ public class RobotContainer {
     }
   }
 
-  private double deadband(double value) {
-    return MathUtil.applyDeadband(value, HardwareConstants.ControllerConstants.DEADBAND);
+  // Drive-axis inputs are source-gated in Triggers on the latched XBOX_DRIVE_MODE flag, so these
+  // return the Thrustmaster or the Xbox depending on the selection latched at teleopInit.
+  //
+  // Every drive-axis read in this file must go through these three methods. Reading
+  // Triggers.getInstance().thrustmaster.getX() directly bypasses the gate and would leave the
+  // align commands following a joystick nobody is holding while the default drive command
+  // follows the Xbox.
+  private double getDriveX() {
+    return Triggers.getInstance().driveXSupplier(); // strafe
   }
 
-  // Drive-axis inputs are source-gated in Triggers on the "Use Xbox Drive" flag, so these
-  // return the Thrustmaster or the Xbox drive controller depending on the live selection.
-  private double getThrustX() {
-    return Triggers.getInstance().thrustmaster.getX(); // strafe
+  private double getDriveY() {
+    return Triggers.getInstance().driveYSupplier(); // forward
   }
 
-  private double getThrustY() {
-    return Triggers.getInstance().thrustmaster.getY(); // forward
+  private double getDriveRot() {
+    return Triggers.getInstance().driveRotSupplier(); // twist / right stick X
   }
 
-  private double getThrustRot() {
-    return Triggers.getInstance().thrustmaster.getTwist(); // twist
+  /**
+   * Currently selected drive controller. Falls back to the value restored from Preferences at
+   * construction if the chooser has no selection yet.
+   */
+  public boolean isXboxDriveSelected() {
+    Boolean selected = driveControllerChooser.getSelected();
+    return selected != null ? selected : HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE;
+  }
+
+  /**
+   * Writes the drive-controller selection to the roboRIO's persistent Preferences so it survives a
+   * brownout reset. Only writes when the value actually changed — Preferences writes hit flash, and
+   * rewriting an unchanged value every loop would be pointless wear.
+   */
+  public void persistDriveControllerSelection() {
+    boolean selected = isXboxDriveSelected();
+    if (selected
+        != Preferences.getBoolean(
+            HardwareConstants.ControllerConstants.driveControllerPrefKey, false)) {
+      Preferences.setBoolean(
+          HardwareConstants.ControllerConstants.driveControllerPrefKey, selected);
+    }
   }
 
   // NamedCommands
@@ -400,10 +463,7 @@ public class RobotContainer {
     // Drivetrain - joystick drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive,
-            () -> MathUtil.clamp(-getThrustY(), -1.0, 1.0),
-            () -> MathUtil.clamp(-getThrustX(), -1.0, 1.0),
-            () -> MathUtil.clamp(-getThrustRot(), -1.0, 1.0)));
+            drive, () -> -getDriveY(), () -> -getDriveX(), () -> -getDriveRot()));
     // Flywheel - idle
     flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // // Prestage - idle
@@ -445,8 +505,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.alignOrXForShoot(
                 drive,
-                () -> -Triggers.getInstance().thrustmaster.getY() * .5,
-                () -> -Triggers.getInstance().thrustmaster.getX() * .5,
+                () -> -getDriveY() * .5,
+                () -> -getDriveX() * .5,
                 () -> RobotState.getInstance().getAngleToAllianceHub()));
 
     // // If close to a hardstop spot (bump or trench), or if hardstop shoot button pressed,
@@ -482,8 +542,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -Triggers.getInstance().thrustmaster.getY() * .5,
-                () -> -Triggers.getInstance().thrustmaster.getX() * .5,
+                () -> -getDriveY() * .5,
+                () -> -getDriveX() * .5,
                 () ->
                     RobotState.getInstance()
                         .getAngleToTarget(
@@ -498,9 +558,7 @@ public class RobotContainer {
         // .or(Triggers.getInstance().isRobotApproachingTrench())
         .whileTrue(
             DriveCommands.joystickDriveAlignForTrench(
-                drive,
-                () -> -Triggers.getInstance().thrustmaster.getY(),
-                () -> -Triggers.getInstance().thrustmaster.getX()));
+                drive, () -> -getDriveY(), () -> -getDriveX()));
 
     // Align for bump when bump button pressed - zone logic temporarily disabled
     Triggers.getInstance()
@@ -508,10 +566,7 @@ public class RobotContainer {
         // .and(Triggers.getInstance().isRobotOnBump())
         // .or(Triggers.getInstance().isRobotApproachingBump())
         .whileTrue(
-            DriveCommands.joystickDriveAlignForBump(
-                drive,
-                () -> -Triggers.getInstance().thrustmaster.getY() * .5,
-                () -> -Triggers.getInstance().thrustmaster.getX() * .5));
+            DriveCommands.joystickDriveAlignForBump(drive, () -> -getDriveY(), () -> -getDriveX()));
 
     // UPPER SHOOTER
     // Set shooting velocity if shoot button pressed, we're in our alliance zone, hub is active, and

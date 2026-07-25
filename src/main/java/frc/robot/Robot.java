@@ -175,6 +175,19 @@ public class Robot extends LoggedRobot {
     // This lets the drive team verify the selected auto path and robot placement.
     robotContainer.updateAutoPreview();
     robotContainer.checkStartPose();
+
+    // Show which controller will drive at the next enable, so changing the selector gives
+    // immediate visible confirmation instead of a surprise when the match starts.
+    // Safe to read the chooser here — we are disabled, so this is not on the match loop.
+    SmartDashboard.putString(
+        HardwareConstants.ControllerConstants.driveControllerPendingKey,
+        HardwareConstants.ControllerConstants.driveControllerLabel(
+            robotContainer.isXboxDriveSelected()));
+
+    // Save the selection to flash as soon as it is made, rather than waiting for the enable.
+    // If the RIO resets before the match even starts, we still come back on the right stick.
+    // No-ops unless the value actually changed.
+    robotContainer.persistDriveControllerSelection();
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
@@ -209,6 +222,30 @@ public class Robot extends LoggedRobot {
     }
     CommandScheduler.getInstance().schedule(robotContainer.getAutoStopCommand());
     HubShiftUtil.initialize();
+
+    // Latch the drive-controller selection for this enable. This is the ONLY place the
+    // dashboard selector is read — changing it mid-match does nothing until the next
+    // disable -> enable. Reading it here instead of per-loop keeps NetworkTables traffic
+    // out of the 20 ms loop entirely.
+    HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE = robotContainer.isXboxDriveSelected();
+
+    // Persist the latched value too, in case the selection was made while already enabled
+    // (practice, or a re-enable after a fault) and disabledPeriodic never saw it.
+    robotContainer.persistDriveControllerSelection();
+
+    // Name the controller that is actually driving now, so the drive team reads
+    // "DRIVING NOW: XBOX CONTROLLER" rather than interpreting a switch. Both the live and
+    // pending keys are written here so they agree the moment the latch takes.
+    String driveLabel =
+        HardwareConstants.ControllerConstants.driveControllerLabel(
+            HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE);
+    SmartDashboard.putString(
+        HardwareConstants.ControllerConstants.driveControllerActiveKey, driveLabel);
+    SmartDashboard.putString(
+        HardwareConstants.ControllerConstants.driveControllerPendingKey, driveLabel);
+    Logger.recordOutput("DriveMode/DriveController", driveLabel);
+    Logger.recordOutput(
+        "DriveMode/XboxDrive", HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE);
 
     CommandScheduler.getInstance().schedule(robotContainer.getIntakeRollerCommand());
     CommandScheduler.getInstance().schedule(robotContainer.getIntakePivotCommand());
