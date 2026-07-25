@@ -210,12 +210,77 @@ public class HardwareConstants {
     public static final int XboxControllerPort = 1;
     public static final int JoystickControllerPort = 2;
     public static final int ButtonPanelPort = 0;
-    // Alternate single-Xbox drive scheme (LT=intake, RT=shoot, RB=pass, sticks=drive).
-    // Selected live via the "Use Xbox Drive" SmartDashboard boolean.
-    public static final int XboxDriveControllerPort = 4;
     public static final double DEADBAND = 0.08;
     public static final int SimControllerPort = 5;
     public static final int SimKeyboardControllerPort = 3;
+
+    // ==================== XBOX DRIVE MODE ====================
+    // Lets us swap which controller drives the robot between matches without a redeploy.
+    //
+    //   false (default) — FLIGHTSTICK drives, Xbox is the override controller.
+    //   true            — XBOX drives, flightstick becomes the override controller.
+    //
+    // LATCHING: this value is read from NetworkTables exactly ONCE, in Robot.teleopInit().
+    // It is NOT polled during the match — flipping the dashboard toggle mid-match does
+    // nothing until the next disable -> enable cycle. This is deliberate: the button
+    // triggers in Triggers.java read this field every loop, and an NT read per trigger
+    // per loop would cost real loop time.
+    public static boolean XBOX_DRIVE_MODE = false;
+
+    // ---- Display names ----
+    // Every readout names the physical controller outright. A driver who has never seen this
+    // dashboard should be able to read one line and know which device to pick up, without
+    // interpreting a checkbox or knowing which mode is "default".
+    public static final String XBOX_LABEL = "XBOX CONTROLLER";
+    public static final String FLIGHTSTICK_LABEL = "FLIGHTSTICK";
+
+    /** Human-readable name of the drive controller for a given mode flag. */
+    public static String driveControllerLabel(boolean xboxDrive) {
+      return xboxDrive ? XBOX_LABEL : FLIGHTSTICK_LABEL;
+    }
+
+    // ---- Selector ----
+    // A named dropdown, not a boolean toggle. A toggle labelled "Use Xbox Drive" tells a new
+    // driver what ON means but never what OFF means; a two-option chooser spells out both
+    // choices and makes the current selection readable at a glance.
+    public static final String driveControllerChooserKey = "DRIVE CONTROLLER";
+    public static final String FLIGHTSTICK_OPTION = "FLIGHTSTICK Drive (normal)";
+    public static final String XBOX_OPTION = "XBOX CONTROLLER Drive";
+
+    /** Chooser option label for a given mode flag. */
+    public static String driveControllerOption(boolean xboxDrive) {
+      return xboxDrive ? XBOX_OPTION : FLIGHTSTICK_OPTION;
+    }
+
+    // Persistent storage key for the selection. Preferences writes through to
+    // /home/lvuser/networktables.json on the roboRIO's flash, so the selection survives a
+    // brownout-induced RIO reset, a code restart, and a redeploy. Without this, a mid-match
+    // reset would bring the robot back on the flightstick regardless of who is driving.
+    //
+    // NOTE: this makes the selection STICKY across events, not just matches. It stays where
+    // it was last set until someone changes it, including across a power cycle days later.
+    // It is cleared by reimaging the RIO or deleting networktables.json.
+    public static final String driveControllerPrefKey = "DriveController_UseXbox";
+
+    // ---- Status readouts ----
+    // What is actually driving the robot RIGHT NOW (the latched value). Updated only at
+    // teleopInit, so during a match this always reflects the scheme the robot is really
+    // running -- not wherever the selector happens to be sitting.
+    public static final String driveControllerActiveKey = "DRIVING NOW";
+
+    // What WILL drive the robot at the next enable (the pending selection). Updated while
+    // disabled so the drive team can change the selection and immediately confirm it took,
+    // instead of finding out when the match starts.
+    //
+    // These are separate on purpose. If a single key tracked the selector live, it would show
+    // the new controller the instant someone changed it even though the robot was still
+    // running the old scheme -- which is exactly how a match gets driven with the wrong
+    // stick. Put both on the Elastic teleop tab; they agree except between a selection change
+    // and the next enable.
+    public static final String driveControllerPendingKey = "DRIVE NEXT ENABLE";
+
+    // Shown before the first enable of a power cycle, when nothing has been latched yet.
+    public static final String NOT_YET_LATCHED = "-- NOT ENABLED YET --";
   }
 
   public static class Zones {
