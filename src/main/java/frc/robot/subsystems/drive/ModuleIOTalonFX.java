@@ -115,9 +115,20 @@ public class ModuleIOTalonFX implements ModuleIO {
     tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
     tryUntilOk(5, () -> driveTalon.setPosition(0.0, 0.25));
 
-    // Configure turn motor
-    var turnConfig = new TalonFXConfiguration();
+    // Configure turn motor.
+    // Start from the constants' initial configs, the same way the drive motor above does. Building
+    // a bare TalonFXConfiguration here silently dropped the steer current limits, leaving the
+    // azimuth on the Phoenix defaults of 120 A stator / 70 A supply instead of the 40 A / 40 A that
+    // TunerConstants asks for. Match logs showed steer peaks of 114 A as a result.
+    // Note: this object is shared across all four modules, so each constructor mutates it and
+    // applies before the next one runs. That is the existing pattern the drive motor uses.
+    var turnConfig = constants.SteerMotorInitialConfigs;
     turnConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    // The steer closed loop outputs torque current, so the stator limit alone does not bound what
+    // the controller asks for — clamp the request too, mirroring the drive motor above
+    turnConfig.TorqueCurrent.PeakForwardTorqueCurrent = turnConfig.CurrentLimits.StatorCurrentLimit;
+    turnConfig.TorqueCurrent.PeakReverseTorqueCurrent =
+        -turnConfig.CurrentLimits.StatorCurrentLimit;
     turnConfig.Slot0 = constants.SteerMotorGains;
     turnConfig.Feedback.FeedbackRemoteSensorID = constants.EncoderId;
     turnConfig.Feedback.FeedbackSensorSource =
