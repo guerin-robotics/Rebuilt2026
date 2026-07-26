@@ -74,7 +74,8 @@ public class Drive extends SubsystemBase {
   // PathPlanner config constants
   private static final double ROBOT_MASS_KG = 63.503;
   private static final double ROBOT_MOI = 5.162;
-  private static final double WHEEL_COF = 1.2;
+  // Published measurement for SDS spikey tread on MK5n; replaces the 1.2 template placeholder
+  private static final double WHEEL_COF = 2.255;
   private static final RobotConfig PP_CONFIG =
       new RobotConfig(
           ROBOT_MASS_KG,
