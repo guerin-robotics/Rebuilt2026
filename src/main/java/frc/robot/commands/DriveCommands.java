@@ -50,7 +50,70 @@ public class DriveCommands {
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
+  // Slew rate limits applied to every driver-facing drive command in this file
+  private static final double MAX_LINEAR_ACCELERATION = 5.0; // Meters/Sec^2
+  private static final double MAX_ANGULAR_ACCELERATION = 10.0; // Rad/Sec^2
+  private static final double LOOP_PERIOD_SECS = 0.02;
+
   private DriveCommands() {}
+
+  /**
+   * Slew rate limiter for commanded chassis speeds. Translation is limited as a vector, so the
+   * commanded direction is preserved while the magnitude ramps — limiting X and Y independently
+   * would bend the robot's path during diagonal accelerations.
+   */
+  private static class ChassisAccelerationLimiter {
+    private double vx = 0.0;
+    private double vy = 0.0;
+    private double omega = 0.0;
+
+    /** Seeds the limiter with the robot's current speeds so the first loop does not step. */
+    void reset(ChassisSpeeds speeds) {
+      vx = speeds.vxMetersPerSecond;
+      vy = speeds.vyMetersPerSecond;
+      omega = speeds.omegaRadiansPerSecond;
+    }
+
+    ChassisSpeeds calculate(ChassisSpeeds desired) {
+      double maxLinearDelta = MAX_LINEAR_ACCELERATION * LOOP_PERIOD_SECS;
+      double deltaVx = desired.vxMetersPerSecond - vx;
+      double deltaVy = desired.vyMetersPerSecond - vy;
+      double deltaMagnitude = Math.hypot(deltaVx, deltaVy);
+      if (deltaMagnitude > maxLinearDelta) {
+        double scale = maxLinearDelta / deltaMagnitude;
+        deltaVx *= scale;
+        deltaVy *= scale;
+      }
+      vx += deltaVx;
+      vy += deltaVy;
+
+      double maxAngularDelta = MAX_ANGULAR_ACCELERATION * LOOP_PERIOD_SECS;
+      omega =
+          MathUtil.clamp(
+              desired.omegaRadiansPerSecond, omega - maxAngularDelta, omega + maxAngularDelta);
+
+      return new ChassisSpeeds(vx, vy, omega);
+    }
+  }
+
+  /**
+   * Seeds a limiter with the robot's measured speeds, expressed in the same driver-relative frame
+   * the drive commands build their speeds in. Called when a command starts so that handing off
+   * between drive commands (or from auto) does not produce a velocity step.
+   */
+  private static void resetLimiter(ChassisAccelerationLimiter limiter, Drive drive) {
+    limiter.reset(
+        ChassisSpeeds.fromRobotRelativeSpeeds(
+            drive.getChassisSpeeds(), driverFrameRotation(drive)));
+  }
+
+  /** Robot heading in the driver's frame of reference (rotated 180° when on red alliance). */
+  private static Rotation2d driverFrameRotation(Drive drive) {
+    boolean isFlipped =
+        DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().get() == Alliance.Red;
+    return isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation();
+  }
 
   private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
     // Apply deadband
@@ -75,6 +138,8 @@ public class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier) {
+    ChassisAccelerationLimiter limiter = new ChassisAccelerationLimiter();
+
     return Commands.run(
             () -> {
               drive.areWheelsXed = false;
@@ -97,17 +162,12 @@ public class DriveCommands {
                       linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                       linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                       omega * drive.getMaxAngularSpeedRadPerSec());
-              boolean isFlipped =
-                  DriverStation.getAlliance().isPresent()
-                      && DriverStation.getAlliance().get() == Alliance.Red;
               drive.runVelocity(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
-                      speeds,
-                      isFlipped
-                          ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                          : drive.getRotation()));
+                      limiter.calculate(speeds), driverFrameRotation(drive)));
             },
             drive)
+        .beforeStarting(() -> resetLimiter(limiter, drive))
         .withName("JoystickDrive");
   }
 
@@ -116,6 +176,8 @@ public class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier) {
+    ChassisAccelerationLimiter limiter = new ChassisAccelerationLimiter();
+
     return Commands.run(
             () -> {
               drive.areWheelsXed = false;
@@ -136,17 +198,12 @@ public class DriveCommands {
                       linearVelocity.getX() * DriveConstants.limitedVelo,
                       linearVelocity.getY() * DriveConstants.limitedVelo,
                       omega * drive.getMaxAngularSpeedRadPerSec());
-              boolean isFlipped =
-                  DriverStation.getAlliance().isPresent()
-                      && DriverStation.getAlliance().get() == Alliance.Red;
               drive.runVelocity(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
-                      speeds,
-                      isFlipped
-                          ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                          : drive.getRotation()));
+                      limiter.calculate(speeds), driverFrameRotation(drive)));
             },
             drive)
+        .beforeStarting(() -> resetLimiter(limiter, drive))
         .withName("JoystickDriveLimited");
   }
 
@@ -244,6 +301,8 @@ public class DriveCommands {
             new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
 
+    ChassisAccelerationLimiter limiter = new ChassisAccelerationLimiter();
+
     // Construct command
     return Commands.run(
             () -> {
@@ -269,20 +328,18 @@ public class DriveCommands {
                       linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                       linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                       omega);
-              boolean isFlipped =
-                  DriverStation.getAlliance().isPresent()
-                      && DriverStation.getAlliance().get() == Alliance.Red;
               drive.runVelocity(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
-                      speeds,
-                      isFlipped
-                          ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                          : drive.getRotation()));
+                      limiter.calculate(speeds), driverFrameRotation(drive)));
             },
             drive)
 
-        // Reset PID controller when command starts
-        .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()))
+        // Reset PID controller and slew rate limiter when command starts
+        .beforeStarting(
+            () -> {
+              angleController.reset(drive.getRotation().getRadians());
+              resetLimiter(limiter, drive);
+            })
         .finallyDo(
             () -> {
               Logger.recordOutput("AutoAim/TargetAngle", 0.0);
