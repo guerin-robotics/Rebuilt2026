@@ -22,9 +22,9 @@ public final class MatchAnalyze {
   /** One logged sample: timestamp plus up to three payload fields. */
   private record Sample(double t, double a, double b, double c) {}
 
-  private static final double ACCEL_CEILING = 4.3; // setpoint generator limit, m/s^2
+  private static final double ACCEL_CEILING = 6.0; // setpoint generator limit, m/s^2
   private static final double BRAKE_BUDGET = 7.0; // DriveCommands limiter, m/s^2
-  private static final double SLIP_CURRENT = 70.0; // configured stator limit, A
+  private static final double SLIP_CURRENT = 80.0; // configured stator limit, A
 
   private static final Set<String> WANTED =
       new HashSet<>(

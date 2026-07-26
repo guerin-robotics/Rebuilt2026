@@ -51,9 +51,9 @@ public class DriveCommands {
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
   // Braking limit for the driver-facing drive commands. Acceleration is deliberately not limited
-  // here — the setpoint generator in Drive.runVelocity clips it to ~4.3 m/s^2 (torque limited),
+  // here — the setpoint generator in Drive.runVelocity clips it to ~6.0 m/s^2 (torque limited),
   // well below any value worth setting. Deceleration is limited because the generator would allow
-  // ~19.4 m/s^2, which stops the robot from full speed in under a quarter second. At the measured
+  // ~21 m/s^2, which stops the robot from full speed in under a fifth of a second. At the measured
   // COF of 2.255 that is within the tires' grip, so this is a controllability limit for the driver
   // rather than a slip margin.
   private static final double MAX_LINEAR_DECELERATION = 7.0; // Meters/Sec^2
