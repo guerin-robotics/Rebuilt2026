@@ -1,0 +1,7 @@
+// Prints the project's compile classpath so the log analyzer can be built against
+// the same WPILib and vendor jars the robot code uses.
+allprojects {
+    tasks.register("printCompileClasspath") {
+        doLast { println configurations.compileClasspath.asPath }
+    }
+}
