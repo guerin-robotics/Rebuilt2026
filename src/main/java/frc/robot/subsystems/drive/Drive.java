@@ -16,7 +16,10 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.Pathfinding;
+import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
+import com.pathplanner.lib.util.swerve.SwerveSetpoint;
+import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
@@ -86,6 +89,13 @@ public class Drive extends SubsystemBase {
               1),
           getModuleTranslations());
 
+  // Theoretical free speed of the azimuth; the generator uses this as the module steering rate
+  // limit. Lower it to a measured value if the modules cannot actually slew this fast.
+  private static final double MAX_STEER_VELOCITY_RAD_PER_SEC =
+      DCMotor.getKrakenX60Foc(1)
+          .withReduction(TunerConstants.FrontLeft.SteerMotorGearRatio)
+          .freeSpeedRadPerSec;
+
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -105,6 +115,21 @@ public class Drive extends SubsystemBase {
       };
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
+
+  // Every velocity command — teleop, auto, and pathfinding — passes through the setpoint generator,
+  // which clips the request to what the modules can steer to and what friction can hold.
+  private final SwerveSetpointGenerator setpointGenerator =
+      new SwerveSetpointGenerator(PP_CONFIG, MAX_STEER_VELOCITY_RAD_PER_SEC);
+  private SwerveSetpoint previousSetpoint =
+      new SwerveSetpoint(
+          new ChassisSpeeds(),
+          new SwerveModuleState[] {
+            new SwerveModuleState(),
+            new SwerveModuleState(),
+            new SwerveModuleState(),
+            new SwerveModuleState()
+          },
+          DriveFeedforwards.zeros(4));
 
   public Drive(
       GyroIO gyroIO,
@@ -181,6 +206,9 @@ public class Drive extends SubsystemBase {
       for (var module : modules) {
         module.stop();
       }
+      // Keep the setpoint generator tracking reality while disabled, so re-enabling does not
+      // resume from the velocity the robot had when it was disabled
+      syncSetpointToMeasured();
     }
 
     // Log empty setpoint states when disabled
@@ -241,14 +269,21 @@ public class Drive extends SubsystemBase {
    * @param speeds Speeds in meters/sec
    */
   public void runVelocity(ChassisSpeeds speeds) {
-    // Calculate module setpoints
-    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
-    SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, TunerConstants.kSpeedAt12Volts);
+    // Generate an achievable setpoint. Speeds must NOT be pre-discretized — the generator
+    // discretizes internally, and it desaturates to the max module speed itself.
+    previousSetpoint = setpointGenerator.generateSetpoint(previousSetpoint, speeds, 0.02);
 
-    // Log unoptimized setpoints and setpoint speeds
+    // Copy the states before handing them to the modules; runSetpoint mutates them to optimize,
+    // and these arrays are the generator's own record of the previous setpoint.
+    SwerveModuleState[] setpointStates = copyStates(previousSetpoint.moduleStates());
+
+    // Log requested vs achievable speeds so it is visible when the generator is clipping
+    Logger.recordOutput("SwerveChassisSpeeds/Requested", speeds);
+    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", previousSetpoint.robotRelativeSpeeds());
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
-    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", discreteSpeeds);
+    Logger.recordOutput(
+        "SwerveStates/SetpointTorqueCurrents",
+        previousSetpoint.feedforwards().torqueCurrentsAmps());
 
     // Send setpoints to modules
     for (int i = 0; i < 4; i++) {
@@ -259,8 +294,28 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
   }
 
+  /** Returns a deep copy of the given module states. */
+  private static SwerveModuleState[] copyStates(SwerveModuleState[] states) {
+    SwerveModuleState[] copy = new SwerveModuleState[states.length];
+    for (int i = 0; i < states.length; i++) {
+      copy[i] = new SwerveModuleState(states[i].speedMetersPerSecond, states[i].angle);
+    }
+    return copy;
+  }
+
+  /**
+   * Re-seeds the setpoint generator from measured state. Called whenever the modules are driven by
+   * something other than runVelocity (characterization, disabled), so the generator never resumes
+   * from a stale setpoint and commands a velocity step.
+   */
+  private void syncSetpointToMeasured() {
+    previousSetpoint =
+        new SwerveSetpoint(getChassisSpeeds(), getModuleStates(), DriveFeedforwards.zeros(4));
+  }
+
   /** Runs the drive in a straight line with the specified drive output. */
   public void runCharacterization(double output) {
+    syncSetpointToMeasured();
     for (int i = 0; i < 4; i++) {
       modules[i].runCharacterization(output);
     }
@@ -277,11 +332,27 @@ public class Drive extends SubsystemBase {
    */
   public void stopWithX() {
     Rotation2d[] headings = new Rotation2d[4];
+    SwerveModuleState[] xStates = new SwerveModuleState[4];
     for (int i = 0; i < 4; i++) {
       headings[i] = getModuleTranslations()[i].getAngle();
+      xStates[i] = new SwerveModuleState(0.0, headings[i]);
     }
     kinematics.resetHeadings(headings);
-    stop();
+
+    // Commanded directly rather than through runVelocity: the setpoint generator holds the previous
+    // module angles on a zero-speed request, so routing the X through it would stop the robot
+    // without ever forming the X. Sync the generator to the X so the next move steers from it.
+    previousSetpoint =
+        new SwerveSetpoint(new ChassisSpeeds(), copyStates(xStates), DriveFeedforwards.zeros(4));
+    Logger.recordOutput("SwerveChassisSpeeds/Requested", new ChassisSpeeds());
+    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", new ChassisSpeeds());
+    Logger.recordOutput("SwerveStates/Setpoints", xStates);
+
+    for (int i = 0; i < 4; i++) {
+      modules[i].runSetpoint(xStates[i]);
+    }
+
+    Logger.recordOutput("SwerveStates/SetpointsOptimized", xStates);
   }
 
   public void alignForDefenseShot(Pose2d targetPose) {

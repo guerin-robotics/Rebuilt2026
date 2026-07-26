@@ -51,7 +51,7 @@ public class DriveCommands {
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
   // Slew rate limits applied to every driver-facing drive command in this file
-  private static final double MAX_LINEAR_ACCELERATION = 5.0; // Meters/Sec^2
+  private static final double MAX_LINEAR_ACCELERATION = 7.0; // Meters/Sec^2
   private static final double MAX_ANGULAR_ACCELERATION = 10.0; // Rad/Sec^2
   private static final double LOOP_PERIOD_SECS = 0.02;
 
