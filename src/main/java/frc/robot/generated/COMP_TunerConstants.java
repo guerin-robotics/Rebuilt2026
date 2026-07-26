@@ -24,11 +24,11 @@ public class COMP_TunerConstants {
   // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
   private static final Slot0Configs steerGains =
       new Slot0Configs()
-          .withKP(3750) // 25
+          .withKP(2000) // 3750 25
           .withKI(0)
-          .withKD(50) // 0
-          .withKS(0.1) // 8 or 10
-          .withKV(1.94) // 2
+          .withKD(20) // 50 0
+          .withKS(0) // .1 8 or 10
+          .withKV(0) // 1.94 2
           .withKA(0)
           .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
   // When using closed-loop control, the drive motor uses the control
@@ -76,7 +76,7 @@ public class COMP_TunerConstants {
                   // Swerve azimuth does not require much torque output, so we can set a relatively
                   // low
                   // stator current limit to help avoid brownouts without impacting performance.
-                  .withStatorCurrentLimit(Amps.of(40))
+                  .withStatorCurrentLimit(Amps.of(60))
                   .withStatorCurrentLimitEnable(true)
                   .withSupplyCurrentLimit(Amps.of(40))
                   .withSupplyCurrentLimitEnable(true));
