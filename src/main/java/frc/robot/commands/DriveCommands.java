@@ -50,12 +50,11 @@ public class DriveCommands {
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
-  // Braking limit for the driver-facing drive commands. Acceleration is deliberately not limited
-  // here — the setpoint generator in Drive.runVelocity clips it to ~6.0 m/s^2 (torque limited),
-  // well below any value worth setting. Deceleration is limited because the generator would allow
-  // ~21 m/s^2, which stops the robot from full speed in under a fifth of a second. At the measured
-  // COF of 2.255 that is within the tires' grip, so this is a controllability limit for the driver
-  // rather than a slip margin.
+  // Slew limits for the driver-facing drive commands. These are now the only thing shaping the
+  // command — nothing downstream clips it — so acceleration is limited here as well as braking.
+  // Both are driver-feel numbers rather than slip margins: at the measured COF of 2.255 the tires
+  // hold about 22 m/s^2, well above either value.
+  private static final double MAX_LINEAR_ACCELERATION = 5.5; // Meters/Sec^2
   private static final double MAX_LINEAR_DECELERATION = 7.0; // Meters/Sec^2
   private static final double MAX_ANGULAR_ACCELERATION = 10.0; // Rad/Sec^2
   private static final double LOOP_PERIOD_SECS = 0.02;
@@ -96,18 +95,16 @@ public class DriveCommands {
       double deltaVx = desired.vxMetersPerSecond - vx;
       double deltaVy = desired.vyMetersPerSecond - vy;
 
-      // Limit braking only; accelerating and holding speed through a direction change pass
-      // through to the setpoint generator, which enforces what the tires and modules can do
+      // Braking gets its own, looser limit so the robot can stop harder than it starts
       boolean braking =
           Math.hypot(desired.vxMetersPerSecond, desired.vyMetersPerSecond) < Math.hypot(vx, vy);
-      if (braking) {
-        double maxLinearDelta = MAX_LINEAR_DECELERATION * LOOP_PERIOD_SECS;
-        double deltaMagnitude = Math.hypot(deltaVx, deltaVy);
-        if (deltaMagnitude > maxLinearDelta) {
-          double scale = maxLinearDelta / deltaMagnitude;
-          deltaVx *= scale;
-          deltaVy *= scale;
-        }
+      double maxLinearDelta =
+          (braking ? MAX_LINEAR_DECELERATION : MAX_LINEAR_ACCELERATION) * LOOP_PERIOD_SECS;
+      double deltaMagnitude = Math.hypot(deltaVx, deltaVy);
+      if (deltaMagnitude > maxLinearDelta) {
+        double scale = maxLinearDelta / deltaMagnitude;
+        deltaVx *= scale;
+        deltaVy *= scale;
       }
       vx += deltaVx;
       vy += deltaVy;

@@ -44,8 +44,8 @@ estimation.
 
 ## Baseline: July 2026 Indiana event (9 matches, q6 → e2)
 
-Measured **before** the traction-control work (setpoint generator, slew limiting, 70 A slip
-current). Auto paths were still planned at 7.0 m/s² globals at this point.
+Measured **before** the traction-control work (slew limiting, COF correction). Auto paths were
+still planned at 7.0 m/s² globals at this point.
 
 | Metric | Baseline |
 |---|---|
