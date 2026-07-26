@@ -31,8 +31,8 @@ gets unplugged and replugged it can land on a different port, and the symptom is
 
 ## 2. Elastic setup (do this once, then save the layout)
 
-Three widgets, all under **SmartDashboard**. They are published as soon as robot code
-starts, so you don't need to enable to see them.
+One widget, under **SmartDashboard**. It is published as soon as robot code starts, so
+you don't need to enable to see it.
 
 1. Open Elastic and connect to the robot (gear icon → team number 10021).
 2. Go to the **Teleoperated** tab — the code auto-selects this tab on enable, so this
@@ -42,11 +42,12 @@ starts, so you don't need to enable to see them.
 | Key | Widget type | Shows |
 |---|---|---|
 | `DRIVE CONTROLLER` | ComboBox Chooser (automatic) | the dropdown you pick from |
-| `DRIVE NEXT ENABLE` | Text Display | what will drive at the next enable |
-| `DRIVING NOW` | Text Display | what is driving right now |
 
-4. Stack them vertically in that order. Make `DRIVING NOW` the largest — it is the one
-   that answers "which controller do I pick up."
+4. **Optional but recommended.** The dropdown shows what you *requested*, not what the
+   robot is actually running. To see the latched value, add **NetworkTables →
+   AdvantageKit → RealOutputs → `driveController`** as a Boolean Box: `true` = Xbox is
+   driving, `false` = flightstick. It only changes at enable, so it is the honest answer
+   to "which controller do I pick up."
 5. **Save the layout** (Ctrl+S / File → Save Layout) or you will rebuild this at the event.
 
 ---
@@ -58,18 +59,20 @@ Do this with the robot **disabled**.
 1. Pick the incoming driver's controller from the `DRIVE CONTROLLER` dropdown:
    - `FLIGHTSTICK Drive (normal)`
    - `XBOX CONTROLLER Drive`
-2. Watch `DRIVE NEXT ENABLE`. Within a moment it should name the controller you picked.
-   If it does not change, the dashboard is not connected to the robot — fix that first.
-3. Enable teleop. `DRIVING NOW` updates to match.
+2. Confirm the dropdown now reads your choice. If it snaps back or does not respond, the
+   dashboard is not connected to the robot — fix that first.
+3. Enable teleop. The selection latches at that moment.
 
 ### The one rule
 
-> **`DRIVING NOW` and `DRIVE NEXT ENABLE` must say the same thing before the match starts.**
+> **The dropdown is a request. It does not take effect until the next enable.**
 
-If they disagree, the change has not taken effect yet. Disable and re-enable.
+Change it while already enabled and the robot keeps running the old scheme for the rest
+of that enable. Disable and re-enable to apply it.
 
-They only disagree in the window between changing the dropdown and the next enable —
-which is exactly the state worth catching.
+If you added the optional `driveController` boolean box from section 2, it shows the
+latched value — it will disagree with the dropdown in exactly that window, which is the
+state worth catching.
 
 ### Why the change doesn't apply immediately
 
@@ -82,18 +85,18 @@ next disable → enable.
 
 ## 4. What happens after a brownout or reboot
 
-The selection is saved to the roboRIO's flash. If the RIO resets mid-match, robot code
-restarts and **comes back on the same controller you selected**. You do not need to do
-anything.
+**Brownout (voltage sag): nothing to do.** A brownout cuts motor power but does *not*
+restart robot code, so the latched selection is untouched and the robot keeps driving on
+the same controller. This is confirmed in the July practice logs — sessions with 64, 9,
+3, and 1 brownout events all kept running with no code restart.
 
-`DRIVING NOW` will name the restored controller rather than reading
-`-- NOT ENABLED YET --`, so you can confirm the recovery took.
+**Code restart, RIO reboot, or redeploy: the selection is lost.** It is not saved
+anywhere. Robot code comes back on `FLIGHTSTICK Drive (normal)`, the default. If an Xbox
+driver is up, re-pick `XBOX CONTROLLER Drive` from the dropdown before enabling.
 
-This also survives a full power cycle and a code redeploy.
-
-> **The selection is sticky across events.** It stays wherever it was last set — including
-> days later at the next event. If you finished the last event on Xbox, the robot boots on
-> Xbox. Always confirm `DRIVE NEXT ENABLE` before your first match.
+> **Confirm the dropdown before your first match, and after any redeploy between
+> matches.** There is no stored selection to fall back on — unlike earlier versions of
+> this code, the choice is not sticky across restarts or across events.
 
 ---
 
@@ -237,11 +240,12 @@ Check rotation direction the same way with the right stick.
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| Dropdown change does nothing to `DRIVE NEXT ENABLE` | Dashboard not connected | Reconnect Elastic; check team number |
-| `DRIVING NOW` disagrees with `DRIVE NEXT ENABLE` | Selection made but not yet latched | Disable, re-enable |
+| Dropdown will not change / snaps back | Dashboard not connected | Reconnect Elastic; check team number |
+| Changed the dropdown mid-match, nothing happened | Selection latches only at enable | Disable, re-enable |
 | Controller does nothing at all | Wrong DS port | Check DS USB tab: Xbox on 1, flightstick on 2 |
 | Robot drives backwards in Xbox mode | Stick sign convention | See section 7 |
-| Robot boots on the wrong controller | Sticky saved selection | Re-pick from the dropdown |
+| Robot boots on the flightstick | Selection is not saved across restarts | Re-pick from the dropdown before enabling |
+| `driveController` disagrees with the dropdown | Selection made but not yet latched | Disable, re-enable |
 | Widgets missing in Elastic | Robot code not running | Confirm code is deployed and running |
 
 ---
@@ -250,8 +254,12 @@ Check rotation direction the same way with the right stick.
 
 | File | Role |
 |---|---|
-| `HardwareConstants.ControllerConstants` | `XBOX_DRIVE_MODE` flag, dashboard keys, display names |
+| `HardwareConstants.ControllerConstants` | `XBOX_DRIVE_MODE` flag, chooser key, option labels |
 | `Triggers.java` | `sourced()` routing, `driveXSupplier`/`driveYSupplier`/`driveRotSupplier` |
-| `RobotContainer.java` | Chooser setup, `isXboxDriveSelected()`, `persistDriveControllerSelection()` |
+| `RobotContainer.java` | `driveControllerChooser` setup, `isXboxDriveSelected()` |
 | `Robot.teleopInit()` | The latch — the only place the selection is read |
-| `Robot.disabledPeriodic()` | Updates `DRIVE NEXT ENABLE`, saves selection to flash |
+| `Robot.robotPeriodic()` | Logs `driveController`, the latched value |
+
+The chooser is a `LoggedDashboardChooser<Boolean>`, the same type and wiring as the
+`Driver Preset` chooser: options declared in the `RobotContainer` constructor, read once
+through a one-line accessor, latched in `teleopInit`, logged once in `robotPeriodic`.
