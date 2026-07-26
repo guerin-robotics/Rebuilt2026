@@ -88,8 +88,8 @@ public class Triggers {
   }
 
   public Trigger trenchAlignButton() {
-    // R3 in Xbox mode
-    return sourced(thrustmaster.button(2), controller.rightStick());
+    // X in Xbox mode
+    return sourced(thrustmaster.button(2), controller.x());
   }
 
   public Trigger intakeInButton() {
