@@ -112,7 +112,7 @@ driver is up, re-pick `XBOX CONTROLLER Drive` from the dropdown before enabling.
 | Left trigger | Intake roller |
 | Left bumper | Intake in (pivot up) |
 | Right bumper | Intake out (pivot down) |
-| Right stick press | Trench align |
+| X | Trench align |
 | A | Bump align |
 | Y | Shoot from tower |
 
@@ -143,8 +143,8 @@ These stay on the flightstick and have no Xbox button:
 - **Manual compress** — auto-compress on shoot still works.
 - **Demo / tuning / hardstop shots** — practice and demo only.
 
-If any of these turn out to matter in a real match, Xbox X, the D-pad, Start, Back, and
-the left stick press are all still free.
+If any of these turn out to matter in a real match, the D-pad, Start, Back, and both
+stick presses are all still free.
 
 ---
 
@@ -168,8 +168,9 @@ public Trigger shootFromTowerButton() {
 ```
 
 The **first** argument is the binding when the flightstick drives; the **second** is
-the binding in Xbox drive mode. To move this onto Xbox X, change `controller.y()` to
-`controller.x()` (and fix the `// Y in Xbox mode` comment).
+the binding in Xbox drive mode. To move this onto Xbox Back, change `controller.y()` to
+`controller.back()` (and fix the `// Y in Xbox mode` comment). Pick from the free list
+below — X is trench align, so reusing it would put two live functions on one button.
 
 **2. Override functions** (`allianceWinFlipper`, `allianceWinDisabler`) also use
 `sourced(...)`, but the arguments read the opposite way — these live on the
@@ -206,8 +207,8 @@ hidden toggle on the pad, and double compress is not available in that mode.
 | Start / Back | `controller.start()` / `.back()` |
 | Flightstick button N | `thrustmaster.button(N)` |
 
-**Free Xbox buttons** — nothing on them in Xbox drive mode: X, the D-pad, Start, Back,
-and the left stick press. Prefer these when adding a function.
+**Free Xbox buttons** — nothing on them in Xbox drive mode: the D-pad, Start, Back, and
+both stick presses. Prefer these when adding a function.
 
 ### Rules
 
