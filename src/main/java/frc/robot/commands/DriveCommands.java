@@ -50,13 +50,15 @@ public class DriveCommands {
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
-  // Slew limits for the driver-facing drive commands. These are now the only thing shaping the
-  // command — nothing downstream clips it — so acceleration is limited here as well as braking.
-  // Both are driver-feel numbers rather than slip margins: at the measured COF of 2.255 the tires
-  // hold about 22 m/s^2, well above either value.
-  private static final double MAX_LINEAR_ACCELERATION = 5.5; // Meters/Sec^2
-  private static final double MAX_LINEAR_DECELERATION = 7.0; // Meters/Sec^2
-  private static final double MAX_ANGULAR_ACCELERATION = 10.0; // Rad/Sec^2
+  // Slew limits for the driver-facing drive commands. These are the only thing shaping the command
+  // now, and they exist to take the edge off single-loop velocity steps — not to protect traction.
+  // For reference, at 80 A slip current the drive can produce roughly 13.5 m/s^2 of chassis
+  // acceleration and 66 rad/s^2 of angular acceleration, and the tires hold about 22 m/s^2 at the
+  // measured COF of 2.255. Everything below sits under the hardware limit on purpose, but close
+  // enough that the driver should not feel a wall.
+  private static final double MAX_LINEAR_ACCELERATION = 10.0; // Meters/Sec^2
+  private static final double MAX_LINEAR_DECELERATION = 13.0; // Meters/Sec^2
+  private static final double MAX_ANGULAR_ACCELERATION = 25.0; // Rad/Sec^2
   private static final double LOOP_PERIOD_SECS = 0.02;
 
   private DriveCommands() {}
