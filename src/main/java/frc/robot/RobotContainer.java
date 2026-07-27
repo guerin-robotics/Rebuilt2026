@@ -663,9 +663,11 @@ public class RobotContainer {
         .onFalse(TransportCommands.stop(transport));
 
     // INTAKE ROLLER
-    // Set to agitate voltage (after a wait) when any shooting sequence is started (shoot to hub,
-    // pass, shoot from tower). Agitate is also delayed until aligned. Reverts to the default
-    // (intakeRollerVoltage) once the shoot/pass button is released.
+    // Hold the roller at zero when any shooting sequence is started (shoot to hub, pass, shoot
+    // from tower), then agitate from the loop the fuel actually starts moving. The condition
+    // passed here is the same one the LOWER SHOOTER binding above waits on before it runs the
+    // feeders and transport — keep the two in sync or the roller will lead or lag the shot.
+    // Reverts to the default (intakeRollerVoltage) once the shoot/pass button is released.
     Triggers.getInstance()
         .shootButton()
         .or(Triggers.getInstance().passButton())
@@ -674,22 +676,14 @@ public class RobotContainer {
             intakeRollerCommands.setVoltageAfterWait(
                 intakeRoller,
                 HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage,
-                Triggers.getInstance().isAlignedForCurrentShot));
+                flywheel.isFlywheelSpunUp.and(Triggers.getInstance().isAlignedLooser)));
 
-    // Set to agitate voltage when shoot button is pressed
-    // and other standard shooting conditions true
-    Triggers.getInstance()
-        .shootButton()
-        .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
-        .and(
-            () ->
-                !(Triggers.getInstance().isShootSafeZone.getAsBoolean()
-                    && !Triggers.getInstance().isShootSafeTime.getAsBoolean()))
-        .and(Triggers.getInstance().isAlignedLooser)
-        .whileTrue(
-            intakeRollerCommands.setRollerVoltage(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))
-        .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
+    // NOTE: the binding above is the ONLY roller owner during a shot. A second binding used to
+    // sit here (shootButton + isAlignedLooser -> setRollerVoltage(agitate), .onFalse(stop)).
+    // Because it was registered later it interrupted setVoltageAfterWait and agitated on the
+    // very first tick of the press — before the feeders and transport were gated on — and its
+    // .onFalse released the subsystem whenever alignment was momentarily lost, letting the
+    // 12 V default command re-engage mid-shot. See IntakeRollerBehaviorTest.
 
     // INTAKE PIVOT
     // Retract on retract button — also cancels automatic compression for this shoot press
@@ -1008,8 +1002,10 @@ public class RobotContainer {
         .onFalse(FeederCommands.stopUpper(upperFeeder))
         .onFalse(TransportCommands.stop(transport));
 
-    // Set to agitate voltage (after a wait) when any shooting sequence is started (shoot to hub,
-    // pass, shoot from tower). Agitate is also delayed until aligned.
+    // Hold the roller at zero when any shooting sequence is started (shoot to hub, pass, shoot
+    // from tower), then agitate from the loop the fuel actually starts moving. The sim LOWER
+    // SHOOTER bindings gate the feeders on isAlignedForCurrentShot with no spin-up wait, so that
+    // is the condition passed here.
     Triggers.getInstance()
         .simShootButton()
         .or(Triggers.getInstance().simPassButton())
