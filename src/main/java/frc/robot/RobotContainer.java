@@ -338,7 +338,14 @@ public class RobotContainer {
                 drive, () -> 0, () -> 0, () -> RobotState.getInstance().getAngleToAllianceHub())
             .alongWith(
                 ShootSequences.autoShootToHub(
-                    flywheel, prestage, hood, upperFeeder, lowerFeeder, transport, intakePivot)));
+                    flywheel,
+                    prestage,
+                    hood,
+                    upperFeeder,
+                    lowerFeeder,
+                    transport,
+                    intakeRoller,
+                    intakePivot)));
 
     // Stop all subsystems after shooting
     NamedCommands.registerCommand(
