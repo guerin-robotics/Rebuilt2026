@@ -117,6 +117,23 @@ public class Robot extends LoggedRobot {
     // timing (see the template project documentation for details)
     // Threads.setCurrentThreadPriority(true, 99);
 
+    // ── PER-LOOP CACHE REFRESH ────────────────────────────────────────────────
+    // These MUST run before CommandScheduler.run(). The scheduler is what polls every trigger
+    // condition and runs every command, and those are the consumers of these caches. Refreshing
+    // after the scheduler (as this used to) meant every trigger and command in the codebase read
+    // the PREVIOUS loop's snapshot.
+    //
+    // Refresh the cached alliance color once per loop so that AllianceFlipUtil.shouldFlip()
+    // doesn't call DriverStation.getAlliance() (which creates an Optional) 20-30+ times per cycle.
+    AllianceFlipUtil.refresh();
+
+    // Compute the hub shift window once per loop. getShiftedShiftInfo() was previously recomputed
+    // on every call — allocating two double[6] schedules plus a ShiftInfo record each time — and
+    // was reached 6-8 times per cycle via Triggers.isShootSafeTime, isShootClear, and the
+    // teleopPeriodic dashboard writes. Caching also guarantees every consumer in a given loop
+    // sees the SAME shift state, which the repeated-call version did not.
+    HubShiftUtil.refresh();
+
     // Runs the Scheduler. This is responsible for polling buttons, adding
     // newly-scheduled commands, running already-scheduled commands, removing
     // finished or interrupted commands, and running subsystem periodic() methods.
@@ -128,10 +145,6 @@ public class Robot extends LoggedRobot {
     batteryLogger.setBatteryVoltage(RobotController.getBatteryVoltage());
     batteryLogger.setRioCurrent(RobotController.getInputCurrent());
     batteryLogger.periodicAfterScheduler();
-
-    // Refresh the cached alliance color once per loop so that AllianceFlipUtil.shouldFlip()
-    // doesn't call DriverStation.getAlliance() (which creates an Optional) 20-30+ times per cycle.
-    AllianceFlipUtil.refresh();
 
     // CPU FIX: cache pose once — was calling getEstimatedPose() 4 separate times here,
     // plus getBroadZone(pose) was called again inside getSpecificZone and getApproachingZone.

@@ -178,6 +178,58 @@ public class HubShiftUtil {
   private static final double endingActiveFudge =
       shiftEndFuelCountExtension + -1 * (maxTimeOfFlight + maxFuelCountDelay);
 
+  // ── PRE-BUILT SHIFTED SCHEDULES ──────────────────────────────────────────
+  // These are derived entirely from the fudge constants above, so they never change at runtime.
+  // They used to be rebuilt as local arrays on every getShiftedShiftInfo() call, which meant two
+  // double[6] allocations per call at 6-8 calls per 20 ms loop. Declared here (rather than up with
+  // shiftStartTimes/shiftEndTimes) because static initializers run in declaration order and these
+  // depend on the fudge constants immediately above.
+  //
+  // "StartingActive" = our alliance holds the hub during the first scheduled window.
+  private static final double[] startingActiveStartTimes = {
+    0.0,
+    10.0,
+    35.0 + endingActiveFudge,
+    60.0 + approachingActiveFudge,
+    85.0 + endingActiveFudge,
+    110.0 + approachingActiveFudge
+  };
+  private static final double[] startingActiveEndTimes = {
+    10.0,
+    35.0 + endingActiveFudge,
+    60.0 + approachingActiveFudge,
+    85.0 + endingActiveFudge,
+    110.0 + approachingActiveFudge,
+    140.0
+  };
+  private static final double[] startingInactiveStartTimes = {
+    0.0,
+    10.0 + endingActiveFudge,
+    35.0 + approachingActiveFudge,
+    60.0 + endingActiveFudge,
+    85.0 + approachingActiveFudge,
+    110.0
+  };
+  private static final double[] startingInactiveEndTimes = {
+    10.0 + endingActiveFudge,
+    35.0 + approachingActiveFudge,
+    60.0 + endingActiveFudge,
+    85.0 + approachingActiveFudge,
+    110.0,
+    140.0
+  };
+
+  /**
+   * Cached shift state for the current loop, recomputed once per cycle by {@link #refresh()}.
+   *
+   * <p>Initialised to an inactive DISABLED window so that a read before the first {@code refresh()}
+   * fails closed — {@code Triggers.isShootSafeTime} reads {@code active()}, and a stale {@code
+   * true} there would gate the shooter open. In practice this initial value is never observed,
+   * because {@code Robot.robotPeriodic()} refreshes before {@code CommandScheduler.run()} polls
+   * anything.
+   */
+  private static ShiftInfo cachedShiftInfo = new ShiftInfo(ShiftEnum.DISABLED, 0.0, 0.0, false);
+
   // Tracks whether the first-active alliance is flipped for testing. Not
   // currently used directly (kept for compatibility with older code paths).
   private static boolean firstActiveAlliance = false;
@@ -349,49 +401,30 @@ public class HubShiftUtil {
   }
 
   /**
-   * Returns shift information computed from the official (baseline) schedule defined by
-   * `shiftStartTimes`/`shiftEndTimes` and the current schedule (active/inactive) for the match.
+   * Recomputes the cached shift state. Call exactly once per loop, from {@code
+   * Robot.robotPeriodic()}, BEFORE {@code CommandScheduler.run()} — the scheduler is what polls
+   * {@code Triggers.isShootSafeTime} and the other shift-gated conditions.
+   *
+   * <p>Note this also drives the FMS clock resync inside {@link #getShiftInfo}, which mutates
+   * {@code shiftTimerOffset}. Running it once per loop instead of 6-8 times means the resync is
+   * applied once per cycle rather than converging over several redundant calls.
    */
+  public static void refresh() {
+    cachedShiftInfo = computeShiftedShiftInfo();
+  }
+
+  /** Returns the shift state cached for this loop by {@link #refresh()}. */
   public static ShiftInfo getShiftedShiftInfo() {
+    return cachedShiftInfo;
+  }
+
+  private static ShiftInfo computeShiftedShiftInfo() {
     boolean[] shiftSchedule = getSchedule();
     // Starting active
-    if (shiftSchedule[1] == true) {
-      double[] shiftedShiftStartTimes = {
-        0.0,
-        10.0,
-        35.0 + endingActiveFudge,
-        60.0 + approachingActiveFudge,
-        85.0 + endingActiveFudge,
-        110.0 + approachingActiveFudge
-      };
-      double[] shiftedShiftEndTimes = {
-        10.0,
-        35.0 + endingActiveFudge,
-        60.0 + approachingActiveFudge,
-        85.0 + endingActiveFudge,
-        110.0 + approachingActiveFudge,
-        140.0
-      };
-      return getShiftInfo(shiftSchedule, shiftedShiftStartTimes, shiftedShiftEndTimes);
+    if (shiftSchedule[1]) {
+      return getShiftInfo(shiftSchedule, startingActiveStartTimes, startingActiveEndTimes);
     }
-    double[] shiftedShiftStartTimes = {
-      0.0,
-      10.0 + endingActiveFudge,
-      35.0 + approachingActiveFudge,
-      60.0 + endingActiveFudge,
-      85.0 + approachingActiveFudge,
-      110.0
-    };
-    double[] shiftedShiftEndTimes = {
-      10.0 + endingActiveFudge,
-      35.0 + approachingActiveFudge,
-      60.0 + endingActiveFudge,
-      85.0 + approachingActiveFudge,
-      110.0,
-      140.0
-    };
-    return getShiftInfo(shiftSchedule, shiftedShiftStartTimes, shiftedShiftEndTimes);
-    // }
+    return getShiftInfo(shiftSchedule, startingInactiveStartTimes, startingInactiveEndTimes);
   }
 
   /**
