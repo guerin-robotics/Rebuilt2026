@@ -256,9 +256,7 @@ public class RobotContainer {
     driverPresetChooser.addDefaultOption("Parker", 1.35); // 1.35
     driverPresetChooser.addOption("Christian", 2.0); // 2.0
 
-    driveControllerChooser =
-        new LoggedDashboardChooser<Boolean>(
-            HardwareConstants.ControllerConstants.driveControllerChooserKey);
+    driveControllerChooser = new LoggedDashboardChooser<Boolean>("Drive controller");
     driveControllerChooser.addDefaultOption(
         HardwareConstants.ControllerConstants.FLIGHTSTICK_OPTION, false);
     driveControllerChooser.addOption(HardwareConstants.ControllerConstants.XBOX_OPTION, true);
@@ -481,10 +479,9 @@ public class RobotContainer {
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
     // button is pressed
     // Requires demo mode to be false (if demo mode is on we don't want to align to pass)
-    (Triggers.getInstance()
-            .shootButton()
-            .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean()))
-        .or(Triggers.getInstance().passButton())
+    Triggers.getInstance()
+        .shootButton()
+        .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
         .and(() -> !HardwareConstants.TuningConstants.DEMO_MODE)
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(

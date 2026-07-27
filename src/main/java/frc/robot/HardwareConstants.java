@@ -231,9 +231,8 @@ public class HardwareConstants {
     // A named dropdown, not a boolean toggle. A toggle labelled "Use Xbox Drive" tells a new
     // driver what ON means but never what OFF means; a two-option chooser spells out both
     // choices and makes the current selection readable at a glance.
-    public static final String driveControllerChooserKey = "DRIVE CONTROLLER";
-    public static final String FLIGHTSTICK_OPTION = "FLIGHTSTICK Drive (normal)";
-    public static final String XBOX_OPTION = "XBOX CONTROLLER Drive";
+    public static final String FLIGHTSTICK_OPTION = "Thrustmaster";
+    public static final String XBOX_OPTION = "Xbox";
   }
 
   public static class Zones {
