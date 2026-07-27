@@ -668,6 +668,21 @@ public class RobotContainer {
                 intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage))
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
+    // Set to agitate voltage when shoot button is pressed
+    // and other standard shooting conditions true
+    Triggers.getInstance()
+        .shootButton()
+        .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
+        .and(
+            () ->
+                !(Triggers.getInstance().isShootSafeZone.getAsBoolean()
+                    && !Triggers.getInstance().isShootSafeTime.getAsBoolean()))
+        .and(Triggers.getInstance().isAlignedLooser)
+        .whileTrue(
+            intakeRollerCommands.setRollerVoltage(
+                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))
+        .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
+
     // INTAKE PIVOT
     // Retract on retract button — also cancels automatic compression for this shoot press
     Triggers.getInstance()
