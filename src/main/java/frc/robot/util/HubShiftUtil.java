@@ -345,7 +345,12 @@ public class HubShiftUtil {
           && fieldTeleopTime <= 135
           && DriverStation.isFMSAttached()) {
         shiftTimerOffset += currentTime - fieldTeleopTime;
-        currentTime = timerValue + shiftTimerOffset;
+        // Sign must match the definition of currentTime at the top of this method
+        // (timerValue - shiftTimerOffset). With the offset just updated by
+        // (currentTime - fieldTeleopTime), this resolves exactly to fieldTeleopTime, which is
+        // the whole point of the resync. Using '+' here instead produced a currentTime roughly
+        // twice the drift off in the WRONG direction for the loop in which the resync fired.
+        currentTime = timerValue - shiftTimerOffset;
       }
       int currentShiftIndex = -1;
       for (int i = 0; i < shiftStartTimes.length; i++) {
