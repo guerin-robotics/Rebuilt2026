@@ -33,11 +33,12 @@ import org.junit.jupiter.api.Test;
  * alliance inactive first  [0,10) T  [10,33.25) F  [33.25,60) T  [60,83.25) F  [83.25,110) T  [110,140) T
  * </pre>
  *
- * <p><b>These are characterization assertions, not a claim the tuning is correct.</b> In particular
- * {@code endingActiveFudge} is currently exactly {@code 0.0}, so an active window closes at its
- * official boundary with no allowance for a ball already in flight — {@link
- * #activeWindowClosesAtTheOfficialBoundary()} pins that so it cannot change silently, and will need
- * updating if the fudge constants are retuned.
+ * <p><b>These pin current behaviour so a retune cannot move it silently</b>, and will need updating
+ * deliberately if the fudge constants change. Both offsets are correct as they stand: the window
+ * opens 1.75 s early so a ball fired then is registered exactly as the window opens, and it closes
+ * exactly on the boundary because the 3 s rules grace period exactly covers our 3 s worst-case
+ * fire-to-score latency. See the derived-offset comments in {@link HubShiftUtil} for the worked
+ * arithmetic.
  */
 public class HubShiftTimingSimTest {
 
@@ -126,16 +127,22 @@ public class HubShiftTimingSimTest {
   }
 
   /**
-   * Characterization of a live tuning gap: {@code endingActiveFudge} is currently exactly 0.0, so
-   * an active window closes at its official boundary with no extension for fuel already in flight.
-   * If the fudge constants are retuned this test is expected to fail — update it deliberately.
+   * An active window closes exactly at its official boundary, because {@code endingActiveFudge} =
+   * {@code 3.0 - (1.0 + 2.0)} = 0.0. The 3 s grace period the rules grant past the boundary exactly
+   * covers our 1 s worst-case flight plus 2 s worst-case count delay, so fuel fired at the buzzer
+   * is still registered at t+3.0 — the last countable instant.
+   *
+   * <p>The margin is zero by construction. If flight time ever gets slower, {@code maxTimeOfFlight}
+   * must go up, which pulls this boundary earlier and will fail this test — update it deliberately.
    */
   @Test
   void activeWindowClosesAtTheOfficialBoundary() {
     ourAllianceStartsActive(true);
 
     assertTrue(activeAt(34.9), "still active just before the official 35 s boundary");
-    assertFalse(activeAt(35.1), "closes exactly at the boundary — endingActiveFudge is 0.0");
+    assertFalse(
+        activeAt(35.1),
+        "closes exactly at the boundary — the rules grace period covers worst-case flight time");
   }
 
   /**

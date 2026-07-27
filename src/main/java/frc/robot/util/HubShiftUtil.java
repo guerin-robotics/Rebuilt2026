@@ -97,7 +97,7 @@ public class HubShiftUtil {
   //   → Increase  minFuelCountDelay (field takes longer to register the score)
   //   Both make approachingActiveFudge more negative, so the "active" window
   //   opens further ahead of the official shift start time.
-  //   Example: raising minTimeOfFlight from 2.5 → 3.0 starts the window 0.5 s
+  //   Example: raising minTimeOfFlight from 0.75 → 1.25 starts the window 0.5 s
   //   earlier.
   //
   // TO START SHOOTING LATER  (robot waits longer before firing near a shift)
@@ -105,11 +105,11 @@ public class HubShiftUtil {
   //
   // TO STOP SHOOTING LATER  (robot keeps firing longer after a shift closes)
   //   → Increase  shiftEndFuelCountExtension
-  //   Example: raising it from 3.0 → 4.0 keeps the "active" window open 1 s
-  //   longer after the official shift end.
+  //   BUT SEE THE WARNING ON THAT CONSTANT: it encodes a game rule, not a
+  //   preference. Raising it past what the rules allow makes the robot shoot
+  //   into a window the field has already stopped counting.
   //
   // TO STOP SHOOTING SOONER  (robot stops earlier before a shift closes)
-  //   → Decrease  shiftEndFuelCountExtension
   //   → Increase  maxTimeOfFlight   or  maxFuelCountDelay
   //   Both make endingActiveFudge more negative, pulling the end of the
   //   active window further back before the official shift end.
@@ -127,8 +127,13 @@ public class HubShiftUtil {
    * Combined with maxFuelCountDelay this determines the latest moment a ball can leave the shooter
    * and still be counted within the extended end window. Increase this value to stop shooting
    * sooner (the window closes earlier to ensure late balls still make it).
+   *
+   * <p>1.0 s is our measured worst-case flight time. It was previously 3.0, which was an
+   * overestimate; correcting it is what moved endingActiveFudge from -2.0 to 0.0, i.e. the robot
+   * now keeps firing a full 2 s longer into each closing window than it used to. That is the
+   * intended behaviour — see the endingActiveFudge note below for why 0.0 is correct.
    */
-  private static final double maxTimeOfFlight = 1.0; // 3.0
+  private static final double maxTimeOfFlight = 1.0; // was 3.0 (overestimate)
 
   /**
    * Shortest time (seconds) the field sensors need to register a scored ball after it arrives. Used
@@ -146,9 +151,14 @@ public class HubShiftUtil {
   private static final double maxFuelCountDelay = 2.0;
 
   /**
-   * Extra seconds added PAST the official shift end so that balls already fired before the boundary
-   * can still be counted. Increase this value to keep shooting longer after a shift officially
-   * closes; decrease it to stop shooting sooner.
+   * Extra seconds added PAST the official shift end during which the field still counts fuel that
+   * was already in the air at the boundary.
+   *
+   * <p><b>This is a game rule, not a tuning knob.</b> 3.0 s is what the rules grant. Unlike the
+   * four constants above — which are measurements of our robot and can legitimately be re-measured
+   * — changing this number does not change when the field stops counting. Raising it only makes the
+   * robot keep firing into a window that has already closed, and every one of those shots is
+   * wasted. Only change it if the rule itself changes.
    */
   private static final double shiftEndFuelCountExtension = 3.0;
 
@@ -156,25 +166,41 @@ public class HubShiftUtil {
   //
   // approachingActiveFudge — applied to the START of an active window.
   //   Formula:  -(minTimeOfFlight + minFuelCountDelay)
-  //   Example with current values: -(2.5 + 1.0) = -3.5 s
-  //   Effect: the robot treats an active window as opening earlier than the
-  //   official shift start, giving fired balls time to arrive and be counted.
+  //   With current values: -(0.75 + 1.0) = -1.75 s
+  //   Effect: the robot treats an active window as opening 1.75 s earlier than
+  //   the official shift start. A ball fired at that moment takes best-case
+  //   0.75 + 1.0 = 1.75 s to fly and be registered, so it lands on the counter
+  //   exactly as the window opens — no earlier, so nothing is wasted.
   //   NOTE: if you change minTimeOfFlight or minFuelCountDelay, update the
-  //   example value in this comment to match.
-  //   Change: adjust minTimeOfFlight or minFuelCountDelay (see tuning guide above).
+  //   worked value in this comment to match.
   private static final double approachingActiveFudge = -1 * (minTimeOfFlight + minFuelCountDelay);
 
   // endingActiveFudge — applied to the END of an active window.
   //   Formula:  shiftEndFuelCountExtension - (maxTimeOfFlight + maxFuelCountDelay)
-  //   Example with current values: 3.0 - (3.0 + 2.0) = -2.0 s
-  //   Effect: the robot treats an active window as closing earlier than the
-  //   official shift end.  shiftEndFuelCountExtension extends the window past
-  //   the boundary, but we subtract flight + counting time so the last ball
-  //   shot still arrives within that extended window.
-  //   NOTE: if you change any of the three constants above, update the
-  //   example value in this comment to match.
-  //   Change: adjust shiftEndFuelCountExtension, maxTimeOfFlight, or
-  //   maxFuelCountDelay (see tuning guide above).
+  //   With current values: 3.0 - (1.0 + 2.0) = 0.0 s
+  //
+  //   0.0 IS CORRECT AND DELIBERATE — do not "fix" it. It means: keep shooting
+  //   right up to the official boundary. Worked example for a window closing at
+  //   t = 35 s:
+  //
+  //     t = 35.0   window officially closes
+  //     t = 38.0   field stops counting (35.0 + 3.0 s rules grace period)
+  //
+  //   Worst case a ball takes 1.0 s to fly + 2.0 s to register = 3.0 s from
+  //   leaving the shooter to being counted. So the last moment we can fire and
+  //   still score is 38.0 - 3.0 = 35.0 — the boundary itself. The rules grace
+  //   period exactly covers our worst-case latency, so the offset nets to zero.
+  //
+  //   The margin here is zero by construction: the final shot is counted at the
+  //   last instant of the grace period. That is fine as long as maxTimeOfFlight
+  //   and maxFuelCountDelay stay honest worst cases. If flight time ever gets
+  //   slower (heavier fuel, lower flywheel RPM, longer shots), raise
+  //   maxTimeOfFlight — the fudge goes negative and the robot stops earlier.
+  //   Nothing warns you otherwise; the late shots simply never score.
+  //
+  //   NOTE: if you change any of the three constants above, update the worked
+  //   value in this comment to match. HubShiftTimingSimTest pins this boundary
+  //   and is expected to fail if you retune — update it deliberately.
   private static final double endingActiveFudge =
       shiftEndFuelCountExtension + -1 * (maxTimeOfFlight + maxFuelCountDelay);
 
