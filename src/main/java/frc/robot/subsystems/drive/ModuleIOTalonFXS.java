@@ -105,8 +105,11 @@ public class ModuleIOTalonFXS implements ModuleIO {
     tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
     tryUntilOk(5, () -> driveTalon.setPosition(0.0, 0.25));
 
-    // Configure turn motor
-    var turnConfig = new TalonFXSConfiguration();
+    // Configure turn motor.
+    // Start from the constants' initial configs, matching the drive motor above and
+    // ModuleIOTalonFX. A bare configuration drops the steer current limits onto the Phoenix
+    // defaults. Nothing constructs this IO today, but it carried the same defect.
+    var turnConfig = constants.SteerMotorInitialConfigs;
     turnConfig.Commutation.MotorArrangement =
         switch (constants.SteerMotorType) {
           case TalonFXS_Minion_JST -> MotorArrangementValue.Minion_JST;

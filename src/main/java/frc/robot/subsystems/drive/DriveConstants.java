@@ -19,5 +19,5 @@ public class DriveConstants {
 
   public static double limitedVelo = 0.1;
 
-  public static double rotationExponent;
+  public static double rotationExponent = 2.0;
 }
