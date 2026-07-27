@@ -256,9 +256,7 @@ public class RobotContainer {
     driverPresetChooser.addDefaultOption("Parker", 1.35); // 1.35
     driverPresetChooser.addOption("Christian", 2.0); // 2.0
 
-    driveControllerChooser =
-        new LoggedDashboardChooser<Boolean>(
-            HardwareConstants.ControllerConstants.driveControllerChooserKey);
+    driveControllerChooser = new LoggedDashboardChooser<Boolean>("Drive controller");
     driveControllerChooser.addDefaultOption(
         HardwareConstants.ControllerConstants.FLIGHTSTICK_OPTION, false);
     driveControllerChooser.addOption(HardwareConstants.ControllerConstants.XBOX_OPTION, true);
@@ -340,7 +338,14 @@ public class RobotContainer {
                 drive, () -> 0, () -> 0, () -> RobotState.getInstance().getAngleToAllianceHub())
             .alongWith(
                 ShootSequences.autoShootToHub(
-                    flywheel, prestage, hood, upperFeeder, lowerFeeder, transport, intakePivot)));
+                    flywheel,
+                    prestage,
+                    hood,
+                    upperFeeder,
+                    lowerFeeder,
+                    transport,
+                    intakeRoller,
+                    intakePivot)));
 
     // Stop all subsystems after shooting
     NamedCommands.registerCommand(
@@ -481,10 +486,9 @@ public class RobotContainer {
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
     // button is pressed
     // Requires demo mode to be false (if demo mode is on we don't want to align to pass)
-    (Triggers.getInstance()
-            .shootButton()
-            .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean()))
-        .or(Triggers.getInstance().passButton())
+    Triggers.getInstance()
+        .shootButton()
+        .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
         .and(() -> !HardwareConstants.TuningConstants.DEMO_MODE)
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
@@ -662,6 +666,21 @@ public class RobotContainer {
         .whileTrue(
             intakeRollerCommands.setRollerVoltage(
                 intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage))
+        .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
+
+    // Set to agitate voltage when shoot button is pressed
+    // and other standard shooting conditions true
+    Triggers.getInstance()
+        .shootButton()
+        .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
+        .and(
+            () ->
+                !(Triggers.getInstance().isShootSafeZone.getAsBoolean()
+                    && !Triggers.getInstance().isShootSafeTime.getAsBoolean()))
+        .and(Triggers.getInstance().isAlignedLooser)
+        .whileTrue(
+            intakeRollerCommands.setRollerVoltage(
+                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // INTAKE PIVOT

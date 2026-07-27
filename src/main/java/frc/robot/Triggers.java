@@ -124,7 +124,7 @@ public class Triggers {
 
   public Trigger passButton() {
     // No Xbox-mode home.
-    return thrustmaster.button(11);
+    return sourced(thrustmaster.button(11), controller.povUp());
   }
 
   public Trigger hardstopShootButton() {
