@@ -130,6 +130,11 @@ public class RobotContainer {
   // Resets to false when shoot button is released
   public boolean doubleCompress = false;
 
+  // Xbox-mode pivot toggle state. The flight stick keeps separate retract/deploy buttons, but
+  // Xbox mode folds both onto LB, so we have to remember which way the pivot last went.
+  // Starts false (deployed) to match the pivot's resting state.
+  private boolean pivotRetracted = false;
+
   // Stores the starting pose of the currently selected auto.
   // Updated when the auto chooser selection changes.
   private Pose2d autoStartPose = new Pose2d();
@@ -479,7 +484,7 @@ public class RobotContainer {
     //                         .getApproachingZoneX(
     //                             frc.robot.RobotState.getInstance().getEstimatedPose())
     //                     == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH))
-    //     .or(Triggers.getInstance().hardstopShootButton())
+    //     .or(<hardstopShootButton removed - button 9 is turbo now, pick a free button>)
     //     .whileTrue(
     //         Commands.sequence(
     //             DriveCommands.alignForDefenseShot(drive),
@@ -524,6 +529,11 @@ public class RobotContainer {
         // .or(Triggers.getInstance().isRobotApproachingBump())
         .whileTrue(
             DriveCommands.joystickDriveAlignForBump(drive, () -> -getDriveY(), () -> -getDriveX()));
+
+    // Turbo — raises the drive current limit for low-speed pushes, mainly getting over the bump
+    // with a full hopper. Capped at Waits.turboMaxSeconds, so the driver has to release and press
+    // again for another window rather than holding it indefinitely.
+    Triggers.getInstance().turboButton().whileTrue(DriveCommands.turboMode(drive));
 
     // UPPER SHOOTER
     // Set shooting velocity if shoot button pressed, we're in our alliance zone, hub is active, and
@@ -690,10 +700,28 @@ public class RobotContainer {
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // INTAKE PIVOT
-    // Retract on retract button — also cancels automatic compression for this shoot press
+    // Xbox mode: LB alternates deploy/retract, since RB is turbo there. The two flight-stick
+    // buttons below stay as they were. Both paths cancel auto-compress the same way.
+    Triggers.getInstance()
+        .intakePivotToggleButton()
+        .onTrue(
+            Commands.sequence(
+                    Commands.runOnce(() -> compressCancelled = true),
+                    Commands.runOnce(() -> pivotRetracted = !pivotRetracted),
+                    Commands.either(
+                        IntakePivotCommands.setPivotPosition(
+                            intakePivot, HardwareConstants.CompConstants.Positions.pivotUpPos),
+                        IntakePivotCommands.setPivotPosition(
+                            intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
+                        () -> pivotRetracted))
+                .withName("IntakePivot_ToggleXbox"));
+
+    // Retract on retract button — also cancels automatic compression for this shoot press.
+    // Keeps pivotRetracted in step so a later mode switch to Xbox doesn't waste the first LB press.
     Triggers.getInstance()
         .intakeInButton()
         .onTrue(Commands.runOnce(() -> compressCancelled = true))
+        .onTrue(Commands.runOnce(() -> pivotRetracted = true))
         .whileTrue(
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotUpPos));
@@ -702,6 +730,7 @@ public class RobotContainer {
     Triggers.getInstance()
         .intakeOutButton()
         .onTrue(Commands.runOnce(() -> compressCancelled = true))
+        .onTrue(Commands.runOnce(() -> pivotRetracted = false))
         .whileTrue(
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));

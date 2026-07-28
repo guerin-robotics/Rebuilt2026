@@ -93,13 +93,28 @@ public class Triggers {
   }
 
   public Trigger intakeInButton() {
-    // LB in Xbox mode
-    return sourced(thrustmaster.button(3), controller.leftBumper());
+    // Thrustmaster-MODE only, not merely thrustmaster-device: in Xbox mode buttons 3 and 4 are
+    // the alliance flipper, so leaving these live there would fire both meanings off one press.
+    // Xbox mode folds both pivot directions into intakePivotToggleButton() on LB.
+    return sourced(thrustmaster.button(3), new Trigger(() -> false));
   }
 
   public Trigger intakeOutButton() {
-    // RB in Xbox mode
-    return sourced(thrustmaster.button(4), controller.rightBumper());
+    // Thrustmaster-mode only, same reason as above. RB in Xbox mode is turbo now.
+    return sourced(thrustmaster.button(4), new Trigger(() -> false));
+  }
+
+  /**
+   * Xbox mode only: LB alternates the pivot between deployed and retracted, so one bumper covers
+   * what buttons 3 and 4 do separately on the flight stick. Never true in Thrustmaster mode.
+   */
+  public Trigger intakePivotToggleButton() {
+    return sourced(new Trigger(() -> false), controller.leftBumper());
+  }
+
+  /** Turbo: raises the drive current limit while held. Button 9 on the stick, RB in Xbox mode. */
+  public Trigger turboButton() {
+    return sourced(thrustmaster.button(9), controller.rightBumper());
   }
 
   public Trigger intakeRollerButton() {
@@ -125,11 +140,6 @@ public class Triggers {
   public Trigger passButton() {
     // No Xbox-mode home.
     return sourced(thrustmaster.button(11), controller.povUp());
-  }
-
-  public Trigger hardstopShootButton() {
-    // Only referenced by commented-out code.
-    return thrustmaster.button(9);
   }
 
   public Trigger demoDistanceShot() {
