@@ -88,6 +88,11 @@ public class Module {
     io.setTurnPosition(Rotation2d.kZero);
   }
 
+  /** Sets the drive motor stator and torque-current limit, in amps. */
+  public void setDriveCurrentLimit(double amps) {
+    io.setDriveCurrentLimit(amps);
+  }
+
   /** Disables all outputs to motors. */
   public void stop() {
     io.setDriveOpenLoop(0.0);

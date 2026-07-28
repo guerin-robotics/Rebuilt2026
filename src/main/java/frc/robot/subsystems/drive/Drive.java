@@ -33,6 +33,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -264,6 +265,19 @@ public class Drive extends SubsystemBase {
     for (int i = 0; i < 4; i++) {
       modules[i].runCharacterization(output);
     }
+  }
+
+  /**
+   * Sets the stator / torque-current limit on all four drive motors. Raising this past the slip
+   * point buys low-speed torque at the cost of traction and bus draw, so it is meant to be held
+   * briefly and released -- see {@code DriveCommands.turboMode}.
+   */
+  public void setDriveCurrentLimit(Current limit) {
+    double amps = limit.in(Amps);
+    for (int i = 0; i < 4; i++) {
+      modules[i].setDriveCurrentLimit(amps);
+    }
+    Logger.recordOutput("Drive/DriveCurrentLimitAmps", amps);
   }
 
   /** Stops the drive. */

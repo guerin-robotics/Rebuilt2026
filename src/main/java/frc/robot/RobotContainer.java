@@ -407,6 +407,12 @@ public class RobotContainer {
     new EventTrigger("HoodDown")
         .onTrue(
             HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
+
+    // Event marker for raising the drive current limit over the bump with a full hopper.
+    // Zoned marker (start AND end position in the path), so whileTrue -- the limit drops back to
+    // the default as soon as the zone ends. turboMode() declares no subsystem requirements, so it
+    // will not interrupt the path-following command.
+    new EventTrigger("Turbo").whileTrue(DriveCommands.turboMode(drive));
   }
 
   private void configureStateBindings() {

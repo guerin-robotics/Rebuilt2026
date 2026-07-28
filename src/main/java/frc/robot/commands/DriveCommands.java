@@ -477,6 +477,35 @@ public class DriveCommands {
             drive)
         .withName("StopWithX");
   }
+
+  /**
+   * Turbo mode: raises the drive stator / torque-current limit while this command runs, and
+   * restores the default limit when it ends or is interrupted.
+   *
+   * <p>Intended for low-speed, high-torque moments -- getting over the bump with a full hopper, or
+   * pushing. Down there the motors have little back-EMF, so a given stator current costs very
+   * little supply current and the raised limit turns into real wheel torque. At speed the 40 A
+   * supply limit clamps the draw anyway, so turbo does progressively less the faster you are going.
+   *
+   * <p>The raised limit is above the flat-carpet slip point, so on open floor this trades traction
+   * for torque and will tend to spin the wheels.
+   *
+   * <p>No subsystem requirement is declared, deliberately. This has to be schedulable from a
+   * PathPlanner EventTrigger during an auto path; requiring the drive subsystem there would
+   * interrupt the path-following command and take the whole auto group down with it. Because it
+   * holds no requirement it also composes cleanly with whatever drive command is already running.
+   */
+  public static Command turboMode(Drive drive) {
+    return Commands.startEnd(
+            () ->
+                drive.setDriveCurrentLimit(
+                    HardwareConstants.CompConstants.Currents.driveTurboCurrent),
+            () ->
+                drive.setDriveCurrentLimit(
+                    HardwareConstants.CompConstants.Currents.driveDefaultCurrent))
+        .withName("Drive_TurboMode");
+  }
+
   /**
    * Measures the velocity feedforward constants for the drive motors.
    *

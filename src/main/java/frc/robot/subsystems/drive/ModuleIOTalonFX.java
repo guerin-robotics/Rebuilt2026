@@ -12,7 +12,9 @@ import static frc.robot.util.PhoenixUtil.*;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
@@ -83,6 +85,17 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final StatusSignal<Voltage> turnAppliedVolts;
   private final StatusSignal<Current> turnCurrent;
 
+  // Runtime-adjustable drive current limits (turbo mode).
+  //
+  // These are private copies, not references into constants.DriveMotorInitialConfigs: that object
+  // is shared across all four modules by SwerveModuleConstantsFactory, so mutating it here would
+  // change every module's limits at once. Only the fields this class actually configures are
+  // copied -- everything else in these two config groups is left at the Phoenix default, which is
+  // what the startup apply() wrote anyway.
+  private final CurrentLimitsConfigs driveCurrentLimitConfigs = new CurrentLimitsConfigs();
+  private final TorqueCurrentConfigs driveTorqueCurrentConfigs = new TorqueCurrentConfigs();
+  private double appliedDriveCurrentLimitAmps;
+
   // Connection debouncers
   private final Debouncer driveConnectedDebounce =
       new Debouncer(0.5, Debouncer.DebounceType.kFalling);
@@ -114,6 +127,18 @@ public class ModuleIOTalonFX implements ModuleIO {
             : InvertedValue.CounterClockwise_Positive;
     tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
     tryUntilOk(5, () -> driveTalon.setPosition(0.0, 0.25));
+
+    // Seed the runtime limit copies from what was just applied, so setDriveCurrentLimit() only
+    // has to change the slip-current fields and leaves the supply limit alone.
+    driveCurrentLimitConfigs
+        .withSupplyCurrentLimit(driveConfig.CurrentLimits.SupplyCurrentLimit)
+        .withSupplyCurrentLimitEnable(driveConfig.CurrentLimits.SupplyCurrentLimitEnable)
+        .withStatorCurrentLimit(driveConfig.CurrentLimits.StatorCurrentLimit)
+        .withStatorCurrentLimitEnable(driveConfig.CurrentLimits.StatorCurrentLimitEnable);
+    driveTorqueCurrentConfigs
+        .withPeakForwardTorqueCurrent(driveConfig.TorqueCurrent.PeakForwardTorqueCurrent)
+        .withPeakReverseTorqueCurrent(driveConfig.TorqueCurrent.PeakReverseTorqueCurrent);
+    appliedDriveCurrentLimitAmps = constants.SlipCurrent;
 
     // Configure turn motor.
     // Start from the constants' initial configs, the same way the drive motor above does. Building
@@ -271,5 +296,28 @@ public class ModuleIOTalonFX implements ModuleIO {
           case TorqueCurrentFOC -> positionTorqueCurrentRequest.withPosition(
               rotation.getRotations());
         });
+  }
+
+  @Override
+  public void setDriveCurrentLimit(double amps) {
+    // Skip redundant CAN traffic -- turbo mode toggles on edges, but guard anyway in case this
+    // ever gets called from a periodic path.
+    if (amps == appliedDriveCurrentLimitAmps) {
+      return;
+    }
+    appliedDriveCurrentLimitAmps = amps;
+
+    // The drive closed loop outputs torque current, so the stator limit alone does not bound what
+    // the controller asks for -- the peak torque current has to move with it, same as at startup.
+    driveCurrentLimitConfigs.StatorCurrentLimit = amps;
+    driveTorqueCurrentConfigs.PeakForwardTorqueCurrent = amps;
+    driveTorqueCurrentConfigs.PeakReverseTorqueCurrent = -amps;
+
+    // Deliberately NOT tryUntilOk() here: this runs from a command during a match, and a blocking
+    // retry loop across four modules would stall the 20 ms robot loop. A timeout of 0 queues the
+    // config without waiting for a response. If a frame is dropped the module keeps its previous
+    // limit, which is a safe outcome in both directions -- turbo just doesn't engage.
+    driveTalon.getConfigurator().apply(driveCurrentLimitConfigs, 0.0);
+    driveTalon.getConfigurator().apply(driveTorqueCurrentConfigs, 0.0);
   }
 }
