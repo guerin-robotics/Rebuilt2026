@@ -704,17 +704,10 @@ public class RobotContainer {
     // buttons below stay as they were. Both paths cancel auto-compress the same way.
     Triggers.getInstance()
         .intakePivotToggleButton()
+        .onTrue(Commands.runOnce(() -> compressCancelled = true))
         .onTrue(
-            Commands.sequence(
-                    Commands.runOnce(() -> compressCancelled = true),
-                    Commands.runOnce(() -> pivotRetracted = !pivotRetracted),
-                    Commands.either(
-                        IntakePivotCommands.setPivotPosition(
-                            intakePivot, HardwareConstants.CompConstants.Positions.pivotUpPos),
-                        IntakePivotCommands.setPivotPosition(
-                            intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
-                        () -> pivotRetracted))
-                .withName("IntakePivot_ToggleXbox"));
+            IntakePivotCommands.togglePivot(
+                intakePivot, () -> pivotRetracted = !pivotRetracted, () -> pivotRetracted));
 
     // Retract on retract button — also cancels automatic compression for this shoot press.
     // Keeps pivotRetracted in step so a later mode switch to Xbox doesn't waste the first LB press.

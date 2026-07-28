@@ -47,6 +47,29 @@ public class IntakePivotCommands {
         .withName("IntakePivotStop");
   }
 
+  /**
+   * Alternates the pivot between retracted and deployed. Xbox mode binds both directions to one
+   * bumper, so each press has to flip the latch and then drive to whichever position that lands on.
+   *
+   * <p>The latch itself is owned by the caller rather than this factory, because the flight-stick
+   * retract/deploy buttons write it directly — they set an absolute direction while this toggles,
+   * and both have to agree on where the pivot ended up.
+   *
+   * @param flip flips the caller's latch; runs before the position is chosen
+   * @param isRetracted reads the caller's latch after the flip
+   */
+  public static Command togglePivot(
+      IntakePivot intakePivot, Runnable flip, BooleanSupplier isRetracted) {
+    return Commands.sequence(
+            Commands.runOnce(flip),
+            Commands.either(
+                setPivotPosition(intakePivot, HardwareConstants.CompConstants.Positions.pivotUpPos),
+                setPivotPosition(
+                    intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
+                isRetracted))
+        .withName("IntakePivot_Toggle");
+  }
+
   /** Move the pivot to a specific position. */
   public static Command setPivotPosition(IntakePivot intakePivot, Angle position) {
     return Commands.runOnce(() -> intakePivot.setPivotPosition(position), intakePivot)
