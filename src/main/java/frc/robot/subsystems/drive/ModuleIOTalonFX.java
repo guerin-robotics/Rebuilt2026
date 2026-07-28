@@ -10,6 +10,7 @@ package frc.robot.subsystems.drive;
 import static frc.robot.util.PhoenixUtil.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -38,6 +39,8 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.generated.TunerConstants;
 import java.util.Queue;
+import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Module IO implementation for Talon FX drive motor controller, Talon FX turn motor controller, and
@@ -313,11 +316,30 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveTorqueCurrentConfigs.PeakForwardTorqueCurrent = amps;
     driveTorqueCurrentConfigs.PeakReverseTorqueCurrent = -amps;
 
-    // Deliberately NOT tryUntilOk() here: this runs from a command during a match, and a blocking
-    // retry loop across four modules would stall the 20 ms robot loop. A timeout of 0 queues the
-    // config without waiting for a response. If a frame is dropped the module keeps its previous
-    // limit, which is a safe outcome in both directions -- turbo just doesn't engage.
-    driveTalon.getConfigurator().apply(driveCurrentLimitConfigs, 0.0);
-    driveTalon.getConfigurator().apply(driveTorqueCurrentConfigs, 0.0);
+    // These MUST use a non-zero timeout. Phoenix rejects a zero-timeout config outright with
+    // StatusCode.TimeoutCannotBeZero and, worse, special-cases that status so it is not even
+    // reported -- an apply(cfg, 0.0) silently does nothing at all. An earlier version of this
+    // method did exactly that, so turbo logged as engaged while the motors kept the stock limit.
+    //
+    // CTRE's guidance is 0.050 s or more. On a healthy CANivore each apply round-trips in a couple
+    // of milliseconds, so the realistic cost of the four calls below is well inside one 20 ms loop;
+    // the timeout only bites when the bus is already in trouble. This runs on a button edge and the
+    // turbo cap rate-limits it further, so it is not a hot path.
+    boolean ok =
+        applyOk(() -> driveTalon.getConfigurator().apply(driveCurrentLimitConfigs, 0.05))
+            & applyOk(() -> driveTalon.getConfigurator().apply(driveTorqueCurrentConfigs, 0.05));
+
+    // Surfaced so a failed apply can never again look like a successful one in the log.
+    Logger.recordOutput("Drive/CurrentLimit/Module" + constants.DriveMotorId + "Applied", ok);
+    Logger.recordOutput("Drive/CurrentLimit/Module" + constants.DriveMotorId + "Amps", amps);
+  }
+
+  /** Runs a config apply with one retry, reporting whether the device actually accepted it. */
+  private static boolean applyOk(Supplier<StatusCode> apply) {
+    StatusCode status = apply.get();
+    if (!status.isOK()) {
+      status = apply.get();
+    }
+    return status.isOK();
   }
 }
