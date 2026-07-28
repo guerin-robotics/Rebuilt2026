@@ -138,7 +138,8 @@ public class Triggers {
   }
 
   public Trigger passButton() {
-    // No Xbox-mode home.
+    // D-pad Up in Xbox mode. Pass IS reachable in both modes -- this used to be commented
+    // "no Xbox-mode home", which was wrong and had propagated into the controller-mode doc.
     return sourced(thrustmaster.button(11), controller.povUp());
   }
 
