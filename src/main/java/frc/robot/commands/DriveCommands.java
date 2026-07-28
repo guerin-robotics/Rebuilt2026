@@ -494,6 +494,10 @@ public class DriveCommands {
    * PathPlanner EventTrigger during an auto path; requiring the drive subsystem there would
    * interrupt the path-following command and take the whole auto group down with it. Because it
    * holds no requirement it also composes cleanly with whatever drive command is already running.
+   *
+   * <p>Capped at {@code Waits.turboMaxSeconds} to bound motor heating. When the cap expires the
+   * default limit is restored even if the button is still held; because this is bound with
+   * whileTrue, the driver has to release and press again to get another window.
    */
   public static Command turboMode(Drive drive) {
     return Commands.startEnd(
@@ -503,6 +507,7 @@ public class DriveCommands {
             () ->
                 drive.setDriveCurrentLimit(
                     HardwareConstants.CompConstants.Currents.driveDefaultCurrent))
+        .withTimeout(HardwareConstants.CompConstants.Waits.turboMaxSeconds)
         .withName("Drive_TurboMode");
   }
 

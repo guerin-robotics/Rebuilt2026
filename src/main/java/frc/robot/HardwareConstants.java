@@ -123,6 +123,11 @@ public class HardwareConstants {
       public static final double waitBetweenCompressSeconds = 0.15;
 
       public static final double autoWaitToCompressSeconds = 0.50; // 0.85
+
+      // Hard cap on how long turbo mode may hold the raised drive current limit. Bounds motor
+      // heating if a driver leans on the button during a stalled push. The button must be
+      // released and pressed again to get another window.
+      public static final double turboMaxSeconds = 2.0;
     }
 
     public static class Thresholds {
