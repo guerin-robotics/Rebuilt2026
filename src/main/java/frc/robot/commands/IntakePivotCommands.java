@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -49,25 +50,34 @@ public class IntakePivotCommands {
 
   /**
    * Alternates the pivot between retracted and deployed. Xbox mode binds both directions to one
-   * bumper, so each press has to flip the latch and then drive to whichever position that lands on.
+   * bumper, so each press sends the pivot to whichever end it is not currently headed for.
    *
-   * <p>The latch itself is owned by the caller rather than this factory, because the flight-stick
-   * retract/deploy buttons write it directly — they set an absolute direction while this toggles,
-   * and both have to agree on where the pivot ended up.
-   *
-   * @param flip flips the caller's latch; runs before the position is chosen
-   * @param isRetracted reads the caller's latch after the flip
+   * <p>The direction is derived from the subsystem's own goal rather than from a latch kept
+   * alongside the binding. A latch only knows about the presses that write it, and the pivot is
+   * also repositioned by the compress sequences, the shoot sequences and the autonomous
+   * DeployIntake / RetractIntake markers — after any of those the latch would disagree with the
+   * hardware and the next press would re-command the position already held, doing nothing visible.
+   * Reading the goal cannot drift, because every one of those paths sets it.
    */
-  public static Command togglePivot(
-      IntakePivot intakePivot, Runnable flip, BooleanSupplier isRetracted) {
-    return Commands.sequence(
-            Commands.runOnce(flip),
-            Commands.either(
-                setPivotPosition(intakePivot, HardwareConstants.CompConstants.Positions.pivotUpPos),
-                setPivotPosition(
-                    intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
-                isRetracted))
+  public static Command togglePivot(IntakePivot intakePivot) {
+    return Commands.either(
+            setPivotPosition(intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
+            setPivotPosition(intakePivot, HardwareConstants.CompConstants.Positions.pivotUpPos),
+            () -> isRetracted(intakePivot))
         .withName("IntakePivot_Toggle");
+  }
+
+  /**
+   * Whether the pivot's commanded goal sits nearer retracted than deployed.
+   *
+   * <p>Compared by distance rather than equality because the compress sequences park the pivot at
+   * intermediate jostle positions, which still have to resolve to one side or the other.
+   */
+  private static boolean isRetracted(IntakePivot intakePivot) {
+    double goal = intakePivot.getGoalPosition().in(Rotations);
+    double retracted = HardwareConstants.CompConstants.Positions.pivotUpPos.in(Rotations);
+    double deployed = HardwareConstants.CompConstants.Positions.pivotDownPos.in(Rotations);
+    return Math.abs(goal - retracted) <= Math.abs(goal - deployed);
   }
 
   /** Move the pivot to a specific position. */

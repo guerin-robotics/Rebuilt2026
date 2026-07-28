@@ -130,11 +130,6 @@ public class RobotContainer {
   // Resets to false when shoot button is released
   public boolean doubleCompress = false;
 
-  // Xbox-mode pivot toggle state. The flight stick keeps separate retract/deploy buttons, but
-  // Xbox mode folds both onto LB, so we have to remember which way the pivot last went.
-  // Starts false (deployed) to match the pivot's resting state.
-  private boolean pivotRetracted = false;
-
   // Stores the starting pose of the currently selected auto.
   // Updated when the auto chooser selection changes.
   private Pose2d autoStartPose = new Pose2d();
@@ -705,16 +700,13 @@ public class RobotContainer {
     Triggers.getInstance()
         .intakePivotToggleButton()
         .onTrue(Commands.runOnce(() -> compressCancelled = true))
-        .onTrue(
-            IntakePivotCommands.togglePivot(
-                intakePivot, () -> pivotRetracted = !pivotRetracted, () -> pivotRetracted));
+        .onTrue(IntakePivotCommands.togglePivot(intakePivot));
 
     // Retract on retract button — also cancels automatic compression for this shoot press.
-    // Keeps pivotRetracted in step so a later mode switch to Xbox doesn't waste the first LB press.
+    // No toggle bookkeeping needed: setPivotPosition updates the goal the toggle reads.
     Triggers.getInstance()
         .intakeInButton()
         .onTrue(Commands.runOnce(() -> compressCancelled = true))
-        .onTrue(Commands.runOnce(() -> pivotRetracted = true))
         .whileTrue(
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotUpPos));
@@ -723,7 +715,6 @@ public class RobotContainer {
     Triggers.getInstance()
         .intakeOutButton()
         .onTrue(Commands.runOnce(() -> compressCancelled = true))
-        .onTrue(Commands.runOnce(() -> pivotRetracted = false))
         .whileTrue(
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
