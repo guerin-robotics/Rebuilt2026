@@ -304,11 +304,11 @@ public class ModuleIOTalonFX implements ModuleIO {
   @Override
   public void setDriveCurrentLimit(double amps) {
     // Skip redundant CAN traffic -- turbo mode toggles on edges, but guard anyway in case this
-    // ever gets called from a periodic path.
+    // ever gets called from a periodic path. This holds the last limit the device ACCEPTED, so a
+    // rejected apply below cannot be mistaken for a live one.
     if (amps == appliedDriveCurrentLimitAmps) {
       return;
     }
-    appliedDriveCurrentLimitAmps = amps;
 
     // The drive closed loop outputs torque current, so the stator limit alone does not bound what
     // the controller asks for -- the peak torque current has to move with it, same as at startup.
@@ -328,6 +328,12 @@ public class ModuleIOTalonFX implements ModuleIO {
     boolean ok =
         applyOk(() -> driveTalon.getConfigurator().apply(driveCurrentLimitConfigs, 0.05))
             & applyOk(() -> driveTalon.getConfigurator().apply(driveTorqueCurrentConfigs, 0.05));
+
+    // Commit the cache only on success. NaN on failure rather than the previous value, because
+    // NaN != NaN makes the guard above fall through for ANY next request -- including a repeat of
+    // the value that just failed, and including the previous limit after a partial apply left the
+    // stator and torque-current groups disagreeing. Either way the next call re-sends both.
+    appliedDriveCurrentLimitAmps = ok ? amps : Double.NaN;
 
     // Surfaced so a failed apply can never again look like a successful one in the log.
     Logger.recordOutput("Drive/CurrentLimit/Module" + constants.DriveMotorId + "Applied", ok);
