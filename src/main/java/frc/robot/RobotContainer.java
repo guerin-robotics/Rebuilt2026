@@ -9,7 +9,6 @@ package frc.robot;
 
 import static edu.wpi.first.math.util.Units.metersToInches;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Volts;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -325,12 +324,6 @@ public class RobotContainer {
         IntakePivotCommands.setPivotPosition(
             intakePivot, HardwareConstants.CompConstants.Positions.pivotUpPos));
 
-    // Auto run intake command
-    NamedCommands.registerCommand(
-        "RunIntake",
-        intakeRollerCommands.setRollerVoltage(
-            intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage));
-
     // Auto shoot command
     NamedCommands.registerCommand(
         "Shoot",
@@ -389,19 +382,10 @@ public class RobotContainer {
                     intakePivot.setPivotPosition(
                         HardwareConstants.CompConstants.Positions.pivotUpPos)));
 
-    // Event marker for running intake rollers while in a zoned area
-    // Uses whileTrue because this is a zoned event marker (has start AND end positions in the path)
-    // No subsystem requirements declared to avoid interrupting the auto command group
-    new EventTrigger("RunIntake")
-        .whileTrue(
-            Commands.startEnd(
-                () -> {
-                  intakeRoller.setRollerVoltage(
-                      HardwareConstants.CompConstants.Voltages.intakeRollerVoltage);
-                },
-                () -> {
-                  intakeRoller.setRollerVoltage(Volts.of(0));
-                }));
+    // NOTE: there is no "RunIntake" event trigger any more. The roller now follows the same
+    // rules in auto as it does in teleop: the always-on default command runs it at intake
+    // voltage, and the shoot sequence takes it to agitate when the feeders start. The zoned
+    // RunIntake markers left in the .path files fire against nothing, which is harmless.
 
     // Event marker for setting the hood position to down
     new EventTrigger("HoodDown")
