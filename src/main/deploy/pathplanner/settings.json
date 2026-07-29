@@ -16,9 +16,9 @@
     "Pre-WVRoX",
     "Other"
   ],
-  "defaultMaxVel": 4.2,
-  "defaultMaxAccel": 6.0,
-  "defaultMaxAngVel": 540.0,
+  "defaultMaxVel": 4.0,
+  "defaultMaxAccel": 5.75,
+  "defaultMaxAngVel": 450.0,
   "defaultMaxAngAccel": 1020.0,
   "defaultNominalVoltage": 12.0,
   "robotMass": 63.503,
