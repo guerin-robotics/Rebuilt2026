@@ -12,7 +12,12 @@ public class intakeRollerConstants {
     public static final int INTAKE_ROLLER_MAIN_SUPPLY_AMP = 40;
     public static final int INTAKE_ROLLER_MAIN_SUPPLY_TRIGGER_AMP = 35;
     public static final Time INTAKE_ROLLER_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
-    public static final int INTAKE_ROLLER_MAIN_STATOR_AMP = 100; // 60 // 40 before IRI // 55
+    // 100 A was reachable but not useful: IRI logs show the leader above 60 A for only 5.5% of
+    // roller runtime, and those are all low-speed jams (velocity p50 51 rps, applied 4.3 V) where
+    // the 40 A supply limit is already clamping duty cycle, so the extra stator headroom bought
+    // torque the supply limit would not let become power. 60 A gives back the peak draw at a cost
+    // of 5.9 s/match of clipped stall torque. // 100 // 60 // 40 before IRI // 55
+    public static final int INTAKE_ROLLER_MAIN_STATOR_AMP = 60;
   }
 
   public static class SoftwareConstants {
