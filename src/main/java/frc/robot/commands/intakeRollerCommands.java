@@ -7,8 +7,10 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.HardwareConstants;
 import frc.robot.subsystems.intakeRoller.intakeRoller;
+import frc.robot.subsystems.upperFeeder.UpperFeeder;
 import java.util.function.BooleanSupplier;
 
 public class intakeRollerCommands {
@@ -69,6 +71,26 @@ public class intakeRollerCommands {
             () -> intakeRoller.setRollerVoltage(Volts.of(0)),
             intakeRoller)
         .withName("IntakeRoller_Reverse");
+  }
+
+  /**
+   * Holds the roller at zero for {@code flywheelSpinupSeconds}, then agitates. This is the roller
+   * half of the hard-coded tower shot: the tower feeders and transport use the no-align {@link
+   * FeederCommands#setUpperVelocityAfterWait(UpperFeeder, AngularVelocity)} overloads, which wait
+   * the same fixed spin-up time and then release unconditionally. Mirroring that wait here starts
+   * the roller on the same loop the fuel starts moving.
+   *
+   * <p>Do not use this for the hub or pass shots — those gate their feed on alignment, so their
+   * roller binding must gate on the same condition via {@link #setVoltageAfterWait}.
+   *
+   * @param intakeRoller The intake roller subsystem
+   * @param voltage The agitate voltage to apply once the spin-up wait has elapsed
+   */
+  public static Command setVoltageAfterSpinupWait(intakeRoller intakeRoller, Voltage voltage) {
+    return Commands.sequence(
+            new WaitCommand(HardwareConstants.CompConstants.Waits.flywheelSpinupSeconds),
+            setRollerVoltage(intakeRoller, voltage))
+        .withName("IntakeRoller_AgitateAfterSpinup");
   }
 
   /**

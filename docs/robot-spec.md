@@ -1279,8 +1279,12 @@ Three state flags reset on shoot button release:
 - `reverseIntakeButton` → `reverseRoller()` — holds `intakeRollerReverseVoltage` (-12 V) while
   held to back a jam out; same ownership story as `holdRollerStopped`. Release hands the roller
   back to the default at 12 V
-- `shootButton || passButton || shootFromTowerButton` → `setVoltageAfterWait(agitate,
-  isFlywheelSpunUp && isAlignedLooser)` — 0 V until the feeders are gated on, then agitate voltage
+- `shootButton || passButton` → `setVoltageAfterWait(agitate, isFlywheelSpunUp &&
+  isAlignedLooser)` — 0 V until the feeders are gated on, then agitate voltage
+- `shootFromTowerButton` → `setVoltageAfterSpinupWait(agitate)` — 0 V for `flywheelSpinupSeconds`
+  (0.5 s), then agitate voltage. Separate from the binding above because the tower shot's feeders
+  use the no-align `setXVelocityAfterWait` overloads and release on that same fixed wait rather
+  than on alignment
 
 **Cancellations on shoot button release:**
 - `compressCancelled = false`

@@ -647,27 +647,40 @@ public class RobotContainer {
         .onFalse(TransportCommands.stop(transport));
 
     // INTAKE ROLLER
-    // Hold the roller at zero when any shooting sequence is started (shoot to hub, pass, shoot
-    // from tower), then agitate from the loop the fuel actually starts moving. The condition
-    // passed here is the same one the LOWER SHOOTER binding above waits on before it runs the
-    // feeders and transport — keep the two in sync or the roller will lead or lag the shot.
+    // Hold the roller at zero when the hub or pass sequence is started, then agitate from the loop
+    // the fuel actually starts moving. The condition passed here is the same one the LOWER SHOOTER
+    // binding above waits on before it runs the feeders and transport — keep the two in sync or the
+    // roller will lead or lag the shot.
     // Reverts to the default (intakeRollerVoltage) once the shoot/pass button is released.
     Triggers.getInstance()
         .shootButton()
         .or(Triggers.getInstance().passButton())
-        .or(Triggers.getInstance().shootFromTowerButton())
         .whileTrue(
             intakeRollerCommands.setVoltageAfterWait(
                 intakeRoller,
                 HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage,
                 flywheel.isFlywheelSpunUp.and(Triggers.getInstance().isAlignedLooser)));
 
-    // NOTE: the binding above is the ONLY roller owner during a shot. A second binding used to
-    // sit here (shootButton + isAlignedLooser -> setRollerVoltage(agitate), .onFalse(stop)).
-    // Because it was registered later it interrupted setVoltageAfterWait and agitated on the
-    // very first tick of the press — before the feeders and transport were gated on — and its
-    // .onFalse released the subsystem whenever alignment was momentarily lost, letting the
-    // 12 V default command re-engage mid-shot.
+    // The tower shot needs its own roller binding because it releases its feed on a different
+    // condition: the FULL SHOOTER tower binding above uses the no-align setXVelocityAfterWait
+    // overloads, which wait flywheelSpinupSeconds and then feed unconditionally. The tower shot
+    // does not aim, so gating the roller on isAlignedLooser like the hub/pass binding above left
+    // the roller holding 0 V for the whole shot while the feeders pulled fuel. Mirror the tower
+    // feed's fixed wait instead so the roller agitates on the same loop the fuel starts moving.
+    Triggers.getInstance()
+        .shootFromTowerButton()
+        .whileTrue(
+            intakeRollerCommands.setVoltageAfterSpinupWait(
+                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage));
+
+    // NOTE: the two bindings above are the ONLY roller owners during a shot, and their triggers
+    // are disjoint in normal use. Holding shoot and tower together schedules both; the tower
+    // binding is registered later so it wins the subsystem, which is the intended precedence.
+    // Do not add a third. One used to sit here (shootButton + isAlignedLooser ->
+    // setRollerVoltage(agitate), .onFalse(stop)). Because it was registered later it interrupted
+    // setVoltageAfterWait and agitated on the very first tick of the press — before the feeders
+    // and transport were gated on — and its .onFalse released the subsystem whenever alignment
+    // was momentarily lost, letting the 12 V default command re-engage mid-shot.
 
     // Hold to stop the roller. This requires intakeRoller, so it interrupts whatever owns the
     // roller — the always-on default or a shot's agitate — and holds it at zero. Releasing the
@@ -995,19 +1008,26 @@ public class RobotContainer {
         .onFalse(FeederCommands.stopUpper(upperFeeder))
         .onFalse(TransportCommands.stop(transport));
 
-    // Hold the roller at zero when any shooting sequence is started (shoot to hub, pass, shoot
-    // from tower), then agitate from the loop the fuel actually starts moving. The sim LOWER
-    // SHOOTER bindings gate the feeders on isAlignedForCurrentShot with no spin-up wait, so that
-    // is the condition passed here.
+    // Hold the roller at zero when the hub or pass sequence is started, then agitate from the loop
+    // the fuel actually starts moving. The sim LOWER SHOOTER bindings gate the feeders on
+    // isAlignedForCurrentShot with no spin-up wait, so that is the condition passed here.
     Triggers.getInstance()
         .simShootButton()
         .or(Triggers.getInstance().simPassButton())
-        .or(Triggers.getInstance().simShootFromTowerButton())
         .whileTrue(
             intakeRollerCommands.setVoltageAfterWait(
                 intakeRoller,
                 HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage,
                 Triggers.getInstance().isAlignedForCurrentShot));
+
+    // Tower shot roller — mirrors the comp binding. The sim tower shot above also uses the
+    // no-align setXVelocityAfterWait overloads, so the roller waits the same fixed spin-up time
+    // rather than gating on alignment the tower shot never establishes.
+    Triggers.getInstance()
+        .simShootFromTowerButton()
+        .whileTrue(
+            intakeRollerCommands.setVoltageAfterSpinupWait(
+                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage));
 
     // INTAKE PIVOT
     // Retract on retract button — also cancels automatic compression for this shoot press
