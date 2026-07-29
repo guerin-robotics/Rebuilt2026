@@ -841,17 +841,19 @@ public class RobotContainer {
                 () -> Triggers.getInstance().simYSupplier(),
                 () -> RobotState.getInstance().getAngleToAllianceHub()));
 
-    // If shooting when near a hardstop spot (trench and eventually tower), go to the hardstop spot
-    // and shoot
-    Triggers.getInstance()
-        .simShootButton()
-        .and(Triggers.getInstance().isShootClear)
-        .and(
-            () ->
-                frc.robot.RobotState.getInstance()
-                        .getApproachingZoneX(frc.robot.RobotState.getInstance().getEstimatedPose())
-                    == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH)
-        .whileTrue(DriveCommands.alignForDefenseShot(drive));
+    // // If shooting when near a hardstop spot (trench and eventually tower), go to the hardstop
+    // spot
+    // // and shoot
+    // Triggers.getInstance()
+    //     .simShootButton()
+    //     .and(Triggers.getInstance().isShootClear)
+    //     .and(
+    //         () ->
+    //             frc.robot.RobotState.getInstance()
+    //
+    // .getApproachingZoneX(frc.robot.RobotState.getInstance().getEstimatedPose())
+    //                 == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH)
+    //     .whileTrue(DriveCommands.alignForDefenseShot(drive));
 
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
     // button is pressed

@@ -14,7 +14,6 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
@@ -298,12 +297,12 @@ public class Drive extends SubsystemBase {
     stop();
   }
 
-  public void alignForDefenseShot(Pose2d targetPose) {
-    Command followCommand =
-        AutoBuilder.pathfindToPose(targetPose, PathConstraints.unlimitedConstraints(12));
-    Logger.recordOutput("RobotState/targetPose", targetPose);
-    followCommand.schedule();
-  }
+  // public void alignForDefenseShot(Pose2d targetPose) {
+  //   Command followCommand =
+  //       AutoBuilder.pathfindToPose(targetPose, PathConstraints.unlimitedConstraints(12));
+  //   Logger.recordOutput("RobotState/targetPose", targetPose);
+  //   followCommand.schedule();
+  // }
 
   /** Returns a command to run a quasistatic test in the specified direction. */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

@@ -14,7 +14,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -192,37 +191,38 @@ public class DriveCommands {
                 && Math.abs(ySupplier.getAsDouble()) < 0.1);
   }
 
-  public static Command alignForDefenseShot(Drive drive) {
-    return Commands.runOnce(
-        () -> {
-          drive.aligningDefensively = true;
+  // public static Command alignForDefenseShot(Drive drive) {
+  //   return Commands.runOnce(
+  //       () -> {
+  //         drive.aligningDefensively = true;
 
-          double targetx = AllianceFlipUtil.applyX(3.5);
-          double targety;
-          if (AllianceFlipUtil.applyY(RobotState.getInstance().getEstimatedPose().getY()) >= 4.0) {
-            targety = AllianceFlipUtil.applyY(6.5);
-          } else {
-            targety = AllianceFlipUtil.applyY(1.5);
-          }
+  //         double targetx = AllianceFlipUtil.applyX(3.5);
+  //         double targety;
+  //         if (AllianceFlipUtil.applyY(RobotState.getInstance().getEstimatedPose().getY()) >= 4.0)
+  // {
+  //           targety = AllianceFlipUtil.applyY(6.5);
+  //         } else {
+  //           targety = AllianceFlipUtil.applyY(1.5);
+  //         }
 
-          // Similar mechanism to getAngleToAllianceHub(), only using target pose instead of
-          // current
-          // pose
-          // Get alliance hub target (2D position on the field)
-          Translation3d hubTarget3d = RobotState.getInstance().getAllianceHubTarget();
-          Translation2d hubTarget2d = hubTarget3d.toTranslation2d();
-          // Calculate the vector from target pose to hub
-          Translation2d robotToHub = hubTarget2d.minus(new Translation2d(targetx, targety));
-          // Calculate angle
-          Rotation2d targetRotation =
-              new Rotation2d(robotToHub.getX(), robotToHub.getY()).plus(Rotation2d.kPi);
+  //         // Similar mechanism to getAngleToAllianceHub(), only using target pose instead of
+  //         // current
+  //         // pose
+  //         // Get alliance hub target (2D position on the field)
+  //         Translation3d hubTarget3d = RobotState.getInstance().getAllianceHubTarget();
+  //         Translation2d hubTarget2d = hubTarget3d.toTranslation2d();
+  //         // Calculate the vector from target pose to hub
+  //         Translation2d robotToHub = hubTarget2d.minus(new Translation2d(targetx, targety));
+  //         // Calculate angle
+  //         Rotation2d targetRotation =
+  //             new Rotation2d(robotToHub.getX(), robotToHub.getY()).plus(Rotation2d.kPi);
 
-          Pose2d targetPose = new Pose2d(targetx, targety, targetRotation);
+  //         Pose2d targetPose = new Pose2d(targetx, targety, targetRotation);
 
-          drive.alignForDefenseShot(targetPose);
-        },
-        drive);
-  }
+  //         drive.alignForDefenseShot(targetPose);
+  //       },
+  //       drive);
+  // }
 
   /**
    * Field relative drive command using joystick for linear control and PID for angular control.
