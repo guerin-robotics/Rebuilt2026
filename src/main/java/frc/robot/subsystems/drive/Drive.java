@@ -14,7 +14,6 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
@@ -33,6 +32,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -266,6 +266,19 @@ public class Drive extends SubsystemBase {
     }
   }
 
+  /**
+   * Sets the stator / torque-current limit on all four drive motors. Raising this past the slip
+   * point buys low-speed torque at the cost of traction and bus draw, so it is meant to be held
+   * briefly and released -- see {@code DriveCommands.turboMode}.
+   */
+  public void setDriveCurrentLimit(Current limit) {
+    double amps = limit.in(Amps);
+    for (int i = 0; i < 4; i++) {
+      modules[i].setDriveCurrentLimit(amps);
+    }
+    Logger.recordOutput("Drive/DriveCurrentLimitAmps", amps);
+  }
+
   /** Stops the drive. */
   public void stop() {
     runVelocity(new ChassisSpeeds());
@@ -284,12 +297,12 @@ public class Drive extends SubsystemBase {
     stop();
   }
 
-  public void alignForDefenseShot(Pose2d targetPose) {
-    Command followCommand =
-        AutoBuilder.pathfindToPose(targetPose, PathConstraints.unlimitedConstraints(12));
-    Logger.recordOutput("RobotState/targetPose", targetPose);
-    followCommand.schedule();
-  }
+  // public void alignForDefenseShot(Pose2d targetPose) {
+  //   Command followCommand =
+  //       AutoBuilder.pathfindToPose(targetPose, PathConstraints.unlimitedConstraints(12));
+  //   Logger.recordOutput("RobotState/targetPose", targetPose);
+  //   followCommand.schedule();
+  // }
 
   /** Returns a command to run a quasistatic test in the specified direction. */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

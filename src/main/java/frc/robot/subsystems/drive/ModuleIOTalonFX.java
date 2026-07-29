@@ -10,9 +10,12 @@ package frc.robot.subsystems.drive;
 import static frc.robot.util.PhoenixUtil.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
@@ -36,6 +39,8 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.generated.TunerConstants;
 import java.util.Queue;
+import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Module IO implementation for Talon FX drive motor controller, Talon FX turn motor controller, and
@@ -83,6 +88,17 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final StatusSignal<Voltage> turnAppliedVolts;
   private final StatusSignal<Current> turnCurrent;
 
+  // Runtime-adjustable drive current limits (turbo mode).
+  //
+  // These are private copies, not references into constants.DriveMotorInitialConfigs: that object
+  // is shared across all four modules by SwerveModuleConstantsFactory, so mutating it here would
+  // change every module's limits at once. Only the fields this class actually configures are
+  // copied -- everything else in these two config groups is left at the Phoenix default, which is
+  // what the startup apply() wrote anyway.
+  private final CurrentLimitsConfigs driveCurrentLimitConfigs = new CurrentLimitsConfigs();
+  private final TorqueCurrentConfigs driveTorqueCurrentConfigs = new TorqueCurrentConfigs();
+  private double appliedDriveCurrentLimitAmps;
+
   // Connection debouncers
   private final Debouncer driveConnectedDebounce =
       new Debouncer(0.5, Debouncer.DebounceType.kFalling);
@@ -114,6 +130,18 @@ public class ModuleIOTalonFX implements ModuleIO {
             : InvertedValue.CounterClockwise_Positive;
     tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
     tryUntilOk(5, () -> driveTalon.setPosition(0.0, 0.25));
+
+    // Seed the runtime limit copies from what was just applied, so setDriveCurrentLimit() only
+    // has to change the slip-current fields and leaves the supply limit alone.
+    driveCurrentLimitConfigs
+        .withSupplyCurrentLimit(driveConfig.CurrentLimits.SupplyCurrentLimit)
+        .withSupplyCurrentLimitEnable(driveConfig.CurrentLimits.SupplyCurrentLimitEnable)
+        .withStatorCurrentLimit(driveConfig.CurrentLimits.StatorCurrentLimit)
+        .withStatorCurrentLimitEnable(driveConfig.CurrentLimits.StatorCurrentLimitEnable);
+    driveTorqueCurrentConfigs
+        .withPeakForwardTorqueCurrent(driveConfig.TorqueCurrent.PeakForwardTorqueCurrent)
+        .withPeakReverseTorqueCurrent(driveConfig.TorqueCurrent.PeakReverseTorqueCurrent);
+    appliedDriveCurrentLimitAmps = constants.SlipCurrent;
 
     // Configure turn motor.
     // Start from the constants' initial configs, the same way the drive motor above does. Building
@@ -271,5 +299,53 @@ public class ModuleIOTalonFX implements ModuleIO {
           case TorqueCurrentFOC -> positionTorqueCurrentRequest.withPosition(
               rotation.getRotations());
         });
+  }
+
+  @Override
+  public void setDriveCurrentLimit(double amps) {
+    // Skip redundant CAN traffic -- turbo mode toggles on edges, but guard anyway in case this
+    // ever gets called from a periodic path. This holds the last limit the device ACCEPTED, so a
+    // rejected apply below cannot be mistaken for a live one.
+    if (amps == appliedDriveCurrentLimitAmps) {
+      return;
+    }
+
+    // The drive closed loop outputs torque current, so the stator limit alone does not bound what
+    // the controller asks for -- the peak torque current has to move with it, same as at startup.
+    driveCurrentLimitConfigs.StatorCurrentLimit = amps;
+    driveTorqueCurrentConfigs.PeakForwardTorqueCurrent = amps;
+    driveTorqueCurrentConfigs.PeakReverseTorqueCurrent = -amps;
+
+    // These MUST use a non-zero timeout. Phoenix rejects a zero-timeout config outright with
+    // StatusCode.TimeoutCannotBeZero and, worse, special-cases that status so it is not even
+    // reported -- an apply(cfg, 0.0) silently does nothing at all. An earlier version of this
+    // method did exactly that, so turbo logged as engaged while the motors kept the stock limit.
+    //
+    // CTRE's guidance is 0.050 s or more. On a healthy CANivore each apply round-trips in a couple
+    // of milliseconds, so the realistic cost of the four calls below is well inside one 20 ms loop;
+    // the timeout only bites when the bus is already in trouble. This runs on a button edge and the
+    // turbo cap rate-limits it further, so it is not a hot path.
+    boolean ok =
+        applyOk(() -> driveTalon.getConfigurator().apply(driveCurrentLimitConfigs, 0.05))
+            & applyOk(() -> driveTalon.getConfigurator().apply(driveTorqueCurrentConfigs, 0.05));
+
+    // Commit the cache only on success. NaN on failure rather than the previous value, because
+    // NaN != NaN makes the guard above fall through for ANY next request -- including a repeat of
+    // the value that just failed, and including the previous limit after a partial apply left the
+    // stator and torque-current groups disagreeing. Either way the next call re-sends both.
+    appliedDriveCurrentLimitAmps = ok ? amps : Double.NaN;
+
+    // Surfaced so a failed apply can never again look like a successful one in the log.
+    Logger.recordOutput("Drive/CurrentLimit/Module" + constants.DriveMotorId + "Applied", ok);
+    Logger.recordOutput("Drive/CurrentLimit/Module" + constants.DriveMotorId + "Amps", amps);
+  }
+
+  /** Runs a config apply with one retry, reporting whether the device actually accepted it. */
+  private static boolean applyOk(Supplier<StatusCode> apply) {
+    StatusCode status = apply.get();
+    if (!status.isOK()) {
+      status = apply.get();
+    }
+    return status.isOK();
   }
 }

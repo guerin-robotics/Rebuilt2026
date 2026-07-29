@@ -110,11 +110,19 @@ driver is up, re-pick `XBOX CONTROLLER Drive` from the dropdown before enabling.
 | Right stick X | Rotation |
 | Right trigger | Shoot |
 | Left trigger | Stop intake roller (hold — the roller otherwise runs continuously) |
-| Left bumper | Intake in (pivot up) |
-| Right bumper | Intake out (pivot down) |
+| Left bumper | Intake pivot toggle (alternates up / down) |
+| Right bumper | Turbo (raises drive current limit, 2 s cap) |
 | X | Trench align |
 | A | Bump align |
 | Y | Shoot from tower |
+| D-pad Up | Pass |
+
+Xbox mode has no separate intake-in / intake-out buttons. `intakeInButton()` and
+`intakeOutButton()` are Thrustmaster-*mode* only — they must stay dead in Xbox mode
+because flightstick 3 and 4 are the alliance flipper there, and leaving them live would
+fire both meanings off one press. Both directions are folded onto
+`intakePivotToggleButton()` on LB, backed by the `pivotRetracted` latch in
+`RobotContainer`.
 
 The flightstick becomes the override controller:
 
@@ -125,26 +133,29 @@ The flightstick becomes the override controller:
 | 4 | Flip alliance winner (same as 3) |
 | 6 | Manual compress |
 | 7 | Demo shot (demo mode only) |
-| 11 | Pass |
 | 12 | Cancel auto-X |
+
+Flightstick 11 is **not** pass in this mode. `passButton()` is `sourced(...)`, so pass
+moves to Xbox D-pad Up when the Xbox drives and button 11 goes dead along with the rest
+of the stick's drive functions.
 
 ### Flightstick drive mode (normal)
 
-Unchanged from what the team has always run — see `Triggers.java` for the full list.
-The Xbox is the override controller: A flips alliance winner, Y disables hub shift,
-B toggles double compress.
+Intake stays on buttons 3 (in) and 4 (out) as always, and **button 9 is turbo**.
+Otherwise unchanged — see `Triggers.java` for the full list. The Xbox is the override
+controller: A flips alliance winner, Y disables hub shift, B toggles double compress.
 
 ### Not available in Xbox drive mode
 
 These stay on the flightstick and have no Xbox button:
 
-- **Pass** — reachable only via the shoot button when outside the alliance zone. An Xbox
-  driver cannot pass while standing inside the alliance zone.
 - **Manual compress** — auto-compress on shoot still works.
-- **Demo / tuning / hardstop shots** — practice and demo only.
+- **Demo / tuning shots** — practice and demo only.
+- **Independent intake in / out** — Xbox mode has the LB toggle instead, so you cannot
+  command a direction directly, only alternate.
 
-If any of these turn out to matter in a real match, the D-pad, Start, Back, and both
-stick presses are all still free.
+If any of these turn out to matter in a real match, Start, Back, both stick presses and
+the D-pad other than Up are all still free.
 
 ---
 
@@ -185,10 +196,25 @@ public Trigger allianceWinDisabler() {
 
 For the Xbox-mode flightstick button, edit the **second** argument.
 
-**3. Single-controller functions** (`passButton`, `intakeCompressButton`,
-`autoXOverride`) return one binding with no `sourced(...)`, and that binding is live in
-**both** modes. `passButton` and `intakeCompressButton` stay on the flightstick in both
-modes — this is why they are the "not available on Xbox" gaps above.
+**3. Single-controller functions** (`intakeCompressButton`, `autoXOverride`) return one
+binding with no `sourced(...)`, and that binding is live in **both** modes. They stay on
+the flightstick either way — this is why manual compress is a "not available on Xbox"
+gap above.
+
+`passButton` is **not** one of these, despite the stale `// No Xbox-mode home` comment
+that used to sit on it. It is a normal shape-1 drive function:
+
+```java
+public Trigger passButton() {
+    return sourced(thrustmaster.button(11), controller.povUp());
+    //             ^ flightstick-drive: btn 11   ^ Xbox-drive: D-pad Up
+}
+```
+
+Pass is reachable in both modes. Shape-1 gating is also why `intakeInButton` and
+`intakeOutButton` pass a dead `new Trigger(() -> false)` as their second argument —
+they must not stay live on flightstick 3 and 4 in Xbox mode, where those buttons are
+the alliance flipper.
 
 `doubleCompressOverride` (Xbox B) is override-only: it uses `sourced(...)` with a dead
 second argument (`new Trigger(() -> false)`), so it toggles double compress **only when
@@ -207,8 +233,9 @@ hidden toggle on the pad, and double compress is not available in that mode.
 | Start / Back | `controller.start()` / `.back()` |
 | Flightstick button N | `thrustmaster.button(N)` |
 
-**Free Xbox buttons** — nothing on them in Xbox drive mode: the D-pad, Start, Back, and
-both stick presses. Prefer these when adding a function.
+**Free Xbox buttons** — nothing on them in Xbox drive mode: Start, Back, both stick
+presses, and the D-pad other than Up (Up is Pass). Prefer these when adding a function.
+Both bumpers are now taken — LB is the intake toggle, RB is turbo.
 
 ### Rules
 

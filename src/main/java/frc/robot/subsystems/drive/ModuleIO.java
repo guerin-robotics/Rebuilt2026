@@ -46,4 +46,11 @@ public interface ModuleIO {
 
   /** Run the turn motor to the specified rotation. */
   public default void setTurnPosition(Rotation2d rotation) {}
+
+  /**
+   * Sets the drive motor stator and torque-current limit, in amps. Used by turbo mode to trade the
+   * default slip-point limit for extra low-speed torque. Implementations should ignore repeat calls
+   * with the value already applied so this stays cheap to call.
+   */
+  public default void setDriveCurrentLimit(double amps) {}
 }

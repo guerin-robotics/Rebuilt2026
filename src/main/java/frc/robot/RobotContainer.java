@@ -391,6 +391,12 @@ public class RobotContainer {
     new EventTrigger("HoodDown")
         .onTrue(
             HoodCommands.setHoodPos(hood, HardwareConstants.CompConstants.Positions.hoodDownPos));
+
+    // Event marker for raising the drive current limit over the bump with a full hopper.
+    // Zoned marker (start AND end position in the path), so whileTrue -- the limit drops back to
+    // the default as soon as the zone ends. turboMode() declares no subsystem requirements, so it
+    // will not interrupt the path-following command.
+    new EventTrigger("Turbo").whileTrue(DriveCommands.turboMode(drive));
   }
 
   private void configureStateBindings() {
@@ -460,7 +466,7 @@ public class RobotContainer {
     //                         .getApproachingZoneX(
     //                             frc.robot.RobotState.getInstance().getEstimatedPose())
     //                     == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH))
-    //     .or(Triggers.getInstance().hardstopShootButton())
+    //     .or(<hardstopShootButton removed - button 9 is turbo now, pick a free button>)
     //     .whileTrue(
     //         Commands.sequence(
     //             DriveCommands.alignForDefenseShot(drive),
@@ -505,6 +511,11 @@ public class RobotContainer {
         // .or(Triggers.getInstance().isRobotApproachingBump())
         .whileTrue(
             DriveCommands.joystickDriveAlignForBump(drive, () -> -getDriveY(), () -> -getDriveX()));
+
+    // Turbo — raises the drive current limit for low-speed pushes, mainly getting over the bump
+    // with a full hopper. Capped at Waits.turboMaxSeconds, so the driver has to release and press
+    // again for another window rather than holding it indefinitely.
+    Triggers.getInstance().turboButton().whileTrue(DriveCommands.turboMode(drive));
 
     // UPPER SHOOTER
     // Set shooting velocity if shoot button pressed, we're in our alliance zone, hub is active, and
@@ -677,7 +688,15 @@ public class RobotContainer {
         .whileTrue(intakeRollerCommands.holdRollerStopped(intakeRoller));
 
     // INTAKE PIVOT
-    // Retract on retract button — also cancels automatic compression for this shoot press
+    // Xbox mode: LB alternates deploy/retract, since RB is turbo there. The two flight-stick
+    // buttons below stay as they were. Both paths cancel auto-compress the same way.
+    Triggers.getInstance()
+        .intakePivotToggleButton()
+        .onTrue(Commands.runOnce(() -> compressCancelled = true))
+        .onTrue(IntakePivotCommands.togglePivot(intakePivot));
+
+    // Retract on retract button — also cancels automatic compression for this shoot press.
+    // No toggle bookkeeping needed: setPivotPosition updates the goal the toggle reads.
     Triggers.getInstance()
         .intakeInButton()
         .onTrue(Commands.runOnce(() -> compressCancelled = true))
@@ -820,17 +839,19 @@ public class RobotContainer {
                 () -> Triggers.getInstance().simYSupplier(),
                 () -> RobotState.getInstance().getAngleToAllianceHub()));
 
-    // If shooting when near a hardstop spot (trench and eventually tower), go to the hardstop spot
-    // and shoot
-    Triggers.getInstance()
-        .simShootButton()
-        .and(Triggers.getInstance().isShootClear)
-        .and(
-            () ->
-                frc.robot.RobotState.getInstance()
-                        .getApproachingZoneX(frc.robot.RobotState.getInstance().getEstimatedPose())
-                    == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH)
-        .whileTrue(DriveCommands.alignForDefenseShot(drive));
+    // // If shooting when near a hardstop spot (trench and eventually tower), go to the hardstop
+    // spot
+    // // and shoot
+    // Triggers.getInstance()
+    //     .simShootButton()
+    //     .and(Triggers.getInstance().isShootClear)
+    //     .and(
+    //         () ->
+    //             frc.robot.RobotState.getInstance()
+    //
+    // .getApproachingZoneX(frc.robot.RobotState.getInstance().getEstimatedPose())
+    //                 == HardwareConstants.Zones.approachingZoneX.APPROACHING_ALLIANCE_TRENCH)
+    //     .whileTrue(DriveCommands.alignForDefenseShot(drive));
 
     // Align for pass if shoot button is pressed but we're not in our alliance zone, or if pass
     // button is pressed

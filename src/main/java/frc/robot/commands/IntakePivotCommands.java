@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -45,6 +46,38 @@ public class IntakePivotCommands {
   public static Command stopPivot(IntakePivot intakePivot) {
     return Commands.runOnce(() -> intakePivot.setPivotVoltage(Volts.of(0)), intakePivot)
         .withName("IntakePivotStop");
+  }
+
+  /**
+   * Alternates the pivot between retracted and deployed. Xbox mode binds both directions to one
+   * bumper, so each press sends the pivot to whichever end it is not currently headed for.
+   *
+   * <p>The direction is derived from the subsystem's own goal rather than from a latch kept
+   * alongside the binding. A latch only knows about the presses that write it, and the pivot is
+   * also repositioned by the compress sequences, the shoot sequences and the autonomous
+   * DeployIntake / RetractIntake markers — after any of those the latch would disagree with the
+   * hardware and the next press would re-command the position already held, doing nothing visible.
+   * Reading the goal cannot drift, because every one of those paths sets it.
+   */
+  public static Command togglePivot(IntakePivot intakePivot) {
+    return Commands.either(
+            setPivotPosition(intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos),
+            setPivotPosition(intakePivot, HardwareConstants.CompConstants.Positions.pivotUpPos),
+            () -> isRetracted(intakePivot))
+        .withName("IntakePivot_Toggle");
+  }
+
+  /**
+   * Whether the pivot's commanded goal sits nearer retracted than deployed.
+   *
+   * <p>Compared by distance rather than equality because the compress sequences park the pivot at
+   * intermediate jostle positions, which still have to resolve to one side or the other.
+   */
+  private static boolean isRetracted(IntakePivot intakePivot) {
+    double goal = intakePivot.getGoalPosition().in(Rotations);
+    double retracted = HardwareConstants.CompConstants.Positions.pivotUpPos.in(Rotations);
+    double deployed = HardwareConstants.CompConstants.Positions.pivotDownPos.in(Rotations);
+    return Math.abs(goal - retracted) <= Math.abs(goal - deployed);
   }
 
   /** Move the pivot to a specific position. */

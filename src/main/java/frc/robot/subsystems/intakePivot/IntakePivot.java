@@ -83,4 +83,16 @@ public class IntakePivot extends SubsystemBase {
   public Angle getPosition() {
     return inputs.intakePivotPosition;
   }
+
+  /**
+   * Returns the goal the pivot was last commanded to. Every repositioning path -- the driver
+   * buttons, compress sequences and the autonomous intake markers -- goes through {@link
+   * #setPivotPosition}, so this is authoritative for "where is the pivot headed" in a way that a
+   * flag maintained at individual call sites is not.
+   *
+   * @return the last commanded goal position
+   */
+  public Angle getGoalPosition() {
+    return goalPosition;
+  }
 }

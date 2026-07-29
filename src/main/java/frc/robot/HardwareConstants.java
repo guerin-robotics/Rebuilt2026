@@ -1,6 +1,7 @@
 package frc.robot;
 
 import static edu.wpi.first.math.util.Units.inchesToMeters;
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
@@ -9,6 +10,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.lib.AllianceFlipUtil;
 
@@ -52,6 +54,19 @@ public class HardwareConstants {
   }
 
   public static class CompConstants {
+    // Drive stator / torque-current limits. These bound wheel torque, not bus draw --
+    // supply current is separately limited to 40 A per motor in the Tuner constants.
+    public static class Currents {
+      // Normal operating limit. Matches COMP_TunerConstants.kSlipCurrent and is set near the
+      // point where the tread breaks loose on carpet, so the wheels stop rather than spin.
+      public static final Current driveDefaultCurrent = Amps.of(80);
+      // Turbo: raised limit for low-speed, high-torque situations -- crossing the bump with a
+      // full hopper, or pushing. Above the flat-ground slip point, so on flat carpet this
+      // mostly spins the wheels; it pays off at low speed where traction is better than
+      // steady-state carpet mu. Held only while commanded, never latched on.
+      public static final Current driveTurboCurrent = Amps.of(120);
+    }
+
     // Subsystems that run at a constant voltage: transport, roller
     public static class Voltages {
       public static final Voltage transportVoltage = Volts.of(-7.0);
@@ -108,6 +123,11 @@ public class HardwareConstants {
       public static final double waitBetweenCompressSeconds = 0.15;
 
       public static final double autoWaitToCompressSeconds = 0.50; // 0.85
+
+      // Hard cap on how long turbo mode may hold the raised drive current limit. Bounds motor
+      // heating if a driver leans on the button during a stalled push. The button must be
+      // released and pressed again to get another window.
+      public static final double turboMaxSeconds = 2.0;
     }
 
     public static class Thresholds {

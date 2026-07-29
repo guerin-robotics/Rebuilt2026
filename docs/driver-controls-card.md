@@ -53,8 +53,8 @@ THRUSTMASTER T.16000M
    │ ROLLER │        │ shot   │                  │        │ AUTO-X │        │
    ├────────┼────────┼────────┤       ⊙ stick    ├────────┼────────┼────────┤
    │   8    │   9    │   10   │                  │   14   │   15   │   16   │
-   │  BUMP  │        │ TOWER  │                  │        │        │        │
-   │ ALIGN  │        │  SHOT  │                  │        │        │        │
+   │  BUMP  │ TURBO  │ TOWER  │                  │        │        │        │
+   │ ALIGN  │  ⚡    │  SHOT  │                  │        │        │        │
    └────────┴────────┴────────┘                  └────────┴────────┴────────┘
 
    Blank buttons do nothing. Button 7 only works in practice/demo mode.
@@ -72,10 +72,11 @@ THRUSTMASTER T.16000M
 | 6 | Compress by hand |
 | 7 | Demo shot — practice and demos only, dead in a match |
 | 8 | Bump align — locks your heading for the bump |
+| **9** | **Turbo ⚡** — extra push for 2 seconds. See *Turbo* below |
 | 10 | Tower shot — fixed shot, no aiming, no waiting |
 | 11 | Pass |
 | 12 | Cancel auto-X (stop the wheels locking up) |
-| Hat, 9, 13–16 | Nothing |
+| Hat, 13–16 | Nothing |
 
 **The Xbox does three things in this mode**
 
@@ -98,7 +99,7 @@ XBOX ELITE SERIES 2
 ────────────────────────────────────────────────────────────────────────────────
 
       STOP ROLLER ── LT                                RT ── SHOOT ★
-   INTAKE IN, up ── LB                                 RB ── INTAKE OUT, down
+   INTAKE TOGGLE ── LB                                 RB ── TURBO ⚡
    ╔═════════════════════════════════════════════════════════════════════════╗
    ║                                                                         ║
    ║      ╭─────╮                                              ( Y )         ║
@@ -123,8 +124,8 @@ XBOX ELITE SERIES 2
 | Right stick, left / right | Turn |
 | **Right trigger** | **Shoot** — aims, spins up and fires. See below. Squeeze it properly, a light pull won't register |
 | Left trigger | **Stop the roller** — the roller runs on its own, hold this to stop it. Let go and it runs again |
-| Left bumper | Intake in (pivot up) |
-| Right bumper | Intake out (pivot down) |
+| **Left bumper** | **Intake toggle** — tap to flip the pivot up, tap again for down |
+| **Right bumper** | **Turbo ⚡** — extra push for 2 seconds. See *Turbo* below |
 | X | Trench align |
 | A | Bump align |
 | Y | Tower shot |
@@ -176,6 +177,30 @@ Let go early and nothing comes out.
 
 ---
 
+## Turbo ⚡
+
+**Flightstick 9 · Xbox right bumper**
+
+Hold it for extra pushing power. It is there for **getting over the bump with a full
+hopper**, and for shoving matches. Hold it, drive into the thing, let go once you're over.
+
+```
+  IT RUNS FOR 2 SECONDS, THEN STOPS ON ITS OWN.
+
+  Holding the button down longer does NOT keep it going. To get another
+  2 seconds you have to LET GO and PRESS IT AGAIN.
+
+  This is deliberate — it stops the motors cooking if you lean on it.
+```
+
+- **It does almost nothing at speed.** Turbo is a low-speed, high-shove tool. Driving
+  across open carpet you will not feel it, and that's expected — nothing is broken.
+- **On open carpet it can spin the wheels.** More power than the tread can hold. If the
+  robot feels like it's slipping instead of going, let go of turbo.
+- **Use it in bursts.** Don't drive around with your thumb on it.
+
+---
+
 ## Good to know
 
 - **The robot slows to half speed while it's aiming.** That is on purpose. It is not a
@@ -187,9 +212,13 @@ Let go early and nothing comes out.
   stop it: hold to stop, let go to start again. If you stop it mid-shot it won't go back
   to stirring until the next trigger pull.
 
-- **Touching the intake cancels auto-compress.** If you press intake in, intake out, or
-  compress, the robot stops compressing by itself for the rest of that trigger pull. Let
-  go of the trigger and it comes back.
+- **Touching the intake cancels auto-compress.** If you press intake in, intake out, the
+  Xbox intake toggle, or compress, the robot stops compressing by itself for the rest of
+  that trigger pull. Let go of the trigger and it comes back.
+
+- **The Xbox intake bumper is a toggle, not a hold.** Tap it and the pivot goes up and
+  *stays* up. Tap it again to bring it down. On the flightstick they're still two
+  separate buttons (3 up, 4 down).
 
 - **Tower shot and demo shot don't aim.** They fire a fixed shot on a timer. Line the
   robot up yourself first.
@@ -205,3 +234,6 @@ Let go early and nothing comes out.
 *Button positions confirmed with the drive team. Functions read from the robot code on
 28 July 2026 — if a button does something different from this card, the card is wrong,
 so tell a programmer.*
+
+*Changed 28 July 2026: turbo added on flightstick 9 / Xbox RB. Xbox intake out moved off
+RB — both intake directions are now the LB toggle. Flightstick intake is unchanged.*

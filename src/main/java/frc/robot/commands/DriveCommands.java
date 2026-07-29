@@ -14,7 +14,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -192,37 +191,38 @@ public class DriveCommands {
                 && Math.abs(ySupplier.getAsDouble()) < 0.1);
   }
 
-  public static Command alignForDefenseShot(Drive drive) {
-    return Commands.runOnce(
-        () -> {
-          drive.aligningDefensively = true;
+  // public static Command alignForDefenseShot(Drive drive) {
+  //   return Commands.runOnce(
+  //       () -> {
+  //         drive.aligningDefensively = true;
 
-          double targetx = AllianceFlipUtil.applyX(3.5);
-          double targety;
-          if (AllianceFlipUtil.applyY(RobotState.getInstance().getEstimatedPose().getY()) >= 4.0) {
-            targety = AllianceFlipUtil.applyY(6.5);
-          } else {
-            targety = AllianceFlipUtil.applyY(1.5);
-          }
+  //         double targetx = AllianceFlipUtil.applyX(3.5);
+  //         double targety;
+  //         if (AllianceFlipUtil.applyY(RobotState.getInstance().getEstimatedPose().getY()) >= 4.0)
+  // {
+  //           targety = AllianceFlipUtil.applyY(6.5);
+  //         } else {
+  //           targety = AllianceFlipUtil.applyY(1.5);
+  //         }
 
-          // Similar mechanism to getAngleToAllianceHub(), only using target pose instead of
-          // current
-          // pose
-          // Get alliance hub target (2D position on the field)
-          Translation3d hubTarget3d = RobotState.getInstance().getAllianceHubTarget();
-          Translation2d hubTarget2d = hubTarget3d.toTranslation2d();
-          // Calculate the vector from target pose to hub
-          Translation2d robotToHub = hubTarget2d.minus(new Translation2d(targetx, targety));
-          // Calculate angle
-          Rotation2d targetRotation =
-              new Rotation2d(robotToHub.getX(), robotToHub.getY()).plus(Rotation2d.kPi);
+  //         // Similar mechanism to getAngleToAllianceHub(), only using target pose instead of
+  //         // current
+  //         // pose
+  //         // Get alliance hub target (2D position on the field)
+  //         Translation3d hubTarget3d = RobotState.getInstance().getAllianceHubTarget();
+  //         Translation2d hubTarget2d = hubTarget3d.toTranslation2d();
+  //         // Calculate the vector from target pose to hub
+  //         Translation2d robotToHub = hubTarget2d.minus(new Translation2d(targetx, targety));
+  //         // Calculate angle
+  //         Rotation2d targetRotation =
+  //             new Rotation2d(robotToHub.getX(), robotToHub.getY()).plus(Rotation2d.kPi);
 
-          Pose2d targetPose = new Pose2d(targetx, targety, targetRotation);
+  //         Pose2d targetPose = new Pose2d(targetx, targety, targetRotation);
 
-          drive.alignForDefenseShot(targetPose);
-        },
-        drive);
-  }
+  //         drive.alignForDefenseShot(targetPose);
+  //       },
+  //       drive);
+  // }
 
   /**
    * Field relative drive command using joystick for linear control and PID for angular control.
@@ -477,6 +477,40 @@ public class DriveCommands {
             drive)
         .withName("StopWithX");
   }
+
+  /**
+   * Turbo mode: raises the drive stator / torque-current limit while this command runs, and
+   * restores the default limit when it ends or is interrupted.
+   *
+   * <p>Intended for low-speed, high-torque moments -- getting over the bump with a full hopper, or
+   * pushing. Down there the motors have little back-EMF, so a given stator current costs very
+   * little supply current and the raised limit turns into real wheel torque. At speed the 40 A
+   * supply limit clamps the draw anyway, so turbo does progressively less the faster you are going.
+   *
+   * <p>The raised limit is above the flat-carpet slip point, so on open floor this trades traction
+   * for torque and will tend to spin the wheels.
+   *
+   * <p>No subsystem requirement is declared, deliberately. This has to be schedulable from a
+   * PathPlanner EventTrigger during an auto path; requiring the drive subsystem there would
+   * interrupt the path-following command and take the whole auto group down with it. Because it
+   * holds no requirement it also composes cleanly with whatever drive command is already running.
+   *
+   * <p>Capped at {@code Waits.turboMaxSeconds} to bound motor heating. When the cap expires the
+   * default limit is restored even if the button is still held; because this is bound with
+   * whileTrue, the driver has to release and press again to get another window.
+   */
+  public static Command turboMode(Drive drive) {
+    return Commands.startEnd(
+            () ->
+                drive.setDriveCurrentLimit(
+                    HardwareConstants.CompConstants.Currents.driveTurboCurrent),
+            () ->
+                drive.setDriveCurrentLimit(
+                    HardwareConstants.CompConstants.Currents.driveDefaultCurrent))
+        .withTimeout(HardwareConstants.CompConstants.Waits.turboMaxSeconds)
+        .withName("Drive_TurboMode");
+  }
+
   /**
    * Measures the velocity feedforward constants for the drive motors.
    *
