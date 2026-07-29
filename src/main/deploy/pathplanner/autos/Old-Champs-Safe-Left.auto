@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Safe-Left-Comp-Path-1"
+            "pathName": "Old-Champs-Safe-Left-1"
           }
         },
         {
@@ -23,7 +23,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 3.8
+                  "waitTime": 3.0
                 }
               }
             ]
@@ -44,7 +44,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left-Comp-Path-2"
+            "pathName": "Old-Champs-Safe-Left-2"
           }
         },
         {
@@ -60,10 +60,16 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 4.0
+                  "waitTime": 3.25
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopAll"
           }
         },
         {
@@ -73,15 +79,15 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "stopAll"
+            "pathName": "Old-Champs-Safe-Left-3"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Pre-WVRoX",
   "choreoAuto": false
 }

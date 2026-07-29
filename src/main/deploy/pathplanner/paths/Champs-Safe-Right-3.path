@@ -50,7 +50,21 @@
       "rotationDegrees": 0.0
     }
   ],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Slow-Zone",
+      "minWaypointRelativePos": 0.87981836928934,
+      "maxWaypointRelativePos": 1.1339823921319794,
+      "constraints": {
+        "maxVelocity": 1.75,
+        "maxAcceleration": 6.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 1020.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
@@ -61,8 +75,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 7.0,
+    "maxVelocity": 4.2,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 1020.0,
     "nominalVoltage": 12.0,
@@ -73,7 +87,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Champs-Paths",
+  "folder": "WVRoX-Paths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -137.2906100426386

@@ -4,17 +4,20 @@
   "holonomicMode": true,
   "pathFolders": [
     "Center-Paths",
+    "Champs-Paths",
     "Comp-Paths",
     "Left-Paths",
-    "Champs-Paths",
+    "Pre-WVRoX-Paths",
     "Right-Paths",
-    "States-Paths"
+    "States-Paths",
+    "WVRoX-Paths"
   ],
   "autoFolders": [
+    "Pre-WVRoX",
     "Other"
   ],
-  "defaultMaxVel": 4.0,
-  "defaultMaxAccel": 7.0,
+  "defaultMaxVel": 4.2,
+  "defaultMaxAccel": 6.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 1020.0,
   "defaultNominalVoltage": 12.0,
