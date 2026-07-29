@@ -78,7 +78,7 @@ frc.robot
 │   ├── TransportCommands.java    — setTransportVoltage, setTransportVelocity, *AfterWait
 │   ├── PrestageCommands.java     — setPrestageVelocity, stop, prestageIdle
 │   ├── IntakePivotCommands.java  — setPivotPosition, compressPivot, autoPivotCompress
-│   └── intakeRollerCommands.java — setRollerVoltage, stopIntakeRoller, setVoltageAfterWait
+│   └── intakeRollerCommands.java — setRollerVoltage, stopIntakeRoller, holdRollerStopped, setVoltageAfterWait
 │
 ├── subsystems/
 │   ├── drive/          — Drive, Module, GyroIO/Pigeon2, ModuleIO/TalonFX/Sim, PhoenixOdometryThread
@@ -1238,6 +1238,7 @@ Three state flags reset on shoot button release:
 | Drive | `joystickDrive` (thrustmaster axes 0=strafe, 1=forward, 2=twist, all negated, clamped ±1) |
 | Flywheel | `FlywheelCommands.flywheelIdle()` → 1,200 RPM |
 | Hood | `HoodCommands.hoodIdle()` → 0° position |
+| Intake Roller | `intakeRollerCommands.setRollerVoltage(intakeRollerVoltage)` → 12 V, always on. Runs in auto as well as teleop, so nothing in an auto may *require* the roller |
 
 ### Active Teleop Bindings (in priority / condition order)
 
@@ -1273,7 +1274,10 @@ Three state flags reset on shoot button release:
   `sequence(waitUntil(isFlywheelSpunUp).withTimeout(0.5s), compressPivot(() -> doubleCompress))`; onFalse: pivotDown
 
 **Intake Roller:**
-- `intakeRollerButton` → hold 12 V; onFalse: stop
+- `intakeRollerButton` → `holdRollerStopped()` — holds 0 V while held, requiring the subsystem
+  so the always-on default cannot re-engage. Release hands the roller back to the default at 12 V
+- `shootButton || passButton || shootFromTowerButton` → `setVoltageAfterWait(agitate,
+  isFlywheelSpunUp && isAlignedLooser)` — 0 V until the feeders are gated on, then agitate voltage
 
 **Cancellations on shoot button release:**
 - `compressCancelled = false`
@@ -1288,7 +1292,6 @@ Registered before `buildAutoChooser()`:
 |---|---|
 | `"DeployIntake"` | `IntakePivotCommands.setPivotPosition(pivotDownPos=0.0rot)` |
 | `"RetractIntake"` | `IntakePivotCommands.setPivotPosition(pivotUpPos=0.3rot)` |
-| `"RunIntake"` | `setRollerVoltage(12V).alongWith(setTransportVoltage(-7V))` |
 | `"Shoot"` | `joystickDriveAtAngle(at hub angle).alongWith(autoShootToHub(...))` |
 | `"stopAll"` | `ShootSequences.stopAll(...)` |
 | `"HoodDownNamed"` | `HoodCommands.setHoodPos(0°)` |
@@ -1301,8 +1304,14 @@ All declared without subsystem requirements to avoid interrupting the path-follo
 |---|---|
 | `"DeployIntake"` onTrue | `runOnce(() -> intakePivot.setPivotPosition(0.0rot))` (no req) |
 | `"RetractIntake"` onTrue | `runOnce(() -> intakePivot.setPivotPosition(0.3rot))` (no req) |
-| `"RunIntake"` whileTrue | `startEnd(() -> intakeRoller.setRollerVoltage(12V), () -> intakeRoller.setRollerVoltage(0V))` (no req) |
 | `"HoodDown"` onTrue | `HoodCommands.setHoodPos(hood, 0°)` |
+
+There is no `"RunIntake"` trigger. The roller follows the same rules in auto as in teleop —
+its always-on default command runs it, and `autoShootToHub` takes it to agitate voltage when
+the feeders start. The roller commands in `ShootSequences` are `.asProxy()`'d so `intakeRoller`
+stays out of the auto's requirement union; `PathPlannerAuto` holds that union for the auto's
+whole duration, which would otherwise block the default command. The `RunIntake` markers still
+present in the `.path` files fire against nothing.
 
 ### Pre-Match Auto Checks
 

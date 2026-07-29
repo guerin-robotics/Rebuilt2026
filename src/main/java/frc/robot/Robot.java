@@ -217,7 +217,6 @@ public class Robot extends LoggedRobot {
     // out of the 20 ms loop entirely.
     HardwareConstants.ControllerConstants.XBOX_DRIVE_MODE = robotContainer.isXboxDriveSelected();
 
-    CommandScheduler.getInstance().schedule(robotContainer.getIntakeRollerCommand());
     CommandScheduler.getInstance().schedule(robotContainer.getIntakePivotCommand());
 
     // Automated tab switching
