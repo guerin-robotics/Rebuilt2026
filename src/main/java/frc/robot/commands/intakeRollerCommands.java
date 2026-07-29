@@ -53,6 +53,25 @@ public class intakeRollerCommands {
   }
 
   /**
+   * Runs the intake roller backwards for as long as this command runs, to back a jam out of the
+   * intake. Like {@link #holdRollerStopped}, this requires the subsystem and does not end on its
+   * own, so it interrupts whatever owns the roller — the always-on default or a shot's agitate —
+   * and keeps ownership until its button is released. On release the roller is zeroed and the
+   * always-on default re-engages at intake voltage on the next loop.
+   *
+   * @param intakeRoller The intake roller subsystem
+   */
+  public static Command reverseRoller(intakeRoller intakeRoller) {
+    return Commands.startEnd(
+            () ->
+                intakeRoller.setRollerVoltage(
+                    HardwareConstants.CompConstants.Voltages.intakeRollerReverseVoltage),
+            () -> intakeRoller.setRollerVoltage(Volts.of(0)),
+            intakeRoller)
+        .withName("IntakeRoller_Reverse");
+  }
+
+  /**
    * Runs the intake roller at the given agitate voltage, but only once the shot is actually being
    * fed. The caller passes the same condition its feeder/transport binding gates on, so the roller
    * starts agitating on the same loop the fuel starts moving — agitating earlier just stirs the

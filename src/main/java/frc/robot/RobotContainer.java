@@ -676,6 +676,14 @@ public class RobotContainer {
         .intakeRollerButton()
         .whileTrue(intakeRollerCommands.holdRollerStopped(intakeRoller));
 
+    // Hold to reverse the roller to back out a jam. Same ownership story as the hold-to-stop
+    // binding above — it interrupts the always-on default or a shot's agitate, and releasing
+    // hands the roller back to the default at intake voltage. Registered after hold-to-stop so
+    // reverse wins if both are pressed on the same loop.
+    Triggers.getInstance()
+        .reverseIntakeButton()
+        .whileTrue(intakeRollerCommands.reverseRoller(intakeRoller));
+
     // INTAKE PIVOT
     // Retract on retract button — also cancels automatic compression for this shoot press
     Triggers.getInstance()
@@ -693,15 +701,9 @@ public class RobotContainer {
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
 
-    // Manual compress button — cancels auto-compress and runs compress with no initial wait
-    // Runs single or double compress based on override - subject to change
-    Triggers.getInstance()
-        .intakeCompressButton()
-        .onTrue(Commands.runOnce(() -> compressCancelled = true))
-        .whileTrue(IntakePivotCommands.compressPivot(intakePivot, () -> doubleCompress))
-        .onFalse(
-            IntakePivotCommands.setPivotPosition(
-                intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
+    // NOTE: the manual compress button used to sit here on TM button 6. That button is now the
+    // hold-to-reverse jam clear, so manual compress is gone in comp bindings. Auto-compress on
+    // the shoot button below is unchanged, as is the double-compress override on Xbox B.
 
     // Automatic compress on shoot button when:
     //   - neither intake deploy nor retract button is currently pressed

@@ -282,6 +282,7 @@ public final class Constants {
 | `transportVoltage` | −7.0 V |
 | `intakeRollerVoltage` | +12.0 V |
 | `intakeRollerAgitateVoltage` | +3.0 V |
+| `intakeRollerReverseVoltage` | −12.0 V |
 | `prestageIdleVoltage` | −1.0 V |
 | `prestageVoltage` | +8.0 V |
 
@@ -1013,7 +1014,7 @@ Singleton. `CommandXboxController controller` (port 1), `CommandJoystick thrustm
 | `intakeInButton()` | 3 |
 | `intakeOutButton()` | 4 |
 | `intakeRollerButton()` | 5 |
-| `intakeCompressButton()` | 6 |
+| `reverseIntakeButton()` | 6 |
 | `demoDistanceShot()` | 7 |
 | `bumpAlignButton()` | 8 |
 | `shootFromTowerButton()` | 10 |
@@ -1269,13 +1270,15 @@ Three state flags reset on shoot button release:
 **Intake Pivot:**
 - `intakeInButton` → set `compressCancelled=true`, hold `pivotUpPos=0.3rot`
 - `intakeOutButton` → set `compressCancelled=true`, hold `pivotDownPos=0.0rot`
-- `intakeCompressButton` → set `compressCancelled=true`, `compressPivot(() -> doubleCompress)`, onFalse: pivotDown
 - `shootButton && !compressCancelled && !(isShootSafeZone && !isShootSafeTime) && isAlignedLooser` →
   `sequence(waitUntil(isFlywheelSpunUp).withTimeout(0.5s), compressPivot(() -> doubleCompress))`; onFalse: pivotDown
 
 **Intake Roller:**
 - `intakeRollerButton` → `holdRollerStopped()` — holds 0 V while held, requiring the subsystem
   so the always-on default cannot re-engage. Release hands the roller back to the default at 12 V
+- `reverseIntakeButton` → `reverseRoller()` — holds `intakeRollerReverseVoltage` (-12 V) while
+  held to back a jam out; same ownership story as `holdRollerStopped`. Release hands the roller
+  back to the default at 12 V
 - `shootButton || passButton || shootFromTowerButton` → `setVoltageAfterWait(agitate,
   isFlywheelSpunUp && isAlignedLooser)` — 0 V until the feeders are gated on, then agitate voltage
 

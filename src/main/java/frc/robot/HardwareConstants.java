@@ -57,6 +57,9 @@ public class HardwareConstants {
       public static final Voltage transportVoltage = Volts.of(-7.0);
       public static final Voltage intakeRollerVoltage = Volts.of(12.0);
       public static final Voltage intakeRollerAgitateVoltage = Volts.of(3);
+      // Held-button jam clear. Mirrors intakeRollerVoltage so a jam backs out at the same
+      // rate it went in; it is only ever applied while the driver holds the button.
+      public static final Voltage intakeRollerReverseVoltage = Volts.of(-12.0);
       public static final Voltage prestageIdleVoltage = Volts.of(-1);
       public static final Voltage prestageVoltage = Volts.of(8);
     }

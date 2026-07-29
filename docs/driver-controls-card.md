@@ -49,8 +49,8 @@ THRUSTMASTER T.16000M
         LEFT SIDE                                       RIGHT SIDE
    ┌────────┬────────┬────────┐                  ┌────────┬────────┬────────┐
    │   5    │   6    │   7    │                  │   11   │   12   │   13   │
-   │  STOP  │COMPRESS│ demo   │                  │  PASS  │ CANCEL │        │
-   │ ROLLER │        │ shot   │                  │        │ AUTO-X │        │
+   │  STOP  │REVERSE │ demo   │                  │  PASS  │ CANCEL │        │
+   │ ROLLER │ ROLLER │ shot   │                  │        │ AUTO-X │        │
    ├────────┼────────┼────────┤       ⊙ stick    ├────────┼────────┼────────┤
    │   8    │   9    │   10   │                  │   14   │   15   │   16   │
    │  BUMP  │        │ TOWER  │                  │        │        │        │
@@ -69,7 +69,7 @@ THRUSTMASTER T.16000M
 | 3 | Intake in (pivot up) |
 | 4 | Intake out (pivot down) |
 | 5 | **Stop the roller** — the roller runs on its own, hold this to stop it. Let go and it runs again |
-| 6 | Compress by hand |
+| 6 | **Reverse the roller** — hold to back a jam out. Let go and it goes back to intaking |
 | 7 | Demo shot — practice and demos only, dead in a match |
 | 8 | Bump align — locks your heading for the bump |
 | 10 | Tower shot — fixed shot, no aiming, no waiting |
@@ -110,7 +110,7 @@ XBOX ELITE SERIES 2
    ║        ← ✛ →                        │  R  │             Y  TOWER SHOT  ║
    ║          ↓                          ╰─────╯             X  TRENCH      ║
    ║        D-PAD                          TURN              A  BUMP        ║
-   ║      ↑ = PASS                    left / right           B  nothing     ║
+   ║   ↑ = PASS  ↓ = REVERSE          left / right           B  nothing     ║
    ║                                                                         ║
    ╚═════════════════════════════════════════════════════════════════════════╝
       Menu, View, the small centre buttons, clicking the sticks and the
@@ -129,6 +129,7 @@ XBOX ELITE SERIES 2
 | A | Bump align |
 | Y | Tower shot |
 | D-pad Up | Pass |
+| D-pad Down | **Reverse the roller** — hold to back a jam out. Let go and it goes back to intaking |
 | B | Nothing in this mode |
 | Everything else | Nothing |
 
@@ -136,13 +137,12 @@ XBOX ELITE SERIES 2
 > before you trust it in a match. If the robot goes backwards, stop and tell a
 > programmer — it's a one-line fix, but not one to discover mid-match.
 
-**The flightstick does five things in this mode**
+**The flightstick does four things in this mode**
 
 | Flightstick | What it does |
 |---|---|
 | 2 | Turn the hub timer off completely |
 | 3 or 4 | Flip which alliance the hub is favouring (either button, same result) |
-| 6 | Compress by hand |
 | 7 | Demo shot — practice and demos only |
 | 12 | Cancel auto-X |
 
@@ -183,13 +183,17 @@ Let go early and nothing comes out.
 
 - **The intake roller runs by itself, the whole match.** There is no button to run it —
   it spins from the moment you enable, in auto and in teleop, and the robot drops it to
-  a gentler stir on its own while a shot is going out. Button 5 / LT is the only way to
-  stop it: hold to stop, let go to start again. If you stop it mid-shot it won't go back
-  to stirring until the next trigger pull.
+  a gentler stir on its own while a shot is going out. Button 5 / LT holds it stopped and
+  button 6 / D-pad down runs it backwards to clear a jam — both are hold-to-use, let go and
+  it intakes again. If you stop or reverse it mid-shot it won't go back to stirring until
+  the next trigger pull.
 
-- **Touching the intake cancels auto-compress.** If you press intake in, intake out, or
-  compress, the robot stops compressing by itself for the rest of that trigger pull. Let
-  go of the trigger and it comes back.
+- **There is no compress-by-hand button any more.** Button 6 is the roller reverse now.
+  Compress still happens on its own on the trigger, and Xbox B still switches it to double.
+
+- **Touching the intake cancels auto-compress.** If you press intake in or intake out, the
+  robot stops compressing by itself for the rest of that trigger pull. Let go of the trigger
+  and it comes back.
 
 - **Tower shot and demo shot don't aim.** They fire a fixed shot on a timer. Line the
   robot up yourself first.
