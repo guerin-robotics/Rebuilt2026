@@ -38,6 +38,21 @@ public class intakeRollerCommands {
   }
 
   /**
+   * Holds the roller at zero for as long as this command runs. Unlike {@link #stopIntakeRoller},
+   * this does not end, so it keeps ownership of the subsystem and the always-on default command
+   * cannot re-engage until the command is interrupted or its button is released.
+   *
+   * @param intakeRoller The intake roller subsystem
+   */
+  public static Command holdRollerStopped(intakeRoller intakeRoller) {
+    return Commands.startEnd(
+            () -> intakeRoller.setRollerVoltage(Volts.of(0)),
+            () -> intakeRoller.setRollerVoltage(Volts.of(0)),
+            intakeRoller)
+        .withName("IntakeRoller_HoldStopped");
+  }
+
+  /**
    * Runs the intake roller at the given agitate voltage, but only once the shot is actually being
    * fed. The caller passes the same condition its feeder/transport binding gates on, so the roller
    * starts agitating on the same loop the fuel starts moving — agitating earlier just stirs the

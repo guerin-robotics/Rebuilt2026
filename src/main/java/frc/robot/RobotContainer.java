@@ -669,6 +669,13 @@ public class RobotContainer {
     // .onFalse released the subsystem whenever alignment was momentarily lost, letting the
     // 12 V default command re-engage mid-shot. See IntakeRollerBehaviorTest.
 
+    // Hold to stop the roller. This requires intakeRoller, so it interrupts whatever owns the
+    // roller — the always-on default or a shot's agitate — and holds it at zero. Releasing the
+    // button ends the command and hands the roller back to the default at intake voltage.
+    Triggers.getInstance()
+        .intakeRollerButton()
+        .whileTrue(intakeRollerCommands.holdRollerStopped(intakeRoller));
+
     // INTAKE PIVOT
     // Retract on retract button — also cancels automatic compression for this shoot press
     Triggers.getInstance()
