@@ -268,7 +268,7 @@ Encodes match-schedule timing for when the hub is active. `isShootSafeTime` is t
 - Auto delay: SmartDashboard input applied at `autonomousInit()`
 - Start pose validation in `disabledPeriodic()`: ± 6 in translation, ± 5° rotation
 
-**Named Commands:** `DeployIntake`, `RetractIntake`, `RunIntake`, `Shoot`, `stopAll`, `HoodDownNamed`
+**Named Commands:** `DeployIntake`, `RetractIntake`, `Shoot`, `stopAll`, `HoodDownNamed`
 
 ---
 

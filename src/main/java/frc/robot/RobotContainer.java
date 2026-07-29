@@ -667,7 +667,7 @@ public class RobotContainer {
     // Because it was registered later it interrupted setVoltageAfterWait and agitated on the
     // very first tick of the press — before the feeders and transport were gated on — and its
     // .onFalse released the subsystem whenever alignment was momentarily lost, letting the
-    // 12 V default command re-engage mid-shot. See IntakeRollerBehaviorTest.
+    // 12 V default command re-engage mid-shot.
 
     // Hold to stop the roller. This requires intakeRoller, so it interrupts whatever owns the
     // roller — the always-on default or a shot's agitate — and holds it at zero. Releasing the

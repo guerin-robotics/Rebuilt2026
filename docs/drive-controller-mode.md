@@ -109,7 +109,7 @@ driver is up, re-pick `XBOX CONTROLLER Drive` from the dropdown before enabling.
 | Left stick | Translation (drive) |
 | Right stick X | Rotation |
 | Right trigger | Shoot |
-| Left trigger | Intake roller |
+| Left trigger | Stop intake roller (hold — the roller otherwise runs continuously) |
 | Left bumper | Intake in (pivot up) |
 | Right bumper | Intake out (pivot down) |
 | X | Trench align |
