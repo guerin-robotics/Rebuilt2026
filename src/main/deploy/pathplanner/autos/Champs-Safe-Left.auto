@@ -44,7 +44,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Safe-Left-Comp-Path-2"
+            "pathName": "Champs-Safe-Left-2"
           }
         },
         {
@@ -81,7 +81,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Champs-Left-3"
+            "pathName": "Champs-Safe-Left-3"
           }
         }
       ]
