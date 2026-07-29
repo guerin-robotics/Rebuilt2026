@@ -68,7 +68,10 @@ public class COMP_TunerConstants {
       new TalonFXConfiguration()
           .withCurrentLimits(
               new CurrentLimitsConfigs()
-                  .withSupplyCurrentLimit(Amps.of(40))
+                  // 40 A capped achievable accel above ~1.5 m/s well below the 80 A stator
+                  // limit; match logs showed supply pinned at the limit while stator current
+                  // fell to ~33 A at 3.5 m/s.
+                  .withSupplyCurrentLimit(Amps.of(50))
                   .withSupplyCurrentLimitEnable(true));
   private static final TalonFXConfiguration steerInitialConfigs =
       new TalonFXConfiguration()
