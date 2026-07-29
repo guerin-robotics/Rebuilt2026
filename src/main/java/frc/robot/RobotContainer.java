@@ -407,11 +407,12 @@ public class RobotContainer {
     // Hood - stop motor when no command is running (prevents stale closed-loop reference)
     hood.setDefaultCommand(HoodCommands.hoodIdle(hood));
 
-    // Intake Roller - always run at intake voltage; shoot/pass/tower sequences override this with
-    // agitate voltage via their own whileTrue bindings
+    // Intake Roller - always run at intake velocity under closed-loop torque-FOC control;
+    // shoot/pass/tower sequences override this with agitate voltage via their own whileTrue
+    // bindings
     intakeRoller.setDefaultCommand(
-        intakeRollerCommands.setRollerVoltage(
-            intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage));
+        intakeRollerCommands.runRollerAtVelocity(
+            intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity));
     // OVERRIDES
     // Flip alliance winner
     Triggers.getInstance().allianceWinFlipper().onTrue(HubShiftUtil.flipWinner());
@@ -802,11 +803,12 @@ public class RobotContainer {
     // prestage.setDefaultCommand(PrestageCommands.prestageIdle(prestage));
     // Hood - stop motor when no command is running (prevents stale closed-loop reference)
     hood.setDefaultCommand(HoodCommands.hoodIdle(hood));
-    // Intake Roller - always run at intake voltage; shoot/pass/tower sequences override this with
-    // agitate voltage via their own whileTrue bindings
+    // Intake Roller - always run at intake velocity under closed-loop torque-FOC control;
+    // shoot/pass/tower sequences override this with agitate voltage via their own whileTrue
+    // bindings
     intakeRoller.setDefaultCommand(
-        intakeRollerCommands.setRollerVoltage(
-            intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage));
+        intakeRollerCommands.runRollerAtVelocity(
+            intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity));
 
     // OVERRIDES
     // Flip alliance winner

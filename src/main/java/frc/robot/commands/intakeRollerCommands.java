@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -26,6 +27,27 @@ public class intakeRollerCommands {
   public static Command setRollerVelocity(intakeRoller intakeRoller, AngularVelocity rollerVelo) {
     return Commands.runOnce(() -> intakeRoller.setRollerVelocity(rollerVelo), intakeRoller)
         .withName("IntakeRollerVelocity");
+  }
+
+  /**
+   * Runs the roller at a closed-loop velocity for as long as this command runs, then zeroes it.
+   *
+   * <p>This is the velocity-control counterpart to {@link #setRollerVoltage} and exists because
+   * {@link #setRollerVelocity} is a {@code runOnce} — it ends immediately, so it cannot hold the
+   * subsystem as a default command. This one uses {@code startEnd} so it never ends on its own.
+   *
+   * <p>Stops by commanding 0 V rather than 0 RPM: the velocity request goes out as torque current,
+   * so a 0 RPM setpoint would actively brake the roller against the hopper instead of coasting.
+   *
+   * @param intakeRoller The intake roller subsystem
+   * @param rollerVelo The closed-loop velocity setpoint to hold
+   */
+  public static Command runRollerAtVelocity(intakeRoller intakeRoller, AngularVelocity rollerVelo) {
+    return Commands.startEnd(
+            () -> intakeRoller.setRollerVelocity(rollerVelo),
+            () -> intakeRoller.setRollerVoltage(Volts.of(0)),
+            intakeRoller)
+        .withName("IntakeRoller_Velocity_" + (int) rollerVelo.in(RPM) + "RPM");
   }
 
   public static Command intakeRollerIdle(intakeRoller intakeRoller) {
