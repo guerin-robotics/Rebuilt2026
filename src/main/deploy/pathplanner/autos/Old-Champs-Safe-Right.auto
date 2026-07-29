@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Champs-Left-1"
+            "pathName": "Old-Champs-Safe-Right-1"
           }
         },
         {
@@ -23,7 +23,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 3.25
+                  "waitTime": 3.0
                 }
               }
             ]
@@ -32,19 +32,19 @@
         {
           "type": "named",
           "data": {
-            "name": "stopAll"
+            "name": "DeployIntake"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "DeployIntake"
+            "name": "stopAll"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "qual2 path 2"
+            "pathName": "Old-Champs-Safe-Right-2"
           }
         },
         {
@@ -69,19 +69,25 @@
         {
           "type": "named",
           "data": {
-            "name": "stopAll"
+            "name": "DeployIntake"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "DeployIntake"
+            "name": "stopAll"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Old-Champs-Safe-Right-3"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Pre-WVRoX",
   "choreoAuto": false
 }
