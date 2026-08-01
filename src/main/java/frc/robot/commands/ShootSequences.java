@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.HardwareConstants;
+import frc.robot.Triggers;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.intakePivot.IntakePivot;
@@ -33,7 +34,8 @@ public class ShootSequences {
                     prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
                 HoodCommands.setHoodPosForHub(hood)),
             Commands.sequence(
-                Commands.waitUntil(flywheel.isFlywheelSpunUp)
+                Commands.waitUntil(
+                        flywheel.isFlywheelSpunUp.and(Triggers.getInstance().isAlignedLooser))
                     .withTimeout(HardwareConstants.CompConstants.Waits.spinUpTimeOut),
                 Commands.parallel(
                     FeederCommands.setLowerFeederVelocity(
