@@ -12,10 +12,24 @@ import frc.robot.subsystems.lowerFeeder.LowerFeeder;
 import frc.robot.subsystems.prestage.Prestage;
 import frc.robot.subsystems.transport.Transport;
 import frc.robot.subsystems.upperFeeder.UpperFeeder;
+import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class ShootSequences {
 
+  /**
+   * Auto hub shot: spin up the flywheel/hood/prestage immediately, then feed once the shooter is
+   * ready AND the drivetrain is pointed at the hub.
+   *
+   * <p>Mirrors the teleop gating, where the feeders, agitator, and compress are all held off until
+   * {@code isAlignedLooser} is true. Uses the standard Spinup → Align → Act budget: phase 1 waits
+   * for spin-up, phase 2 waits for alignment with the remainder of {@code alignmentTimeoutSeconds},
+   * so feeding always begins within that total budget even if alignment never arrives.
+   *
+   * @param isAligned true when the drivetrain is pointed at the hub within tolerance. Supplied by
+   *     the caller so the alignment target always matches whatever the paired drive command is
+   *     aiming at.
+   */
   public static Command autoShootToHub(
       Flywheel flywheel,
       Prestage prestage,
@@ -24,7 +38,8 @@ public class ShootSequences {
       LowerFeeder lowerFeeder,
       Transport transport,
       intakeRoller intakeRoller,
-      IntakePivot intakePivot) {
+      IntakePivot intakePivot,
+      BooleanSupplier isAligned) {
     return Commands.parallel(
             Commands.runOnce(() -> Logger.recordOutput("RobotState/shooting", true)),
             Commands.parallel(
@@ -35,6 +50,17 @@ public class ShootSequences {
             Commands.sequence(
                 Commands.waitUntil(flywheel.isFlywheelSpunUp)
                     .withTimeout(HardwareConstants.CompConstants.Waits.spinUpTimeOut),
+                // Hold the feed until we're aimed. Timeout is the remaining alignment budget, so
+                // a shot that never lines up still fires rather than stalling the auto.
+                Commands.waitUntil(isAligned)
+                    .withTimeout(
+                        HardwareConstants.CompConstants.Waits.alignmentTimeoutSeconds
+                            - HardwareConstants.CompConstants.Waits.spinUpTimeOut),
+                // Records whether we actually got aligned or fell through on the timeout.
+                Commands.runOnce(
+                    () ->
+                        Logger.recordOutput(
+                            "RobotState/autoShotAlignedAtFeed", isAligned.getAsBoolean())),
                 Commands.parallel(
                     FeederCommands.setLowerFeederVelocity(
                         lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
