@@ -135,7 +135,7 @@ public class Drive extends SubsystemBase {
         // Sim-derived values (10.0 / 7.5); last real-robot tested values from drive
         // practice were 40.0 / 35.0 (PR #91)
         new PPHolonomicDriveController(
-            new PIDConstants(10.0, 0.0, 0.0), new PIDConstants(7.5, 0.0, 0.0)),
+            new PIDConstants(10.0, 0.0, 0.0), new PIDConstants(7.1, 0.0, 0)),
         PP_CONFIG,
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);

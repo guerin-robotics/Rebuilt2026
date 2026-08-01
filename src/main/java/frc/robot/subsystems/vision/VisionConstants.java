@@ -95,7 +95,7 @@ public class VisionConstants {
 
   // Tags farther than this are unreliable — reject the observation entirely.
   // At long range, small pixel errors become large pose errors.
-  public static double maxDistanceMeters = 6.0; // 4.0
+  public static double maxDistanceMeters = 8.0; // 4.0
 
   // Stricter distance limit for SINGLE-tag observations only. Every
   // catastrophic accepted pose in the State/Worlds logs (2.5–9.6 m wrong,
