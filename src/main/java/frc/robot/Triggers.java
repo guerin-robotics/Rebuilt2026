@@ -115,24 +115,26 @@ public class Triggers {
     return sourced(thrustmaster.button(6), controller.povDown());
   }
 
-  public Trigger bumpAlignButton() {
-    // A in Xbox mode
-    return sourced(thrustmaster.button(8), controller.a());
-  }
+  // public Trigger bumpAlignButton() {
+  //   // A in Xbox mode
+  //   return sourced(thrustmaster.button(8), controller.a());
+  // }
 
   public Trigger shootFromTowerButton() {
-    // Y in Xbox mode
+    // Spins up all shooter components.
+    // Compresses intake.
+    // Sets hood to defined pos.
     return sourced(thrustmaster.button(10), controller.y());
   }
 
   public Trigger passButton() {
-    // No Xbox-mode home.
-    return sourced(thrustmaster.button(11), controller.povUp());
+    // Spins up all shooter components.
+    // Sets hood pos.
+    return sourced(thrustmaster.button(9), controller.povUp());
   }
 
-  public Trigger hardstopShootButton() {
-    // Only referenced by commented-out code.
-    return thrustmaster.button(9);
+  public Trigger wvroxOdometryReset() {
+    return sourced(thrustmaster.button(8), controller.povDown());
   }
 
   public Trigger demoDistanceShot() {
@@ -289,13 +291,14 @@ public class Triggers {
 
   public final LoggedTrigger isAlignedLooser =
       new LoggedTrigger(
-          "isAlignedLooser",
-          () -> {
-            if (RobotState.getInstance().getBroadZone()
-                == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE) {
-              return RobotState.getInstance().isAlignedToHubLoose();
-            } else {
-              return RobotState.getInstance().isAlignedToPassLoose();
-            }
-          });
+              "isAlignedLooser",
+              () -> {
+                if (RobotState.getInstance().getBroadZone()
+                    == HardwareConstants.Zones.broadZone.ALLIANCE_ZONE) {
+                  return RobotState.getInstance().isAlignedToHubLoose();
+                } else {
+                  return RobotState.getInstance().isAlignedToPassLoose();
+                }
+              })
+          .debounce(0.3, DebounceType.kRising);
 }

@@ -8,7 +8,10 @@
 package frc.robot;
 
 import static edu.wpi.first.math.util.Units.metersToInches;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -17,12 +20,14 @@ import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.lib.AllianceFlipUtil;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeederCommands;
@@ -500,12 +505,13 @@ public class RobotContainer {
                 drive, () -> -getDriveY(), () -> -getDriveX()));
 
     // Align for bump when bump button pressed - zone logic temporarily disabled
-    Triggers.getInstance()
-        .bumpAlignButton()
-        // .and(Triggers.getInstance().isRobotOnBump())
-        // .or(Triggers.getInstance().isRobotApproachingBump())
-        .whileTrue(
-            DriveCommands.joystickDriveAlignForBump(drive, () -> -getDriveY(), () -> -getDriveX()));
+    // Triggers.getInstance()
+    //     .bumpAlignButton()
+    //     // .and(Triggers.getInstance().isRobotOnBump())
+    //     // .or(Triggers.getInstance().isRobotApproachingBump())
+    //     .whileTrue(
+    //         DriveCommands.joystickDriveAlignForBump(drive, () -> -getDriveY(), () ->
+    // -getDriveX()));
 
     // UPPER SHOOTER
     // Set shooting velocity if shoot button pressed, we're in our alliance zone, hub is active, and
@@ -529,7 +535,7 @@ public class RobotContainer {
             .shootButton()
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
             .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
-        .or(Triggers.getInstance().passButton())
+        // .or(Triggers.getInstance().passButton())
         .whileTrue(
             FlywheelCommands.setVelocityForPassing(flywheel)
                 .alongWith(
@@ -537,6 +543,28 @@ public class RobotContainer {
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity)))
         .onFalse(FlywheelCommands.stop(flywheel))
         .onFalse(PrestageCommands.stop(prestage));
+
+    Triggers.getInstance()
+        .passButton()
+        .whileTrue(
+            FlywheelCommands.setFlywheelVelocity(flywheel, RPM.of(2050))
+                .alongWith(
+                    PrestageCommands.setPrestageVelocity(
+                        prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity))
+                .alongWith(
+                    FeederCommands.setUpperVelocityAfterWait(
+                        upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                .alongWith(
+                    FeederCommands.setLowerVelocityAfterWait(
+                        lowerFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity))
+                .alongWith(
+                    TransportCommands.setVelocityAfterWait(
+                        transport, HardwareConstants.CompConstants.Velocities.transportVelocity)))
+        .onFalse(FlywheelCommands.stop(flywheel))
+        .onFalse(PrestageCommands.stop(prestage))
+        .onFalse(FeederCommands.stopLower(lowerFeeder))
+        .onFalse(FeederCommands.stopUpper(upperFeeder))
+        .onFalse(TransportCommands.stop(transport));
 
     // LOWER SHOOTER
     // Set shooting velocity if:
@@ -733,6 +761,7 @@ public class RobotContainer {
                         && !Triggers.getInstance().isShootSafeTime.getAsBoolean()))
             .and(Triggers.getInstance().isAlignedLooser))
         .or(Triggers.getInstance().shootFromTowerButton())
+        .or(Triggers.getInstance().passButton())
         .whileTrue(
             Commands.sequence(
                 Commands.waitUntil(flywheel.isFlywheelSpunUp)
@@ -745,10 +774,14 @@ public class RobotContainer {
     // HOOD
     // Set pos for hub if shoot to hub button or shoot to tower button is pressed, and we're in our
     // alliance zone and the hub is active, and tuning mode is false
-    (Triggers.getInstance().shootButton().or(Triggers.getInstance().shootFromTowerButton()))
+    (Triggers.getInstance().shootButton())
         .and(Triggers.getInstance().isShootClear)
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .whileTrue(HoodCommands.setHoodPosForHub(hood));
+
+    Triggers.getInstance()
+        .shootFromTowerButton()
+        .whileTrue(HoodCommands.setHoodPos(hood, Degrees.of(2.5)));
 
     // Set pos for passing if shoot to hub button is pressed but we're not in our alliance zone, or
     // if pass button is presssed
@@ -757,7 +790,7 @@ public class RobotContainer {
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
             .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
         .or(Triggers.getInstance().passButton())
-        .whileTrue(HoodCommands.setPosForPassing(hood));
+        .whileTrue(HoodCommands.setHoodPos(hood, Degrees.of(28)));
 
     // Set pos to defined tuning pos when shoot button is pressed and tuning mode is on
     Triggers.getInstance()
@@ -770,6 +803,20 @@ public class RobotContainer {
         .demoDistanceShot()
         .and(() -> HardwareConstants.TuningConstants.DEMO_MODE)
         .whileTrue(HoodCommands.setHoodPos(hood, HardwareConstants.TuningConstants.HoodDemoPos));
+
+    // ODOMETRY - WVROX
+    // Set robot pos to centered and facing straight in front of tower
+    Triggers.getInstance()
+        .wvroxOdometryReset()
+        .onTrue(
+            new RunCommand(
+                () ->
+                    drive.setPose(
+                        new Pose2d(
+                            AllianceFlipUtil.applyX(3.5),
+                            AllianceFlipUtil.applyY(4.0),
+                            new Rotation2d(0.0))),
+                drive));
 
     // CANCELLATIONS
     // Auto-compress, auto-x, and double compress cancellations

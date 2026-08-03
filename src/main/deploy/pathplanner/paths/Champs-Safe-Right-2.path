@@ -266,8 +266,8 @@
     },
     {
       "name": "RunIntake",
-      "waypointRelativePos": 1.7,
-      "endWaypointRelativePos": 5.566375545851523,
+      "waypointRelativePos": 1.0242504758883253,
+      "endWaypointRelativePos": 8.281448286802028,
       "command": null
     }
   ],
