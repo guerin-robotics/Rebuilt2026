@@ -16,6 +16,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import java.util.Set;
 import org.littletonrobotics.junction.Logger;
 
 public class VisionConstants {
@@ -78,6 +79,25 @@ public class VisionConstants {
           new Translation3d(
               Inches.of(-12.572), Inches.of(5.375), Inches.of(12.509)), // -11.028 - 1.5
           new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(180)));
+
+  // ---- Trench tags ----
+
+  // Tags mounted inside the trench. They are only ever seen through the trench opening
+  // at a steep, glancing angle, which produces unreliable PnP solves, so they must not
+  // contribute to a pose estimate at all.
+  //
+  // Held as a static Set so the trench check costs a hash lookup instead of rebuilding
+  // an 8-element set per camera per frame inside the vision loop.
+  private static final Set<Integer> trenchTagIds = Set.of(1, 6, 7, 12, 17, 22, 23, 28);
+
+  /**
+   * Returns whether a fiducial ID belongs to a trench tag.
+   *
+   * @param fiducialId The AprilTag fiducial ID to test.
+   */
+  public static boolean isTrenchTag(int fiducialId) {
+    return trenchTagIds.contains(fiducialId);
+  }
 
   // ---- Filtering thresholds ----
 

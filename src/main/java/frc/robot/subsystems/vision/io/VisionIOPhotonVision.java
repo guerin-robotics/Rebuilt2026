@@ -77,6 +77,29 @@ public class VisionIOPhotonVision implements VisionIO {
         continue;
       }
 
+      // --- Trench tag exclusion ---
+      // Trench tags must not contribute to a pose estimate. This has to happen BEFORE the
+      // estimator runs, because both strategies solve from the result we hand them.
+      //
+      // The two strategies need different treatment:
+      //   - Single-tag fallback solves from result.targets, so dropping trench targets from
+      //     that list is enough — the estimator then picks the best remaining tag.
+      //   - Multi-tag PnP was already solved on the coprocessor, and estimateCoprocMultiTagPose()
+      //     just reads that baked transform. Removing targets client-side cannot change it, so
+      //     if the coprocessor folded a trench tag into the solve the only correct move is to
+      //     discard the whole multi-tag result and let the single-tag fallback handle the frame.
+      if (result.getMultiTagResult().isPresent()
+          && result.getMultiTagResult().get().fiducialIDsUsed.stream()
+              .anyMatch(id -> isTrenchTag(id))) {
+        result.multitagResult = Optional.empty();
+      }
+      result.targets.removeIf(target -> isTrenchTag(target.fiducialId));
+
+      // Every target in the frame was a trench tag — nothing left to estimate from
+      if (!result.hasTargets()) {
+        continue;
+      }
+
       // --- Pose estimation using PhotonPoseEstimator ---
       // Strategy: try multi-tag first (more accurate), fall back to lowest-ambiguity single-tag.
       // estimateCoprocMultiTagPose() uses the coprocessor's multi-tag PnP solve when available.
@@ -94,19 +117,10 @@ public class VisionIOPhotonVision implements VisionIO {
 
       EstimatedRobotPose estimate = estimatedPose.get();
 
-      HashSet<Integer> trenchIDs = new HashSet<Integer>();
-      trenchIDs.add(1);
-      trenchIDs.add(6);
-      trenchIDs.add(7);
-      trenchIDs.add(12);
-      trenchIDs.add(17);
-      trenchIDs.add(22);
-      trenchIDs.add(23);
-      trenchIDs.add(28);
-
-      // Collect all tag IDs seen (estimate.targetsUsed contains every target in the frame)
+      // Collect all tag IDs seen. estimate.targetsUsed is the filtered target list from
+      // above, so trench tags are already gone.
       for (var target : estimate.targetsUsed) {
-        if (target.fiducialId >= 0 && !trenchIDs.contains(target.fiducialId)) {
+        if (target.fiducialId >= 0) {
           tagIds.add((short) target.fiducialId);
         }
       }
