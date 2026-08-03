@@ -28,7 +28,11 @@ public class intakeRollerCommands {
   }
 
   public static Command intakeRollerIdle(intakeRoller intakeRoller) {
-    return Commands.run(() -> intakeRoller.setIntakeRollerIdle(), intakeRoller)
+    return Commands.run(
+            () ->
+                intakeRoller.setRollerVoltage(
+                    HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage),
+            intakeRoller)
         .withName("intakeRollerIdle");
   }
 

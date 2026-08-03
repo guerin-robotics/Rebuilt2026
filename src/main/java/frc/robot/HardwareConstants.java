@@ -101,7 +101,7 @@ public class HardwareConstants {
       // Maximum time to wait for heading alignment before shooting regardless.
       // After this many seconds, feeding starts even if the robot isn't facing the target.
       public static final double alignmentTimeoutSeconds = 1.5;
-      public static final double spinUpTimeOut = 0.5;
+      public static final double spinUpTimeOut = 1; // 0.5
       // Compress sequence waits
       public static final double waitToCompressSeconds = 0.50; // 65
       public static final double waitToDropSeconds = 0.5;
@@ -115,7 +115,7 @@ public class HardwareConstants {
       public static final double prestageSpinupThreshold = 500;
       // How close (in degrees) the robot's heading must be to the hub before we start feeding.
       public static final double hubAlignmentToleranceDegrees = 1.5;
-      public static final double hubLooseAlignmentToleranceDegrees = 7.0;
+      public static final double hubLooseAlignmentToleranceDegrees = 6.0;
       // How close (in degrees) the robot's heading must be to the pass target before we start
       // feeding. Slightly more lenient than hub since pass shots tolerate more error.
       public static final double passAlignmentToleranceDegrees = 7.0;

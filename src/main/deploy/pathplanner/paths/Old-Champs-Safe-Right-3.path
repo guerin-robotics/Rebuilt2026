@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.8280000000000003,
-        "y": 5.390036144578313
+        "x": 2.8826385542168675,
+        "y": 2.516048192771084
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0471888949859927,
-        "y": 5.243862373069714
+        "x": 3.0972247427031667,
+        "y": 2.6443165353616176
       },
       "isLocked": false,
-      "linkedName": "Left-End-Pos"
+      "linkedName": "Right-End-Pos"
     },
     {
       "anchor": {
-        "x": 3.066100622106482,
-        "y": 7.378381510416666
+        "x": 3.10284252025463,
+        "y": 0.69096238425926
       },
       "prevControl": {
-        "x": 1.9345237363307561,
-        "y": 6.95569089218834
+        "x": 2.2005915828015326,
+        "y": 0.9695676642659432
       },
       "nextControl": {
-        "x": 3.327811825138056,
-        "y": 7.47614143428685
+        "x": 3.691828269675926,
+        "y": 0.5090899884259261
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.423850839120371,
-        "y": 7.414598524305555
+        "x": 6.428509186921296,
+        "y": 0.6658335503472221
       },
       "prevControl": {
-        "x": 4.947709845534942,
-        "y": 7.381936211411531
+        "x": 5.026215277777778,
+        "y": 0.6705575086805562
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,7 +46,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.9138202519379842,
+      "waypointRelativePos": 0.9912212171052632,
       "rotationDegrees": 0.0
     }
   ],
@@ -55,15 +55,15 @@
   "eventMarkers": [
     {
       "name": "RunIntake",
-      "waypointRelativePos": 0.0,
+      "waypointRelativePos": 0,
       "endWaypointRelativePos": 2.0,
       "command": null
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.2,
-    "maxAcceleration": 7.0,
-    "maxAngularVelocity": 540.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 450.0,
     "maxAngularAcceleration": 1020.0,
     "nominalVoltage": 12.0,
     "unlimited": false
@@ -73,10 +73,10 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Champs-Paths",
+  "folder": "Pre-WVRoX-Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 137.4895529219991
+    "rotation": -137.2906100426386
   },
   "useDefaultConstraints": true
 }

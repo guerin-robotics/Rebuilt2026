@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Safe-Left-Comp-Path-1"
+            "pathName": "Houston-We've-Had-An-Auto-1"
           }
         },
         {
@@ -23,16 +23,10 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 3.8
+                  "waitTime": 5.0
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "stopAll"
           }
         },
         {
@@ -42,28 +36,15 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Left-Comp-Path-2"
+            "name": "stopAll"
           }
         },
         {
-          "type": "race",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 4.0
-                }
-              }
-            ]
+            "pathName": "Houston-We've-Had-An-Auto-2"
           }
         },
         {

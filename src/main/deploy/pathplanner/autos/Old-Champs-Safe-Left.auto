@@ -7,7 +7,44 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Champs-Left-1"
+            "pathName": "Old-Champs-Safe-Left-1"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 3.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopAll"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DeployIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Old-Champs-Safe-Left-2"
           }
         },
         {
@@ -44,44 +81,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "qual2 path 2"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 3.25
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "stopAll"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "DeployIntake"
+            "pathName": "Old-Champs-Safe-Left-3"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Pre-WVRoX",
   "choreoAuto": false
 }
