@@ -60,6 +60,8 @@ public class VisionIOPhotonVision implements VisionIO {
 
     // Read new camera observations
     Set<Short> tagIds = new HashSet<>();
+    Set<Short> multiTagIdsUsed = new HashSet<>();
+    int multiTagSolvesDiscarded = 0;
     List<PoseObservation> poseObservations = new LinkedList<>();
     for (var result : camera.getAllUnreadResults()) {
       // Update latest target observation (used for simple target-tracking, not pose estimation)
@@ -85,13 +87,20 @@ public class VisionIOPhotonVision implements VisionIO {
       //   - Single-tag fallback solves from result.targets, so dropping trench targets from
       //     that list is enough — the estimator then picks the best remaining tag.
       //   - Multi-tag PnP was already solved on the coprocessor, and estimateCoprocMultiTagPose()
-      //     just reads that baked transform. Removing targets client-side cannot change it, so
-      //     if the coprocessor folded a trench tag into the solve the only correct move is to
-      //     discard the whole multi-tag result and let the single-tag fallback handle the frame.
-      if (result.getMultiTagResult().isPresent()
-          && result.getMultiTagResult().get().fiducialIDsUsed.stream()
-              .anyMatch(id -> isTrenchTag(id))) {
-        result.multitagResult = Optional.empty();
+      //     just reads that baked transform. Removing targets client-side cannot change it, so a
+      //     trench tag inside a multi-tag solve can only be tolerated or the solve rejected
+      //     wholesale. VisionConstants.minCleanTagsToKeepMultiTag decides which.
+      if (result.getMultiTagResult().isPresent()) {
+        List<Short> idsUsed = result.getMultiTagResult().get().fiducialIDsUsed;
+        // Recorded before the filter so the log shows what the coprocessor actually solved from
+        for (short id : idsUsed) {
+          multiTagIdsUsed.add(id);
+        }
+        long cleanTags = idsUsed.stream().filter(id -> !isTrenchTag(id)).count();
+        if (cleanTags < minCleanTagsToKeepMultiTag) {
+          result.multitagResult = Optional.empty();
+          multiTagSolvesDiscarded++;
+        }
       }
       result.targets.removeIf(target -> isTrenchTag(target.fiducialId));
 
@@ -181,5 +190,14 @@ public class VisionIOPhotonVision implements VisionIO {
     for (int id : tagIds) {
       inputs.tagIds[i++] = id;
     }
+
+    // Save multi-tag diagnostics. Always assigned, so a cycle with no multi-tag solve reports
+    // empty rather than leaving the previous cycle's values in the log.
+    inputs.multiTagFiducialIdsUsed = new int[multiTagIdsUsed.size()];
+    int j = 0;
+    for (int id : multiTagIdsUsed) {
+      inputs.multiTagFiducialIdsUsed[j++] = id;
+    }
+    inputs.multiTagSolvesDiscarded = multiTagSolvesDiscarded;
   }
 }

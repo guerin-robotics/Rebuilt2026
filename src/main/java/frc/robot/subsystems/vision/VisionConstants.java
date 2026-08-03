@@ -99,6 +99,22 @@ public class VisionConstants {
     return trenchTagIds.contains(fiducialId);
   }
 
+  // How many NON-trench tags must have contributed to a coprocessor multi-tag solve for that
+  // solve to be kept when a trench tag was also folded into it.
+  //
+  // Multi-tag PnP runs on the coprocessor and arrives as one baked transform, so a trench tag
+  // inside it cannot be removed here — only tolerated or the whole solve rejected. Multi-tag is
+  // a least-squares fit: with two or more clean tags it is over-constrained and one bad tag
+  // shifts the result rather than flipping it. With only one clean tag the trench tag carries
+  // real weight, and the clean single-tag fallback is the better answer.
+  //
+  //   2                 — tolerate a trench tag when >=2 clean tags also contributed (lenient)
+  //   Integer.MAX_VALUE — reject any multi-tag solve that used a trench tag at all (strict)
+  //
+  // Log /Vision/CameraN/MultiTagFiducialIdsUsed and .../MultiTagSolvesDiscarded to see how often
+  // this actually fires before changing it.
+  public static int minCleanTagsToKeepMultiTag = 2;
+
   // ---- Filtering thresholds ----
 
   // Single-tag ambiguity above this is rejected (multi-tag is always trusted).
