@@ -131,10 +131,10 @@ public final class SimulationConstants {
    * muzzle". Passing the robot-frame value (negative X, since the shooter sits at −X) puts the Fuel
    * out the <i>front</i> of the robot, which is the bug this constant replaced.
    *
-   * <p>Value is the shooter axis from the CAD-exported {@code RobotModelVisualizer} ({@code
-   * SHOOTER_AXIS_POSITION}), 0.2762 m behind robot center.
+   * <p>Started from the CAD shooter axis (0.2762 m) and pulled 3 in toward robot center after
+   * watching where Fuel actually left the robot in simulation.
    */
-  public static final Distance SHOOTER_EXIT_DISTANCE = Meters.of(0.2762);
+  public static final Distance SHOOTER_EXIT_DISTANCE = Meters.of(0.2000);
 
   /**
    * Height the Fuel leaves the shooter at. Also from the CAD-exported {@code RobotModelVisualizer}
@@ -159,21 +159,26 @@ public final class SimulationConstants {
    * {@code FlywheelConstants.SPEED_MAP} and {@code HoodConstants.ANGLE_MAP} were tuned until shots
    * actually scored, so each (distance, RPM, hood) triple is a known-good shot. Solving projectile
    * motion for the elevation that carries Fuel from the exit point into the Hub (1.5748 m, from
-   * MapleSim's {@code RebuiltHub}) gives 43°–56°, fitting this line with R² = 0.88 and a worst
-   * vertical miss of 9 cm.
+   * MapleSim's {@code RebuiltHub}) gives 43°–54°, fitting this line with R² = 0.88 and a worst
+   * vertical miss of 3 in.
    *
    * <p>The fit additionally requires every shot to be <i>descending</i> when it reaches the Hub. A
    * shot that arrives still rising clips the front of the goal structure instead of dropping in.
    *
+   * <p><b>The fit uses MapleSim's gravity, not Earth's.</b> {@code GamePieceProjectile.GRAVITY} is
+   * 11.0 m/s², not 9.81 — the library inflates gravity as a rough stand-in for the air drag it does
+   * not simulate. Fitting against 9.81 lands shots 5–15 in low depending on distance, which is
+   * exactly how this was found.
+   *
    * <p>The negative slope is physically sensible: farther shots use more speed and a flatter arc.
    *
-   * <p><b>These are derived, not measured.</b> The fit assumes no aerodynamic drag (MapleSim models
-   * none either) and a shot through the center of the Hub. If you measure the real launch angle,
-   * replace them — {@code LaunchModelTest} will say immediately if the new values stop scoring.
+   * <p><b>These are derived, not measured.</b> The fit assumes a shot through the center of the
+   * Hub. If you measure the real launch angle, replace them — {@code LaunchModelTest} will say
+   * immediately if the new values stop scoring.
    */
-  public static final double LAUNCH_ANGLE_OFFSET_DEGREES = 53.96;
+  public static final double LAUNCH_ANGLE_OFFSET_DEGREES = 54.45;
 
-  public static final double LAUNCH_ANGLE_PER_HOOD_DEGREE = -0.906;
+  public static final double LAUNCH_ANGLE_PER_HOOD_DEGREE = -0.899;
 
   /**
    * Scales flywheel surface speed to Fuel exit speed (v = ω · r · factor).
@@ -182,7 +187,7 @@ public final class SimulationConstants {
    * the Fuel physically unable to reach the Hub at any angle from the mapped distances — the shot
    * falls short even on an ideal 45° arc.
    */
-  public static final double LAUNCH_VELOCITY_FACTOR = 0.99;
+  public static final double LAUNCH_VELOCITY_FACTOR = 1.05;
 
   // ─── Field ──────────────────────────────────────────────────────────────────
 

@@ -136,15 +136,26 @@ the field.
 `SimulationConstants` therefore converts hood position to real elevation:
 
 ```
-launchAngleDeg = 53.96 + (-0.906 × hoodDegrees)
-launchSpeed    = ω × drumRadius × 0.99
+launchAngleDeg = 54.45 + (-0.899 × hoodDegrees)
+launchSpeed    = ω × drumRadius × 1.05
 ```
 
 **Where those numbers came from:** they were fitted from the robot's own characterization. Every
 (distance, RPM, hood) triple in `SPEED_MAP` and `ANGLE_MAP` was tuned until shots scored, so each one
 is a known-good shot. Solving projectile motion for the elevation that carries Fuel from the shooter
-into the Hub (1.5748 m) across all nine points gives 43°–56°, fitting the line above with R² = 0.88
-and a worst vertical miss of 9 cm.
+into the Hub (1.5748 m) across all nine points gives 43°–54°, fitting the line above with R² = 0.88
+and a worst vertical miss of 3 in.
+
+#### MapleSim's gravity is not Earth's
+
+`GamePieceProjectile.GRAVITY` is **11.0 m/s²**, not 9.81 — the library inflates gravity as a rough
+stand-in for the air drag it does not model. Its trajectory is `z = h₀ + v_z·t − 5.5t²`.
+
+Any hand-derived shot math must use 11.0. Fitting against 9.81 lands Fuel 5 in low at close range and
+15 in low at the far shots — enough to hit the goal structure instead of dropping in, and it looks
+exactly like a launch-angle problem. `LaunchModelTest` reads the constant from the library rather
+than hardcoding it, so a maple-sim update that changes gravity fails the build instead of quietly
+invalidating the fit.
 
 The fit also requires every shot to be **descending** at the Hub. A shot still rising when it arrives
 hits the front of the goal structure instead of dropping in, which is what "hitting the top of the
@@ -197,11 +208,11 @@ These are duplicated because the originals are `private`. If you change one, cha
 |---|---|---|
 | `INTAKE_CAPACITY` | 50 Fuel | Measured on the real hopper |
 | `SHOT_INTERVAL_SECONDS` | 0.05 s | 20 Fuel/second, measured |
-| `SHOOTER_EXIT_DISTANCE` | 0.2762 m | CAD shooter axis — **positive, in shooter frame** |
+| `SHOOTER_EXIT_DISTANCE` | 0.2000 m | Tuned against sim — **positive, in shooter frame** |
 | `LAUNCH_HEIGHT` | 0.415 m | CAD shooter axis |
-| `LAUNCH_ANGLE_OFFSET_DEGREES` | 53.96 | Fitted from characterization — replace with a measurement |
-| `LAUNCH_ANGLE_PER_HOOD_DEGREE` | −0.906 | Fitted from characterization — replace with a measurement |
-| `LAUNCH_VELOCITY_FACTOR` | 0.99 | Fitted from characterization — replace with a measurement |
+| `LAUNCH_ANGLE_OFFSET_DEGREES` | 54.45 | Fitted from characterization — replace with a measurement |
+| `LAUNCH_ANGLE_PER_HOOD_DEGREE` | −0.899 | Fitted from characterization — replace with a measurement |
+| `LAUNCH_VELOCITY_FACTOR` | 1.05 | Fitted from characterization — replace with a measurement |
 
 ---
 

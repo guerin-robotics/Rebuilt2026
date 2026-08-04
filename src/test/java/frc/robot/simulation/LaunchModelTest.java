@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import frc.robot.subsystems.flywheel.FlywheelConstants;
 import frc.robot.subsystems.hood.HoodConstants;
+import org.ironmaple.simulation.gamepieces.GamePieceProjectile;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -36,12 +37,22 @@ public class LaunchModelTest {
 
   private static final double DRUM_RADIUS_METERS =
       FlywheelConstants.TrajectoryVisualization.DRUM_RADIUS_METERS;
-  private static final double GRAVITY = 9.81;
 
   /**
-   * Allowed vertical error at the Hub. The fitted linear model's worst case is 0.072 m; this leaves
-   * headroom for small retunes of the maps without becoming so loose it stops catching a broken
-   * model (the raw-hood-angle bug misses by well over a meter).
+   * MapleSim's gravity, which is 11.0 m/s² rather than Earth's 9.81 — the library inflates it as a
+   * rough stand-in for the air drag it does not simulate.
+   *
+   * <p>Read from the library rather than hardcoded, so that if a maple-sim update changes it, this
+   * test recompiles against the new value and fails the height assertions instead of silently
+   * validating a launch model that no longer scores.
+   */
+  private static final double GRAVITY = GamePieceProjectile.GRAVITY;
+
+  /**
+   * Allowed vertical error at the Hub. The fitted model's worst case is 0.079 m (3.1 in); this
+   * leaves headroom for small retunes of the maps without becoming so loose it stops catching a
+   * broken model — the raw-hood-angle bug missed by well over a meter, and fitting against Earth
+   * gravity instead of MapleSim's missed by up to 0.38 m.
    */
   private static final double TOLERANCE_METERS = 0.20;
 
