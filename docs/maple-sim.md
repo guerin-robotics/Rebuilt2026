@@ -75,11 +75,25 @@ Connect to the sim over NT4 (`localhost`), then add these keys.
 | Key | Type | What it shows |
 |---|---|---|
 | `MapleSim/GroundTruthPose` | `Pose2d` | Where the robot **actually is** in the physics world |
-| `MapleSim/Fuel` | `Pose3d[]` | Every Fuel on the field, including shots in flight |
-| `MapleSim/FuelHeld` | `int` | How many Fuel the robot is carrying |
+| `MapleSim/Fuel` | `Pose3d[]` | Every Fuel the arena draws, including shots in flight |
+| `MapleSim/Fuel/Drawn` | `int` | Fuel visible on the field |
+| `MapleSim/Fuel/HeldByRobot` | `int` | Fuel inside the robot (up to 50) |
+| `MapleSim/Fuel/InFlight` | `int` | Shots currently airborne |
 | `MapleSim/IntakeRunning` | `boolean` | Whether the intake is currently able to grab Fuel |
-| `MapleSim/FlywheelSpunUp` | `boolean` | Flywheel readiness, as the shot logic sees it |
 | `Odometry/Robot` | `Pose2d` | Where the pose **estimator thinks** it is |
+
+Shot diagnostics, published on every shot:
+
+| Key | What it tells you |
+|---|---|
+| `MapleSim/Shot/ArrivalHeightMeters` | Where the Fuel will be at the Hub. Compare against **1.575** |
+| `MapleSim/Shot/ArrivalErrorMeters` | Signed miss. Negative = low |
+| `MapleSim/Shot/ArrivalVerticalSpeedMPS` | Negative = dropping in. Positive = still rising into the goal front |
+| `MapleSim/Shot/FlywheelRPM` | Compare against `Flywheel/targetRPM` — below target makes every shot short |
+| `MapleSim/Shot/SpunUp` / `Feeding` | Why shots are or are not firing |
+
+**Diagnosing a miss:** if `ArrivalHeight` is right but Fuel still misses, the launch model is fine
+and the problem is aim or pose. If `ArrivalHeight` is low, check `FlywheelRPM` first.
 
 ### The one view worth building
 
@@ -136,15 +150,36 @@ the field.
 `SimulationConstants` therefore converts hood position to real elevation:
 
 ```
-launchAngleDeg = 54.45 + (-0.899 × hoodDegrees)
-launchSpeed    = ω × drumRadius × 1.05
+launchAngleDeg = 65.60 + (-0.420 × hoodDegrees)     → 60°-65°
+launchSpeed    = ω × drumRadius × 1.06
 ```
+
+#### Why the arc is lofted, not flat
+
+For a given speed and distance, **two** launch elevations reach the Hub: a flat one and a lofted one.
+An unconstrained fit finds the flat one first — and it is a trap. At these speeds the flat solution
+is degenerate: its apex sits level with the Hub and the Fuel arrives nearly horizontal, so it skims
+into the *side* of the goal instead of dropping into it. It scores (the goal volume is generous) but
+looks wrong, and has no margin.
+
+The lofted solution is used instead. Apex lands 10–49 in above the Hub, arriving 42°–52° below
+horizontal.
+
+Accuracy is therefore judged by **horizontal distance from the Hub center as the Fuel descends
+through Hub height** — what actually scores — not by height at a fixed distance. Worst case is 8.8 in
+against `RebuiltHub.GoalRadius` of 23.5 in.
+
+#### Fuel vanishing into the Hub is scoring
+
+`RebuiltHub extends Goal`. Fuel entering the goal volume is consumed and points are added, so it
+does not return to the field — it is *in the Hub*. Fuel "disappearing into the side of the hub" means
+shots are working. Use `MapleSim/Fuel/*` to account for where Fuel has gone: the field starts with
+192, and the robot alone can hold 50.
 
 **Where those numbers came from:** they were fitted from the robot's own characterization. Every
 (distance, RPM, hood) triple in `SPEED_MAP` and `ANGLE_MAP` was tuned until shots scored, so each one
-is a known-good shot. Solving projectile motion for the elevation that carries Fuel from the shooter
-into the Hub (1.5748 m) across all nine points gives 43°–54°, fitting the line above with R² = 0.88
-and a worst vertical miss of 3 in.
+is a known-good shot. Projectile motion is solved for the elevation that carries Fuel from the
+shooter into the Hub at each of the nine points, taking the lofted root as described above.
 
 #### MapleSim's gravity is not Earth's
 
@@ -210,9 +245,9 @@ These are duplicated because the originals are `private`. If you change one, cha
 | `SHOT_INTERVAL_SECONDS` | 0.05 s | 20 Fuel/second, measured |
 | `SHOOTER_EXIT_DISTANCE` | 0.2000 m | Tuned against sim — **positive, in shooter frame** |
 | `LAUNCH_HEIGHT` | 0.415 m | CAD shooter axis |
-| `LAUNCH_ANGLE_OFFSET_DEGREES` | 54.45 | Fitted from characterization — replace with a measurement |
-| `LAUNCH_ANGLE_PER_HOOD_DEGREE` | −0.899 | Fitted from characterization — replace with a measurement |
-| `LAUNCH_VELOCITY_FACTOR` | 1.05 | Fitted from characterization — replace with a measurement |
+| `LAUNCH_ANGLE_OFFSET_DEGREES` | 65.60 | Fitted from characterization — replace with a measurement |
+| `LAUNCH_ANGLE_PER_HOOD_DEGREE` | −0.420 | Fitted from characterization — replace with a measurement |
+| `LAUNCH_VELOCITY_FACTOR` | 1.06 | Fitted from characterization — replace with a measurement |
 
 ---
 

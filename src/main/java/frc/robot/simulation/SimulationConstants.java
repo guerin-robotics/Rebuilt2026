@@ -157,28 +157,31 @@ public final class SimulationConstants {
    *
    * <p><b>Where these numbers came from:</b> fitted from the robot's own characterization tables.
    * {@code FlywheelConstants.SPEED_MAP} and {@code HoodConstants.ANGLE_MAP} were tuned until shots
-   * actually scored, so each (distance, RPM, hood) triple is a known-good shot. Solving projectile
-   * motion for the elevation that carries Fuel from the exit point into the Hub (1.5748 m, from
-   * MapleSim's {@code RebuiltHub}) gives 43°–54°, fitting this line with R² = 0.88 and a worst
-   * vertical miss of 3 in.
+   * actually scored, so each (distance, RPM, hood) triple is a known-good shot.
    *
-   * <p>The fit additionally requires every shot to be <i>descending</i> when it reaches the Hub. A
-   * shot that arrives still rising clips the front of the goal structure instead of dropping in.
+   * <p><b>Why the arc is lofted (60°–65°) rather than flat:</b> for a given speed and distance
+   * there are two elevations that reach the Hub — a flat one and a lofted one. An unconstrained fit
+   * finds the flat one first, but at these speeds it is degenerate: the apex sits level with the
+   * Hub and the Fuel arrives nearly horizontal, skimming into the side of the goal rather than
+   * dropping into it. The lofted solution is fitted here instead. It carries the apex 10–49 in
+   * above the Hub and arrives descending at 42°–52°.
+   *
+   * <p>Accuracy is judged by <i>horizontal distance from Hub center as the Fuel descends through
+   * Hub height</i>, not by height at a fixed distance — that is what actually scores. Worst case is
+   * 8.8 in against a goal radius of 23.5 in ({@code RebuiltHub.GoalRadius}).
    *
    * <p><b>The fit uses MapleSim's gravity, not Earth's.</b> {@code GamePieceProjectile.GRAVITY} is
    * 11.0 m/s², not 9.81 — the library inflates gravity as a rough stand-in for the air drag it does
-   * not simulate. Fitting against 9.81 lands shots 5–15 in low depending on distance, which is
-   * exactly how this was found.
+   * not simulate. Fitting against 9.81 lands shots 5–15 in low depending on distance.
    *
    * <p>The negative slope is physically sensible: farther shots use more speed and a flatter arc.
    *
-   * <p><b>These are derived, not measured.</b> The fit assumes a shot through the center of the
-   * Hub. If you measure the real launch angle, replace them — {@code LaunchModelTest} will say
-   * immediately if the new values stop scoring.
+   * <p><b>These are derived, not measured.</b> If you measure the real launch angle, replace them —
+   * {@code LaunchModelTest} will say immediately if the new values stop scoring.
    */
-  public static final double LAUNCH_ANGLE_OFFSET_DEGREES = 54.45;
+  public static final double LAUNCH_ANGLE_OFFSET_DEGREES = 65.60;
 
-  public static final double LAUNCH_ANGLE_PER_HOOD_DEGREE = -0.899;
+  public static final double LAUNCH_ANGLE_PER_HOOD_DEGREE = -0.420;
 
   /**
    * Scales flywheel surface speed to Fuel exit speed (v = ω · r · factor).
@@ -187,7 +190,7 @@ public final class SimulationConstants {
    * the Fuel physically unable to reach the Hub at any angle from the mapped distances — the shot
    * falls short even on an ideal 45° arc.
    */
-  public static final double LAUNCH_VELOCITY_FACTOR = 1.05;
+  public static final double LAUNCH_VELOCITY_FACTOR = 1.06;
 
   // ─── Field ──────────────────────────────────────────────────────────────────
 
