@@ -20,6 +20,7 @@ public interface HoodIO {
     public Voltage hoodVoltage = Volts.of(0);
     public Current hoodSupplyCurrent = Amps.of(0);
     public Current hoodStatorCurrent = Amps.of(0);
+    public Current hoodTorqueCurrent = Amps.of(0);
     public Temperature hoodTemperature = Celsius.of(0);
     public AngularVelocity hoodVelocity = DegreesPerSecond.of(0);
     public Angle hoodPosition = Degrees.of(0);

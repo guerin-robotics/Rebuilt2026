@@ -24,6 +24,9 @@ public interface PrestageIO {
     public Current prestageRightStatorAmps = Amps.of(0);
     public Current prestageRightSupplyAmps = Amps.of(0);
 
+    public Current prestageLeftTorqueCurrentAmps = Amps.of(0);
+    public Current prestageRightTorqueCurrentAmps = Amps.of(0);
+
     public AngularVelocity prestageLeftVelocity = RotationsPerSecond.of(0);
     public AngularVelocity prestageRightVelocity = RotationsPerSecond.of(0);
 

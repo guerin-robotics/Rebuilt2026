@@ -38,6 +38,7 @@ public interface FlywheelIO {
     public Voltage leaderAppliedVolts = Volts.of(0);
     public Current leaderSupplyCurrentAmps = Amps.of(0);
     public Current leaderStatorCurrentAmps = Amps.of(0);
+    public Current leaderTorqueCurrentAmps = Amps.of(0);
     public Temperature leaderTemp = Celsius.of(0);
 
     public Angle leaderAngle = Rotations.of(0);
@@ -47,6 +48,7 @@ public interface FlywheelIO {
     public Voltage follower1AppliedVolts = Volts.of(0);
     public Current follower1SupplyCurrentAmps = Amps.of(0);
     public Current follower1StatorCurrentAmps = Amps.of(0);
+    public Current follower1TorqueCurrentAmps = Amps.of(0);
     public Temperature follower1Temp = Celsius.of(0);
 
     // Follower 2 motor
@@ -54,6 +56,7 @@ public interface FlywheelIO {
     public Voltage follower2AppliedVolts = Volts.of(0);
     public Current follower2SupplyCurrentAmps = Amps.of(0);
     public Current follower2StatorCurrentAmps = Amps.of(0);
+    public Current follower2TorqueCurrentAmps = Amps.of(0);
     public Temperature follower2Temp = Celsius.of(0);
 
     // Follower 3 motor
@@ -61,6 +64,7 @@ public interface FlywheelIO {
     public Voltage follower3AppliedVolts = Volts.of(0);
     public Current follower3SupplyCurrentAmps = Amps.of(0);
     public Current follower3StatorCurrentAmps = Amps.of(0);
+    public Current follower3TorqueCurrentAmps = Amps.of(0);
     public Temperature follower3Temp = Celsius.of(0);
 
     // Follower 4 motor
@@ -68,6 +72,7 @@ public interface FlywheelIO {
     public Voltage follower4AppliedVolts = Volts.of(0);
     public Current follower4SupplyCurrentAmps = Amps.of(0);
     public Current follower4StatorCurrentAmps = Amps.of(0);
+    public Current follower4TorqueCurrentAmps = Amps.of(0);
     public Temperature follower4Temp = Celsius.of(0);
   }
 

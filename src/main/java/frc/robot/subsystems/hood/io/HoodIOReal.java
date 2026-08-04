@@ -34,6 +34,7 @@ public class HoodIOReal implements HoodIO {
   private final StatusSignal<Voltage> motorVoltage;
   private final StatusSignal<Current> statorCurrent;
   private final StatusSignal<Current> supplyCurrent;
+  private final StatusSignal<Current> torqueCurrent;
   private final StatusSignal<Temperature> deviceTemp;
   private final StatusSignal<Angle> devicePos;
   private final StatusSignal<Double> closedLoopReference;
@@ -52,6 +53,7 @@ public class HoodIOReal implements HoodIO {
     motorVoltage = hoodMotor.getMotorVoltage();
     statorCurrent = hoodMotor.getStatorCurrent();
     supplyCurrent = hoodMotor.getSupplyCurrent();
+    torqueCurrent = hoodMotor.getTorqueCurrent();
     deviceTemp = hoodMotor.getDeviceTemp();
     devicePos = hoodMotor.getPosition();
     closedLoopReference = hoodMotor.getClosedLoopReference();
@@ -60,7 +62,14 @@ public class HoodIOReal implements HoodIO {
     // 50Hz for signals we need every loop (velocity, voltage, current, position, closed-loop
     // reference)
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0, velocity, motorVoltage, statorCurrent, supplyCurrent, devicePos, closedLoopReference);
+        50.0,
+        velocity,
+        motorVoltage,
+        statorCurrent,
+        supplyCurrent,
+        torqueCurrent,
+        devicePos,
+        closedLoopReference);
 
     // 10Hz for diagnostic-only signals (temperature, closed-loop error)
     BaseStatusSignal.setUpdateFrequencyForAll(10.0, deviceTemp, closedLoopError);
@@ -156,6 +165,7 @@ public class HoodIOReal implements HoodIO {
         motorVoltage,
         statorCurrent,
         supplyCurrent,
+        torqueCurrent,
         deviceTemp,
         devicePos,
         closedLoopReference,
@@ -169,6 +179,7 @@ public class HoodIOReal implements HoodIO {
     inputs.hoodVoltage = motorVoltage.getValue();
     inputs.hoodStatorCurrent = statorCurrent.getValue();
     inputs.hoodSupplyCurrent = supplyCurrent.getValue();
+    inputs.hoodTorqueCurrent = torqueCurrent.getValue();
     inputs.hoodTemperature = deviceTemp.getValue();
     // closedLoopReference and closedLoopError are raw doubles in mechanism rotations.
     // Convert to degrees so all hood angles are in degrees throughout the codebase.

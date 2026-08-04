@@ -20,6 +20,7 @@ public interface UpperFeederIO {
     public Voltage upperFeederVoltage = Volts.of(0);
     public Current upperFeederStatorAmps = Amps.of(0);
     public Current upperFeederSupplyAmps = Amps.of(0);
+    public Current upperFeederTorqueCurrentAmps = Amps.of(0);
     public AngularVelocity upperFeederMotorVelocity = RotationsPerSecond.of(0);
     public Temperature upperFeederMotorTemperature = Celsius.of(0);
     public AngularVelocity upperFeederClosedLoopReference = RotationsPerSecond.of(0);
