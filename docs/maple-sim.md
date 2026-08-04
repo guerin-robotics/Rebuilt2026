@@ -109,8 +109,24 @@ mechanism releases discrete balls.
 
 ### The launch model
 
-Shot geometry (launch height, drum radius, exit offset) comes from
-`FlywheelConstants.TrajectoryVisualization`. **Launch angle and speed do not** — see below.
+Only the drum radius comes from `FlywheelConstants.TrajectoryVisualization`. Exit point, launch
+height, angle, and speed are all defined in `SimulationConstants` — see below for why.
+
+#### Where the Fuel spawns
+
+MapleSim computes the spawn point as:
+
+```
+initialPosition = robotPosition + offset.rotateBy(shooterFacing)
+```
+
+It rotates by the **shooter facing**, not the robot heading. The offset is therefore expressed in the
+*shooter's* frame, where positive means "out the muzzle" — **not** in the robot frame. Passing the
+robot-frame value (negative X, since the shooter sits at −X) spawns Fuel out the *front* of the
+robot, roughly 0.43 m from where it belongs, and every shot then flies too far and arrives low.
+
+`SHOOTER_EXIT_DISTANCE` is positive for this reason. If you ever see Fuel appearing from the wrong
+face of the robot, this sign convention is the first thing to check.
 
 **Hood position is not launch angle.** `Hood.getPosition()` reports a *mechanism* angle: the CANcoder
 reading after the 122:12 reduction. Hub shots ask for hood values of roughly 1°–12°, and using those
@@ -120,17 +136,26 @@ the field.
 `SimulationConstants` therefore converts hood position to real elevation:
 
 ```
-launchAngleDeg = 50.26 + (-0.756 × hoodDegrees)
-launchSpeed    = ω × drumRadius × 1.01
+launchAngleDeg = 53.96 + (-0.906 × hoodDegrees)
+launchSpeed    = ω × drumRadius × 0.99
 ```
 
 **Where those numbers came from:** they were fitted from the robot's own characterization. Every
 (distance, RPM, hood) triple in `SPEED_MAP` and `ANGLE_MAP` was tuned until shots scored, so each one
-is a known-good shot. Solving projectile motion for the elevation that carries Fuel into the Hub
-(1.5748 m) across all nine points gives 41°–52°, fitting the line above with R² = 0.90 and a worst
-vertical miss of 7 cm.
+is a known-good shot. Solving projectile motion for the elevation that carries Fuel from the shooter
+into the Hub (1.5748 m) across all nine points gives 43°–56°, fitting the line above with R² = 0.88
+and a worst vertical miss of 9 cm.
+
+The fit also requires every shot to be **descending** at the Hub. A shot still rising when it arrives
+hits the front of the goal structure instead of dropping in, which is what "hitting the top of the
+section the plastic attaches to" looks like.
 
 The negative slope is physically sensible — farther shots use more speed and a flatter arc.
+
+**Launch geometry uses the CAD numbers** from `RobotModelVisualizer.SHOOTER_AXIS_POSITION`
+(0.2762 m back, 0.415 m up). These disagree with `TrajectoryVisualization`'s hand-entered −6 in and
+20 in. The CAD pair is self-consistent and came from the exported model, so it wins here — but the
+two sources should be reconciled against the real robot.
 
 **These are derived, not measured.** The fit assumes no aerodynamic drag and a shot through Hub
 center. If you measure the real launch angle, replace them; `LaunchModelTest` will tell you
@@ -172,9 +197,11 @@ These are duplicated because the originals are `private`. If you change one, cha
 |---|---|---|
 | `INTAKE_CAPACITY` | 50 Fuel | Measured on the real hopper |
 | `SHOT_INTERVAL_SECONDS` | 0.05 s | 20 Fuel/second, measured |
-| `LAUNCH_ANGLE_OFFSET_DEGREES` | 50.26 | Fitted from characterization — replace with a measurement |
-| `LAUNCH_ANGLE_PER_HOOD_DEGREE` | −0.756 | Fitted from characterization — replace with a measurement |
-| `LAUNCH_VELOCITY_FACTOR` | 1.01 | Fitted from characterization — replace with a measurement |
+| `SHOOTER_EXIT_DISTANCE` | 0.2762 m | CAD shooter axis — **positive, in shooter frame** |
+| `LAUNCH_HEIGHT` | 0.415 m | CAD shooter axis |
+| `LAUNCH_ANGLE_OFFSET_DEGREES` | 53.96 | Fitted from characterization — replace with a measurement |
+| `LAUNCH_ANGLE_PER_HOOD_DEGREE` | −0.906 | Fitted from characterization — replace with a measurement |
+| `LAUNCH_VELOCITY_FACTOR` | 0.99 | Fitted from characterization — replace with a measurement |
 
 ---
 

@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
@@ -121,6 +122,32 @@ public final class SimulationConstants {
   // ─── Launch model ───────────────────────────────────────────────────────────
 
   /**
+   * How far the Fuel leaves the robot from its center, measured <i>along the direction the shooter
+   * fires</i>. The shooter is on the back of the robot, and it fires backward, so this is positive.
+   *
+   * <p><b>Sign convention — read before changing:</b> MapleSim positions a projectile as {@code
+   * robotPosition + offset.rotateBy(shooterFacing)}. It rotates by the <i>shooter facing</i>, not
+   * the robot heading. So this offset is expressed in the shooter's frame: positive means "out the
+   * muzzle". Passing the robot-frame value (negative X, since the shooter sits at −X) puts the Fuel
+   * out the <i>front</i> of the robot, which is the bug this constant replaced.
+   *
+   * <p>Value is the shooter axis from the CAD-exported {@code RobotModelVisualizer} ({@code
+   * SHOOTER_AXIS_POSITION}), 0.2762 m behind robot center.
+   */
+  public static final Distance SHOOTER_EXIT_DISTANCE = Meters.of(0.2762);
+
+  /**
+   * Height the Fuel leaves the shooter at. Also from the CAD-exported {@code RobotModelVisualizer}
+   * shooter axis.
+   *
+   * <p>Note this disagrees with {@code TrajectoryVisualization.LAUNCH_HEIGHT_METERS} (20 in = 0.508
+   * m), as does the exit offset above (−6 in there vs −10.9 in from CAD). The CAD pair is used here
+   * because the two values are self-consistent and came from the exported model; the visualizer's
+   * pair appear to be hand-entered estimates. Worth reconciling on the real robot.
+   */
+  public static final Distance LAUNCH_HEIGHT = Meters.of(0.415);
+
+  /**
    * Converts hood position to the Fuel's actual launch elevation above horizontal.
    *
    * <p><b>Why this exists:</b> {@code Hood.getPosition()} reports a <i>mechanism</i> angle — the
@@ -131,27 +158,31 @@ public final class SimulationConstants {
    * <p><b>Where these numbers came from:</b> fitted from the robot's own characterization tables.
    * {@code FlywheelConstants.SPEED_MAP} and {@code HoodConstants.ANGLE_MAP} were tuned until shots
    * actually scored, so each (distance, RPM, hood) triple is a known-good shot. Solving projectile
-   * motion for the elevation that carries the Fuel from the launch height into the Hub (1.5748 m,
-   * from MapleSim's {@code RebuiltHub}) gives 41°–52°, fitting this line with R² = 0.90.
+   * motion for the elevation that carries Fuel from the exit point into the Hub (1.5748 m, from
+   * MapleSim's {@code RebuiltHub}) gives 43°–56°, fitting this line with R² = 0.88 and a worst
+   * vertical miss of 9 cm.
+   *
+   * <p>The fit additionally requires every shot to be <i>descending</i> when it reaches the Hub. A
+   * shot that arrives still rising clips the front of the goal structure instead of dropping in.
    *
    * <p>The negative slope is physically sensible: farther shots use more speed and a flatter arc.
    *
-   * <p><b>These are derived, not measured.</b> The fit assumes no aerodynamic drag and a shot
-   * through the center of the Hub. If you measure the real launch angle, replace them.
+   * <p><b>These are derived, not measured.</b> The fit assumes no aerodynamic drag (MapleSim models
+   * none either) and a shot through the center of the Hub. If you measure the real launch angle,
+   * replace them — {@code LaunchModelTest} will say immediately if the new values stop scoring.
    */
-  public static final double LAUNCH_ANGLE_OFFSET_DEGREES = 50.26;
+  public static final double LAUNCH_ANGLE_OFFSET_DEGREES = 53.96;
 
-  public static final double LAUNCH_ANGLE_PER_HOOD_DEGREE = -0.756;
+  public static final double LAUNCH_ANGLE_PER_HOOD_DEGREE = -0.906;
 
   /**
    * Scales flywheel surface speed to Fuel exit speed (v = ω · r · factor).
    *
    * <p>{@code FlywheelConstants.TrajectoryVisualization.VELOCITY_FUDGE_FACTOR} is 0.8, which makes
    * the Fuel physically unable to reach the Hub at any angle from the mapped distances — the shot
-   * falls short even on an ideal 45° arc. 1.0 is the lowest value consistent with the robot's own
-   * characterization tables, so the sim uses that instead.
+   * falls short even on an ideal 45° arc.
    */
-  public static final double LAUNCH_VELOCITY_FACTOR = 1.01;
+  public static final double LAUNCH_VELOCITY_FACTOR = 0.99;
 
   // ─── Field ──────────────────────────────────────────────────────────────────
 

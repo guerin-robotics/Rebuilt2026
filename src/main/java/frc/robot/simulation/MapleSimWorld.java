@@ -279,17 +279,22 @@ public class MapleSimWorld {
 
     Pose2d robotPose = getGroundTruthPose();
 
+    // The shooter fires out the back of the robot, so it faces 180° from the robot heading.
+    Rotation2d shooterFacing = robotPose.getRotation().plus(Rotation2d.k180deg);
+
     SimulatedArena.getInstance()
         .addGamePieceProjectile(
             new RebuiltFuelOnFly(
                 robotPose.getTranslation(),
-                new Translation2d(
-                    TrajectoryVisualization.SHOOTER_EXIT_X_METERS,
-                    TrajectoryVisualization.SHOOTER_EXIT_Y_METERS),
+                // MapleSim computes the spawn point as
+                //   robotPosition + offset.rotateBy(shooterFacing)
+                // rotating by the SHOOTER facing, not the robot heading. So this offset lives in
+                // the shooter's frame and is positive "out the muzzle". Passing the robot-frame
+                // value (negative X) spawns the Fuel out the front of the robot instead.
+                new Translation2d(SimulationConstants.SHOOTER_EXIT_DISTANCE.in(Meters), 0.0),
                 driveSimulation.getDriveTrainSimulatedChassisSpeedsFieldRelative(),
-                // The shooter fires out the back of the robot (-X), so it faces 180° from heading.
-                robotPose.getRotation().plus(Rotation2d.k180deg),
-                Meters.of(TrajectoryVisualization.LAUNCH_HEIGHT_METERS),
+                shooterFacing,
+                SimulationConstants.LAUNCH_HEIGHT,
                 MetersPerSecond.of(launchSpeedMetersPerSec),
                 getLaunchElevation()));
     return true;
