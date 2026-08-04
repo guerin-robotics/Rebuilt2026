@@ -79,6 +79,8 @@ Connect to the sim over NT4 (`localhost`), then add these keys.
 | `MapleSim/Fuel/Drawn` | `int` | Fuel visible on the field |
 | `MapleSim/Fuel/HeldByRobot` | `int` | Fuel inside the robot (up to 50) |
 | `MapleSim/Fuel/InFlight` | `int` | Shots currently airborne |
+| `MapleSim/Fuel/InCirculation` | `int` | Field + robot + in flight |
+| `MapleSim/Fuel/AwaitingReturn` | `int` | Scored Fuel the human player has not fed back yet |
 | `MapleSim/IntakeRunning` | `boolean` | Whether the intake is currently able to grab Fuel |
 | `Odometry/Robot` | `Pose2d` | Where the pose **estimator thinks** it is |
 
@@ -171,10 +173,39 @@ against `RebuiltHub.GoalRadius` of 23.5 in.
 
 #### Fuel vanishing into the Hub is scoring
 
-`RebuiltHub extends Goal`. Fuel entering the goal volume is consumed and points are added, so it
-does not return to the field — it is *in the Hub*. Fuel "disappearing into the side of the hub" means
-shots are working. Use `MapleSim/Fuel/*` to account for where Fuel has gone: the field starts with
-192, and the robot alone can hold 50.
+`RebuiltHub extends Goal`. Fuel entering the goal volume is consumed and points are added, so it does
+not return to the field — it is *in the Hub*. Fuel "disappearing into the side of the hub" means
+shots are working.
+
+---
+
+## Fuel Count and the Human Player
+
+The arena places **192 Fuel** at reset. Two things then remove it from view:
+
+- The robot holds up to `INTAKE_CAPACITY` (50) — a quarter of the field, invisible inside it.
+- Fuel scored in the Hub is **consumed permanently**. MapleSim never returns it.
+
+That second one is the important one. The library expects the robot program to decide when a human
+player would feed Fuel back in — `Arena2026Rebuilt.outpostDump()` and `outpostThrow()` exist for
+exactly this and are never called on your behalf. Left alone, the field drains as you shoot until
+there is nothing to intake.
+
+`MapleSimWorld` now models the human player: it keeps a target number of Fuel **in circulation** and
+feeds replacements in at the depot when the Hub has swallowed some.
+
+| Constant | Default | What it does |
+|---|---|---|
+| `FUEL_RETURN_ENABLED` | `true` | Set false to let the field drain, like a practice field with nobody feeding it |
+| `TARGET_FUEL_IN_CIRCULATION` | 192 | **Raise this to put more Fuel in play than the arena starts with** |
+| `FUEL_RETURN_INTERVAL_SECONDS` | 0.4 | How fast the human player feeds Fuel back |
+| `FUEL_RETURN_POSITION` | (0.7, 0.7) | Blue depot; mirrored for red |
+
+"In circulation" counts Fuel on the field **plus** Fuel in the robot **plus** Fuel in flight. Counting
+only what is lying on the field would treat a full 50-Fuel hopper as 50 missing Fuel and flood the
+field with replacements.
+
+Watch `MapleSim/Fuel/InCirculation` and `MapleSim/Fuel/AwaitingReturn` to see this working.
 
 **Where those numbers came from:** they were fitted from the robot's own characterization. Every
 (distance, RPM, hood) triple in `SPEED_MAP` and `ANGLE_MAP` was tuned until shots scored, so each one

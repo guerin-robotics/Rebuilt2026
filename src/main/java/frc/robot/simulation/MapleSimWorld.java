@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.Timer;
+import frc.lib.AllianceFlipUtil;
 import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.drive.Drive;
@@ -30,6 +31,7 @@ import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.ironmaple.simulation.gamepieces.GamePieceProjectile;
+import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnField;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 import org.littletonrobotics.junction.Logger;
 
@@ -74,6 +76,12 @@ public class MapleSimWorld {
 
   /** Timestamp of the last simulated shot, used to rate-limit the shot cadence. */
   private double lastShotTimestamp = 0.0;
+
+  /** Timestamp of the last Fuel fed back in by the simulated human player. */
+  private double lastFuelReturnTimestamp = 0.0;
+
+  /** Scatter for returned Fuel. Seeded for repeatable runs. */
+  private final java.util.Random random = new java.util.Random(2026);
 
   private MapleSimWorld() {
     // Install our arena BEFORE anything calls SimulatedArena.getInstance(), which would otherwise
@@ -195,10 +203,62 @@ public class MapleSimWorld {
   public void update() {
     updateIntake();
     updateShooter();
+    returnScoredFuel();
 
     SimulatedArena.getInstance().simulationPeriodic();
 
     logState();
+  }
+
+  /**
+   * Puts Fuel back into play to model the human player feeding it in from the depot.
+   *
+   * <p>MapleSim consumes Fuel scored in the Hub and never returns it, so without this the field
+   * drains as you shoot and eventually there is nothing left to intake.
+   *
+   * <p>Works against Fuel <i>in circulation</i> — on the field, held by the robot, and in flight —
+   * rather than what is merely visible on the field. A robot carrying a full 50-Fuel hopper is not
+   * missing Fuel, and treating it as missing would flood the field with replacements.
+   *
+   * <p>Rate-limited, so a large deficit trickles back in the way a human player would feed it
+   * rather than appearing all at once.
+   */
+  private void returnScoredFuel() {
+    if (!SimulationConstants.FUEL_RETURN_ENABLED) {
+      return;
+    }
+
+    double now = Timer.getFPGATimestamp();
+    if (now - lastFuelReturnTimestamp < SimulationConstants.FUEL_RETURN_INTERVAL_SECONDS) {
+      return;
+    }
+
+    if (fuelInCirculation() >= SimulationConstants.TARGET_FUEL_IN_CIRCULATION) {
+      // Nothing owed. Hold the clock at now so the next genuine deficit is served promptly.
+      lastFuelReturnTimestamp = now;
+      return;
+    }
+    lastFuelReturnTimestamp = now;
+
+    Translation2d depot = SimulationConstants.FUEL_RETURN_POSITION;
+    if (AllianceFlipUtil.shouldFlip()) {
+      depot = AllianceFlipUtil.apply(depot);
+    }
+
+    double scatter = SimulationConstants.FUEL_RETURN_SCATTER_METERS;
+    Translation2d spawn =
+        depot.plus(
+            new Translation2d(
+                (random.nextDouble() - 0.5) * scatter, (random.nextDouble() - 0.5) * scatter));
+
+    SimulatedArena.getInstance().addGamePiece(new RebuiltFuelOnField(spawn));
+  }
+
+  /** Fuel still in play: lying on the field, held by the robot, or airborne. */
+  private int fuelInCirculation() {
+    return SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel").length
+        + intakeSimulation.getGamePiecesAmount()
+        + SimulatedArena.getInstance().gamePieceLaunched().size();
   }
 
   /**
@@ -395,7 +455,11 @@ public class MapleSimWorld {
     Logger.recordOutput(SimulationConstants.LOG_ROOT + "/Fuel/Drawn", fuelPoses.length);
     Logger.recordOutput(SimulationConstants.LOG_ROOT + "/Fuel/HeldByRobot", held);
     Logger.recordOutput(SimulationConstants.LOG_ROOT + "/Fuel/InFlight", inFlight);
+    int circulating = fuelPoses.length + held + inFlight;
+    Logger.recordOutput(SimulationConstants.LOG_ROOT + "/Fuel/InCirculation", circulating);
+    // How much Fuel the Hub has swallowed that the human player has not fed back in yet.
     Logger.recordOutput(
-        SimulationConstants.LOG_ROOT + "/Fuel/AccountedFor", fuelPoses.length + held);
+        SimulationConstants.LOG_ROOT + "/Fuel/AwaitingReturn",
+        Math.max(0, SimulationConstants.TARGET_FUEL_IN_CIRCULATION - circulating));
   }
 }

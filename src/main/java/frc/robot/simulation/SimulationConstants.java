@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -191,6 +192,50 @@ public final class SimulationConstants {
    * falls short even on an ideal 45° arc.
    */
   public static final double LAUNCH_VELOCITY_FACTOR = 1.06;
+
+  // ─── Fuel return (human player) ─────────────────────────────────────────────
+
+  /**
+   * Whether Fuel scored in the Hub is put back into play.
+   *
+   * <p>MapleSim never returns it on its own. {@code RebuiltHub} extends {@code Goal}: Fuel entering
+   * the goal volume is consumed and counted, and nothing feeds it back. The Outpost is the intended
+   * return path — {@code Arena2026Rebuilt.outpostDump()} and {@code outpostThrow()} put Fuel back
+   * on the field — but the library expects the robot program to decide when a human player would do
+   * that. Left alone, the field drains as you shoot.
+   *
+   * <p>Set false to watch the field deplete, which is closer to a practice field with no one
+   * feeding it.
+   */
+  public static final boolean FUEL_RETURN_ENABLED = true;
+
+  /**
+   * How many Fuel stay in circulation — on the field, inside the robot, and in flight combined.
+   *
+   * <p>The arena places 192 at reset, so 192 keeps the field topped up as Fuel is scored. <b>Raise
+   * this to put more Fuel in play than the arena starts with</b>; the return logic will feed the
+   * extra in at the normal rate rather than dumping it all at once.
+   *
+   * <p>Counting Fuel held by the robot and in flight — not just what is lying on the field —
+   * matters: with a 50-Fuel hopper, a full robot would otherwise look like 50 missing Fuel and
+   * trigger a flood of replacements.
+   */
+  public static final int TARGET_FUEL_IN_CIRCULATION = 192;
+
+  /**
+   * Seconds between returned Fuel. Models how fast a human player can feed them back rather than
+   * teleporting the whole backlog in at once.
+   */
+  public static final double FUEL_RETURN_INTERVAL_SECONDS = 0.4;
+
+  /**
+   * Where returned Fuel is placed, on the blue side; mirrored for red. Matches the blue depot
+   * cluster the arena itself stocks at reset.
+   */
+  public static final Translation2d FUEL_RETURN_POSITION = new Translation2d(0.7, 0.7);
+
+  /** Random scatter applied to each returned Fuel so they do not stack in one spot. */
+  public static final double FUEL_RETURN_SCATTER_METERS = 0.6;
 
   // ─── Field ──────────────────────────────────────────────────────────────────
 
