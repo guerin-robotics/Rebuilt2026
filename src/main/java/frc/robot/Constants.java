@@ -21,6 +21,19 @@ public final class Constants {
   // CHANGE ME TO WHAT ROBOT IS CURRENTLY BEING USED
   public static final RobotType robotType = RobotType.COMP;
 
+  /**
+   * Selects the simulation backend when {@link #currentMode} is {@link Mode#SIM}.
+   *
+   * <p>{@code true} — MapleSim rigid-body physics: real mass, wheel traction limits, field
+   * collisions, and 2026 Rebuilt Fuel that can be intaked and shot.
+   *
+   * <p>{@code false} — the original per-module {@code DCMotorSim} path ({@code ModuleIOSim}), which
+   * has no notion of mass or collisions. Kept as a fallback because maple-sim 0.4.0 is a beta.
+   *
+   * <p>Has no effect on a real robot: {@link #currentMode} is {@link Mode#REAL} there regardless.
+   */
+  public static final boolean useMapleSim = true;
+
   public static enum Mode {
     /** Running on a real robot. */
     REAL,
