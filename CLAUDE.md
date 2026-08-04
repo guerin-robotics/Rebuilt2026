@@ -162,6 +162,7 @@ Team skills (slash commands) are in `.claude/skills/`:
 **Change risk classification:** [docs/change-classification.md](docs/change-classification.md)
 **Full architecture:** [ARCHITECTURE.md](ARCHITECTURE.md)
 **Template for new subsystems:** [template/](template/)
+**Physics simulation:** [docs/maple-sim.md](docs/maple-sim.md)
 
 ## graphify
 
