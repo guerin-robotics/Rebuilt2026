@@ -9,12 +9,14 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
+import frc.robot.RobotState;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.flywheel.FlywheelConstants.TrajectoryVisualization;
 import java.util.function.BooleanSupplier;
@@ -27,6 +29,7 @@ import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
+import org.ironmaple.simulation.gamepieces.GamePieceProjectile;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 import org.littletonrobotics.junction.Logger;
 
@@ -65,6 +68,9 @@ public class MapleSimWorld {
   private Supplier<AngularVelocity> upperFeederVelocity = () -> RPM.of(0);
   private Supplier<Angle> hoodAngle = () -> Radians.of(0);
   private BooleanSupplier flywheelSpunUp = () -> false;
+
+  /** Hub center height, from MapleSim's {@code RebuiltHub.blueHubPose}. */
+  private static final double HUB_HEIGHT_METERS = 1.5748;
 
   /** Timestamp of the last simulated shot, used to rate-limit the shot cadence. */
   private double lastShotTimestamp = 0.0;
@@ -229,12 +235,22 @@ public class MapleSimWorld {
     boolean feeding =
         Math.abs(upperFeederVelocity.get().in(RPM))
             >= SimulationConstants.FEEDER_FEEDING_THRESHOLD.in(RPM);
-    boolean fastEnough =
-        Math.abs(flywheelSpeed.in(RPM)) >= SimulationConstants.MIN_SHOT_VELOCITY.in(RPM);
+
+    // Require the flywheel to have actually reached its commanded speed, not merely to be
+    // spinning. ShootSequences waits on isFlywheelSpunUp but with a timeout, so the feeder can
+    // run while the flywheel is still ramping; firing then launches Fuel far below the RPM the
+    // characterization tables assume, and every such shot falls short.
+    boolean spunUp =
+        flywheelSpunUp.getAsBoolean()
+            && Math.abs(flywheelSpeed.in(RPM)) >= SimulationConstants.MIN_SHOT_VELOCITY.in(RPM);
+
+    Logger.recordOutput(SimulationConstants.LOG_ROOT + "/Shot/Feeding", feeding);
+    Logger.recordOutput(SimulationConstants.LOG_ROOT + "/Shot/SpunUp", spunUp);
+    Logger.recordOutput(SimulationConstants.LOG_ROOT + "/Shot/FlywheelRPM", flywheelSpeed.in(RPM));
 
     double now = Timer.getFPGATimestamp();
 
-    if (!(feeding && fastEnough)) {
+    if (!(feeding && spunUp)) {
       // Not shooting: hold the cadence clock at "now" so the first shot after the feeder spins
       // up fires immediately instead of dumping a backlog of missed intervals.
       lastShotTimestamp = now;
@@ -282,6 +298,8 @@ public class MapleSimWorld {
     // The shooter fires out the back of the robot, so it faces 180° from the robot heading.
     Rotation2d shooterFacing = robotPose.getRotation().plus(Rotation2d.k180deg);
 
+    logShotPrediction(robotPose, launchSpeedMetersPerSec, getLaunchElevation().in(Degrees));
+
     SimulatedArena.getInstance()
         .addGamePieceProjectile(
             new RebuiltFuelOnFly(
@@ -298,6 +316,46 @@ public class MapleSimWorld {
                 MetersPerSecond.of(launchSpeedMetersPerSec),
                 getLaunchElevation()));
     return true;
+  }
+
+  /**
+   * Publishes what this shot is predicted to do, so a miss can be diagnosed without guessing.
+   *
+   * <p>{@code ArrivalHeight} is the key signal. Compare it against the Hub at 1.575 m:
+   *
+   * <ul>
+   *   <li><b>Arrival height is right but Fuel still misses</b> — the launch model is fine and the
+   *       problem is aim, robot pose, or the shot firing at the wrong distance.
+   *   <li><b>Arrival height is low</b> — the model itself is off; check {@code FlywheelRPM} against
+   *       {@code Flywheel/targetRPM} first, since a flywheel below its commanded speed makes every
+   *       shot fall short no matter how good the angle is.
+   * </ul>
+   *
+   * <p>Uses MapleSim's inflated gravity, not Earth's — see {@link SimulationConstants}.
+   */
+  private void logShotPrediction(Pose2d robotPose, double speed, double elevationDegrees) {
+    double distanceToHub =
+        robotPose
+            .getTranslation()
+            .getDistance(RobotState.getInstance().getAllianceHubTarget().toTranslation2d());
+    double flightDistance = distanceToHub - SimulationConstants.SHOOTER_EXIT_DISTANCE.in(Meters);
+    double theta = Math.toRadians(elevationDegrees);
+
+    double flightTime = flightDistance / (speed * Math.cos(theta));
+    double arrivalHeight =
+        SimulationConstants.LAUNCH_HEIGHT.in(Meters)
+            + speed * Math.sin(theta) * flightTime
+            - 0.5 * GamePieceProjectile.GRAVITY * flightTime * flightTime;
+    double arrivalVerticalSpeed =
+        speed * Math.sin(theta) - GamePieceProjectile.GRAVITY * flightTime;
+
+    String root = SimulationConstants.LOG_ROOT + "/Shot/";
+    Logger.recordOutput(root + "DistanceToHubMeters", distanceToHub);
+    Logger.recordOutput(root + "ExitSpeedMPS", speed);
+    Logger.recordOutput(root + "ArrivalHeightMeters", arrivalHeight);
+    Logger.recordOutput(root + "ArrivalErrorMeters", arrivalHeight - HUB_HEIGHT_METERS);
+    // Negative means descending into the goal; positive means still rising into the front of it.
+    Logger.recordOutput(root + "ArrivalVerticalSpeedMPS", arrivalVerticalSpeed);
   }
 
   /**
@@ -323,10 +381,21 @@ public class MapleSimWorld {
         SimulationConstants.LOG_ROOT + "/IntakeRunning", intakeSimulation.isRunning());
     Logger.recordOutput(
         SimulationConstants.LOG_ROOT + "/FlywheelSpunUp", flywheelSpunUp.getAsBoolean());
-    // Every Fuel on the field, for the AdvantageScope 3D view. Drag this onto the field as a
+    // Every Fuel the arena draws, for the AdvantageScope 3D view. Drag this onto the field as a
     // "Fuel" game piece to watch shots fly and land.
+    Pose3d[] fuelPoses = SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel");
+    Logger.recordOutput(SimulationConstants.LOG_ROOT + "/Fuel", fuelPoses);
+
+    // Fuel accounting. The field starts with 192; if fewer are visible, they are somewhere in
+    // this breakdown rather than lost. The robot alone can hold INTAKE_CAPACITY (50) of them,
+    // which is a quarter of the field, and Fuel scored in the Hub stays there until the Outpost
+    // releases it.
+    int held = intakeSimulation.getGamePiecesAmount();
+    int inFlight = SimulatedArena.getInstance().gamePieceLaunched().size();
+    Logger.recordOutput(SimulationConstants.LOG_ROOT + "/Fuel/Drawn", fuelPoses.length);
+    Logger.recordOutput(SimulationConstants.LOG_ROOT + "/Fuel/HeldByRobot", held);
+    Logger.recordOutput(SimulationConstants.LOG_ROOT + "/Fuel/InFlight", inFlight);
     Logger.recordOutput(
-        SimulationConstants.LOG_ROOT + "/Fuel",
-        SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
+        SimulationConstants.LOG_ROOT + "/Fuel/AccountedFor", fuelPoses.length + held);
   }
 }
