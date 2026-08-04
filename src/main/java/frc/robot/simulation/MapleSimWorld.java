@@ -1,5 +1,6 @@
 package frc.robot.simulation;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RPM;
@@ -230,24 +231,51 @@ public class MapleSimWorld {
             >= SimulationConstants.FEEDER_FEEDING_THRESHOLD.in(RPM);
     boolean fastEnough =
         Math.abs(flywheelSpeed.in(RPM)) >= SimulationConstants.MIN_SHOT_VELOCITY.in(RPM);
-    boolean cadenceElapsed =
-        Timer.getFPGATimestamp() - lastShotTimestamp >= SimulationConstants.SHOT_INTERVAL_SECONDS;
 
-    if (!(feeding && fastEnough && cadenceElapsed)) {
+    double now = Timer.getFPGATimestamp();
+
+    if (!(feeding && fastEnough)) {
+      // Not shooting: hold the cadence clock at "now" so the first shot after the feeder spins
+      // up fires immediately instead of dumping a backlog of missed intervals.
+      lastShotTimestamp = now;
       return;
     }
 
-    // Consume a held Fuel. Returns false when the robot is empty — nothing to shoot.
+    // The shot interval (50 ms) is shorter than the robot loop (20 ms per call), so fire every
+    // shot that came due since the last loop rather than capping the rate at one per loop.
+    int fired = 0;
+    while (now - lastShotTimestamp >= SimulationConstants.SHOT_INTERVAL_SECONDS
+        && fired < SimulationConstants.MAX_SHOTS_PER_LOOP) {
+      if (!launchOneFuel(flywheelSpeed)) {
+        // Robot is empty — stop trying and resync the clock so it does not build up credit.
+        lastShotTimestamp = now;
+        break;
+      }
+      lastShotTimestamp += SimulationConstants.SHOT_INTERVAL_SECONDS;
+      fired++;
+    }
+
+    if (fired > 0) {
+      Logger.recordOutput(SimulationConstants.LOG_ROOT + "/ShotsThisLoop", fired);
+    }
+  }
+
+  /**
+   * Consumes one held Fuel and adds it to the field as a projectile.
+   *
+   * @return false if the robot had no Fuel to shoot
+   */
+  private boolean launchOneFuel(AngularVelocity flywheelSpeed) {
     if (!intakeSimulation.obtainGamePieceFromIntake()) {
-      return;
+      return false;
     }
-    lastShotTimestamp = Timer.getFPGATimestamp();
 
-    // v = ω × r, matching FlywheelVisualizer.toLinearVelocity()
+    // v = ω · r · factor. Uses the sim's own factor rather than the visualizer's 0.8, which
+    // cannot reach the Hub from any mapped distance — see SimulationConstants.
     double launchSpeedMetersPerSec =
         Math.abs(flywheelSpeed.in(RadiansPerSecond))
             * TrajectoryVisualization.DRUM_RADIUS_METERS
-            * TrajectoryVisualization.VELOCITY_FUDGE_FACTOR;
+            * SimulationConstants.LAUNCH_VELOCITY_FACTOR;
 
     Pose2d robotPose = getGroundTruthPose();
 
@@ -263,7 +291,22 @@ public class MapleSimWorld {
                 robotPose.getRotation().plus(Rotation2d.k180deg),
                 Meters.of(TrajectoryVisualization.LAUNCH_HEIGHT_METERS),
                 MetersPerSecond.of(launchSpeedMetersPerSec),
-                hoodAngle.get()));
+                getLaunchElevation()));
+    return true;
+  }
+
+  /**
+   * Converts the hood's mechanism angle into the Fuel's actual launch elevation.
+   *
+   * <p>Feeding the raw hood reading in as elevation gives a 1°–12° shot that cannot reach the Hub.
+   * See {@code SimulationConstants.LAUNCH_ANGLE_OFFSET_DEGREES} for where this mapping came from.
+   */
+  private Angle getLaunchElevation() {
+    double elevationDegrees =
+        SimulationConstants.LAUNCH_ANGLE_OFFSET_DEGREES
+            + SimulationConstants.LAUNCH_ANGLE_PER_HOOD_DEGREE * hoodAngle.get().in(Degrees);
+    Logger.recordOutput(SimulationConstants.LOG_ROOT + "/LaunchAngleDeg", elevationDegrees);
+    return Degrees.of(elevationDegrees);
   }
 
   /** Publishes sim state for AdvantageScope. Ground truth is the key signal for judging drift. */

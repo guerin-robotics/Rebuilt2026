@@ -107,10 +107,40 @@ the intake stowed does nothing.
 least one Fuel held. Shots are rate-limited, because the feeder runs continuously while the real
 mechanism releases discrete balls.
 
-Launch velocity and angle reuse `FlywheelConstants.TrajectoryVisualization` — the same drum radius,
-fudge factor, launch height, and exit offset that drive the AdvantageScope trajectory preview.
-Simulated Fuel therefore follows the arc the preview already draws. **Tune the preview and you tune
-the sim**; they cannot disagree.
+### The launch model
+
+Shot geometry (launch height, drum radius, exit offset) comes from
+`FlywheelConstants.TrajectoryVisualization`. **Launch angle and speed do not** — see below.
+
+**Hood position is not launch angle.** `Hood.getPosition()` reports a *mechanism* angle: the CANcoder
+reading after the 122:12 reduction. Hub shots ask for hood values of roughly 1°–12°, and using those
+directly as the ball's elevation gives a nearly flat shot that cannot reach the Hub from anywhere on
+the field.
+
+`SimulationConstants` therefore converts hood position to real elevation:
+
+```
+launchAngleDeg = 50.26 + (-0.756 × hoodDegrees)
+launchSpeed    = ω × drumRadius × 1.01
+```
+
+**Where those numbers came from:** they were fitted from the robot's own characterization. Every
+(distance, RPM, hood) triple in `SPEED_MAP` and `ANGLE_MAP` was tuned until shots scored, so each one
+is a known-good shot. Solving projectile motion for the elevation that carries Fuel into the Hub
+(1.5748 m) across all nine points gives 41°–52°, fitting the line above with R² = 0.90 and a worst
+vertical miss of 7 cm.
+
+The negative slope is physically sensible — farther shots use more speed and a flatter arc.
+
+**These are derived, not measured.** The fit assumes no aerodynamic drag and a shot through Hub
+center. If you measure the real launch angle, replace them; `LaunchModelTest` will tell you
+immediately if the new values stop putting characterized shots in the Hub.
+
+> **Note on `VELOCITY_FUDGE_FACTOR`:** the visualizer's value of 0.8 makes Fuel physically unable to
+> reach the Hub from any mapped distance — it falls short even on an ideal 45° arc. The sim uses 1.01
+> instead, the lowest value consistent with the characterization tables. **The AdvantageScope
+> trajectory preview still uses 0.8 and the raw hood angle, so that preview is wrong on the real
+> robot too** — it is drawn by `FlywheelVisualizer`, which this work did not change.
 
 ---
 
@@ -138,11 +168,13 @@ These are duplicated because the originals are `private`. If you change one, cha
 
 ### Values that are guesses — fix when you know better
 
-| Constant | Current | How to calibrate |
+| Constant | Current | Basis |
 |---|---|---|
-| `SHOT_INTERVAL_SECONDS` | 0.15 s | Count shots per second in match video |
-
-`INTAKE_CAPACITY` is set to 50, measured from the real hopper.
+| `INTAKE_CAPACITY` | 50 Fuel | Measured on the real hopper |
+| `SHOT_INTERVAL_SECONDS` | 0.05 s | 20 Fuel/second, measured |
+| `LAUNCH_ANGLE_OFFSET_DEGREES` | 50.26 | Fitted from characterization — replace with a measurement |
+| `LAUNCH_ANGLE_PER_HOOD_DEGREE` | −0.756 | Fitted from characterization — replace with a measurement |
+| `LAUNCH_VELOCITY_FACTOR` | 1.01 | Fitted from characterization — replace with a measurement |
 
 ---
 

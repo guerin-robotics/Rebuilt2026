@@ -104,14 +104,54 @@ public final class SimulationConstants {
   public static final AngularVelocity FEEDER_FEEDING_THRESHOLD = RPM.of(500);
 
   /**
-   * Minimum time between simulated shots while the feeder is running — the robot's cycle rate.
+   * Time between simulated shots while the feeder is running — 20 Fuel per second.
    *
-   * <p>ASSUMPTION — tune this until the sim's shots-per-second matches match video.
+   * <p>This is faster than the 20 ms robot loop, so {@code MapleSimWorld} fires however many shots
+   * are due each loop rather than at most one. Without that, the rate would silently clamp to 50/s
+   * and in practice land near 16/s from loop-boundary rounding.
    */
-  public static final double SHOT_INTERVAL_SECONDS = 0.15;
+  public static final double SHOT_INTERVAL_SECONDS = 0.05;
+
+  /** Safety cap on shots launched in a single loop, so a stalled clock cannot flood the field. */
+  public static final int MAX_SHOTS_PER_LOOP = 10;
 
   /** Below this flywheel speed no projectile is launched, matching the trajectory preview. */
   public static final AngularVelocity MIN_SHOT_VELOCITY = RPM.of(300);
+
+  // ─── Launch model ───────────────────────────────────────────────────────────
+
+  /**
+   * Converts hood position to the Fuel's actual launch elevation above horizontal.
+   *
+   * <p><b>Why this exists:</b> {@code Hood.getPosition()} reports a <i>mechanism</i> angle — the
+   * CANcoder reading after the 122:12 reduction. It is not the angle the ball leaves at. The hub
+   * shot range asks for hood values of roughly 1°–12°, and feeding those in as launch elevation
+   * produces an almost flat shot that cannot reach the Hub at any distance.
+   *
+   * <p><b>Where these numbers came from:</b> fitted from the robot's own characterization tables.
+   * {@code FlywheelConstants.SPEED_MAP} and {@code HoodConstants.ANGLE_MAP} were tuned until shots
+   * actually scored, so each (distance, RPM, hood) triple is a known-good shot. Solving projectile
+   * motion for the elevation that carries the Fuel from the launch height into the Hub (1.5748 m,
+   * from MapleSim's {@code RebuiltHub}) gives 41°–52°, fitting this line with R² = 0.90.
+   *
+   * <p>The negative slope is physically sensible: farther shots use more speed and a flatter arc.
+   *
+   * <p><b>These are derived, not measured.</b> The fit assumes no aerodynamic drag and a shot
+   * through the center of the Hub. If you measure the real launch angle, replace them.
+   */
+  public static final double LAUNCH_ANGLE_OFFSET_DEGREES = 50.26;
+
+  public static final double LAUNCH_ANGLE_PER_HOOD_DEGREE = -0.756;
+
+  /**
+   * Scales flywheel surface speed to Fuel exit speed (v = ω · r · factor).
+   *
+   * <p>{@code FlywheelConstants.TrajectoryVisualization.VELOCITY_FUDGE_FACTOR} is 0.8, which makes
+   * the Fuel physically unable to reach the Hub at any angle from the mapped distances — the shot
+   * falls short even on an ideal 45° arc. 1.0 is the lowest value consistent with the robot's own
+   * characterization tables, so the sim uses that instead.
+   */
+  public static final double LAUNCH_VELOCITY_FACTOR = 1.01;
 
   // ─── Field ──────────────────────────────────────────────────────────────────
 
