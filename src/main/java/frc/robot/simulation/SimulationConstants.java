@@ -80,12 +80,8 @@ public final class SimulationConstants {
 
   public static final Distance INTAKE_EXTENSION = Inches.of(8.5);
 
-  /**
-   * How many Fuel the robot can hold before the intake stops accepting more.
-   *
-   * <p>ASSUMPTION — not derived from anything in the codebase. Adjust to match the real hopper.
-   */
-  public static final int INTAKE_CAPACITY = 24;
+  /** How many Fuel the robot can hold before the intake stops accepting more. */
+  public static final int INTAKE_CAPACITY = 50;
 
   /**
    * The intake only grabs Fuel when the pivot is at or below this angle. The pivot reads 0 when
@@ -118,6 +114,21 @@ public final class SimulationConstants {
   public static final AngularVelocity MIN_SHOT_VELOCITY = RPM.of(300);
 
   // ─── Field ──────────────────────────────────────────────────────────────────
+
+  /**
+   * Whether the robot can drive across the field bumps in simulation.
+   *
+   * <p>MapleSim's physics engine is 2D, so it cannot model driving <i>over</i> anything — every
+   * obstacle is a wall of infinite height. Left in place, the bumps stop an auto dead and most
+   * routines become impossible to run.
+   *
+   * <p>{@code true} removes them, which is wrong in the opposite direction: crossings become free,
+   * with none of the real time loss, traction loss, or deflection. Trust sim autos for <i>path
+   * geometry</i> across a bump, not for <i>timing</i>.
+   *
+   * <p>Set to {@code false} to restore the stock arena and treat the bumps as walls.
+   */
+  public static final boolean BUMPS_ARE_PASSABLE = true;
 
   /**
    * Where the simulated robot is placed on startup and whenever the sim field is reset. Roughly the
