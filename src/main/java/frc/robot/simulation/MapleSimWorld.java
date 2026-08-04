@@ -69,6 +69,10 @@ public class MapleSimWorld {
   private double lastShotTimestamp = 0.0;
 
   private MapleSimWorld() {
+    // Install our arena BEFORE anything calls SimulatedArena.getInstance(), which would otherwise
+    // lazily create the stock Arena2026Rebuilt and leave the bumps in place as solid walls.
+    SimulatedArena.overrideInstance(new RebuiltArena());
+
     // One shared module config — MapleSim calls the supplier once per corner.
     SwerveModuleSimulationConfig moduleConfig =
         new SwerveModuleSimulationConfig(

@@ -140,8 +140,38 @@ These are duplicated because the originals are `private`. If you change one, cha
 
 | Constant | Current | How to calibrate |
 |---|---|---|
-| `INTAKE_CAPACITY` | 24 Fuel | Count what the hopper actually holds |
 | `SHOT_INTERVAL_SECONDS` | 0.15 s | Count shots per second in match video |
+
+`INTAKE_CAPACITY` is set to 50, measured from the real hopper.
+
+---
+
+## The Field Bumps — Read This Before Trusting an Auto
+
+**MapleSim cannot simulate driving over anything.** Its physics engine (dyn4j) is strictly 2D. The
+chassis has no Z coordinate, so every obstacle is a wall of infinite height. A bump the robot drives
+over and a guardrail it cannot cross are the same object to the engine.
+
+The stock `Arena2026Rebuilt` includes the two field bumps as solid obstacles — 47 × 217 in, centered
+at x ≈ 4.60 m and x ≈ 11.94 m, spanning most of the field width. With those in place, a simulated
+auto that crosses one **stops dead against it**, which makes most routines impossible to run.
+
+`RebuiltArena` removes them, controlled by `SimulationConstants.BUMPS_ARE_PASSABLE` (default `true`).
+
+Neither behavior is correct:
+
+| Setting | Behavior | Wrong because |
+|---|---|---|
+| `true` (default) | Robot crosses freely | No time loss, traction loss, or deflection |
+| `false` | Robot is blocked | The real robot crosses it fine |
+
+**So:** trust a sim auto for *path geometry* across a bump. Do **not** trust it for *timing*, and do
+not conclude a path is clean just because it ran here. Given the auto time budget is already tight,
+assume a real crossing costs more than the sim shows.
+
+The bumps are matched by physical size rather than list position, and `RebuiltArenaTest` fails the
+build if the count is ever not exactly 2 — so a maple-sim update that changes the field map surfaces
+as a test failure instead of autos mysteriously stopping dead again.
 
 ---
 
@@ -199,6 +229,7 @@ A handful at startup is normal (~11 in 3000 loops when this was added, with `Dri
 |---|---|
 | `simulation/MapleSimWorld.java` | Owns the physics world, arena, and Fuel interaction |
 | `simulation/SimulationConstants.java` | Every tunable value described above |
+| `simulation/RebuiltArena.java` | 2026 arena with the bumps made passable |
 | `subsystems/drive/ModuleIOMapleSim.java` | Module IO backed by the physics engine |
 | `subsystems/drive/GyroIOSim.java` | Simulated gyro with realistic drift |
 | `Constants.useMapleSim` | Backend toggle |
