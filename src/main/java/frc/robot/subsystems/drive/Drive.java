@@ -45,6 +45,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.Robot;
 import frc.robot.RobotState;
 import frc.robot.generated.TunerConstants;
+import frc.robot.simulation.MapleSimWorld;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -360,6 +361,13 @@ public class Drive extends SubsystemBase {
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+
+    // In MapleSim, also teleport the physics body. Without this the estimator would be reset to
+    // the auto's start pose while the simulated robot stayed where it was, and every subsequent
+    // vision measurement would fight the odometry. No-op on a real robot.
+    if (MapleSimWorld.isActive()) {
+      MapleSimWorld.getInstance().resetPose(pose);
+    }
   }
 
   /** Adds a new timestamped vision measurement. */
