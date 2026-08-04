@@ -44,4 +44,12 @@ public class UpperFeeder extends SubsystemBase {
       io.setUpperFeederVelocity(feederVelo);
     }
   }
+
+  /**
+   * Returns the measured motor velocity. Read by the MapleSim world to detect when Fuel is actually
+   * being fed into the flywheel, which is what triggers a simulated shot.
+   */
+  public AngularVelocity getVelocity() {
+    return inputs.upperFeederMotorVelocity;
+  }
 }

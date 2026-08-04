@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.AllianceFlipUtil;
+import frc.robot.simulation.MapleSimWorld;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.util.BatteryLogger;
 import frc.robot.util.Elastic;
@@ -266,7 +267,16 @@ public class Robot extends LoggedRobot {
   @Override
   public void simulationInit() {}
 
-  /** This function is called periodically whilst in simulation. */
+  /**
+   * Steps the MapleSim physics world one robot period.
+   *
+   * <p>Runs after {@code CommandScheduler} has already executed this loop's subsystem periodics, so
+   * the motor voltages the physics engine integrates are the ones commanded this loop.
+   */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    if (MapleSimWorld.isActive()) {
+      MapleSimWorld.getInstance().update();
+    }
+  }
 }

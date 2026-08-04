@@ -39,10 +39,13 @@ import frc.robot.commands.ShootSequences;
 import frc.robot.commands.TransportCommands;
 import frc.robot.commands.intakeRollerCommands;
 import frc.robot.generated.TunerConstants;
+import frc.robot.simulation.MapleSimWorld;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
+import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOMapleSim;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.flywheel.Flywheel;
@@ -86,6 +89,7 @@ import frc.robot.subsystems.vision.io.VisionIOPhotonVisionSim;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.RobotModelVisualizer;
 import java.util.List;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -180,24 +184,48 @@ public class RobotContainer {
         break;
 
       case SIM:
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(TunerConstants.FrontLeft),
-                new ModuleIOSim(TunerConstants.FrontRight),
-                new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight));
+        if (MapleSimWorld.isActive()) {
+          // MapleSim rigid-body physics: mass, wheel traction, field collisions.
+          MapleSimWorld simWorld = MapleSimWorld.getInstance();
+          var simModules = simWorld.getModules();
+          drive =
+              new Drive(
+                  new GyroIOSim(simWorld.getGyroSimulation()),
+                  new ModuleIOMapleSim(simModules[0]),
+                  new ModuleIOMapleSim(simModules[1]),
+                  new ModuleIOMapleSim(simModules[2]),
+                  new ModuleIOMapleSim(simModules[3]));
+        } else {
+          // Fallback: independent per-module DCMotorSim, no mass or collisions.
+          drive =
+              new Drive(
+                  new GyroIO() {},
+                  new ModuleIOSim(TunerConstants.FrontLeft),
+                  new ModuleIOSim(TunerConstants.FrontRight),
+                  new ModuleIOSim(TunerConstants.BackLeft),
+                  new ModuleIOSim(TunerConstants.BackRight));
+        }
+        // Vision reads the pose the cameras should physically see. Under MapleSim that is the
+        // ground-truth pose; feeding the estimator's own output back in (as the stock template
+        // does) makes vision incapable of ever correcting error, since it only ever confirms
+        // what the estimator already believes.
+        Supplier<Pose2d> visionGroundTruth =
+            MapleSimWorld.isActive()
+                ? MapleSimWorld.getInstance()::getGroundTruthPose
+                : drive::getPose;
         vision =
             new Vision(
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, visionGroundTruth),
                 new VisionIOPhotonVisionSim(
-                    VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose),
+                    VisionConstants.camera1Name, VisionConstants.robotToCamera1, visionGroundTruth),
                 new VisionIOPhotonVisionSim(
-                    VisionConstants.camera2Name, VisionConstants.robotToCamera2, drive::getPose),
+                    VisionConstants.camera2Name, VisionConstants.robotToCamera2, visionGroundTruth),
                 new VisionIOPhotonVisionSim(
-                    VisionConstants.camera3Name, VisionConstants.robotToCamera3, drive::getPose));
+                    VisionConstants.camera3Name,
+                    VisionConstants.robotToCamera3,
+                    visionGroundTruth));
         flywheel = new Flywheel(new FlywheelIOSim());
         upperFeeder = new UpperFeeder(new UpperFeederIOSim());
         lowerFeeder = new LowerFeeder(new LowerFeederIOSim());
@@ -238,6 +266,19 @@ public class RobotContainer {
     // Wire the hood angle supplier into the flywheel's trajectory visualizer.
     // This keeps Flywheel and Hood decoupled — the supplier is the only link.
     flywheel.setHoodAngleSupplier(hood::getPosition);
+
+    // Tell the MapleSim world which mechanism signals gate Fuel pickup and shooting.
+    // Suppliers only — the sim world holds no subsystem references.
+    if (MapleSimWorld.isActive()) {
+      MapleSimWorld.getInstance()
+          .configureMechanisms(
+              intakePivot::getPosition,
+              intakeRoller::getVelocity,
+              flywheel::getFlywheelVelocity,
+              upperFeeder::getVelocity,
+              hood::getPosition,
+              flywheel::isSpunUp);
+    }
 
     // 3D robot model component poses for AdvantageScope (Robot_Omega articulated model).
     // Suppliers only — no subsystem cross-references. Updated from Robot.robotPeriodic().

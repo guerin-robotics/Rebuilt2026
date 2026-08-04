@@ -158,6 +158,14 @@ public class Flywheel extends SubsystemBase {
     return inputs.leaderAngle;
   }
 
+  /**
+   * Returns the measured flywheel (mechanism) velocity — the same signal the trajectory visualizer
+   * uses. Read by the MapleSim world to set launch speed for simulated Fuel.
+   */
+  public AngularVelocity getFlywheelVelocity() {
+    return inputs.flywheelVelocity;
+  }
+
   public boolean isSpunUp() {
     Logger.recordOutput("Flywheel/currentRPMTarget", currentRPMTarget);
     return (Math.abs(currentRPMTarget - inputs.leaderVelocity.in(RPM))

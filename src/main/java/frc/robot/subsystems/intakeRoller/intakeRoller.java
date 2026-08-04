@@ -46,4 +46,12 @@ public class intakeRoller extends SubsystemBase {
   public void setRollerVelocity(AngularVelocity rollerVelo) {
     io.setRollerVelocity(rollerVelo);
   }
+
+  /**
+   * Returns the measured roller velocity. Read by the MapleSim world to decide whether the intake
+   * is actually spinning and can pick up Fuel.
+   */
+  public AngularVelocity getVelocity() {
+    return inputs.intakeRollerVelocity;
+  }
 }
