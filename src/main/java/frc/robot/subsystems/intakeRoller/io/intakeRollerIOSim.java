@@ -1,6 +1,8 @@
 package frc.robot.subsystems.intakeRoller.io;
 
 import static edu.wpi.first.units.Units.Celsius;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -117,29 +119,26 @@ public class intakeRollerIOSim implements intakeRollerIO {
     // 6. Read values from the TalonFX status signals (just like on real hardware)
     // Leader motor
     inputs.intakeRollerVelocity =
-        RotationsPerSecond.of(intakeRollerLeader.getVelocity().getValueAsDouble());
+        RotationsPerSecond.of(intakeRollerLeader.getVelocity().getValueAsDouble()).in(RPM);
     inputs.intakeRollerVoltage = intakeRollerLeader.getMotorVoltage().getValue();
     inputs.intakeRollerStatorCurrent = intakeRollerLeader.getStatorCurrent().getValue();
     inputs.intakeRollerSupplyCurrent = intakeRollerLeader.getSupplyCurrent().getValue();
     inputs.intakeRollerTemperature = intakeRollerLeader.getDeviceTemp().getValue().in(Celsius);
     inputs.rollerClosedLoopReference =
-        RotationsPerSecond.of(intakeRollerLeader.getClosedLoopReference().getValueAsDouble());
+        intakeRollerLeader.getClosedLoopReference().getValueAsDouble();
     inputs.rollerClosedLoopError =
-        RotationsPerSecond.of(intakeRollerLeader.getClosedLoopError().getValueAsDouble());
-    inputs.rollerPos = intakeRollerLeader.getPosition().getValue();
+        RotationsPerSecond.of(intakeRollerLeader.getClosedLoopError().getValueAsDouble()).in(RPM);
+    inputs.rollerPos = intakeRollerLeader.getPosition().getValue().in(Degrees);
 
     // Follower motor
-    inputs.intakeRollerFollowerVelocity = intakeRollerFollower.getVelocity().getValue();
+    inputs.intakeRollerFollowerVelocity =
+        intakeRollerFollower.getVelocity().getValue().in(RotationsPerSecond);
     inputs.intakeRollerFollowerVoltage = intakeRollerFollower.getMotorVoltage().getValue();
     inputs.intakeRollerFollowerStatorCurrent = intakeRollerFollower.getStatorCurrent().getValue();
     inputs.intakeRollerFollowerSupplyCurrent = intakeRollerFollower.getSupplyCurrent().getValue();
     inputs.intakeRollerFollowerTemperature =
         intakeRollerFollower.getDeviceTemp().getValue().in(Celsius);
-    inputs.rollerFollowerClosedLoopReference =
-        RotationsPerSecond.of(intakeRollerFollower.getClosedLoopReference().getValueAsDouble());
-    inputs.rollerFollowerClosedLoopError =
-        RotationsPerSecond.of(intakeRollerFollower.getClosedLoopError().getValueAsDouble());
-    inputs.rollerFollowerPos = intakeRollerFollower.getPosition().getValue();
+    inputs.rollerFollowerPos = intakeRollerFollower.getPosition().getValue().in(Degrees);
   }
 
   @Override

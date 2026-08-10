@@ -2,6 +2,7 @@ package frc.robot.subsystems.hood.io;
 
 import static edu.wpi.first.units.Units.Celsius;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Seconds;
 
@@ -163,18 +164,18 @@ public class HoodIOReal implements HoodIO {
         closedLoopError);
 
     // Read from cache — no additional CAN traffic
-    inputs.hoodVelocity = velocity.getValue();
+    inputs.hoodVelocity = velocity.getValue().in(RPM);
     // CTRE returns position in mechanism rotations; wrap in Degrees for consistent logging.
     // This ensures AdvantageScope displays the value in degrees (not rotations).
-    inputs.hoodPosition = Degrees.of(devicePos.getValue().in(Degrees));
+    inputs.hoodPosition = devicePos.getValue().in(Degrees);
     inputs.hoodVoltage = motorVoltage.getValue();
     inputs.hoodStatorCurrent = statorCurrent.getValue();
     inputs.hoodSupplyCurrent = supplyCurrent.getValue();
     inputs.hoodTemperature = deviceTemp.getValue().in(Celsius);
     // closedLoopReference and closedLoopError are raw doubles in mechanism rotations.
     // Convert to degrees so all hood angles are in degrees throughout the codebase.
-    inputs.hoodClosedLoopReference = Degrees.of(closedLoopReference.getValueAsDouble() * 360.0);
-    inputs.hoodClosedLoopError = Degrees.of(closedLoopError.getValueAsDouble() * 360.0);
+    inputs.hoodClosedLoopReference = closedLoopReference.getValueAsDouble() * 360.0;
+    inputs.hoodClosedLoopError = closedLoopError.getValueAsDouble() * 360.0;
   }
 
   @Override

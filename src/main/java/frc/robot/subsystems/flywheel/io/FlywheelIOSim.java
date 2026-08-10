@@ -1,6 +1,8 @@
 package frc.robot.subsystems.flywheel.io;
 
 import static edu.wpi.first.units.Units.Celsius;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -133,42 +135,43 @@ public class FlywheelIOSim implements FlywheelIO {
     // 6. Read values from the TalonFX status signals (just like on real hardware)
 
     // Combined flywheel velocity
-    inputs.flywheelVelocity = RotationsPerSecond.of(leader.getVelocity().getValueAsDouble());
+    inputs.flywheelVelocity = leader.getVelocity().getValue().in(RPM);
     inputs.closedLoopReference =
-        RotationsPerSecond.of(leader.getClosedLoopReference().getValueAsDouble());
-    inputs.closedLoopError = RotationsPerSecond.of(leader.getClosedLoopError().getValueAsDouble());
+        RotationsPerSecond.of(leader.getClosedLoopReference().getValueAsDouble()).in(RPM);
+    inputs.closedLoopError =
+        RotationsPerSecond.of(leader.getClosedLoopError().getValueAsDouble()).in(RPM);
 
     // Leader motor
-    inputs.leaderVelocity = RotationsPerSecond.of(leader.getVelocity().getValueAsDouble());
+    inputs.leaderVelocity = leader.getVelocity().getValue().in(RPM);
     inputs.leaderAppliedVolts = leader.getMotorVoltage().getValue();
     inputs.leaderSupplyCurrentAmps = leader.getSupplyCurrent().getValue();
     inputs.leaderStatorCurrentAmps = leader.getStatorCurrent().getValue();
     inputs.leaderTemp = leader.getDeviceTemp().getValue().in(Celsius);
-    inputs.leaderAngle = leader.getPosition().getValue();
+    inputs.leaderAngle = leader.getPosition().getValue().in(Degrees);
 
     // Follower 1 motor
-    inputs.follower1Velocity = follower1.getVelocity().getValue();
+    inputs.follower1Velocity = follower1.getVelocity().getValue().in(RPM);
     inputs.follower1AppliedVolts = follower1.getMotorVoltage().getValue();
     inputs.follower1SupplyCurrentAmps = follower1.getSupplyCurrent().getValue();
     inputs.follower1StatorCurrentAmps = follower1.getStatorCurrent().getValue();
     inputs.follower1Temp = follower1.getDeviceTemp().getValue().in(Celsius);
 
     // Follower 2 motor
-    inputs.follower2Velocity = follower2.getVelocity().getValue();
+    inputs.follower2Velocity = follower2.getVelocity().getValue().in(RPM);
     inputs.follower2AppliedVolts = follower2.getMotorVoltage().getValue();
     inputs.follower2SupplyCurrentAmps = follower2.getSupplyCurrent().getValue();
     inputs.follower2StatorCurrentAmps = follower2.getStatorCurrent().getValue();
     inputs.follower2Temp = follower2.getDeviceTemp().getValue().in(Celsius);
 
     // Follower 3 motor
-    inputs.follower3Velocity = follower3.getVelocity().getValue();
+    inputs.follower3Velocity = follower3.getVelocity().getValue().in(RPM);
     inputs.follower3AppliedVolts = follower3.getMotorVoltage().getValue();
     inputs.follower3SupplyCurrentAmps = follower3.getSupplyCurrent().getValue();
     inputs.follower3StatorCurrentAmps = follower3.getStatorCurrent().getValue();
     inputs.follower3Temp = follower3.getDeviceTemp().getValue().in(Celsius);
 
     // Follower 4 motor
-    inputs.follower4Velocity = follower4.getVelocity().getValue();
+    inputs.follower4Velocity = follower4.getVelocity().getValue().in(RPM);
     inputs.follower4AppliedVolts = follower4.getMotorVoltage().getValue();
     inputs.follower4SupplyCurrentAmps = follower4.getSupplyCurrent().getValue();
     inputs.follower4StatorCurrentAmps = follower4.getStatorCurrent().getValue();

@@ -1,11 +1,8 @@
 package frc.robot.subsystems.prestage.io;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -22,22 +19,26 @@ public interface PrestageIO {
     public Current prestageRightStatorAmps = Amps.of(0);
     public Current prestageRightSupplyAmps = Amps.of(0);
 
-    public AngularVelocity prestageLeftVelocity = RotationsPerSecond.of(0);
-    public AngularVelocity prestageRightVelocity = RotationsPerSecond.of(0);
+    /** Revolutions per minute. */
+    public double prestageLeftVelocity = 0.0;
+    /** Revolutions per minute. */
+    public double prestageRightVelocity = 0.0;
 
     /** Degrees Celsius. */
     public double prestageLeftTemperature = 0.0;
     /** Degrees Celsius. */
     public double prestageRightTemperature = 0.0;
 
-    public AngularVelocity prestageLeftClosedLoopReference = RotationsPerSecond.of(0);
-    public AngularVelocity prestageRightClosedLoopReference = RotationsPerSecond.of(0);
+    /** Revolutions per minute. */
+    public double prestageLeftClosedLoopReference = 0.0;
 
-    public AngularVelocity prestageLeftClosedLoopError = RotationsPerSecond.of(0);
-    public AngularVelocity prestageRightClosedLoopError = RotationsPerSecond.of(0);
+    /** Revolutions per minute. */
+    public double prestageLeftClosedLoopError = 0.0;
 
-    public Angle prestageLeftPos = Rotations.of(0);
-    public Angle prestageRightPos = Rotations.of(0);
+    /** Degrees. */
+    public double prestageLeftPos = 0.0;
+    /** Degrees. */
+    public double prestageRightPos = 0.0;
   }
 
   public default void updateInputs(PrestageIOInputs inputs) {}

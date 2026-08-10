@@ -1,6 +1,8 @@
 package frc.robot.subsystems.intakePivot.io;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
@@ -86,22 +88,25 @@ public class IntakePivotIOSim implements IntakePivotIO {
     double positionRotations = Units.radiansToRotations(pivotSim.getAngularPositionRad());
     double velocityRPS = Units.radiansToRotations(pivotSim.getAngularVelocityRadPerSec());
 
-    inputs.intakePivotPosition = Rotations.of(positionRotations);
-    inputs.intakePivotVelocity = RotationsPerSecond.of(velocityRPS);
+    inputs.intakePivotPosition = Rotations.of(positionRotations).in(Degrees);
+    inputs.intakePivotVelocity = RotationsPerSecond.of(velocityRPS).in(RPM);
     inputs.intakePivotVoltage = Volts.of(appliedVolts);
     inputs.intakePivotStatorCurrent = Amps.of(Math.abs(pivotSim.getCurrentDrawAmps()));
     inputs.intakePivotSupplyCurrent = Amps.of(Math.abs(pivotSim.getCurrentDrawAmps()));
-    inputs.intakePivotTemperature = 25.0; // sim doesn't model temperature
+    inputs.intakePivotTemperature = 25.0; // sim does not model temperature
 
-    // Closed-loop reference and error in mechanism rotations
+    // Closed-loop reference and error, in degrees. The velocity branch reports a velocity
+    // error, which is not a angle -- it is left in RPM so the number is at least meaningful,
+    // and setPivotVelocity is never bound so it does not run on the robot.
     if (controlMode == ControlMode.POSITION) {
       double refRotations = Units.radiansToRotations(positionController.getSetpoint());
-      inputs.intakePivotClosedLoopReference = refRotations;
-      inputs.intakePivotClosedLoopError = refRotations - positionRotations;
+      inputs.intakePivotClosedLoopReference = Rotations.of(refRotations).in(Degrees);
+      inputs.intakePivotClosedLoopError =
+          Rotations.of(refRotations - positionRotations).in(Degrees);
     } else if (controlMode == ControlMode.VELOCITY) {
       double refRPS = Units.radiansToRotations(velocityController.getSetpoint());
-      inputs.intakePivotClosedLoopReference = refRPS;
-      inputs.intakePivotClosedLoopError = refRPS - velocityRPS;
+      inputs.intakePivotClosedLoopReference = RotationsPerSecond.of(refRPS).in(RPM);
+      inputs.intakePivotClosedLoopError = RotationsPerSecond.of(refRPS - velocityRPS).in(RPM);
     } else {
       inputs.intakePivotClosedLoopReference = 0.0;
       inputs.intakePivotClosedLoopError = 0.0;

@@ -1,11 +1,8 @@
 package frc.robot.subsystems.transport.io;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -18,13 +15,17 @@ public interface TransportIO {
     public Voltage TransportVoltage = Volts.of(0);
     public Current TransportStatorAmps = Amps.of(0);
     public Current TransportSupplyAmps = Amps.of(0);
-    public AngularVelocity TransportMotorVelocity = RotationsPerSecond.of(0);
+    /** Revolutions per minute. */
+    public double TransportMotorVelocity = 0.0;
     /** Degrees Celsius. */
     public double TransportMotorTemperature = 0.0;
 
-    public AngularVelocity transportClosedLoopReference = RotationsPerSecond.of(0);
-    public AngularVelocity transportClosedLoopError = RotationsPerSecond.of(0);
-    public Angle transportPos = Rotations.of(0);
+    /** Revolutions per minute. */
+    public double transportClosedLoopReference = 0.0;
+    /** Revolutions per minute. */
+    public double transportClosedLoopError = 0.0;
+    /** Degrees. */
+    public double transportPos = 0.0;
   }
 
   public default void updateInputs(TransportIOInputs inputs) {}

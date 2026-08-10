@@ -1,6 +1,8 @@
 package frc.robot.subsystems.intakePivot.io;
 
 import static edu.wpi.first.units.Units.Celsius;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 
@@ -179,14 +181,16 @@ public class IntakePivotIOReal implements IntakePivotIO {
         encoderPosition);
 
     // Read from cache — no additional CAN traffic
-    inputs.intakePivotVelocity = velocity.getValue();
-    inputs.intakePivotPosition = Rotations.of(encoderPosition.getValueAsDouble());
+    inputs.intakePivotVelocity = velocity.getValue().in(RPM);
+    inputs.intakePivotPosition = Rotations.of(encoderPosition.getValueAsDouble()).in(Degrees);
     inputs.intakePivotVoltage = motorVoltage.getValue();
     inputs.intakePivotStatorCurrent = statorCurrent.getValue();
     inputs.intakePivotSupplyCurrent = supplyCurrent.getValue();
     inputs.intakePivotTemperature = deviceTemp.getValue().in(Celsius);
-    inputs.intakePivotClosedLoopReference = closedLoopReference.getValueAsDouble();
-    inputs.intakePivotClosedLoopError = closedLoopError.getValueAsDouble();
+    inputs.intakePivotClosedLoopReference =
+        Rotations.of(closedLoopReference.getValueAsDouble()).in(Degrees);
+    inputs.intakePivotClosedLoopError =
+        Rotations.of(closedLoopError.getValueAsDouble()).in(Degrees);
   }
 
   @Override

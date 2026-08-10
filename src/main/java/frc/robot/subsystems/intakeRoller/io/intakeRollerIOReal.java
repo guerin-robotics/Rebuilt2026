@@ -1,6 +1,8 @@
 package frc.robot.subsystems.intakeRoller.io;
 
 import static edu.wpi.first.units.Units.Celsius;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
@@ -49,8 +51,6 @@ public class intakeRollerIOReal implements intakeRollerIO {
   private final StatusSignal<Current> FollowersupplyCurrent;
   private final StatusSignal<Voltage> FollowermotorVoltage;
   private final StatusSignal<Temperature> FollowerdeviceTemp;
-  private final StatusSignal<Double> FollowerclosedLoopReference;
-  private final StatusSignal<Double> FollowerclosedLoopError;
   private final StatusSignal<Angle> Followerpos;
 
   public intakeRollerIOReal() {
@@ -80,8 +80,6 @@ public class intakeRollerIOReal implements intakeRollerIO {
     FollowersupplyCurrent = intakeRollerFollower.getSupplyCurrent();
     FollowermotorVoltage = intakeRollerFollower.getMotorVoltage();
     FollowerdeviceTemp = intakeRollerFollower.getDeviceTemp();
-    FollowerclosedLoopReference = intakeRollerFollower.getClosedLoopReference();
-    FollowerclosedLoopError = intakeRollerFollower.getClosedLoopError();
     Followerpos = intakeRollerFollower.getPosition();
 
     // 50Hz for signals we need every loop (velocity, voltage, current, closed-loop reference)
@@ -148,30 +146,25 @@ public class intakeRollerIOReal implements intakeRollerIO {
         FollowersupplyCurrent,
         FollowermotorVoltage,
         FollowerdeviceTemp,
-        FollowerclosedLoopReference,
-        FollowerclosedLoopError,
         Followerpos);
 
     // Read from cache — no additional CAN traffic
-    inputs.intakeRollerVelocity = velocity.getValue();
+    inputs.intakeRollerVelocity = velocity.getValue().in(RPM);
     inputs.intakeRollerStatorCurrent = statorCurrent.getValue();
     inputs.intakeRollerSupplyCurrent = supplyCurrent.getValue();
     inputs.intakeRollerVoltage = motorVoltage.getValue();
     inputs.intakeRollerTemperature = deviceTemp.getValue().in(Celsius);
     inputs.rollerClosedLoopReference =
-        RotationsPerSecond.of(closedLoopReference.getValueAsDouble());
-    inputs.rollerClosedLoopError = RotationsPerSecond.of(closedLoopError.getValueAsDouble());
-    inputs.rollerPos = pos.getValue();
-    inputs.intakeRollerFollowerVelocity = Followervelocity.getValue();
+        RotationsPerSecond.of(closedLoopReference.getValueAsDouble()).in(RPM);
+    inputs.rollerClosedLoopError =
+        RotationsPerSecond.of(closedLoopError.getValueAsDouble()).in(RPM);
+    inputs.rollerPos = pos.getValue().in(Degrees);
+    inputs.intakeRollerFollowerVelocity = Followervelocity.getValue().in(RPM);
     inputs.intakeRollerFollowerStatorCurrent = FollowerstatorCurrent.getValue();
     inputs.intakeRollerFollowerSupplyCurrent = FollowersupplyCurrent.getValue();
     inputs.intakeRollerFollowerVoltage = FollowermotorVoltage.getValue();
     inputs.intakeRollerFollowerTemperature = FollowerdeviceTemp.getValue().in(Celsius);
-    inputs.rollerFollowerClosedLoopReference =
-        RotationsPerSecond.of(FollowerclosedLoopReference.getValueAsDouble());
-    inputs.rollerFollowerClosedLoopError =
-        RotationsPerSecond.of(FollowerclosedLoopError.getValueAsDouble());
-    inputs.rollerFollowerPos = Followerpos.getValue();
+    inputs.rollerFollowerPos = Followerpos.getValue().in(Degrees);
   }
 
   @Override

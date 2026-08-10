@@ -1,6 +1,8 @@
 package frc.robot.subsystems.lowerFeeder.io;
 
 import static edu.wpi.first.units.Units.Celsius;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -116,16 +118,16 @@ public class LowerFeederIOSim implements LowerFeederIO {
 
     // 6. Read values from the TalonFX status signals (just like on real hardware)
     inputs.lowerFeederMotorVelocity =
-        RotationsPerSecond.of(lowerFeederMotor.getVelocity().getValueAsDouble());
+        RotationsPerSecond.of(lowerFeederMotor.getVelocity().getValueAsDouble()).in(RPM);
     inputs.lowerFeederVoltage = lowerFeederMotor.getMotorVoltage().getValue();
     inputs.lowerFeederStatorAmps = lowerFeederMotor.getStatorCurrent().getValue();
     inputs.lowerFeederSupplyAmps = lowerFeederMotor.getSupplyCurrent().getValue();
     inputs.lowerFeederMotorTemperature = lowerFeederMotor.getDeviceTemp().getValue().in(Celsius);
     inputs.lowerFeederClosedLoopReference =
-        RotationsPerSecond.of(lowerFeederMotor.getClosedLoopReference().getValueAsDouble());
+        lowerFeederMotor.getClosedLoopReference().getValueAsDouble();
     inputs.lowerFeederClosedLoopError =
-        RotationsPerSecond.of(lowerFeederMotor.getClosedLoopError().getValueAsDouble());
-    inputs.lowerFeederPos = lowerFeederMotor.getPosition().getValue();
+        RotationsPerSecond.of(lowerFeederMotor.getClosedLoopError().getValueAsDouble()).in(RPM);
+    inputs.lowerFeederPos = lowerFeederMotor.getPosition().getValue().in(Degrees);
   }
 
   @Override

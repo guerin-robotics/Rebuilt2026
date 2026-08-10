@@ -1,6 +1,8 @@
 package frc.robot.subsystems.prestage.io;
 
 import static edu.wpi.first.units.Units.Celsius;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -139,29 +141,25 @@ public class PrestageIOSim implements PrestageIO {
 
     // Read left motor values from TalonFX status signals
     inputs.prestageLeftVelocity =
-        RotationsPerSecond.of(prestageLeft.getVelocity().getValueAsDouble());
+        RotationsPerSecond.of(prestageLeft.getVelocity().getValueAsDouble()).in(RPM);
     inputs.prestageLeftVoltage = prestageLeft.getMotorVoltage().getValue();
     inputs.prestageLeftStatorAmps = prestageLeft.getStatorCurrent().getValue();
     inputs.prestageLeftSupplyAmps = prestageLeft.getSupplyCurrent().getValue();
     inputs.prestageLeftTemperature = prestageLeft.getDeviceTemp().getValue().in(Celsius);
     inputs.prestageLeftClosedLoopReference =
-        RotationsPerSecond.of(prestageLeft.getClosedLoopReference().getValueAsDouble());
+        prestageLeft.getClosedLoopReference().getValueAsDouble();
     inputs.prestageLeftClosedLoopError =
-        RotationsPerSecond.of(prestageLeft.getClosedLoopError().getValueAsDouble());
+        RotationsPerSecond.of(prestageLeft.getClosedLoopError().getValueAsDouble()).in(RPM);
 
     // Read right motor values from TalonFX status signals
     inputs.prestageRightVelocity =
-        RotationsPerSecond.of(prestageRight.getVelocity().getValueAsDouble());
+        RotationsPerSecond.of(prestageRight.getVelocity().getValueAsDouble()).in(RPM);
     inputs.prestageRightVoltage = prestageRight.getMotorVoltage().getValue();
     inputs.prestageRightStatorAmps = prestageRight.getStatorCurrent().getValue();
     inputs.prestageRightSupplyAmps = prestageRight.getSupplyCurrent().getValue();
     inputs.prestageRightTemperature = prestageRight.getDeviceTemp().getValue().in(Celsius);
-    inputs.prestageRightClosedLoopReference =
-        RotationsPerSecond.of(prestageRight.getClosedLoopReference().getValueAsDouble());
-    inputs.prestageRightClosedLoopError =
-        RotationsPerSecond.of(prestageRight.getClosedLoopError().getValueAsDouble());
-    inputs.prestageLeftPos = prestageLeft.getPosition().getValue();
-    inputs.prestageRightPos = prestageRight.getPosition().getValue();
+    inputs.prestageLeftPos = prestageLeft.getPosition().getValue().in(Degrees);
+    inputs.prestageRightPos = prestageRight.getPosition().getValue().in(Degrees);
   }
 
   @Override

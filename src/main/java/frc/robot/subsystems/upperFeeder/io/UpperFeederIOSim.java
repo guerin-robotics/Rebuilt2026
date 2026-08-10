@@ -1,6 +1,8 @@
 package frc.robot.subsystems.upperFeeder.io;
 
 import static edu.wpi.first.units.Units.Celsius;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -113,16 +115,16 @@ public class UpperFeederIOSim implements UpperFeederIO {
 
     // 6. Read values from the TalonFX status signals (just like on real hardware)
     inputs.upperFeederMotorVelocity =
-        RotationsPerSecond.of(feederMotor.getVelocity().getValueAsDouble());
+        RotationsPerSecond.of(feederMotor.getVelocity().getValueAsDouble()).in(RPM);
     inputs.upperFeederVoltage = feederMotor.getMotorVoltage().getValue();
     inputs.upperFeederStatorAmps = feederMotor.getStatorCurrent().getValue();
     inputs.upperFeederSupplyAmps = feederMotor.getSupplyCurrent().getValue();
     inputs.upperFeederMotorTemperature = feederMotor.getDeviceTemp().getValue().in(Celsius);
     inputs.upperFeederClosedLoopReference =
-        RotationsPerSecond.of(feederMotor.getClosedLoopReference().getValueAsDouble());
+        RotationsPerSecond.of(feederMotor.getClosedLoopReference().getValueAsDouble()).in(RPM);
     inputs.upperFeederClosedLoopError =
-        RotationsPerSecond.of(feederMotor.getClosedLoopError().getValueAsDouble());
-    inputs.upperFeederPos = feederMotor.getPosition().getValue();
+        RotationsPerSecond.of(feederMotor.getClosedLoopError().getValueAsDouble()).in(RPM);
+    inputs.upperFeederPos = feederMotor.getPosition().getValue().in(Degrees);
   }
 
   @Override

@@ -1,6 +1,8 @@
 package frc.robot.subsystems.prestage.io;
 
 import static edu.wpi.first.units.Units.Celsius;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
@@ -50,8 +52,6 @@ public class PrestageIOReal implements PrestageIO {
   private final StatusSignal<Current> rightSupplyCurrent;
   private final StatusSignal<Voltage> rightMotorVoltage;
   private final StatusSignal<Temperature> rightDeviceTemp;
-  private final StatusSignal<Double> rightClosedLoopReference;
-  private final StatusSignal<Double> rightClosedLoopError;
   private final StatusSignal<Angle> rightPos;
 
   public PrestageIOReal() {
@@ -79,8 +79,6 @@ public class PrestageIOReal implements PrestageIO {
     rightSupplyCurrent = prestageRight.getSupplyCurrent();
     rightMotorVoltage = prestageRight.getMotorVoltage();
     rightDeviceTemp = prestageRight.getDeviceTemp();
-    rightClosedLoopReference = prestageRight.getClosedLoopReference();
-    rightClosedLoopError = prestageRight.getClosedLoopError();
     rightPos = prestageRight.getPosition();
 
     // 50Hz for signals we need every loop (velocity, voltage, current, closed-loop reference)
@@ -94,12 +92,11 @@ public class PrestageIOReal implements PrestageIO {
         rightVelocity,
         rightStatorCurrent,
         rightSupplyCurrent,
-        rightMotorVoltage,
-        rightClosedLoopReference);
+        rightMotorVoltage);
 
     // 10Hz for diagnostic-only signals (temperature, closed-loop error)
     BaseStatusSignal.setUpdateFrequencyForAll(
-        10.0, leftDeviceTemp, leftClosedLoopError, rightDeviceTemp, rightClosedLoopError);
+        10.0, leftDeviceTemp, leftClosedLoopError, rightDeviceTemp);
 
     // Stop sending signals we didn't register — reduces CAN bus traffic
     prestageLeft.optimizeBusUtilization();
@@ -158,33 +155,27 @@ public class PrestageIOReal implements PrestageIO {
         rightSupplyCurrent,
         rightMotorVoltage,
         rightDeviceTemp,
-        rightClosedLoopReference,
-        rightClosedLoopError,
         rightPos);
 
     // Left motor — read from cache
-    inputs.prestageLeftVelocity = leftVelocity.getValue();
+    inputs.prestageLeftVelocity = leftVelocity.getValue().in(RPM);
     inputs.prestageLeftStatorAmps = leftStatorCurrent.getValue();
     inputs.prestageLeftSupplyAmps = leftSupplyCurrent.getValue();
     inputs.prestageLeftVoltage = leftMotorVoltage.getValue();
     inputs.prestageLeftTemperature = leftDeviceTemp.getValue().in(Celsius);
     inputs.prestageLeftClosedLoopReference =
-        RotationsPerSecond.of(leftClosedLoopReference.getValueAsDouble());
+        RotationsPerSecond.of(leftClosedLoopReference.getValueAsDouble()).in(RPM);
     inputs.prestageLeftClosedLoopError =
-        RotationsPerSecond.of(leftClosedLoopError.getValueAsDouble());
-    inputs.prestageLeftPos = leftPos.getValue();
+        RotationsPerSecond.of(leftClosedLoopError.getValueAsDouble()).in(RPM);
+    inputs.prestageLeftPos = leftPos.getValue().in(Degrees);
 
     // Right motor — read from cache (BUG FIX: was previously reading left motor signals)
-    inputs.prestageRightVelocity = rightVelocity.getValue();
+    inputs.prestageRightVelocity = rightVelocity.getValue().in(RPM);
     inputs.prestageRightStatorAmps = rightStatorCurrent.getValue();
     inputs.prestageRightSupplyAmps = rightSupplyCurrent.getValue();
     inputs.prestageRightVoltage = rightMotorVoltage.getValue();
     inputs.prestageRightTemperature = rightDeviceTemp.getValue().in(Celsius);
-    inputs.prestageRightClosedLoopReference =
-        RotationsPerSecond.of(rightClosedLoopReference.getValueAsDouble());
-    inputs.prestageRightClosedLoopError =
-        RotationsPerSecond.of(rightClosedLoopError.getValueAsDouble());
-    inputs.prestageRightPos = rightPos.getValue();
+    inputs.prestageRightPos = rightPos.getValue().in(Degrees);
   }
 
   @Override

@@ -40,7 +40,7 @@ public class Hood extends SubsystemBase {
   }
 
   public void incrementHoodPos() {
-    Angle position = inputs.hoodPosition;
+    Angle position = Degrees.of(inputs.hoodPosition);
     io.setHoodPos(position.plus(Degrees.of(5)));
   }
 
@@ -81,6 +81,6 @@ public class Hood extends SubsystemBase {
    * @return The hood angle as reported by the CANcoder
    */
   public Angle getPosition() {
-    return inputs.hoodPosition;
+    return Degrees.of(inputs.hoodPosition);
   }
 }

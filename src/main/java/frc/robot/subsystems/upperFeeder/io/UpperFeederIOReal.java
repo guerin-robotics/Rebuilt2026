@@ -1,6 +1,8 @@
 package frc.robot.subsystems.upperFeeder.io;
 
 import static edu.wpi.first.units.Units.Celsius;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
@@ -114,15 +116,16 @@ public class UpperFeederIOReal implements UpperFeederIO {
         pos);
 
     // Read from cache — no additional CAN traffic
-    inputs.upperFeederMotorVelocity = velocity.getValue();
+    inputs.upperFeederMotorVelocity = velocity.getValue().in(RPM);
     inputs.upperFeederStatorAmps = statorCurrent.getValue();
     inputs.upperFeederSupplyAmps = supplyCurrent.getValue();
     inputs.upperFeederVoltage = motorVoltage.getValue();
     inputs.upperFeederMotorTemperature = deviceTemp.getValue().in(Celsius);
     inputs.upperFeederClosedLoopReference =
-        RotationsPerSecond.of(closedLoopReference.getValueAsDouble());
-    inputs.upperFeederClosedLoopError = RotationsPerSecond.of(closedLoopError.getValueAsDouble());
-    inputs.upperFeederPos = pos.getValue();
+        RotationsPerSecond.of(closedLoopReference.getValueAsDouble()).in(RPM);
+    inputs.upperFeederClosedLoopError =
+        RotationsPerSecond.of(closedLoopError.getValueAsDouble()).in(RPM);
+    inputs.upperFeederPos = pos.getValue().in(Degrees);
   }
 
   @Override

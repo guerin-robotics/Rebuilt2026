@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intakePivot;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotations;
 
 import edu.wpi.first.units.Units;
@@ -47,7 +48,7 @@ public class IntakePivot extends SubsystemBase {
             : 0.0);
 
     // Determine if we are within tolerance of our goal
-    double currentRotations = inputs.intakePivotPosition.in(Rotations);
+    double currentRotations = Degrees.of(inputs.intakePivotPosition).in(Rotations);
     double goalRotations = goalPosition.in(Rotations);
     boolean atGoal =
         Math.abs(currentRotations - goalRotations)
@@ -81,6 +82,6 @@ public class IntakePivot extends SubsystemBase {
    * @return current position from the CANcoder
    */
   public Angle getPosition() {
-    return inputs.intakePivotPosition;
+    return Degrees.of(inputs.intakePivotPosition);
   }
 }

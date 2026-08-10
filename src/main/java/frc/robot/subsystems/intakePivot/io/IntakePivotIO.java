@@ -1,8 +1,6 @@
 package frc.robot.subsystems.intakePivot.io;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.units.measure.Angle;
@@ -27,10 +25,16 @@ public interface IntakePivotIO {
     /** Degrees Celsius. */
     public double intakePivotTemperature = 0.0;
 
-    public AngularVelocity intakePivotVelocity = RotationsPerSecond.of(0);
-    public Angle intakePivotPosition = Rotations.of(0);
-    public double intakePivotClosedLoopReference;
-    public double intakePivotClosedLoopError;
+    /** Revolutions per minute. */
+    public double intakePivotVelocity = 0.0;
+    /** Degrees. */
+    public double intakePivotPosition = 0.0;
+
+    /** Degrees. The pivot is position-controlled; setPivotVelocity is never bound. */
+    public double intakePivotClosedLoopReference = 0.0;
+
+    /** Degrees. */
+    public double intakePivotClosedLoopError = 0.0;
   }
 
   public default void updateInputs(IntakePivotIOInputs inputs) {}

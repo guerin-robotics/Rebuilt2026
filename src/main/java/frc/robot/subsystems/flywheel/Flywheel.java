@@ -106,7 +106,7 @@ public class Flywheel extends SubsystemBase {
             : 0.0);
 
     // Update trajectory visualization every loop
-    visualizer.updateTrajectory(inputs.flywheelVelocity, hoodAngleSupplier.get());
+    visualizer.updateTrajectory(RPM.of(inputs.flywheelVelocity), hoodAngleSupplier.get());
 
     Logger.recordOutput("Flywheel/targetRPM", currentRPMTarget);
   }
@@ -155,12 +155,12 @@ public class Flywheel extends SubsystemBase {
 
   /** Returns the accumulated flywheel leader angle (used to spin the drum in the 3D model). */
   public Angle getFlywheelAngle() {
-    return inputs.leaderAngle;
+    return Degrees.of(inputs.leaderAngle);
   }
 
   public boolean isSpunUp() {
     Logger.recordOutput("Flywheel/currentRPMTarget", currentRPMTarget);
-    return (Math.abs(currentRPMTarget - inputs.leaderVelocity.in(RPM))
+    return (Math.abs(currentRPMTarget - inputs.leaderVelocity)
         < HardwareConstants.CompConstants.Thresholds.flywheelSpinupThreshold);
   }
 

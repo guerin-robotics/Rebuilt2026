@@ -1,6 +1,8 @@
 package frc.robot.subsystems.transport.io;
 
 import static edu.wpi.first.units.Units.Celsius;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -105,16 +107,16 @@ public class TransportIOSim implements TransportIO {
         BatterySim.calculateDefaultBatteryLoadedVoltage(transportPhysicsSim.getCurrentDrawAmps()));
 
     // 6. Read values from the TalonFX status signals (just like on real hardware)
-    inputs.TransportMotorVelocity = transportMotor.getVelocity().getValue();
+    inputs.TransportMotorVelocity = transportMotor.getVelocity().getValue().in(RPM);
     inputs.TransportVoltage = transportMotor.getMotorVoltage().getValue();
     inputs.TransportStatorAmps = transportMotor.getStatorCurrent().getValue();
     inputs.TransportSupplyAmps = transportMotor.getSupplyCurrent().getValue();
     inputs.TransportMotorTemperature = transportMotor.getDeviceTemp().getValue().in(Celsius);
     inputs.transportClosedLoopReference =
-        RotationsPerSecond.of(transportMotor.getClosedLoopReference().getValueAsDouble());
+        transportMotor.getClosedLoopReference().getValueAsDouble();
     inputs.transportClosedLoopError =
-        RotationsPerSecond.of(transportMotor.getClosedLoopError().getValueAsDouble());
-    inputs.transportPos = transportMotor.getPosition().getValue();
+        RotationsPerSecond.of(transportMotor.getClosedLoopError().getValueAsDouble()).in(RPM);
+    inputs.transportPos = transportMotor.getPosition().getValue().in(Degrees);
   }
 
   @Override
