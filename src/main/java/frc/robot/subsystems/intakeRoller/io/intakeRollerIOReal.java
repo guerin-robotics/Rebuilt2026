@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intakeRoller.io;
 
+import static edu.wpi.first.units.Units.Celsius;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
@@ -156,7 +157,7 @@ public class intakeRollerIOReal implements intakeRollerIO {
     inputs.intakeRollerStatorCurrent = statorCurrent.getValue();
     inputs.intakeRollerSupplyCurrent = supplyCurrent.getValue();
     inputs.intakeRollerVoltage = motorVoltage.getValue();
-    inputs.intakeRollerTemperature = deviceTemp.getValue();
+    inputs.intakeRollerTemperature = deviceTemp.getValue().in(Celsius);
     inputs.rollerClosedLoopReference =
         RotationsPerSecond.of(closedLoopReference.getValueAsDouble());
     inputs.rollerClosedLoopError = RotationsPerSecond.of(closedLoopError.getValueAsDouble());
@@ -165,7 +166,7 @@ public class intakeRollerIOReal implements intakeRollerIO {
     inputs.intakeRollerFollowerStatorCurrent = FollowerstatorCurrent.getValue();
     inputs.intakeRollerFollowerSupplyCurrent = FollowersupplyCurrent.getValue();
     inputs.intakeRollerFollowerVoltage = FollowermotorVoltage.getValue();
-    inputs.intakeRollerFollowerTemperature = FollowerdeviceTemp.getValue();
+    inputs.intakeRollerFollowerTemperature = FollowerdeviceTemp.getValue().in(Celsius);
     inputs.rollerFollowerClosedLoopReference =
         RotationsPerSecond.of(FollowerclosedLoopReference.getValueAsDouble());
     inputs.rollerFollowerClosedLoopError =

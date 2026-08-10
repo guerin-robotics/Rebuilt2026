@@ -1,5 +1,6 @@
 package frc.robot.subsystems.flywheel.io;
 
+import static edu.wpi.first.units.Units.Celsius;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -289,7 +290,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     inputs.leaderAppliedVolts = leaderMotorVoltage.getValue();
     inputs.leaderSupplyCurrentAmps = leaderSupplyCurrent.getValue();
     inputs.leaderStatorCurrentAmps = leaderStatorCurrent.getValue();
-    inputs.leaderTemp = leaderTemp.getValue();
+    inputs.leaderTemp = leaderTemp.getValue().in(Celsius);
     inputs.leaderAngle = leaderPos.getValue();
 
     // Follower 1 motor — read from cache
@@ -297,28 +298,28 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     inputs.follower1AppliedVolts = follower1MotorVoltage.getValue();
     inputs.follower1SupplyCurrentAmps = follower1SupplyCurrent.getValue();
     inputs.follower1StatorCurrentAmps = follower1StatorCurrent.getValue();
-    inputs.follower1Temp = follower1Temp.getValue();
+    inputs.follower1Temp = follower1Temp.getValue().in(Celsius);
 
     // Follower 2 motor — read from cache
     inputs.follower2Velocity = follower2Velocity.getValue();
     inputs.follower2AppliedVolts = follower2MotorVoltage.getValue();
     inputs.follower2SupplyCurrentAmps = follower2SupplyCurrent.getValue();
     inputs.follower2StatorCurrentAmps = follower2StatorCurrent.getValue();
-    inputs.follower2Temp = follower2Temp.getValue();
+    inputs.follower2Temp = follower2Temp.getValue().in(Celsius);
 
     // Follower 3 motor — read from cache
     inputs.follower3Velocity = follower3Velocity.getValue();
     inputs.follower3AppliedVolts = follower3MotorVoltage.getValue();
     inputs.follower3SupplyCurrentAmps = follower3SupplyCurrent.getValue();
     inputs.follower3StatorCurrentAmps = follower3StatorCurrent.getValue();
-    inputs.follower3Temp = follower3Temp.getValue();
+    inputs.follower3Temp = follower3Temp.getValue().in(Celsius);
 
     // Follower 4 motor — read from cache
     inputs.follower4Velocity = follower4Velocity.getValue();
     inputs.follower4AppliedVolts = follower4MotorVoltage.getValue();
     inputs.follower4SupplyCurrentAmps = follower4SupplyCurrent.getValue();
     inputs.follower4StatorCurrentAmps = follower4StatorCurrent.getValue();
-    inputs.follower4Temp = follower4Temp.getValue();
+    inputs.follower4Temp = follower4Temp.getValue().in(Celsius);
 
     // Combined flywheel velocity (use leader velocity as representative)
     inputs.flywheelVelocity = inputs.leaderVelocity;

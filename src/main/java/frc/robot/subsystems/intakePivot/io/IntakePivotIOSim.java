@@ -1,7 +1,6 @@
 package frc.robot.subsystems.intakePivot.io;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Celsius;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
@@ -92,7 +91,7 @@ public class IntakePivotIOSim implements IntakePivotIO {
     inputs.intakePivotVoltage = Volts.of(appliedVolts);
     inputs.intakePivotStatorCurrent = Amps.of(Math.abs(pivotSim.getCurrentDrawAmps()));
     inputs.intakePivotSupplyCurrent = Amps.of(Math.abs(pivotSim.getCurrentDrawAmps()));
-    inputs.intakePivotTemperature = Celsius.of(25.0); // sim doesn't model temperature
+    inputs.intakePivotTemperature = 25.0; // sim doesn't model temperature
 
     // Closed-loop reference and error in mechanism rotations
     if (controlMode == ControlMode.POSITION) {

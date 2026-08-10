@@ -1,5 +1,6 @@
 package frc.robot.subsystems.lowerFeeder.io;
 
+import static edu.wpi.first.units.Units.Celsius;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
@@ -117,7 +118,7 @@ public class LowerFeederIOReal implements LowerFeederIO {
     inputs.lowerFeederStatorAmps = statorCurrent.getValue();
     inputs.lowerFeederSupplyAmps = supplyCurrent.getValue();
     inputs.lowerFeederVoltage = motorVoltage.getValue();
-    inputs.lowerFeederMotorTemperature = deviceTemp.getValue();
+    inputs.lowerFeederMotorTemperature = deviceTemp.getValue().in(Celsius);
     inputs.lowerFeederClosedLoopReference =
         RotationsPerSecond.of(closedLoopReference.getValueAsDouble());
     inputs.lowerFeederClosedLoopError = RotationsPerSecond.of(closedLoopError.getValueAsDouble());

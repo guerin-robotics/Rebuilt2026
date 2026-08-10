@@ -1,5 +1,6 @@
 package frc.robot.subsystems.prestage.io;
 
+import static edu.wpi.first.units.Units.Celsius;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
@@ -166,7 +167,7 @@ public class PrestageIOReal implements PrestageIO {
     inputs.prestageLeftStatorAmps = leftStatorCurrent.getValue();
     inputs.prestageLeftSupplyAmps = leftSupplyCurrent.getValue();
     inputs.prestageLeftVoltage = leftMotorVoltage.getValue();
-    inputs.prestageLeftTemperature = leftDeviceTemp.getValue();
+    inputs.prestageLeftTemperature = leftDeviceTemp.getValue().in(Celsius);
     inputs.prestageLeftClosedLoopReference =
         RotationsPerSecond.of(leftClosedLoopReference.getValueAsDouble());
     inputs.prestageLeftClosedLoopError =
@@ -178,7 +179,7 @@ public class PrestageIOReal implements PrestageIO {
     inputs.prestageRightStatorAmps = rightStatorCurrent.getValue();
     inputs.prestageRightSupplyAmps = rightSupplyCurrent.getValue();
     inputs.prestageRightVoltage = rightMotorVoltage.getValue();
-    inputs.prestageRightTemperature = rightDeviceTemp.getValue();
+    inputs.prestageRightTemperature = rightDeviceTemp.getValue().in(Celsius);
     inputs.prestageRightClosedLoopReference =
         RotationsPerSecond.of(rightClosedLoopReference.getValueAsDouble());
     inputs.prestageRightClosedLoopError =

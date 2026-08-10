@@ -1,5 +1,6 @@
 package frc.robot.subsystems.transport.io;
 
+import static edu.wpi.first.units.Units.Celsius;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
@@ -117,7 +118,7 @@ public class TransportIOReal implements TransportIO {
     inputs.TransportStatorAmps = statorCurrent.getValue();
     inputs.TransportSupplyAmps = supplyCurrent.getValue();
     inputs.TransportVoltage = motorVoltage.getValue();
-    inputs.TransportMotorTemperature = deviceTemp.getValue();
+    inputs.TransportMotorTemperature = deviceTemp.getValue().in(Celsius);
     inputs.transportClosedLoopReference =
         RotationsPerSecond.of(closedLoopReference.getValueAsDouble());
     inputs.transportClosedLoopError = RotationsPerSecond.of(closedLoopError.getValueAsDouble());

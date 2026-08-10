@@ -1,5 +1,6 @@
 package frc.robot.subsystems.upperFeeder.io;
 
+import static edu.wpi.first.units.Units.Celsius;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -116,7 +117,7 @@ public class UpperFeederIOSim implements UpperFeederIO {
     inputs.upperFeederVoltage = feederMotor.getMotorVoltage().getValue();
     inputs.upperFeederStatorAmps = feederMotor.getStatorCurrent().getValue();
     inputs.upperFeederSupplyAmps = feederMotor.getSupplyCurrent().getValue();
-    inputs.upperFeederMotorTemperature = feederMotor.getDeviceTemp().getValue();
+    inputs.upperFeederMotorTemperature = feederMotor.getDeviceTemp().getValue().in(Celsius);
     inputs.upperFeederClosedLoopReference =
         RotationsPerSecond.of(feederMotor.getClosedLoopReference().getValueAsDouble());
     inputs.upperFeederClosedLoopError =

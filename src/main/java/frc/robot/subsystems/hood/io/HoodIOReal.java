@@ -1,5 +1,6 @@
 package frc.robot.subsystems.hood.io;
 
+import static edu.wpi.first.units.Units.Celsius;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Seconds;
@@ -169,7 +170,7 @@ public class HoodIOReal implements HoodIO {
     inputs.hoodVoltage = motorVoltage.getValue();
     inputs.hoodStatorCurrent = statorCurrent.getValue();
     inputs.hoodSupplyCurrent = supplyCurrent.getValue();
-    inputs.hoodTemperature = deviceTemp.getValue();
+    inputs.hoodTemperature = deviceTemp.getValue().in(Celsius);
     // closedLoopReference and closedLoopError are raw doubles in mechanism rotations.
     // Convert to degrees so all hood angles are in degrees throughout the codebase.
     inputs.hoodClosedLoopReference = Degrees.of(closedLoopReference.getValueAsDouble() * 360.0);

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intakePivot.io;
 
+import static edu.wpi.first.units.Units.Celsius;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 
@@ -183,7 +184,7 @@ public class IntakePivotIOReal implements IntakePivotIO {
     inputs.intakePivotVoltage = motorVoltage.getValue();
     inputs.intakePivotStatorCurrent = statorCurrent.getValue();
     inputs.intakePivotSupplyCurrent = supplyCurrent.getValue();
-    inputs.intakePivotTemperature = deviceTemp.getValue();
+    inputs.intakePivotTemperature = deviceTemp.getValue().in(Celsius);
     inputs.intakePivotClosedLoopReference = closedLoopReference.getValueAsDouble();
     inputs.intakePivotClosedLoopError = closedLoopError.getValueAsDouble();
   }

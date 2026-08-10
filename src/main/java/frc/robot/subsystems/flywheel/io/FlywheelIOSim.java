@@ -1,5 +1,6 @@
 package frc.robot.subsystems.flywheel.io;
 
+import static edu.wpi.first.units.Units.Celsius;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -142,7 +143,7 @@ public class FlywheelIOSim implements FlywheelIO {
     inputs.leaderAppliedVolts = leader.getMotorVoltage().getValue();
     inputs.leaderSupplyCurrentAmps = leader.getSupplyCurrent().getValue();
     inputs.leaderStatorCurrentAmps = leader.getStatorCurrent().getValue();
-    inputs.leaderTemp = leader.getDeviceTemp().getValue();
+    inputs.leaderTemp = leader.getDeviceTemp().getValue().in(Celsius);
     inputs.leaderAngle = leader.getPosition().getValue();
 
     // Follower 1 motor
@@ -150,28 +151,28 @@ public class FlywheelIOSim implements FlywheelIO {
     inputs.follower1AppliedVolts = follower1.getMotorVoltage().getValue();
     inputs.follower1SupplyCurrentAmps = follower1.getSupplyCurrent().getValue();
     inputs.follower1StatorCurrentAmps = follower1.getStatorCurrent().getValue();
-    inputs.follower1Temp = follower1.getDeviceTemp().getValue();
+    inputs.follower1Temp = follower1.getDeviceTemp().getValue().in(Celsius);
 
     // Follower 2 motor
     inputs.follower2Velocity = follower2.getVelocity().getValue();
     inputs.follower2AppliedVolts = follower2.getMotorVoltage().getValue();
     inputs.follower2SupplyCurrentAmps = follower2.getSupplyCurrent().getValue();
     inputs.follower2StatorCurrentAmps = follower2.getStatorCurrent().getValue();
-    inputs.follower2Temp = follower2.getDeviceTemp().getValue();
+    inputs.follower2Temp = follower2.getDeviceTemp().getValue().in(Celsius);
 
     // Follower 3 motor
     inputs.follower3Velocity = follower3.getVelocity().getValue();
     inputs.follower3AppliedVolts = follower3.getMotorVoltage().getValue();
     inputs.follower3SupplyCurrentAmps = follower3.getSupplyCurrent().getValue();
     inputs.follower3StatorCurrentAmps = follower3.getStatorCurrent().getValue();
-    inputs.follower3Temp = follower3.getDeviceTemp().getValue();
+    inputs.follower3Temp = follower3.getDeviceTemp().getValue().in(Celsius);
 
     // Follower 4 motor
     inputs.follower4Velocity = follower4.getVelocity().getValue();
     inputs.follower4AppliedVolts = follower4.getMotorVoltage().getValue();
     inputs.follower4SupplyCurrentAmps = follower4.getSupplyCurrent().getValue();
     inputs.follower4StatorCurrentAmps = follower4.getStatorCurrent().getValue();
-    inputs.follower4Temp = follower4.getDeviceTemp().getValue();
+    inputs.follower4Temp = follower4.getDeviceTemp().getValue().in(Celsius);
   }
 
   @Override
