@@ -34,6 +34,7 @@ public class TransportIOReal implements TransportIO {
   private final StatusSignal<AngularVelocity> velocity;
   private final StatusSignal<Current> statorCurrent;
   private final StatusSignal<Current> supplyCurrent;
+  private final StatusSignal<Current> torqueCurrent;
   private final StatusSignal<Voltage> motorVoltage;
   private final StatusSignal<Temperature> deviceTemp;
   private final StatusSignal<Double> closedLoopReference;
@@ -48,6 +49,7 @@ public class TransportIOReal implements TransportIO {
     velocity = transportMotor.getVelocity();
     statorCurrent = transportMotor.getStatorCurrent();
     supplyCurrent = transportMotor.getSupplyCurrent();
+    torqueCurrent = transportMotor.getTorqueCurrent();
     motorVoltage = transportMotor.getMotorVoltage();
     deviceTemp = transportMotor.getDeviceTemp();
     closedLoopReference = transportMotor.getClosedLoopReference();
@@ -56,7 +58,13 @@ public class TransportIOReal implements TransportIO {
 
     // 50Hz for signals we need every loop (velocity, voltage, current)
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0, velocity, statorCurrent, supplyCurrent, motorVoltage, closedLoopReference);
+        50.0,
+        velocity,
+        statorCurrent,
+        supplyCurrent,
+        torqueCurrent,
+        motorVoltage,
+        closedLoopReference);
 
     // 10Hz for diagnostic-only signals (temperature, closed-loop error)
     BaseStatusSignal.setUpdateFrequencyForAll(10.0, deviceTemp, closedLoopError);
@@ -106,6 +114,7 @@ public class TransportIOReal implements TransportIO {
         velocity,
         statorCurrent,
         supplyCurrent,
+        torqueCurrent,
         motorVoltage,
         deviceTemp,
         closedLoopReference,
@@ -116,6 +125,7 @@ public class TransportIOReal implements TransportIO {
     inputs.TransportMotorVelocity = velocity.getValue();
     inputs.TransportStatorAmps = statorCurrent.getValue();
     inputs.TransportSupplyAmps = supplyCurrent.getValue();
+    inputs.TransportTorqueCurrentAmps = torqueCurrent.getValue();
     inputs.TransportVoltage = motorVoltage.getValue();
     inputs.TransportMotorTemperature = deviceTemp.getValue();
     inputs.transportClosedLoopReference =

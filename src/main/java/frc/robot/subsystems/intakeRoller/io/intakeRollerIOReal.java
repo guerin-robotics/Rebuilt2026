@@ -38,6 +38,7 @@ public class intakeRollerIOReal implements intakeRollerIO {
   private final StatusSignal<AngularVelocity> velocity;
   private final StatusSignal<Current> statorCurrent;
   private final StatusSignal<Current> supplyCurrent;
+  private final StatusSignal<Current> torqueCurrent;
   private final StatusSignal<Voltage> motorVoltage;
   private final StatusSignal<Temperature> deviceTemp;
   private final StatusSignal<Double> closedLoopReference;
@@ -46,6 +47,7 @@ public class intakeRollerIOReal implements intakeRollerIO {
   private final StatusSignal<AngularVelocity> Followervelocity;
   private final StatusSignal<Current> FollowerstatorCurrent;
   private final StatusSignal<Current> FollowersupplyCurrent;
+  private final StatusSignal<Current> FollowertorqueCurrent;
   private final StatusSignal<Voltage> FollowermotorVoltage;
   private final StatusSignal<Temperature> FollowerdeviceTemp;
   private final StatusSignal<Double> FollowerclosedLoopReference;
@@ -69,6 +71,7 @@ public class intakeRollerIOReal implements intakeRollerIO {
     velocity = intakeRollerLeader.getVelocity();
     statorCurrent = intakeRollerLeader.getStatorCurrent();
     supplyCurrent = intakeRollerLeader.getSupplyCurrent();
+    torqueCurrent = intakeRollerLeader.getTorqueCurrent();
     motorVoltage = intakeRollerLeader.getMotorVoltage();
     deviceTemp = intakeRollerLeader.getDeviceTemp();
     closedLoopReference = intakeRollerLeader.getClosedLoopReference();
@@ -77,6 +80,7 @@ public class intakeRollerIOReal implements intakeRollerIO {
     Followervelocity = intakeRollerFollower.getVelocity();
     FollowerstatorCurrent = intakeRollerFollower.getStatorCurrent();
     FollowersupplyCurrent = intakeRollerFollower.getSupplyCurrent();
+    FollowertorqueCurrent = intakeRollerFollower.getTorqueCurrent();
     FollowermotorVoltage = intakeRollerFollower.getMotorVoltage();
     FollowerdeviceTemp = intakeRollerFollower.getDeviceTemp();
     FollowerclosedLoopReference = intakeRollerFollower.getClosedLoopReference();
@@ -85,7 +89,13 @@ public class intakeRollerIOReal implements intakeRollerIO {
 
     // 50Hz for signals we need every loop (velocity, voltage, current, closed-loop reference)
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0, velocity, statorCurrent, supplyCurrent, motorVoltage, closedLoopReference);
+        50.0,
+        velocity,
+        statorCurrent,
+        supplyCurrent,
+        torqueCurrent,
+        motorVoltage,
+        closedLoopReference);
 
     // 10Hz for diagnostic-only signals (temperature, closed-loop error)
     BaseStatusSignal.setUpdateFrequencyForAll(10.0, deviceTemp, closedLoopError);
@@ -137,6 +147,7 @@ public class intakeRollerIOReal implements intakeRollerIO {
         velocity,
         statorCurrent,
         supplyCurrent,
+        torqueCurrent,
         motorVoltage,
         deviceTemp,
         closedLoopReference,
@@ -145,6 +156,7 @@ public class intakeRollerIOReal implements intakeRollerIO {
         Followervelocity,
         FollowerstatorCurrent,
         FollowersupplyCurrent,
+        FollowertorqueCurrent,
         FollowermotorVoltage,
         FollowerdeviceTemp,
         FollowerclosedLoopReference,
@@ -155,6 +167,7 @@ public class intakeRollerIOReal implements intakeRollerIO {
     inputs.intakeRollerVelocity = velocity.getValue();
     inputs.intakeRollerStatorCurrent = statorCurrent.getValue();
     inputs.intakeRollerSupplyCurrent = supplyCurrent.getValue();
+    inputs.intakeRollerTorqueCurrent = torqueCurrent.getValue();
     inputs.intakeRollerVoltage = motorVoltage.getValue();
     inputs.intakeRollerTemperature = deviceTemp.getValue();
     inputs.rollerClosedLoopReference =
@@ -164,6 +177,7 @@ public class intakeRollerIOReal implements intakeRollerIO {
     inputs.intakeRollerFollowerVelocity = Followervelocity.getValue();
     inputs.intakeRollerFollowerStatorCurrent = FollowerstatorCurrent.getValue();
     inputs.intakeRollerFollowerSupplyCurrent = FollowersupplyCurrent.getValue();
+    inputs.intakeRollerFollowerTorqueCurrent = FollowertorqueCurrent.getValue();
     inputs.intakeRollerFollowerVoltage = FollowermotorVoltage.getValue();
     inputs.intakeRollerFollowerTemperature = FollowerdeviceTemp.getValue();
     inputs.rollerFollowerClosedLoopReference =

@@ -26,6 +26,7 @@ public interface IntakePivotIO {
     public Voltage intakePivotVoltage = Volts.of(0);
     public Current intakePivotSupplyCurrent = Amps.of(0);
     public Current intakePivotStatorCurrent = Amps.of(0);
+    public Current intakePivotTorqueCurrent = Amps.of(0);
     public Temperature intakePivotTemperature = Celsius.of(0);
     public AngularVelocity intakePivotVelocity = RotationsPerSecond.of(0);
     public Angle intakePivotPosition = Rotations.of(0);

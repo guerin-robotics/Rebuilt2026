@@ -52,6 +52,7 @@ public class IntakePivotIOReal implements IntakePivotIO {
   private final StatusSignal<Voltage> motorVoltage;
   private final StatusSignal<Current> statorCurrent;
   private final StatusSignal<Current> supplyCurrent;
+  private final StatusSignal<Current> torqueCurrent;
   private final StatusSignal<Temperature> deviceTemp;
   private final StatusSignal<Double> closedLoopReference;
   private final StatusSignal<Double> closedLoopError;
@@ -71,6 +72,7 @@ public class IntakePivotIOReal implements IntakePivotIO {
     motorVoltage = intakePivotMotor.getMotorVoltage();
     statorCurrent = intakePivotMotor.getStatorCurrent();
     supplyCurrent = intakePivotMotor.getSupplyCurrent();
+    torqueCurrent = intakePivotMotor.getTorqueCurrent();
     deviceTemp = intakePivotMotor.getDeviceTemp();
     closedLoopReference = intakePivotMotor.getClosedLoopReference();
     closedLoopError = intakePivotMotor.getClosedLoopError();
@@ -86,6 +88,7 @@ public class IntakePivotIOReal implements IntakePivotIO {
         motorVoltage,
         statorCurrent,
         supplyCurrent,
+        torqueCurrent,
         encoderPosition,
         closedLoopReference);
 
@@ -172,6 +175,7 @@ public class IntakePivotIOReal implements IntakePivotIO {
         motorVoltage,
         statorCurrent,
         supplyCurrent,
+        torqueCurrent,
         deviceTemp,
         closedLoopReference,
         closedLoopError,
@@ -183,6 +187,7 @@ public class IntakePivotIOReal implements IntakePivotIO {
     inputs.intakePivotVoltage = motorVoltage.getValue();
     inputs.intakePivotStatorCurrent = statorCurrent.getValue();
     inputs.intakePivotSupplyCurrent = supplyCurrent.getValue();
+    inputs.intakePivotTorqueCurrent = torqueCurrent.getValue();
     inputs.intakePivotTemperature = deviceTemp.getValue();
     inputs.intakePivotClosedLoopReference = closedLoopReference.getValueAsDouble();
     inputs.intakePivotClosedLoopError = closedLoopError.getValueAsDouble();
