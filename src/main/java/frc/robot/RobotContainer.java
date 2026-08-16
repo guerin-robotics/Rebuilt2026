@@ -11,7 +11,6 @@ import static edu.wpi.first.math.util.Units.metersToInches;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Volts;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -329,12 +328,6 @@ public class RobotContainer {
         IntakePivotCommands.setPivotPosition(
             intakePivot, HardwareConstants.CompConstants.Positions.pivotUpPos));
 
-    // Auto run intake command
-    NamedCommands.registerCommand(
-        "RunIntake",
-        intakeRollerCommands.setRollerVoltage(
-            intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage));
-
     // Auto shoot command
     NamedCommands.registerCommand(
         "Shoot",
@@ -393,19 +386,10 @@ public class RobotContainer {
                     intakePivot.setPivotPosition(
                         HardwareConstants.CompConstants.Positions.pivotUpPos)));
 
-    // Event marker for running intake rollers while in a zoned area
-    // Uses whileTrue because this is a zoned event marker (has start AND end positions in the path)
-    // No subsystem requirements declared to avoid interrupting the auto command group
-    new EventTrigger("RunIntake")
-        .whileTrue(
-            Commands.startEnd(
-                () -> {
-                  intakeRoller.setRollerVoltage(
-                      HardwareConstants.CompConstants.Voltages.intakeRollerVoltage);
-                },
-                () -> {
-                  intakeRoller.setRollerVoltage(Volts.of(0));
-                }));
+    // NOTE: there is no "RunIntake" event trigger any more. The roller now follows the same
+    // rules in auto as it does in teleop: the always-on default command runs it at intake
+    // voltage, and the shoot sequence takes it to agitate when the feeders start. The zoned
+    // RunIntake markers left in the .path files fire against nothing, which is harmless.
 
     // Event marker for setting the hood position to down
     new EventTrigger("HoodDown")
@@ -427,8 +411,12 @@ public class RobotContainer {
     // Hood - stop motor when no command is running (prevents stale closed-loop reference)
     hood.setDefaultCommand(HoodCommands.hoodIdle(hood));
 
-    // Intake Roller - Idle
-    intakeRoller.setDefaultCommand(intakeRollerCommands.intakeRollerIdle(intakeRoller));
+    // Intake Roller - always run at intake velocity under closed-loop torque-FOC control;
+    // shoot/pass/tower sequences override this with agitate voltage via their own whileTrue
+    // bindings
+    intakeRoller.setDefaultCommand(
+        intakeRollerCommands.runRollerAtVelocity(
+            intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity));
     // OVERRIDES
     // Flip alliance winner
     Triggers.getInstance().allianceWinFlipper().onTrue(HubShiftUtil.flipWinner());
@@ -687,28 +675,55 @@ public class RobotContainer {
         .onFalse(TransportCommands.stop(transport));
 
     // INTAKE ROLLER
-    // Set to intaking voltage when intake button is pressed
-    Triggers.getInstance()
-        .intakeRollerButton()
-        .whileTrue(
-            intakeRollerCommands.setRollerVoltage(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage))
-        .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
-
-    // Set to agitate voltage when shoot button is pressed
-    // and other standard shooting conditions true
+    // Hold the roller at zero when the hub or pass sequence is started, then agitate from the loop
+    // the fuel actually starts moving. The condition passed here is the same one the LOWER SHOOTER
+    // binding above waits on before it runs the feeders and transport — keep the two in sync or the
+    // roller will lead or lag the shot.
+    // Reverts to the default (intakeRollerVoltage) once the shoot/pass button is released.
     Triggers.getInstance()
         .shootButton()
-        .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
-        .and(
-            () ->
-                !(Triggers.getInstance().isShootSafeZone.getAsBoolean()
-                    && !Triggers.getInstance().isShootSafeTime.getAsBoolean()))
-        .and(Triggers.getInstance().isAlignedLooser)
+        .or(Triggers.getInstance().passButton())
         .whileTrue(
-            intakeRollerCommands.setRollerVoltage(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage))
-        .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
+            intakeRollerCommands.setVoltageAfterWait(
+                intakeRoller,
+                HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage,
+                flywheel.isFlywheelSpunUp.and(Triggers.getInstance().isAlignedLooser)));
+
+    // The tower shot needs its own roller binding because it releases its feed on a different
+    // condition: the FULL SHOOTER tower binding above uses the no-align setXVelocityAfterWait
+    // overloads, which wait flywheelSpinupSeconds and then feed unconditionally. The tower shot
+    // does not aim, so gating the roller on isAlignedLooser like the hub/pass binding above left
+    // the roller holding 0 V for the whole shot while the feeders pulled fuel. Mirror the tower
+    // feed's fixed wait instead so the roller agitates on the same loop the fuel starts moving.
+    Triggers.getInstance()
+        .shootFromTowerButton()
+        .whileTrue(
+            intakeRollerCommands.setVoltageAfterSpinupWait(
+                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage));
+
+    // NOTE: the two bindings above are the ONLY roller owners during a shot, and their triggers
+    // are disjoint in normal use. Holding shoot and tower together schedules both; the tower
+    // binding is registered later so it wins the subsystem, which is the intended precedence.
+    // Do not add a third. One used to sit here (shootButton + isAlignedLooser ->
+    // setRollerVoltage(agitate), .onFalse(stop)). Because it was registered later it interrupted
+    // setVoltageAfterWait and agitated on the very first tick of the press — before the feeders
+    // and transport were gated on — and its .onFalse released the subsystem whenever alignment
+    // was momentarily lost, letting the 12 V default command re-engage mid-shot.
+
+    // Hold to stop the roller. This requires intakeRoller, so it interrupts whatever owns the
+    // roller — the always-on default or a shot's agitate — and holds it at zero. Releasing the
+    // button ends the command and hands the roller back to the default at intake voltage.
+    Triggers.getInstance()
+        .intakeRollerButton()
+        .whileTrue(intakeRollerCommands.holdRollerStopped(intakeRoller));
+
+    // Hold to reverse the roller to back out a jam. Same ownership story as the hold-to-stop
+    // binding above — it interrupts the always-on default or a shot's agitate, and releasing
+    // hands the roller back to the default at intake voltage. Registered after hold-to-stop so
+    // reverse wins if both are pressed on the same loop.
+    Triggers.getInstance()
+        .reverseIntakeButton()
+        .whileTrue(intakeRollerCommands.reverseRoller(intakeRoller));
 
     // INTAKE PIVOT
     // Retract on retract button — also cancels automatic compression for this shoot press
@@ -727,15 +742,9 @@ public class RobotContainer {
             IntakePivotCommands.setPivotPosition(
                 intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
 
-    // Manual compress button — cancels auto-compress and runs compress with no initial wait
-    // Runs single or double compress based on override - subject to change
-    Triggers.getInstance()
-        .intakeCompressButton()
-        .onTrue(Commands.runOnce(() -> compressCancelled = true))
-        .whileTrue(IntakePivotCommands.compressPivot(intakePivot, () -> doubleCompress))
-        .onFalse(
-            IntakePivotCommands.setPivotPosition(
-                intakePivot, HardwareConstants.CompConstants.Positions.pivotDownPos));
+    // NOTE: the manual compress button used to sit here on TM button 6. That button is now the
+    // hold-to-reverse jam clear, so manual compress is gone in comp bindings. Auto-compress on
+    // the shoot button below is unchanged, as is the double-compress override on Xbox B.
 
     // Automatic compress on shoot button when:
     //   - neither intake deploy nor retract button is currently pressed
@@ -840,6 +849,12 @@ public class RobotContainer {
     // prestage.setDefaultCommand(PrestageCommands.prestageIdle(prestage));
     // Hood - stop motor when no command is running (prevents stale closed-loop reference)
     hood.setDefaultCommand(HoodCommands.hoodIdle(hood));
+    // Intake Roller - always run at intake velocity under closed-loop torque-FOC control;
+    // shoot/pass/tower sequences override this with agitate voltage via their own whileTrue
+    // bindings
+    intakeRoller.setDefaultCommand(
+        intakeRollerCommands.runRollerAtVelocity(
+            intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity));
 
     // OVERRIDES
     // Flip alliance winner
@@ -1041,27 +1056,26 @@ public class RobotContainer {
         .onFalse(FeederCommands.stopUpper(upperFeeder))
         .onFalse(TransportCommands.stop(transport));
 
-    // INTAKE ROLLER
-    // Set to intaking voltage when intake button is pressed
-    Triggers.getInstance()
-        .simIntakeRollerButton()
-        .whileTrue(
-            intakeRollerCommands.setRollerVoltage(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage))
-        .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
-
-    // Set to agitate voltage (after a wait) when any shooting sequence is started (shoot to hub,
-    // pass, shoot from tower). Agitate is also delayed until aligned.
+    // Hold the roller at zero when the hub or pass sequence is started, then agitate from the loop
+    // the fuel actually starts moving. The sim LOWER SHOOTER bindings gate the feeders on
+    // isAlignedForCurrentShot with no spin-up wait, so that is the condition passed here.
     Triggers.getInstance()
         .simShootButton()
         .or(Triggers.getInstance().simPassButton())
-        .or(Triggers.getInstance().simShootFromTowerButton())
         .whileTrue(
             intakeRollerCommands.setVoltageAfterWait(
                 intakeRoller,
                 HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage,
-                Triggers.getInstance().isAlignedForCurrentShot))
-        .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
+                Triggers.getInstance().isAlignedForCurrentShot));
+
+    // Tower shot roller — mirrors the comp binding. The sim tower shot above also uses the
+    // no-align setXVelocityAfterWait overloads, so the roller waits the same fixed spin-up time
+    // rather than gating on alignment the tower shot never establishes.
+    Triggers.getInstance()
+        .simShootFromTowerButton()
+        .whileTrue(
+            intakeRollerCommands.setVoltageAfterSpinupWait(
+                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage));
 
     // INTAKE PIVOT
     // Retract on retract button — also cancels automatic compression for this shoot press
@@ -1270,11 +1284,6 @@ public class RobotContainer {
   public Command getAutoStopCommand() {
     return ShootSequences.stopAll(
         flywheel, prestage, hood, upperFeeder, lowerFeeder, transport, intakeRoller);
-  }
-
-  public Command getIntakeRollerCommand() {
-    return intakeRollerCommands.setRollerVoltage(
-        intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage);
   }
 
   public Command getIntakePivotCommand() {

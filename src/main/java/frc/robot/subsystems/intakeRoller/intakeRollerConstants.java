@@ -12,7 +12,12 @@ public class intakeRollerConstants {
     public static final int INTAKE_ROLLER_MAIN_SUPPLY_AMP = 40;
     public static final int INTAKE_ROLLER_MAIN_SUPPLY_TRIGGER_AMP = 35;
     public static final Time INTAKE_ROLLER_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
-    public static final int INTAKE_ROLLER_MAIN_STATOR_AMP = 100; // 60 // 40 before IRI // 55
+    // 100 A was reachable but not useful: IRI logs show the leader above 60 A for only 5.5% of
+    // roller runtime, and those are all low-speed jams (velocity p50 51 rps, applied 4.3 V) where
+    // the 40 A supply limit is already clamping duty cycle, so the extra stator headroom bought
+    // torque the supply limit would not let become power. 60 A gives back the peak draw at a cost
+    // of 5.9 s/match of clipped stall torque. // 100 // 60 // 40 before IRI // 55
+    public static final int INTAKE_ROLLER_MAIN_STATOR_AMP = 60;
   }
 
   public static class SoftwareConstants {
@@ -27,11 +32,23 @@ public class intakeRollerConstants {
     public static final double rollerAccel = 100.0;
   }
 
-  // Real robot PID gains for torque-current velocity control
+  // Real robot PID gains for torque-current velocity control.
+  //
+  // Units are AMPS: the request is MotionMagicVelocityTorqueCurrentFOC, so the closed-loop output
+  // is torque current, KV is amps per (mechanism rot/s), and KP is amps per (rot/s) of error.
+  //
+  // Derived from the IRI event logs rather than simulation. The sim's DCMotorSim is frictionless,
+  // so it needs ~0 A to hold speed while the real roller needs ~9 A against hopper drag — sim
+  // cannot inform KS/KV for this mechanism. Steady-state log samples (|accel| < 15 rad/s^2, roller
+  // driven) show the leader sustaining 2900-3100 RPM on 8.8 A median (p25 7.6, p75 12.3), so
+  // KV * 50 rot/s ~= 9 A. KP is sized to add roughly 7 A of correction per 200 RPM of error.
+  //
+  // BENCH-DERIVED STARTING POINT, NOT A VALIDATED TUNE. See docs/intake-roller-bench-tune.md and
+  // confirm steady-state error and stator current on the robot before trusting these in a match.
   public static class PID {
     public static final double KS = 1.5; // 3.5
-    public static final double KV = 0.0; // 0.0
-    public static final double KP = 0.0; // 1.0
+    public static final double KV = 0.18; // 0.0 — 9 A of feedforward at the 3000 RPM setpoint
+    public static final double KP = 2.0; // 0.0 // 1.0
     public static final double KI = 0.0; // 0.0
     public static final double KD = 0.0; // 0.0
   }
