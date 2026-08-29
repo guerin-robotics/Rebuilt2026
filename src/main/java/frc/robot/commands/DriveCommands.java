@@ -18,8 +18,6 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -97,9 +95,7 @@ public class DriveCommands {
                       linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                       linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                       omega * drive.getMaxAngularSpeedRadPerSec());
-              boolean isFlipped =
-                  DriverStation.getAlliance().isPresent()
-                      && DriverStation.getAlliance().get() == Alliance.Red;
+              boolean isFlipped = AllianceFlipUtil.shouldFlip();
               drive.runVelocity(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
                       speeds,
@@ -136,9 +132,7 @@ public class DriveCommands {
                       linearVelocity.getX() * DriveConstants.limitedVelo,
                       linearVelocity.getY() * DriveConstants.limitedVelo,
                       omega * drive.getMaxAngularSpeedRadPerSec());
-              boolean isFlipped =
-                  DriverStation.getAlliance().isPresent()
-                      && DriverStation.getAlliance().get() == Alliance.Red;
+              boolean isFlipped = AllianceFlipUtil.shouldFlip();
               drive.runVelocity(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
                       speeds,
@@ -253,14 +247,28 @@ public class DriveCommands {
               Translation2d linearVelocity =
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
+              // Sample both rotations ONCE per loop.
+              //
+              // On the auto-aim bindings rotationSupplier is getAngleToAllianceHub(): a pose
+              // fetch, an alliance flip of a Translation3d, an atan2, and several Rotation2d /
+              // Translation2d allocations. drive.getRotation() reads through the pose estimator.
+              // These were previously evaluated twice and four times respectively per cycle.
+              //
+              // Correctness, not just cost: the value logged as TargetAngle is now guaranteed to
+              // be the same value fed to the PID, and the heading used for the field-relative
+              // transform below is the same sample used as the PID measurement. Re-evaluating a
+              // pose-dependent supplier mid-loop could previously make them disagree.
+              Rotation2d currentRotation = drive.getRotation();
+              Rotation2d targetRotation = rotationSupplier.get();
+
               // Calculate angular speed
               double omega =
                   angleController.calculate(
-                      drive.getRotation().getRadians(), rotationSupplier.get().getRadians());
+                      currentRotation.getRadians(), targetRotation.getRadians());
 
               // Log target and current angles every loop for debugging
-              Logger.recordOutput("AutoAim/TargetAngle", rotationSupplier.get());
-              Logger.recordOutput("AutoAim/CurrentAngle", drive.getRotation());
+              Logger.recordOutput("AutoAim/TargetAngle", targetRotation);
+              Logger.recordOutput("AutoAim/CurrentAngle", currentRotation);
               Logger.recordOutput("AutoAim/AngleErrorRad", angleController.getPositionError());
 
               // Convert to field relative speeds & send command
@@ -269,15 +277,11 @@ public class DriveCommands {
                       linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                       linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                       omega);
-              boolean isFlipped =
-                  DriverStation.getAlliance().isPresent()
-                      && DriverStation.getAlliance().get() == Alliance.Red;
+              boolean isFlipped = AllianceFlipUtil.shouldFlip();
               drive.runVelocity(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
                       speeds,
-                      isFlipped
-                          ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                          : drive.getRotation()));
+                      isFlipped ? currentRotation.plus(new Rotation2d(Math.PI)) : currentRotation));
             },
             drive)
 
