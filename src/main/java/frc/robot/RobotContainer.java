@@ -336,6 +336,12 @@ public class RobotContainer {
             intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage));
 
     // Auto shoot command
+    //
+    // The alignment condition passed to autoShootToHub is the hub-loose check — the same
+    // tolerance teleop's isAlignedLooser uses for a hub shot, and measured against the same
+    // getAngleToAllianceHub() heading the paired joystickDriveAtAngle is driving to. It is read
+    // as a plain BooleanSupplier inside waitUntil, so nothing new is bound to the scheduler and
+    // the auto group's requirements are unchanged.
     NamedCommands.registerCommand(
         "Shoot",
         DriveCommands.joystickDriveAtAngle(
@@ -349,7 +355,8 @@ public class RobotContainer {
                     lowerFeeder,
                     transport,
                     intakeRoller,
-                    intakePivot)));
+                    intakePivot,
+                    () -> RobotState.getInstance().isAlignedToHubLoose())));
 
     // Stop all subsystems after shooting
     NamedCommands.registerCommand(
