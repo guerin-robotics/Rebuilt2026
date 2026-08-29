@@ -16,6 +16,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import java.util.Set;
 import org.littletonrobotics.junction.Logger;
 
 public class VisionConstants {
@@ -78,6 +79,41 @@ public class VisionConstants {
           new Translation3d(
               Inches.of(-12.572), Inches.of(5.375), Inches.of(12.509)), // -11.028 - 1.5
           new Rotation3d(Degrees.of(0.0), Degrees.of(-15.0), Degrees.of(180)));
+
+  // ---- Trench tags ----
+
+  // Tags mounted inside the trench. They are only ever seen through the trench opening
+  // at a steep, glancing angle, which produces unreliable PnP solves, so they must not
+  // contribute to a pose estimate at all.
+  //
+  // Held as a static Set so the trench check costs a hash lookup instead of rebuilding
+  // an 8-element set per camera per frame inside the vision loop.
+  private static final Set<Integer> trenchTagIds = Set.of(1, 6, 7, 12, 17, 22, 23, 28);
+
+  /**
+   * Returns whether a fiducial ID belongs to a trench tag.
+   *
+   * @param fiducialId The AprilTag fiducial ID to test.
+   */
+  public static boolean isTrenchTag(int fiducialId) {
+    return trenchTagIds.contains(fiducialId);
+  }
+
+  // How many NON-trench tags must have contributed to a coprocessor multi-tag solve for that
+  // solve to be kept when a trench tag was also folded into it.
+  //
+  // Multi-tag PnP runs on the coprocessor and arrives as one baked transform, so a trench tag
+  // inside it cannot be removed here — only tolerated or the whole solve rejected. Multi-tag is
+  // a least-squares fit: with two or more clean tags it is over-constrained and one bad tag
+  // shifts the result rather than flipping it. With only one clean tag the trench tag carries
+  // real weight, and the clean single-tag fallback is the better answer.
+  //
+  //   2                 — tolerate a trench tag when >=2 clean tags also contributed (lenient)
+  //   Integer.MAX_VALUE — reject any multi-tag solve that used a trench tag at all (strict)
+  //
+  // Log /Vision/CameraN/MultiTagFiducialIdsUsed and .../MultiTagSolvesDiscarded to see how often
+  // this actually fires before changing it.
+  public static int minCleanTagsToKeepMultiTag = 2;
 
   // ---- Filtering thresholds ----
 
