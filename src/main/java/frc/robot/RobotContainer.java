@@ -421,7 +421,7 @@ public class RobotContainer {
         DriveCommands.joystickDrive(
             drive, () -> -getDriveY(), () -> -getDriveX(), () -> -getDriveRot()));
     // Flywheel - idle
-    flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
+    // flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // // Prestage - idle
     // prestage.setDefaultCommand(PrestageCommands.prestageIdle(prestage));
     // Hood - stop motor when no command is running (prevents stale closed-loop reference)
@@ -687,12 +687,12 @@ public class RobotContainer {
         .onFalse(TransportCommands.stop(transport));
 
     // INTAKE ROLLER
-    // Set to intaking voltage when intake button is pressed
+    // Set to intaking Velocity when intake button is pressed
     Triggers.getInstance()
         .intakeRollerButton()
         .whileTrue(
-            intakeRollerCommands.setRollerVoltage(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage))
+            intakeRollerCommands.setRollerVelocity(
+                intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity))
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // Set to agitate voltage when shoot button is pressed
@@ -1273,8 +1273,8 @@ public class RobotContainer {
   }
 
   public Command getIntakeRollerCommand() {
-    return intakeRollerCommands.setRollerVoltage(
-        intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage);
+    return intakeRollerCommands.setRollerVelocity(
+        intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity);
   }
 
   public Command getIntakePivotCommand() {
