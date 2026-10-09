@@ -421,14 +421,14 @@ public class RobotContainer {
         DriveCommands.joystickDrive(
             drive, () -> -getDriveY(), () -> -getDriveX(), () -> -getDriveRot()));
     // Flywheel - idle
-    // flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
+    flywheel.setDefaultCommand(FlywheelCommands.flywheelIdle(flywheel));
     // // Prestage - idle
     // prestage.setDefaultCommand(PrestageCommands.prestageIdle(prestage));
     // Hood - stop motor when no command is running (prevents stale closed-loop reference)
     hood.setDefaultCommand(HoodCommands.hoodIdle(hood));
 
     // Intake Roller - Idle
-    intakeRoller.setDefaultCommand(intakeRollerCommands.intakeRollerIdle(intakeRoller));
+    // intakeRoller.setDefaultCommand(intakeRollerCommands.intakeRollerIdle(intakeRoller));
     // OVERRIDES
     // Flip alliance winner
     Triggers.getInstance().allianceWinFlipper().onTrue(HubShiftUtil.flipWinner());
