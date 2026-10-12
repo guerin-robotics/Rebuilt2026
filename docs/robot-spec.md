@@ -646,7 +646,7 @@ default void setHoodPos(Angle position) {}  // MotionMagicTorqueCurrentFOC posit
 ### HoodConstants
 
 **Mechanical:** shaft→hood ratio = 122/12, motor→shaft belt ratio = 5.33,
-magnet offset = −0.16, discontinuity point = 0.625, maxPos = 234°, minPos = 0°
+magnet offset = −0.16, discontinuity point = 0.625, maxPos = 62°, minPos = 0°
 
 **SoftwareConstants:** softwareLowerLimit=0°, softwareUpperLimit=62°,
 `ENCODER_DIRECTION=Clockwise_Positive`, `MOTOR_INVERTED=false`

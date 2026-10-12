@@ -13,7 +13,7 @@ public class HoodConstants {
     public static final double magnetSensorDiscontinuityPoint = 0.75 / 2 + 0.25; // 1;
     public static final double magnetOffset = -0.16;
     // Hood position limits in degrees (mechanism output)
-    public static final Angle hoodMaxPos = Degrees.of(234); // was 0.65 rotations
+    public static final Angle hoodMaxPos = Degrees.of(62); // matches softwareUpperLimit
     public static final Angle hoodMinPos = Degrees.of(0);
 
     /**
