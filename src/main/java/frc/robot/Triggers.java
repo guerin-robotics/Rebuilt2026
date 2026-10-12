@@ -107,9 +107,12 @@ public class Triggers {
     return sourced(thrustmaster.button(5), controller.leftTrigger(TRIGGER_THRESHOLD));
   }
 
-  public Trigger intakeCompressButton() {
-    // No Xbox-mode home — auto-compress on shoot still works in Xbox mode.
-    return thrustmaster.button(6);
+  /**
+   * Hold-to-reverse jam clear. This took over TM button 6 from the manual compress binding, which
+   * was removed — auto-compress on the shoot button is unaffected. D-pad down in Xbox mode.
+   */
+  public Trigger reverseIntakeButton() {
+    return sourced(thrustmaster.button(6), controller.povDown());
   }
 
   // public Trigger bumpAlignButton() {

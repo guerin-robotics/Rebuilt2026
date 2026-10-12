@@ -49,8 +49,8 @@ THRUSTMASTER T.16000M
         LEFT SIDE                                       RIGHT SIDE
    ┌────────┬────────┬────────┐                  ┌────────┬────────┬────────┐
    │   5    │   6    │   7    │                  │   11   │   12   │   13   │
-   │ INTAKE │COMPRESS│ demo   │                  │  PASS  │ CANCEL │        │
-   │ ROLLER │        │ shot   │                  │        │ AUTO-X │        │
+   │  STOP  │REVERSE │ demo   │                  │  PASS  │ CANCEL │        │
+   │ ROLLER │ ROLLER │ shot   │                  │        │ AUTO-X │        │
    ├────────┼────────┼────────┤       ⊙ stick    ├────────┼────────┼────────┤
    │   8    │   9    │   10   │                  │   14   │   15   │   16   │
    │  BUMP  │        │ TOWER  │                  │        │        │        │
@@ -68,8 +68,8 @@ THRUSTMASTER T.16000M
 | 2 | Trench align — locks your heading for the trench |
 | 3 | Intake in (pivot up) |
 | 4 | Intake out (pivot down) |
-| 5 | Intake roller — hold to pull fuel in |
-| 6 | Compress by hand |
+| 5 | **Stop the roller** — the roller runs on its own, hold this to stop it. Let go and it runs again |
+| 6 | **Reverse the roller** — hold to back a jam out. Let go and it goes back to intaking |
 | 7 | Demo shot — practice and demos only, dead in a match |
 | 8 | Bump align — locks your heading for the bump |
 | 10 | Tower shot — fixed shot, no aiming, no waiting |
@@ -97,7 +97,7 @@ You hold the Xbox. The flightstick sits on the desk as the backup controller.
 XBOX ELITE SERIES 2
 ────────────────────────────────────────────────────────────────────────────────
 
-    INTAKE ROLLER ── LT                                RT ── SHOOT ★
+      STOP ROLLER ── LT                                RT ── SHOOT ★
    INTAKE IN, up ── LB                                 RB ── INTAKE OUT, down
    ╔═════════════════════════════════════════════════════════════════════════╗
    ║                                                                         ║
@@ -110,7 +110,7 @@ XBOX ELITE SERIES 2
    ║        ← ✛ →                        │  R  │             Y  TOWER SHOT  ║
    ║          ↓                          ╰─────╯             X  TRENCH      ║
    ║        D-PAD                          TURN              A  BUMP        ║
-   ║      ↑ = PASS                    left / right           B  nothing     ║
+   ║   ↑ = PASS  ↓ = REVERSE          left / right           B  nothing     ║
    ║                                                                         ║
    ╚═════════════════════════════════════════════════════════════════════════╝
       Menu, View, the small centre buttons, clicking the sticks and the
@@ -122,13 +122,14 @@ XBOX ELITE SERIES 2
 | Left stick | Drive |
 | Right stick, left / right | Turn |
 | **Right trigger** | **Shoot** — aims, spins up and fires. See below. Squeeze it properly, a light pull won't register |
-| Left trigger | Intake roller — hold to pull fuel in |
+| Left trigger | **Stop the roller** — the roller runs on its own, hold this to stop it. Let go and it runs again |
 | Left bumper | Intake in (pivot up) |
 | Right bumper | Intake out (pivot down) |
 | X | Trench align |
 | A | Bump align |
 | Y | Tower shot |
 | D-pad Up | Pass |
+| D-pad Down | **Reverse the roller** — hold to back a jam out. Let go and it goes back to intaking |
 | B | Nothing in this mode |
 | Everything else | Nothing |
 
@@ -136,13 +137,12 @@ XBOX ELITE SERIES 2
 > before you trust it in a match. If the robot goes backwards, stop and tell a
 > programmer — it's a one-line fix, but not one to discover mid-match.
 
-**The flightstick does five things in this mode**
+**The flightstick does four things in this mode**
 
 | Flightstick | What it does |
 |---|---|
 | 2 | Turn the hub timer off completely |
 | 3 or 4 | Flip which alliance the hub is favouring (either button, same result) |
-| 6 | Compress by hand |
 | 7 | Demo shot — practice and demos only |
 | 12 | Cancel auto-X |
 
@@ -181,9 +181,19 @@ Let go early and nothing comes out.
 - **The robot slows to half speed while it's aiming.** That is on purpose. It is not a
   dying battery and it is not a brownout.
 
-- **Touching the intake cancels auto-compress.** If you press intake in, intake out, or
-  compress, the robot stops compressing by itself for the rest of that trigger pull. Let
-  go of the trigger and it comes back.
+- **The intake roller runs by itself, the whole match.** There is no button to run it —
+  it spins from the moment you enable, in auto and in teleop, and the robot drops it to
+  a gentler stir on its own while a shot is going out. Button 5 / LT holds it stopped and
+  button 6 / D-pad down runs it backwards to clear a jam — both are hold-to-use, let go and
+  it intakes again. If you stop or reverse it mid-shot it won't go back to stirring until
+  the next trigger pull.
+
+- **There is no compress-by-hand button any more.** Button 6 is the roller reverse now.
+  Compress still happens on its own on the trigger, and Xbox B still switches it to double.
+
+- **Touching the intake cancels auto-compress.** If you press intake in or intake out, the
+  robot stops compressing by itself for the rest of that trigger pull. Let go of the trigger
+  and it comes back.
 
 - **Tower shot and demo shot don't aim.** They fire a fixed shot on a timer. Line the
   robot up yourself first.
@@ -197,5 +207,5 @@ Let go early and nothing comes out.
 ---
 
 *Button positions confirmed with the drive team. Functions read from the robot code on
-27 July 2026 — if a button does something different from this card, the card is wrong,
+28 July 2026 — if a button does something different from this card, the card is wrong,
 so tell a programmer.*

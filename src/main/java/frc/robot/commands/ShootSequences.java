@@ -33,6 +33,21 @@ public class ShootSequences {
                 PrestageCommands.setPrestageVelocity(
                     prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity),
                 HoodCommands.setHoodPosForHub(hood)),
+            // Roller duty cycle, identical to the teleop shoot binding: held at zero from the
+            // start of the sequence, then agitate from the loop the feeders are gated on. It is
+            // gated on the same condition the feeder branch below waits for — keep the two in
+            // sync or the roller will lead or lag the shot.
+            //
+            // .asProxy() keeps intakeRoller OUT of this command's requirements. PathPlannerAuto
+            // requires the union of every command in the auto for the auto's whole duration, so
+            // without the proxy the roller's always-on default command could never run between
+            // shots and the roller would be dead for the rest of the auto.
+            intakeRollerCommands
+                .setVoltageAfterWait(
+                    intakeRoller,
+                    HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage,
+                    flywheel.isFlywheelSpunUp)
+                .asProxy(),
             Commands.sequence(
                 Commands.waitUntil(
                         flywheel.isFlywheelSpunUp.and(Triggers.getInstance().isAlignedLooser))
@@ -44,9 +59,6 @@ public class ShootSequences {
                         upperFeeder, HardwareConstants.CompConstants.Velocities.feederVelocity),
                     TransportCommands.setTransportVelocity(
                         transport, HardwareConstants.CompConstants.Velocities.transportVelocity),
-                    intakeRollerCommands.setRollerVoltage(
-                        intakeRoller,
-                        HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage),
                     IntakePivotCommands.autoPivotCompress(intakePivot))))
         // .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
         .withName("ShootToHub");
@@ -90,7 +102,10 @@ public class ShootSequences {
             FeederCommands.stopUpper(upperFeeder),
             FeederCommands.stopLower(lowerFeeder),
             TransportCommands.stop(transport),
-            intakeRollerCommands.stopIntakeRoller(intakeRoller))
+            // Proxied for the same reason as in autoShootToHub: stopAll runs between path
+            // segments in every auto, so if it contributed intakeRoller to the auto's
+            // requirements the roller's default command could never run.
+            intakeRollerCommands.stopIntakeRoller(intakeRoller).asProxy())
         .withName("StopAll");
   }
 }
