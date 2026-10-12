@@ -428,7 +428,7 @@ public class RobotContainer {
     hood.setDefaultCommand(HoodCommands.hoodIdle(hood));
 
     // Intake Roller - Idle
-    intakeRoller.setDefaultCommand(intakeRollerCommands.intakeRollerIdle(intakeRoller));
+    // intakeRoller.setDefaultCommand(intakeRollerCommands.intakeRollerIdle(intakeRoller));
     // OVERRIDES
     // Flip alliance winner
     Triggers.getInstance().allianceWinFlipper().onTrue(HubShiftUtil.flipWinner());
@@ -687,12 +687,12 @@ public class RobotContainer {
         .onFalse(TransportCommands.stop(transport));
 
     // INTAKE ROLLER
-    // Set to intaking voltage when intake button is pressed
+    // Set to intaking Velocity when intake button is pressed
     Triggers.getInstance()
         .intakeRollerButton()
         .whileTrue(
-            intakeRollerCommands.setRollerVoltage(
-                intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage))
+            intakeRollerCommands.setRollerVelocity(
+                intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity))
         .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
     // Set to agitate voltage when shoot button is pressed
@@ -1273,8 +1273,8 @@ public class RobotContainer {
   }
 
   public Command getIntakeRollerCommand() {
-    return intakeRollerCommands.setRollerVoltage(
-        intakeRoller, HardwareConstants.CompConstants.Voltages.intakeRollerVoltage);
+    return intakeRollerCommands.setRollerVelocity(
+        intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity);
   }
 
   public Command getIntakePivotCommand() {

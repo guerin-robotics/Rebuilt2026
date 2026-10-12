@@ -60,6 +60,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
   private final StatusSignal<Voltage> leaderMotorVoltage;
   private final StatusSignal<Current> leaderSupplyCurrent;
   private final StatusSignal<Current> leaderStatorCurrent;
+  private final StatusSignal<Current> leaderTorqueCurrent;
   private final StatusSignal<Temperature> leaderTemp;
   private final StatusSignal<Double> closedLoopReference;
   private final StatusSignal<Double> closedLoopError;
@@ -70,6 +71,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
   private final StatusSignal<Voltage> follower1MotorVoltage;
   private final StatusSignal<Current> follower1SupplyCurrent;
   private final StatusSignal<Current> follower1StatorCurrent;
+  private final StatusSignal<Current> follower1TorqueCurrent;
   private final StatusSignal<Temperature> follower1Temp;
 
   // Cached status signals for FOLLOWER 2
@@ -77,6 +79,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
   private final StatusSignal<Voltage> follower2MotorVoltage;
   private final StatusSignal<Current> follower2SupplyCurrent;
   private final StatusSignal<Current> follower2StatorCurrent;
+  private final StatusSignal<Current> follower2TorqueCurrent;
   private final StatusSignal<Temperature> follower2Temp;
 
   // Cached status signals for FOLLOWER 3
@@ -84,6 +87,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
   private final StatusSignal<Voltage> follower3MotorVoltage;
   private final StatusSignal<Current> follower3SupplyCurrent;
   private final StatusSignal<Current> follower3StatorCurrent;
+  private final StatusSignal<Current> follower3TorqueCurrent;
   private final StatusSignal<Temperature> follower3Temp;
 
   // Cached status signals for FOLLOWER 4
@@ -91,6 +95,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
   private final StatusSignal<Voltage> follower4MotorVoltage;
   private final StatusSignal<Current> follower4SupplyCurrent;
   private final StatusSignal<Current> follower4StatorCurrent;
+  private final StatusSignal<Current> follower4TorqueCurrent;
   private final StatusSignal<Temperature> follower4Temp;
 
   public FlywheelIOPhoenix6() {
@@ -114,6 +119,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     leaderMotorVoltage = leader.getMotorVoltage();
     leaderSupplyCurrent = leader.getSupplyCurrent();
     leaderStatorCurrent = leader.getStatorCurrent();
+    leaderTorqueCurrent = leader.getTorqueCurrent();
     leaderTemp = leader.getDeviceTemp();
     closedLoopReference = leader.getClosedLoopReference();
     closedLoopError = leader.getClosedLoopError();
@@ -124,6 +130,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     follower1MotorVoltage = follower1.getMotorVoltage();
     follower1SupplyCurrent = follower1.getSupplyCurrent();
     follower1StatorCurrent = follower1.getStatorCurrent();
+    follower1TorqueCurrent = follower1.getTorqueCurrent();
     follower1Temp = follower1.getDeviceTemp();
 
     // Cache signal references once — FOLLOWER 2
@@ -131,6 +138,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     follower2MotorVoltage = follower2.getMotorVoltage();
     follower2SupplyCurrent = follower2.getSupplyCurrent();
     follower2StatorCurrent = follower2.getStatorCurrent();
+    follower2TorqueCurrent = follower2.getTorqueCurrent();
     follower2Temp = follower2.getDeviceTemp();
 
     // Cache signal references once — FOLLOWER 3
@@ -138,6 +146,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     follower3MotorVoltage = follower3.getMotorVoltage();
     follower3SupplyCurrent = follower3.getSupplyCurrent();
     follower3StatorCurrent = follower3.getStatorCurrent();
+    follower3TorqueCurrent = follower3.getTorqueCurrent();
     follower3Temp = follower3.getDeviceTemp();
 
     // Cache signal references once — FOLLOWER 4
@@ -145,6 +154,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     follower4MotorVoltage = follower4.getMotorVoltage();
     follower4SupplyCurrent = follower4.getSupplyCurrent();
     follower4StatorCurrent = follower4.getStatorCurrent();
+    follower4TorqueCurrent = follower4.getTorqueCurrent();
     follower4Temp = follower4.getDeviceTemp();
 
     // 50Hz for signals we need every loop (velocity, voltage, current, closed-loop reference)
@@ -154,24 +164,29 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
         leaderMotorVoltage,
         leaderSupplyCurrent,
         leaderStatorCurrent,
+        leaderTorqueCurrent,
         leaderPos,
         closedLoopReference,
         follower1Velocity,
         follower1MotorVoltage,
         follower1SupplyCurrent,
         follower1StatorCurrent,
+        follower1TorqueCurrent,
         follower2Velocity,
         follower2MotorVoltage,
         follower2SupplyCurrent,
         follower2StatorCurrent,
+        follower2TorqueCurrent,
         follower3Velocity,
         follower3MotorVoltage,
         follower3SupplyCurrent,
         follower3StatorCurrent,
+        follower3TorqueCurrent,
         follower4Velocity,
         follower4MotorVoltage,
         follower4SupplyCurrent,
-        follower4StatorCurrent);
+        follower4StatorCurrent,
+        follower4TorqueCurrent);
 
     // 10Hz for diagnostic-only signals (temperature, closed-loop error)
     BaseStatusSignal.setUpdateFrequencyForAll(
@@ -259,6 +274,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
         leaderMotorVoltage,
         leaderSupplyCurrent,
         leaderStatorCurrent,
+        leaderTorqueCurrent,
         leaderTemp,
         leaderPos,
         closedLoopReference,
@@ -267,21 +283,25 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
         follower1MotorVoltage,
         follower1SupplyCurrent,
         follower1StatorCurrent,
+        follower1TorqueCurrent,
         follower1Temp,
         follower2Velocity,
         follower2MotorVoltage,
         follower2SupplyCurrent,
         follower2StatorCurrent,
+        follower2TorqueCurrent,
         follower2Temp,
         follower3Velocity,
         follower3MotorVoltage,
         follower3SupplyCurrent,
         follower3StatorCurrent,
+        follower3TorqueCurrent,
         follower3Temp,
         follower4Velocity,
         follower4MotorVoltage,
         follower4SupplyCurrent,
         follower4StatorCurrent,
+        follower4TorqueCurrent,
         follower4Temp);
 
     // Leader motor — read from cache
@@ -289,6 +309,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     inputs.leaderAppliedVolts = leaderMotorVoltage.getValue();
     inputs.leaderSupplyCurrentAmps = leaderSupplyCurrent.getValue();
     inputs.leaderStatorCurrentAmps = leaderStatorCurrent.getValue();
+    inputs.leaderTorqueCurrentAmps = leaderTorqueCurrent.getValue();
     inputs.leaderTemp = leaderTemp.getValue();
     inputs.leaderAngle = leaderPos.getValue();
 
@@ -297,6 +318,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     inputs.follower1AppliedVolts = follower1MotorVoltage.getValue();
     inputs.follower1SupplyCurrentAmps = follower1SupplyCurrent.getValue();
     inputs.follower1StatorCurrentAmps = follower1StatorCurrent.getValue();
+    inputs.follower1TorqueCurrentAmps = follower1TorqueCurrent.getValue();
     inputs.follower1Temp = follower1Temp.getValue();
 
     // Follower 2 motor — read from cache
@@ -304,6 +326,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     inputs.follower2AppliedVolts = follower2MotorVoltage.getValue();
     inputs.follower2SupplyCurrentAmps = follower2SupplyCurrent.getValue();
     inputs.follower2StatorCurrentAmps = follower2StatorCurrent.getValue();
+    inputs.follower2TorqueCurrentAmps = follower2TorqueCurrent.getValue();
     inputs.follower2Temp = follower2Temp.getValue();
 
     // Follower 3 motor — read from cache
@@ -311,6 +334,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     inputs.follower3AppliedVolts = follower3MotorVoltage.getValue();
     inputs.follower3SupplyCurrentAmps = follower3SupplyCurrent.getValue();
     inputs.follower3StatorCurrentAmps = follower3StatorCurrent.getValue();
+    inputs.follower3TorqueCurrentAmps = follower3TorqueCurrent.getValue();
     inputs.follower3Temp = follower3Temp.getValue();
 
     // Follower 4 motor — read from cache
@@ -318,6 +342,7 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     inputs.follower4AppliedVolts = follower4MotorVoltage.getValue();
     inputs.follower4SupplyCurrentAmps = follower4SupplyCurrent.getValue();
     inputs.follower4StatorCurrentAmps = follower4StatorCurrent.getValue();
+    inputs.follower4TorqueCurrentAmps = follower4TorqueCurrent.getValue();
     inputs.follower4Temp = follower4Temp.getValue();
 
     // Combined flywheel velocity (use leader velocity as representative)

@@ -34,6 +34,7 @@ public class UpperFeederIOReal implements UpperFeederIO {
   private final StatusSignal<AngularVelocity> velocity;
   private final StatusSignal<Current> statorCurrent;
   private final StatusSignal<Current> supplyCurrent;
+  private final StatusSignal<Current> torqueCurrent;
   private final StatusSignal<Voltage> motorVoltage;
   private final StatusSignal<Temperature> deviceTemp;
   private final StatusSignal<Double> closedLoopReference;
@@ -48,6 +49,7 @@ public class UpperFeederIOReal implements UpperFeederIO {
     velocity = upperFeederMotor.getVelocity();
     statorCurrent = upperFeederMotor.getStatorCurrent();
     supplyCurrent = upperFeederMotor.getSupplyCurrent();
+    torqueCurrent = upperFeederMotor.getTorqueCurrent();
     motorVoltage = upperFeederMotor.getMotorVoltage();
     deviceTemp = upperFeederMotor.getDeviceTemp();
     closedLoopReference = upperFeederMotor.getClosedLoopReference();
@@ -56,7 +58,13 @@ public class UpperFeederIOReal implements UpperFeederIO {
 
     // 50Hz for signals we need every loop (velocity, voltage, current, closed-loop reference)
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0, velocity, statorCurrent, supplyCurrent, motorVoltage, closedLoopReference);
+        50.0,
+        velocity,
+        statorCurrent,
+        supplyCurrent,
+        torqueCurrent,
+        motorVoltage,
+        closedLoopReference);
 
     // 10Hz for diagnostic-only signals (temperature, closed-loop error)
     BaseStatusSignal.setUpdateFrequencyForAll(10.0, deviceTemp, closedLoopError);
@@ -106,6 +114,7 @@ public class UpperFeederIOReal implements UpperFeederIO {
         velocity,
         statorCurrent,
         supplyCurrent,
+        torqueCurrent,
         motorVoltage,
         deviceTemp,
         closedLoopReference,
@@ -116,6 +125,7 @@ public class UpperFeederIOReal implements UpperFeederIO {
     inputs.upperFeederMotorVelocity = velocity.getValue();
     inputs.upperFeederStatorAmps = statorCurrent.getValue();
     inputs.upperFeederSupplyAmps = supplyCurrent.getValue();
+    inputs.upperFeederTorqueCurrentAmps = torqueCurrent.getValue();
     inputs.upperFeederVoltage = motorVoltage.getValue();
     inputs.upperFeederMotorTemperature = deviceTemp.getValue();
     inputs.upperFeederClosedLoopReference =

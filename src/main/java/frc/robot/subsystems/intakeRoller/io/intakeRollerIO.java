@@ -20,6 +20,7 @@ public interface intakeRollerIO {
     public Voltage intakeRollerVoltage = Volts.of(0);
     public Current intakeRollerSupplyCurrent = Amps.of(0);
     public Current intakeRollerStatorCurrent = Amps.of(0);
+    public Current intakeRollerTorqueCurrent = Amps.of(0);
     public Temperature intakeRollerTemperature = Celsius.of(0);
     public AngularVelocity intakeRollerVelocity = RotationsPerSecond.of(0);
     public AngularVelocity rollerClosedLoopReference = RotationsPerSecond.of(0);
@@ -28,6 +29,7 @@ public interface intakeRollerIO {
     public Voltage intakeRollerFollowerVoltage = Volts.of(0);
     public Current intakeRollerFollowerSupplyCurrent = Amps.of(0);
     public Current intakeRollerFollowerStatorCurrent = Amps.of(0);
+    public Current intakeRollerFollowerTorqueCurrent = Amps.of(0);
     public Temperature intakeRollerFollowerTemperature = Celsius.of(0);
     public AngularVelocity intakeRollerFollowerVelocity = RotationsPerSecond.of(0);
     public AngularVelocity rollerFollowerClosedLoopReference = RotationsPerSecond.of(0);

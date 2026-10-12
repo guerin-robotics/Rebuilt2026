@@ -37,6 +37,7 @@ public class PrestageIOReal implements PrestageIO {
   private final StatusSignal<AngularVelocity> leftVelocity;
   private final StatusSignal<Current> leftStatorCurrent;
   private final StatusSignal<Current> leftSupplyCurrent;
+  private final StatusSignal<Current> leftTorqueCurrent;
   private final StatusSignal<Voltage> leftMotorVoltage;
   private final StatusSignal<Temperature> leftDeviceTemp;
   private final StatusSignal<Double> leftClosedLoopReference;
@@ -47,6 +48,7 @@ public class PrestageIOReal implements PrestageIO {
   private final StatusSignal<AngularVelocity> rightVelocity;
   private final StatusSignal<Current> rightStatorCurrent;
   private final StatusSignal<Current> rightSupplyCurrent;
+  private final StatusSignal<Current> rightTorqueCurrent;
   private final StatusSignal<Voltage> rightMotorVoltage;
   private final StatusSignal<Temperature> rightDeviceTemp;
   private final StatusSignal<Double> rightClosedLoopReference;
@@ -66,6 +68,7 @@ public class PrestageIOReal implements PrestageIO {
     leftVelocity = prestageLeft.getVelocity();
     leftStatorCurrent = prestageLeft.getStatorCurrent();
     leftSupplyCurrent = prestageLeft.getSupplyCurrent();
+    leftTorqueCurrent = prestageLeft.getTorqueCurrent();
     leftMotorVoltage = prestageLeft.getMotorVoltage();
     leftDeviceTemp = prestageLeft.getDeviceTemp();
     leftClosedLoopReference = prestageLeft.getClosedLoopReference();
@@ -76,6 +79,7 @@ public class PrestageIOReal implements PrestageIO {
     rightVelocity = prestageRight.getVelocity();
     rightStatorCurrent = prestageRight.getStatorCurrent();
     rightSupplyCurrent = prestageRight.getSupplyCurrent();
+    rightTorqueCurrent = prestageRight.getTorqueCurrent();
     rightMotorVoltage = prestageRight.getMotorVoltage();
     rightDeviceTemp = prestageRight.getDeviceTemp();
     rightClosedLoopReference = prestageRight.getClosedLoopReference();
@@ -88,11 +92,13 @@ public class PrestageIOReal implements PrestageIO {
         leftVelocity,
         leftStatorCurrent,
         leftSupplyCurrent,
+        leftTorqueCurrent,
         leftMotorVoltage,
         leftClosedLoopReference,
         rightVelocity,
         rightStatorCurrent,
         rightSupplyCurrent,
+        rightTorqueCurrent,
         rightMotorVoltage,
         rightClosedLoopReference);
 
@@ -147,6 +153,7 @@ public class PrestageIOReal implements PrestageIO {
         leftVelocity,
         leftStatorCurrent,
         leftSupplyCurrent,
+        leftTorqueCurrent,
         leftMotorVoltage,
         leftDeviceTemp,
         leftClosedLoopReference,
@@ -155,6 +162,7 @@ public class PrestageIOReal implements PrestageIO {
         rightVelocity,
         rightStatorCurrent,
         rightSupplyCurrent,
+        rightTorqueCurrent,
         rightMotorVoltage,
         rightDeviceTemp,
         rightClosedLoopReference,
@@ -165,6 +173,7 @@ public class PrestageIOReal implements PrestageIO {
     inputs.prestageLeftVelocity = leftVelocity.getValue();
     inputs.prestageLeftStatorAmps = leftStatorCurrent.getValue();
     inputs.prestageLeftSupplyAmps = leftSupplyCurrent.getValue();
+    inputs.prestageLeftTorqueCurrentAmps = leftTorqueCurrent.getValue();
     inputs.prestageLeftVoltage = leftMotorVoltage.getValue();
     inputs.prestageLeftTemperature = leftDeviceTemp.getValue();
     inputs.prestageLeftClosedLoopReference =
@@ -177,6 +186,7 @@ public class PrestageIOReal implements PrestageIO {
     inputs.prestageRightVelocity = rightVelocity.getValue();
     inputs.prestageRightStatorAmps = rightStatorCurrent.getValue();
     inputs.prestageRightSupplyAmps = rightSupplyCurrent.getValue();
+    inputs.prestageRightTorqueCurrentAmps = rightTorqueCurrent.getValue();
     inputs.prestageRightVoltage = rightMotorVoltage.getValue();
     inputs.prestageRightTemperature = rightDeviceTemp.getValue();
     inputs.prestageRightClosedLoopReference =
