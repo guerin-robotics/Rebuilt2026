@@ -77,18 +77,16 @@ The drive subsystem feeds wheel and gyro data into a **pose estimator**. `RobotS
 
 Other subsystems can use this for **distance-based shooting** without directly talking to the drive code. That keeps the design cleaner.
 
-### `ShotCalculator` and `HoodPosCalculator` — turning distance into shooter settings
+### `ShotCalculator` — turning distance into shooter settings
 
 **Files:**
 
-- `subsystems/flywheel/ShotCalculator.java`
-- `subsystems/hood/HoodPosCalculator.java`
+- `util/ShotCalculator.java`
 
 When we want to shoot toward a goal from wherever we are:
 
 1. We get **distance** from `RobotState` (often horizontal distance to a target).
-2. **`ShotCalculator`** looks up **flywheel speed** (RPM) from a **table** stored in `FlywheelConstants` (interpolation between measured points).
-3. **`HoodPosCalculator`** looks up **hood angle** from a similar table in `HoodConstants`.
+2. **`ShotCalculator`** looks up **flywheel speed** (RPM) and **hood angle** from the **tables** in `HardwareConstants.ShotMaps` (interpolation between measured points). Both come from the same distance, so the flywheel and hood always agree.
 
 So “aiming” is not one magic formula in one line—it is **data we collected while tuning** the robot, stored as maps, and read at runtime.
 
@@ -285,7 +283,7 @@ Gradle downloads the right JARs when you build. If you add a new vendor library,
 | Program startup and logging | `Robot.java` |
 | Buttons, autos, subsystem creation | `RobotContainer.java` |
 | Field pose and distance | `RobotState.java` |
-| Shooting math from distance | `ShotCalculator.java`, `HoodPosCalculator.java` |
+| Shooting math from distance | `util/ShotCalculator.java` |
 | What happens when we “shoot” or “pass” | `commands/ShootSequences.java` |
 | Joystick and safety triggers | `Triggers.java` |
 | CAN IDs for shooter / intake | `HardwareConstants.java` → `CanIds` |

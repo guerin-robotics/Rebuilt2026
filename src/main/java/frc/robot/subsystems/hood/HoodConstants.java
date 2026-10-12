@@ -1,11 +1,9 @@
 package frc.robot.subsystems.hood;
 
-import static edu.wpi.first.math.util.Units.inchesToMeters;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Time;
 
@@ -62,32 +60,5 @@ public class HoodConstants {
   public static class HoodMagicConstants {
     public static double hoodAccel = 10.0;
     public static double hoodVelo = 1;
-  }
-
-  public class HoodMap {
-    public static final InterpolatingDoubleTreeMap ANGLE_MAP = new InterpolatingDoubleTreeMap();
-    public static final InterpolatingDoubleTreeMap PASSING_ANGLE_MAP =
-        new InterpolatingDoubleTreeMap();
-
-    // Key is distance from center of hub (converted to meters)
-    // Value is hood position in degrees (scaled to 5°..55°)
-    static {
-      ANGLE_MAP.put(inchesToMeters(75.0), 1.0); // Auto shot 1
-      ANGLE_MAP.put(inchesToMeters(85.0), 1.5); // Auto shot 2
-      ANGLE_MAP.put(inchesToMeters(110.0), 2.5); // Tower shot
-      ANGLE_MAP.put(inchesToMeters(130.0), 3.5);
-      ANGLE_MAP.put(inchesToMeters(145.0), 5.25);
-      ANGLE_MAP.put(inchesToMeters(160.0), 11.0);
-      ANGLE_MAP.put(inchesToMeters(175.0), 11.5);
-      ANGLE_MAP.put(inchesToMeters(180.0), 12.25);
-      ANGLE_MAP.put(inchesToMeters(190.0), 12.0);
-    }
-
-    static {
-      PASSING_ANGLE_MAP.put(inchesToMeters(70.0), 20.0);
-      PASSING_ANGLE_MAP.put(inchesToMeters(140.0), 25.0);
-      PASSING_ANGLE_MAP.put(inchesToMeters(225.0), 28.0);
-      PASSING_ANGLE_MAP.put(inchesToMeters(410.0), 35.0);
-    }
   }
 }

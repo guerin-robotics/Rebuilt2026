@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
@@ -204,6 +205,64 @@ public class HardwareConstants {
   public static class PassConstants {
     public static final AngularVelocity FlywheelPassVelocity = RPM.of(2700);
     public static final Angle hoodPassPos = Degrees.of(35.0);
+  }
+
+  /**
+   * Distance-based lookup tables for automatic shooting and passing, used by ShotCalculator.
+   *
+   * <p>Key is distance from the target (meters). Speed maps return flywheel RPM; hood maps return
+   * hood position in degrees. Characterize by shooting from various distances and recording the
+   * RPM and hood position needed. Hub and pass tables must keep matching distance keys so the
+   * flywheel and hood stay paired.
+   */
+  public static class ShotMaps {
+    public static final InterpolatingDoubleTreeMap HUB_SPEED_MAP = new InterpolatingDoubleTreeMap();
+    public static final InterpolatingDoubleTreeMap HUB_HOOD_MAP = new InterpolatingDoubleTreeMap();
+    public static final InterpolatingDoubleTreeMap PASS_SPEED_MAP =
+        new InterpolatingDoubleTreeMap();
+    public static final InterpolatingDoubleTreeMap PASS_HOOD_MAP = new InterpolatingDoubleTreeMap();
+
+    // Hub flywheel speed (RPM)
+    static {
+      HUB_SPEED_MAP.put(inchesToMeters(75.0), 1450.0); // Auto shot 1
+      HUB_SPEED_MAP.put(inchesToMeters(85.0), 1525.0); // Auto shot 2
+      HUB_SPEED_MAP.put(inchesToMeters(110.0), 1625.0); // Tower shot
+      HUB_SPEED_MAP.put(inchesToMeters(130.0), 1700.0);
+      HUB_SPEED_MAP.put(inchesToMeters(145.0), 1750.0);
+      HUB_SPEED_MAP.put(inchesToMeters(160.0), 1875.0);
+      HUB_SPEED_MAP.put(inchesToMeters(175.0), 1925.0);
+      HUB_SPEED_MAP.put(inchesToMeters(180.0), 1950.0);
+      HUB_SPEED_MAP.put(inchesToMeters(190.0), 1975.0);
+    }
+
+    // Hub hood position (degrees)
+    static {
+      HUB_HOOD_MAP.put(inchesToMeters(75.0), 1.0); // Auto shot 1
+      HUB_HOOD_MAP.put(inchesToMeters(85.0), 1.5); // Auto shot 2
+      HUB_HOOD_MAP.put(inchesToMeters(110.0), 2.5); // Tower shot
+      HUB_HOOD_MAP.put(inchesToMeters(130.0), 3.5);
+      HUB_HOOD_MAP.put(inchesToMeters(145.0), 5.25);
+      HUB_HOOD_MAP.put(inchesToMeters(160.0), 11.0);
+      HUB_HOOD_MAP.put(inchesToMeters(175.0), 11.5);
+      HUB_HOOD_MAP.put(inchesToMeters(180.0), 12.25);
+      HUB_HOOD_MAP.put(inchesToMeters(190.0), 12.0);
+    }
+
+    // Pass flywheel speed (RPM)
+    static {
+      PASS_SPEED_MAP.put(inchesToMeters(70.0), 1600.0);
+      PASS_SPEED_MAP.put(inchesToMeters(140.0), 1700.0);
+      PASS_SPEED_MAP.put(inchesToMeters(225.0), 2050.0);
+      PASS_SPEED_MAP.put(inchesToMeters(410.0), 2700.0);
+    }
+
+    // Pass hood position (degrees)
+    static {
+      PASS_HOOD_MAP.put(inchesToMeters(70.0), 20.0);
+      PASS_HOOD_MAP.put(inchesToMeters(140.0), 25.0);
+      PASS_HOOD_MAP.put(inchesToMeters(225.0), 28.0);
+      PASS_HOOD_MAP.put(inchesToMeters(410.0), 35.0);
+    }
   }
 
   public static class ControllerConstants {

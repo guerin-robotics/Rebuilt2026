@@ -21,6 +21,7 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.ShooterIOInputsAutoLogged;
 import frc.robot.util.LoggedTrigger;
+import frc.robot.util.ShotCalculator;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -125,22 +126,24 @@ public class Flywheel extends SubsystemBase {
   }
 
   public void setSpeedForHub() {
-    AngularVelocity velocity = ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub();
+    AngularVelocity velocity = ShotCalculator.getInstance().getShotForHub().flywheelSpeed();
     setFlywheelVelocity(velocity);
   }
 
   public void setSpeedForTarget(Translation3d target) {
-    AngularVelocity velocity = ShotCalculator.getInstance().getFlywheelSpeedForTarget(target);
+    AngularVelocity velocity =
+        ShotCalculator.getInstance().getShotForTarget(target).flywheelSpeed();
     setFlywheelVelocity(velocity);
   }
 
   public void setSpeedForDistance(Distance distance) {
-    AngularVelocity velocity = ShotCalculator.getInstance().getFlywheelSpeedForDistance(distance);
+    AngularVelocity velocity =
+        ShotCalculator.getInstance().getShotForDistance(distance).flywheelSpeed();
     setFlywheelVelocity(velocity);
   }
 
   public void setSpeedForPassing() {
-    AngularVelocity velocity = ShotCalculator.getInstance().getFlywheelSpeedForPassTarget();
+    AngularVelocity velocity = ShotCalculator.getInstance().getShotForPass().flywheelSpeed();
     setFlywheelVelocity(velocity);
   }
 
@@ -181,7 +184,7 @@ public class Flywheel extends SubsystemBase {
                 - RobotState.getInstance().getEstimatedPose().getY()));
     double distance = fuelToGoalDistance.getNorm();
     AngularVelocity idealSpeed =
-        ShotCalculator.getInstance().getFlywheelSpeedForDistance(Meters.of(distance));
+        ShotCalculator.getInstance().getShotForDistance(Meters.of(distance)).flywheelSpeed();
     Translation2d fuelToGoalVector =
         new Translation2d(idealSpeed.magnitude(), RobotState.getInstance().getAngleToAllianceHub());
     // Robot to hub

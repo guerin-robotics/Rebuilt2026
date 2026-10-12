@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.hood.io.HoodIO;
 import frc.robot.subsystems.hood.io.HoodIOInputsAutoLogged;
+import frc.robot.util.ShotCalculator;
 import org.littletonrobotics.junction.Logger;
 
 public class Hood extends SubsystemBase {
@@ -50,7 +51,7 @@ public class Hood extends SubsystemBase {
    * <p><b>Performance note:</b> This runs as the default command (every 20 ms). The call chain is:
    *
    * <ol>
-   *   <li>{@code HoodPosCalculator.getHoodPosForHub()} → {@code getAllianceHubTarget()} → {@code
+   *   <li>{@code ShotCalculator.getShotForHub()} → {@code getAllianceHubTarget()} → {@code
    *       AllianceFlipUtil} (cached) → {@code getDistanceToPoint()} → {@code Pose2d.getTranslation
    *       .getDistance()} → interpolation table lookup
    *   <li>{@code RobotState.isHoodSafe()} → {@code getRobotZone()} + velocity check (now caches
@@ -62,12 +63,12 @@ public class Hood extends SubsystemBase {
    * distance changes every loop so the lookup is necessary.
    */
   public void setHoodPosForHub() {
-    Angle position = HoodPosCalculator.getInstance().getHoodPosForHub();
+    Angle position = ShotCalculator.getInstance().getShotForHub().hoodPos();
     io.setHoodPos(position);
   }
 
   public void setHoodPosForPass() {
-    Angle angle = HoodPosCalculator.getInstance().getHoodPosForPassing();
+    Angle angle = ShotCalculator.getInstance().getShotForPass().hoodPos();
     io.setHoodPos(angle);
   }
 

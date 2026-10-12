@@ -82,9 +82,9 @@ frc.robot
 │
 ├── subsystems/
 │   ├── drive/          — Drive, Module, GyroIO/Pigeon2, ModuleIO/TalonFX/Sim, PhoenixOdometryThread
-│   ├── flywheel/       — Flywheel, ShotCalculator, FlywheelVisualizer
+│   ├── flywheel/       — Flywheel, FlywheelVisualizer
 │   │   └── io/         — FlywheelIO, FlywheelIOPhoenix6, FlywheelIOSim
-│   ├── hood/           — Hood, HoodPosCalculator, HoodVisualizer
+│   ├── hood/           — Hood, HoodVisualizer
 │   │   └── io/         — HoodIO, HoodIOReal, HoodIOSim
 │   ├── intakePivot/    — IntakePivot, IntakePivotVisualizer
 │   │   └── io/         — IntakePivotIO, IntakePivotIOReal, IntakePivotIOSim
@@ -173,7 +173,7 @@ All commands are named with `.withName()`. Format: `"SubsystemName_Action_Option
 
 ### Singleton Pattern
 
-`RobotState`, `Triggers`, `ShotCalculator`, `HoodPosCalculator`, `HubShiftUtil` are all accessed
+`RobotState`, `Triggers`, `ShotCalculator`, `HubShiftUtil` are all accessed
 via `getInstance()`. `RobotState` and `Triggers` are created on first call; `HubShiftUtil` is
 static-only.
 
@@ -533,8 +533,8 @@ Creates `FlywheelVisualizer visualizer`. Creates `LoggedNetworkNumber tuningRPM`
 **Key methods:**
 - `setFlywheelVelocity(AngularVelocity)` — stores `currentRPMTarget`, calls `io.setFlywheelVelocity`
 - `setFlywheelIdle()` — calls `setFlywheelVelocity(flywheelIdleVelocity)` = 1,200 RPM
-- `setSpeedForHub()` — calls `ShotCalculator.getInstance().getFlywheelSpeedForAllianceHub()`
-- `setSpeedForPassing()` — calls `ShotCalculator.getInstance().getFlywheelSpeedForPassTarget()`
+- `setSpeedForHub()` — calls `ShotCalculator.getInstance().getShotForHub().flywheelSpeed()`
+- `setSpeedForPassing()` — calls `ShotCalculator.getInstance().getShotForPass().flywheelSpeed()`
 - `isSpunUp()` — `|currentRPMTarget - inputs.leaderVelocity.in(RPM)| < 200 RPM`
 - `isFlywheelSpunUp` — `LoggedTrigger` wrapping `isSpunUp()`
 
@@ -572,7 +572,7 @@ default void setFlywheelVelocity(AngularVelocity velocity) {}  // MotionMagicVel
 **Current limits:** supply=40 A (trigger 35 A/1 s), stator=45 A
 **`flywheelMagicConstants.flywheelAccel`** = 100
 
-**Distance→RPM map** (`SPEED_MAP`, key = meters):
+**Distance→RPM map** (`HardwareConstants.ShotMaps.HUB_SPEED_MAP`, key = meters):
 
 | Distance (in) | RPM |
 |---|---|
@@ -586,7 +586,7 @@ default void setFlywheelVelocity(AngularVelocity velocity) {}  // MotionMagicVel
 | 180 | 1,950 |
 | 190 | 1,975 |
 
-**Passing speed map** (`PASSING_SPEED_MAP`):
+**Passing speed map** (`HardwareConstants.ShotMaps.PASS_SPEED_MAP`):
 
 | Distance (in) | RPM |
 |---|---|
@@ -595,13 +595,16 @@ default void setFlywheelVelocity(AngularVelocity velocity) {}  // MotionMagicVel
 | 225 | 2,050 |
 | 410 | 2,700 |
 
-### ShotCalculator
+### ShotCalculator (`util/ShotCalculator.java`)
 
-Singleton. `getFlywheelSpeedForAllianceHub()` → calls `RobotState.getAllianceHubTarget()` →
-2D distance → `SPEED_MAP.get()` → clamp to [MIN, MAX] → return RPM.
+Singleton shared by flywheel and hood. Returns a `ShotSolution(distance, flywheelSpeed, hoodPos)`
+so both mechanisms use the same distance.
 
-`getFlywheelSpeedForPassTarget()` → `RobotState.getPassTarget()` → 2D distance →
-`PASSING_SPEED_MAP.get()` → clamp.
+`getShotForHub()` → `RobotState.getAllianceHubTarget()` → 2D distance → `HUB_SPEED_MAP` and
+`HUB_HOOD_MAP` → clamp RPM to [MIN, MAX] and hood to [hoodMinPos, hoodMaxPos].
+
+`getShotForPass()` → `RobotState.getPassTarget()` → 2D distance → `PASS_SPEED_MAP` and
+`PASS_HOOD_MAP` → clamp.
 
 ---
 
@@ -614,8 +617,8 @@ Reports supply current to `Robot.batteryLogger`.
 
 **Key methods:**
 - `setHoodPos(Angle)` — calls `io.setHoodPos(position)`
-- `setHoodPosForHub()` — calls `HoodPosCalculator.getInstance().getHoodPosForHub()` then `io.setHoodPos`
-- `setHoodPosForPass()` — calls `HoodPosCalculator.getInstance().getHoodPosForPassing()`
+- `setHoodPosForHub()` — calls `ShotCalculator.getInstance().getShotForHub().hoodPos()` then `io.setHoodPos`
+- `setHoodPosForPass()` — calls `ShotCalculator.getInstance().getShotForPass().hoodPos()`
 - `stowHood()` — `io.setHoodPos(Degrees.of(0))`
 - `getPosition()` — returns `inputs.hoodPosition`
 - `incrementHoodPos()` — adds 5° to current position
@@ -640,14 +643,6 @@ default void updateInputs(HoodIOInputs inputs) {}
 default void setHoodPos(Angle position) {}  // MotionMagicTorqueCurrentFOC position
 ```
 
-### HoodPosCalculator
-
-Singleton. `getHoodPosForHub()` → `RobotState.getAllianceHubTarget()` → 2D distance →
-`ANGLE_MAP.get()` → clamp to [0°, 234°] → return degrees.
-
-`getHoodPosForPassing()` → `RobotState.getPassTarget()` → 2D distance →
-`PASSING_ANGLE_MAP.get()` → clamp.
-
 ### HoodConstants
 
 **Mechanical:** shaft→hood ratio = 122/12, motor→shaft belt ratio = 5.33,
@@ -660,7 +655,7 @@ magnet offset = −0.16, discontinuity point = 0.625, maxPos = 234°, minPos = 0
 **HoodMagicConstants:** accel=10.0, velo=1
 **CurrentLimits:** supply=40 A (trigger 35 A/1 s), stator=20 A
 
-**Distance→angle map** (`ANGLE_MAP`):
+**Distance→angle map** (`HardwareConstants.ShotMaps.HUB_HOOD_MAP`):
 
 | Distance (in) | Degrees |
 |---|---|
@@ -673,7 +668,7 @@ magnet offset = −0.16, discontinuity point = 0.625, maxPos = 234°, minPos = 0
 | 175 | 11.5 |
 | 180 | 12.25 |
 
-**Passing angle map** (`PASSING_ANGLE_MAP`):
+**Passing angle map** (`HardwareConstants.ShotMaps.PASS_HOOD_MAP`):
 
 | Distance (in) | Degrees |
 |---|---|

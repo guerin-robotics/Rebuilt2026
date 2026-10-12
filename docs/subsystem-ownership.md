@@ -67,7 +67,6 @@ subsystems/vision/VisionConstants.java
 ```
 subsystems/flywheel/Flywheel.java
 subsystems/flywheel/FlywheelIO.java (+ IOInputs, Real, Sim)
-subsystems/flywheel/ShotCalculator.java
 subsystems/flywheel/FlywheelVisualizer.java
 commands/FlywheelCommands.java
 ```
@@ -83,7 +82,6 @@ commands/FlywheelCommands.java
 ```
 subsystems/hood/Hood.java
 subsystems/hood/HoodIO.java (+ IOInputs, Real, Sim)
-subsystems/hood/HoodPosCalculator.java
 commands/HoodCommands.java
 ```
 
@@ -179,4 +177,5 @@ util/HubShiftUtil.java       ← game-specific; replace each season
 util/LocalADStarAK.java
 util/LoggedTrigger.java
 util/PhoenixUtil.java
+util/ShotCalculator.java     ← flywheel + hood shot math; tables in HardwareConstants.ShotMaps
 ```

@@ -6,7 +6,6 @@ import static edu.wpi.first.units.Units.RevolutionsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -110,39 +109,6 @@ public class FlywheelConstants {
         36.0 / 24.0; // Sensor rotations to mechanism rotations
     public static final double flywheelMetersPerRotation = inchesToMeters(Math.PI * 4);
     public static final double flywheelRotationsPerMeter = 1 / flywheelMetersPerRotation;
-  }
-
-  /**
-   * Distance-to-speed lookup table for automatic shooting.
-   *
-   * <p>Maps distance to target (meters) -> required shooter speed (RPM). Characterize by shooting
-   * from various distances and recording the RPM needed.
-   */
-  public static class DistanceMap {
-    public static final InterpolatingDoubleTreeMap SPEED_MAP = new InterpolatingDoubleTreeMap();
-    public static final InterpolatingDoubleTreeMap PASSING_SPEED_MAP =
-        new InterpolatingDoubleTreeMap();
-
-    // Key is distance from center of hub (converted to meters)
-    // Value is angular velocity (RPM)
-    static {
-      SPEED_MAP.put(inchesToMeters(75.0), 1450.0); // Auto shot 1
-      SPEED_MAP.put(inchesToMeters(85.0), 1525.0); // Auto shot 2
-      SPEED_MAP.put(inchesToMeters(110.0), 1625.0); // Tower shot
-      SPEED_MAP.put(inchesToMeters(130.0), 1700.0);
-      SPEED_MAP.put(inchesToMeters(145.0), 1750.0);
-      SPEED_MAP.put(inchesToMeters(160.0), 1875.0);
-      SPEED_MAP.put(inchesToMeters(175.0), 1925.0);
-      SPEED_MAP.put(inchesToMeters(180.0), 1950.0);
-      SPEED_MAP.put(inchesToMeters(190.0), 1975.0);
-    }
-
-    static {
-      PASSING_SPEED_MAP.put(inchesToMeters(70.0), 1600.0);
-      PASSING_SPEED_MAP.put(inchesToMeters(140.0), 1700.0);
-      PASSING_SPEED_MAP.put(inchesToMeters(225.0), 2050.0);
-      PASSING_SPEED_MAP.put(inchesToMeters(410.0), 2700.0);
-    }
   }
 
   /** Simulation constants for the flywheel. */

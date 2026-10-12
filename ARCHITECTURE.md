@@ -17,8 +17,8 @@ src/main/java/frc/robot/
 ├── BuildConstants.java           # Auto-generated git metadata
 ├── subsystems/
 │   ├── drive/                    # Swerve drive, module IO, gyro IO, odometry thread
-│   ├── flywheel/                 # 4x TalonFX shooter, ShotCalculator, visualizer
-│   ├── hood/                     # TalonFX + CANcoder pivot, HoodPosCalculator
+│   ├── flywheel/                 # 4x TalonFX shooter, visualizer
+│   ├── hood/                     # TalonFX + CANcoder pivot
 │   ├── intakePivot/              # TalonFX + CANcoder pivot, IntakePivotVisualizer
 │   ├── intakeRoller/             # 2x TalonFX rollers (voltage-only)
 │   ├── prestage/                 # 2x TalonFX staging wheels
@@ -145,8 +145,8 @@ All subsystems follow the **AdvantageKit IO pattern**:
 
 ### Flywheel
 - 1 leader + 3 followers (IDs 31–33 oppose leader, ID 34 same direction)
-- `ShotCalculator` singleton: `InterpolatingDoubleTreeMap` maps distance (in) → RPM
-- `HoodPosCalculator` computes hood angle from the same distance
+- `util/ShotCalculator` singleton: one distance → flywheel RPM + hood angle
+  (tables in `HardwareConstants.ShotMaps`)
 - `isSpunUp()` threshold: within 200 RPM of target
 
 ### Hood

@@ -50,7 +50,6 @@ import frc.robot.subsystems.flywheel.io.FlywheelIO;
 import frc.robot.subsystems.flywheel.io.FlywheelIOPhoenix6;
 import frc.robot.subsystems.flywheel.io.FlywheelIOSim;
 import frc.robot.subsystems.hood.Hood;
-import frc.robot.subsystems.hood.HoodPosCalculator;
 import frc.robot.subsystems.hood.io.HoodIO;
 import frc.robot.subsystems.hood.io.HoodIOReal;
 import frc.robot.subsystems.hood.io.HoodIOSim;
@@ -85,6 +84,7 @@ import frc.robot.subsystems.vision.io.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.io.VisionIOPhotonVisionSim;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.RobotModelVisualizer;
+import frc.robot.util.ShotCalculator;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -939,7 +939,7 @@ public class RobotContainer {
         .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
         .whileTrue(
             FlywheelCommands.shootOnTheMove(
-                    flywheel, HoodPosCalculator.getInstance().getHoodPosForHub().magnitude())
+                    flywheel, ShotCalculator.getInstance().getShotForHub().hoodPos().magnitude())
                 .alongWith(
                     PrestageCommands.setPrestageVelocity(
                         prestage, HardwareConstants.CompConstants.Velocities.prestageVelocity)))
@@ -953,7 +953,7 @@ public class RobotContainer {
     //     .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE)
     //     .whileTrue(
     //         FlywheelCommands.shootOnTheMove(
-    //             flywheel, HoodPosCalculator.getInstance().getHoodPosForHub().magnitude()));
+    //             flywheel, ShotCalculator.getInstance().getShotForHub().hoodPos().magnitude()));
 
     // Set passing velocity if shoot button is pressed but we're not in our alliance zone and tuning
     // false,
