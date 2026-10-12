@@ -211,9 +211,9 @@ public class HardwareConstants {
    * Distance-based lookup tables for automatic shooting and passing, used by ShotCalculator.
    *
    * <p>Key is distance from the target (meters). Speed maps return flywheel RPM; hood maps return
-   * hood position in degrees. Characterize by shooting from various distances and recording the
-   * RPM and hood position needed. Hub and pass tables must keep matching distance keys so the
-   * flywheel and hood stay paired.
+   * hood position in degrees. Characterize by shooting from various distances and recording the RPM
+   * and hood position needed. Hub and pass tables must keep matching distance keys so the flywheel
+   * and hood stay paired.
    */
   public static class ShotMaps {
     public static final InterpolatingDoubleTreeMap HUB_SPEED_MAP = new InterpolatingDoubleTreeMap();

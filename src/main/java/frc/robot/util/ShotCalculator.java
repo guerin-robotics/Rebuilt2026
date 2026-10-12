@@ -17,9 +17,9 @@ import frc.robot.subsystems.hood.HoodConstants;
 /**
  * Calculates the flywheel speed and hood position needed to hit a target on the field.
  *
- * <p>This is a singleton class that replaces the old flywheel ShotCalculator and
- * HoodPosCalculator. Both values are looked up from the same distance, so the flywheel and hood can
- * never disagree about where the robot is.
+ * <p>This is a singleton class that replaces the old flywheel ShotCalculator and HoodPosCalculator.
+ * Both values are looked up from the same distance, so the flywheel and hood can never disagree
+ * about where the robot is.
  *
  * <p><b>How Distance-Based Shooting Works:</b>
  *
