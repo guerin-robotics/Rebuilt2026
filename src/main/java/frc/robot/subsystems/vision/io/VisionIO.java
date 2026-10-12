@@ -19,6 +19,16 @@ public interface VisionIO {
         new TargetObservation(Rotation2d.kZero, Rotation2d.kZero);
     public PoseObservation[] poseObservations = new PoseObservation[0];
     public int[] tagIds = new int[0];
+
+    // Fiducial IDs the coprocessor's multi-tag PnP solved from this cycle, recorded BEFORE the
+    // trench filter runs. tagIds shows what was visible and survived filtering; this shows what
+    // the multi-tag solve was actually built from, which is the only way to tell how often a
+    // trench tag lands inside one.
+    public int[] multiTagFiducialIdsUsed = new int[0];
+
+    // Multi-tag solves dropped this cycle because too few non-trench tags contributed. Measures
+    // what VisionConstants.minCleanTagsToKeepMultiTag is costing in accepted multi-tag poses.
+    public int multiTagSolvesDiscarded = 0;
   }
 
   /** Represents the angle to a simple target, not used for pose estimation. */
