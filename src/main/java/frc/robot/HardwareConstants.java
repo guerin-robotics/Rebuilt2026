@@ -78,10 +78,7 @@ public class HardwareConstants {
       public static final AngularVelocity prestageIdleVelocityHigh = RPM.of(1200);
       public static final AngularVelocity flywheelIdleVelocityHigh = RPM.of(60);
       public static final AngularVelocity intakeRollerIdleVelocity = RPM.of(1200);
-      // Always-run velocity for the roller default command. IRI logs show the roller free-spins at
-      // ~3200 RPM on a 12 V open-loop command, so 3000 RPM sits just under free speed — closed loop
-      // holds it there and backs off when unloaded instead of pinning at 12 V. // 2400
-      public static final AngularVelocity intakeRollerVelocity = RPM.of(3000);
+      public static final AngularVelocity intakeRollerVelocity = RPM.of(3200);
       public static final AngularVelocity transportVelocity = RPM.of(-1800);
     }
 

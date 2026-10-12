@@ -684,17 +684,12 @@ public class RobotContainer {
         .shootButton()
         .or(Triggers.getInstance().passButton())
         .whileTrue(
-            intakeRollerCommands.setVoltageAfterWait(
-                intakeRoller,
-                HardwareConstants.CompConstants.Voltages.intakeRollerAgitateVoltage,
-                flywheel.isFlywheelSpunUp.and(Triggers.getInstance().isAlignedLooser)));
+            intakeRollerCommands.setRollerVelocity(
+                intakeRoller, HardwareConstants.CompConstants.Velocities.intakeRollerVelocity))
+        .onFalse(intakeRollerCommands.stopIntakeRoller(intakeRoller));
 
-    // The tower shot needs its own roller binding because it releases its feed on a different
-    // condition: the FULL SHOOTER tower binding above uses the no-align setXVelocityAfterWait
-    // overloads, which wait flywheelSpinupSeconds and then feed unconditionally. The tower shot
-    // does not aim, so gating the roller on isAlignedLooser like the hub/pass binding above left
-    // the roller holding 0 V for the whole shot while the feeders pulled fuel. Mirror the tower
-    // feed's fixed wait instead so the roller agitates on the same loop the fuel starts moving.
+    // Set to agitate voltage when shoot button is pressed
+    // and other standard shooting conditions true
     Triggers.getInstance()
         .shootFromTowerButton()
         .whileTrue(

@@ -20,6 +20,7 @@ public interface TransportIO {
     public Voltage TransportVoltage = Volts.of(0);
     public Current TransportStatorAmps = Amps.of(0);
     public Current TransportSupplyAmps = Amps.of(0);
+    public Current TransportTorqueCurrentAmps = Amps.of(0);
     public AngularVelocity TransportMotorVelocity = RotationsPerSecond.of(0);
     public Temperature TransportMotorTemperature = Celsius.of(0);
     public AngularVelocity transportClosedLoopReference = RotationsPerSecond.of(0);

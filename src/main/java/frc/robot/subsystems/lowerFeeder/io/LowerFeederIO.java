@@ -20,6 +20,7 @@ public interface LowerFeederIO {
     public Voltage lowerFeederVoltage = Volts.of(0);
     public Current lowerFeederStatorAmps = Amps.of(0);
     public Current lowerFeederSupplyAmps = Amps.of(0);
+    public Current lowerFeederTorqueCurrentAmps = Amps.of(0);
     public AngularVelocity lowerFeederMotorVelocity = RotationsPerSecond.of(0);
     public Temperature lowerFeederMotorTemperature = Celsius.of(0);
     public AngularVelocity lowerFeederClosedLoopReference = RotationsPerSecond.of(0);
