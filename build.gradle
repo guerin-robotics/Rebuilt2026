@@ -102,6 +102,23 @@ dependencies {
 test {
     useJUnitPlatform()
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
+
+    // One JVM per test class.
+    //
+    // Required, not a preference. Constructing a Drive starts the PhoenixOdometryThread
+    // singleton, which polls at 250 Hz and is never stopped. Any test class that builds a Drive
+    // therefore leaves a busy background thread behind for the rest of the JVM's life. Without
+    // forking, TeleopLoopTimingTest ends up measuring the drive loop while another class's
+    // odometry thread competes for CPU: the calibration workload inflates (~45 ms -> ~68 ms),
+    // the measured iterations inflate with it, and the p99 assertion fails for reasons that have
+    // nothing to do with robot code. That is the most likely reason the timing test was deleted
+    // in 9fadc35 rather than any real regression.
+    //
+    // Forking also isolates the static singletons these tests necessarily poke (HubShiftUtil,
+    // AllianceFlipUtil, CommandScheduler, DriverStationSim), so class execution order stops
+    // mattering. Costs roughly a second of JVM startup per test class.
+    forkEvery = 1
+    maxParallelForks = 1
 }
 
 // Simulation configuration (e.g. environment variables).
