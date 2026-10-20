@@ -103,6 +103,12 @@ public class UpperFeederIOReal implements UpperFeederIO {
     limits.StatorCurrentLimit = UpperFeederConstants.CurrentLimits.UPPER_FEEDER_MAIN_STATOR_AMP;
     limits.StatorCurrentLimitEnable = true;
 
+    // Torque current peaks match the stator limit (TorqueCurrentFOC control)
+    config.TorqueCurrent.PeakForwardTorqueCurrent =
+        UpperFeederConstants.CurrentLimits.UPPER_FEEDER_MAIN_STATOR_AMP;
+    config.TorqueCurrent.PeakReverseTorqueCurrent =
+        -UpperFeederConstants.CurrentLimits.UPPER_FEEDER_MAIN_STATOR_AMP;
+
     upperFeederMotor.getConfigurator().apply(config);
     upperFeederMotor.getConfigurator().apply(limits);
   }

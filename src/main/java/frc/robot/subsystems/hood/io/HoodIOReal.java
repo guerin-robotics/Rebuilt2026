@@ -131,6 +131,12 @@ public class HoodIOReal implements HoodIO {
     config.CurrentLimits.StatorCurrentLimit = HoodConstants.CurrentLimits.HOOD_MAIN_STATOR_AMP;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
 
+    // Torque current peaks match the stator limit (TorqueCurrentFOC control)
+    config.TorqueCurrent.PeakForwardTorqueCurrent =
+        HoodConstants.CurrentLimits.HOOD_MAIN_STATOR_AMP;
+    config.TorqueCurrent.PeakReverseTorqueCurrent =
+        -HoodConstants.CurrentLimits.HOOD_MAIN_STATOR_AMP;
+
     // Software limits — TalonFX expects mechanism rotations, so convert from degrees
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =

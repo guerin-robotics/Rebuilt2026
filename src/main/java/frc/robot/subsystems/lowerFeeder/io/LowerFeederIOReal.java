@@ -103,6 +103,12 @@ public class LowerFeederIOReal implements LowerFeederIO {
     limits.StatorCurrentLimit = LowerFeederConstants.CurrentLimits.LOWER_FEEDER_MAIN_STATOR_AMP;
     limits.StatorCurrentLimitEnable = true;
 
+    // Torque current peaks match the stator limit (TorqueCurrentFOC control)
+    config.TorqueCurrent.PeakForwardTorqueCurrent =
+        LowerFeederConstants.CurrentLimits.LOWER_FEEDER_MAIN_STATOR_AMP;
+    config.TorqueCurrent.PeakReverseTorqueCurrent =
+        -LowerFeederConstants.CurrentLimits.LOWER_FEEDER_MAIN_STATOR_AMP;
+
     lowerFeederMotor.getConfigurator().apply(config);
     lowerFeederMotor.getConfigurator().apply(limits);
   }

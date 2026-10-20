@@ -140,6 +140,12 @@ public class PrestageIOReal implements PrestageIO {
     limits.StatorCurrentLimit = PrestageConstants.CurrentLimits.PRESTAGE_MAIN_STATOR_AMP;
     limits.StatorCurrentLimitEnable = true;
 
+    // Torque current peaks match the stator limit (TorqueCurrentFOC control)
+    config.TorqueCurrent.PeakForwardTorqueCurrent =
+        PrestageConstants.CurrentLimits.PRESTAGE_MAIN_STATOR_AMP;
+    config.TorqueCurrent.PeakReverseTorqueCurrent =
+        -PrestageConstants.CurrentLimits.PRESTAGE_MAIN_STATOR_AMP;
+
     prestageLeft.getConfigurator().apply(config);
     prestageLeft.getConfigurator().apply(limits);
     prestageRight.getConfigurator().apply(config);

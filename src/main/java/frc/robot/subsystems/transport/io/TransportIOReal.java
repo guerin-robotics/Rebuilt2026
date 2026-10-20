@@ -103,6 +103,12 @@ public class TransportIOReal implements TransportIO {
     limits.StatorCurrentLimit = TransportConstants.CurrentLimits.TRANSPORT_MAIN_STATOR_AMP;
     limits.StatorCurrentLimitEnable = true;
 
+    // Torque current peaks match the stator limit (TorqueCurrentFOC control)
+    config.TorqueCurrent.PeakForwardTorqueCurrent =
+        TransportConstants.CurrentLimits.TRANSPORT_MAIN_STATOR_AMP;
+    config.TorqueCurrent.PeakReverseTorqueCurrent =
+        -TransportConstants.CurrentLimits.TRANSPORT_MAIN_STATOR_AMP;
+
     transportMotor.getConfigurator().apply(config);
     transportMotor.getConfigurator().apply(limits);
   }
