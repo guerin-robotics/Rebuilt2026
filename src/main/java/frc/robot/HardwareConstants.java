@@ -69,7 +69,7 @@ public class HardwareConstants {
     // Subsystems that run at a constant velocity: prestage, feeder
     public static class Velocities {
       public static final AngularVelocity prestageVelocity = RPM.of(3000.0);
-      public static final AngularVelocity feederVelocity = RPM.of(-3000.0);
+      public static final AngularVelocity feederVelocity = RPM.of(-2100.0);
       public static final AngularVelocity prestageIdleVelocity = RPM.of(1300);
       public static final AngularVelocity flywheelIdleVelocity = RPM.of(1200);
       public static final AngularVelocity prestageIdleVelocityHigh = RPM.of(1200);
