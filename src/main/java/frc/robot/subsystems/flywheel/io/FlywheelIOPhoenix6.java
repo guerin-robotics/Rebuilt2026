@@ -254,6 +254,16 @@ public class FlywheelIOPhoenix6 implements FlywheelIO {
     limits.StatorCurrentLimit = FlywheelConstants.CurrentLimits.SHOOTER_MAIN_STATOR_AMP;
     limits.StatorCurrentLimitEnable = true;
 
+    // Torque current peaks match the stator limit (TorqueCurrentFOC control)
+    config.TorqueCurrent.PeakForwardTorqueCurrent =
+        FlywheelConstants.CurrentLimits.SHOOTER_MAIN_STATOR_AMP;
+    config.TorqueCurrent.PeakReverseTorqueCurrent =
+        -FlywheelConstants.CurrentLimits.SHOOTER_MAIN_STATOR_AMP;
+    rightSideConfig.TorqueCurrent.PeakForwardTorqueCurrent =
+        FlywheelConstants.CurrentLimits.SHOOTER_MAIN_STATOR_AMP;
+    rightSideConfig.TorqueCurrent.PeakReverseTorqueCurrent =
+        -FlywheelConstants.CurrentLimits.SHOOTER_MAIN_STATOR_AMP;
+
     leader.getConfigurator().apply(config);
     leader.getConfigurator().apply(limits);
     follower1.getConfigurator().apply(config);

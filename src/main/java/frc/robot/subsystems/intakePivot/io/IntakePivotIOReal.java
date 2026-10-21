@@ -134,6 +134,12 @@ public class IntakePivotIOReal implements IntakePivotIO {
     limits.StatorCurrentLimit = IntakePivotConstants.CurrentLimits.INTAKE_PIVOT_MAIN_STATOR_AMP;
     limits.StatorCurrentLimitEnable = true;
 
+    // Torque current peaks match the stator limit (TorqueCurrentFOC control)
+    config.TorqueCurrent.PeakForwardTorqueCurrent =
+        IntakePivotConstants.CurrentLimits.INTAKE_PIVOT_MAIN_STATOR_AMP;
+    config.TorqueCurrent.PeakReverseTorqueCurrent =
+        -IntakePivotConstants.CurrentLimits.INTAKE_PIVOT_MAIN_STATOR_AMP;
+
     // CANcoder remote feedback
     var feedback = new FeedbackConfigs();
     feedback.withFeedbackRemoteSensorID(HardwareConstants.CanIds.INTAKE_PIVOT_ENCODER_ID);

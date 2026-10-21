@@ -13,7 +13,7 @@ public class LowerFeederConstants {
     public static final int LOWER_FEEDER_MAIN_SUPPLY_AMP = 40;
     public static final int LOWER_FEEDER_MAIN_SUPPLY_TRIGGER_AMP = 35;
     public static final Time LOWER_FEEDER_MAIN_SUPPLY_TRIGGER_TIME_SEC = Seconds.of(1);
-    public static final int LOWER_FEEDER_MAIN_STATOR_AMP = 40; // 35
+    public static final int LOWER_FEEDER_MAIN_STATOR_AMP = 60; // 40 // 35
   }
 
   public static class SoftwareConstants {
@@ -30,7 +30,7 @@ public class LowerFeederConstants {
   // All need updated
   public static class PID {
     public static final double KS = 2.0; // 6.0
-    public static final double KV = 0.0; // 0.0
+    public static final double KV = 0.15; // 0.0
     public static final double KP = 16.0; // 4.0
     public static final double KI = 0.0; // 0.0
     public static final double KD = 0.0; // 0.0

@@ -134,6 +134,12 @@ public class intakeRollerIOReal implements intakeRollerIO {
     limits.StatorCurrentLimit = intakeRollerConstants.CurrentLimits.INTAKE_ROLLER_MAIN_STATOR_AMP;
     limits.StatorCurrentLimitEnable = true;
 
+    // Torque current peaks match the stator limit (TorqueCurrentFOC control)
+    config.TorqueCurrent.PeakForwardTorqueCurrent =
+        intakeRollerConstants.CurrentLimits.INTAKE_ROLLER_MAIN_STATOR_AMP;
+    config.TorqueCurrent.PeakReverseTorqueCurrent =
+        -intakeRollerConstants.CurrentLimits.INTAKE_ROLLER_MAIN_STATOR_AMP;
+
     intakeRollerLeader.getConfigurator().apply(config);
     intakeRollerLeader.getConfigurator().apply(limits);
     intakeRollerFollower.getConfigurator().apply(config);
