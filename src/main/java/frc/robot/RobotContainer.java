@@ -780,7 +780,7 @@ public class RobotContainer {
             .and(() -> !Triggers.getInstance().isShootSafeZone.getAsBoolean())
             .and(() -> !HardwareConstants.TuningConstants.TUNING_MODE))
         .or(Triggers.getInstance().passButton())
-        .whileTrue(HoodCommands.setHoodPos(hood, Degrees.of(28)));
+        .whileTrue(HoodCommands.setPosForPassing(hood));
 
     // Set pos to defined tuning pos when shoot button is pressed and tuning mode is on
     Triggers.getInstance()
